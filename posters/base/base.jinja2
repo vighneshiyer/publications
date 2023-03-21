@@ -22,13 +22,18 @@ THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR I
     {% endblock %}
 
     <!-- highlight.js -->
-    {% block highlightjs %}
+    {% block highlightjs_theme %}
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/mono-blue.min.css" integrity="sha512-9MaxPqXjPueWIGbV9cvVzkGnBxywb1kSNUtjm5Ttnk0ltKD23voJdHxAh6y9k10CwWwrFiFn49FG88KZuFzbTg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js" integrity="sha512-bgHRAiTjGrzHzLyKOnpFvaEpGzJet3z4tZnXGjpsCcqOnAH6VGUx9frc5bcIhKTVLEiCO6vEhNAgx5jtLUYrfA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/languages/scala.min.js" integrity="sha512-V270YlcVZGteVNcd3wOMtRGK/UBHMZKx7/UR9bcQx4jhg8MkWcfHrCQlEbhlBu6MhHRa88bOBPbfxfqVUO3fOQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/languages/verilog.min.js" integrity="sha512-4xzKcnOhXeYySC/PneV7sO832OyA5c0IYis5M6OQ6Bncw3F85K+xJk2uh4WNZSWONWBRKlxMPhJe3MmmgVWccw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-      <script defer>hljs.highlightAll();</script>
     {% endblock %}
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js" integrity="sha512-bgHRAiTjGrzHzLyKOnpFvaEpGzJet3z4tZnXGjpsCcqOnAH6VGUx9frc5bcIhKTVLEiCO6vEhNAgx5jtLUYrfA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    {% block highlightjs_langs %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/languages/scala.min.js" integrity="sha512-V270YlcVZGteVNcd3wOMtRGK/UBHMZKx7/UR9bcQx4jhg8MkWcfHrCQlEbhlBu6MhHRa88bOBPbfxfqVUO3fOQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/languages/verilog.min.js" integrity="sha512-4xzKcnOhXeYySC/PneV7sO832OyA5c0IYis5M6OQ6Bncw3F85K+xJk2uh4WNZSWONWBRKlxMPhJe3MmmgVWccw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    {% endblock %}
+
+    <script defer>hljs.highlightAll();</script>
 
     <!-- fonts -->
     {% block fonts %}
