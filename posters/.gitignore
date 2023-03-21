@@ -1,2 +1,4 @@
 *.css
 *.css.map
+posters/*/*.html
+posters/*/figs
