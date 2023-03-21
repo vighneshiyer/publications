@@ -1,0 +1,47 @@
+//////////////////
+// Tango colors //
+//////////////////
+
+$tango-butter-l: #fce94f;
+$tango-butter-m: #edd400;
+$tango-butter-d: #c4a000;
+
+$tango-orange-l: #fcaf3e;
+$tango-orange-m: #f57900;
+$tango-orange-d: #ce5c00;
+
+$tango-chocolate-l: #e9b96e;
+$tango-chocolate-m: #c17d11;
+$tango-chocolate-d: #8f5902;
+
+$tango-chameleon-l: #8ae234;
+$tango-chameleon-m: #73d216;
+$tango-chameleon-d: #4e9a06;
+
+$tango-blue-l: #729fcf;
+$tango-blue-m: #3465a4;
+$tango-blue-d: #204a87;
+
+$tango-plum-l: #ad7fa8;
+$tango-plum-m: #75507b;
+$tango-plum-d: #5c3566;
+
+$tango-red-l: #ef2929;
+$tango-red-m: #cc0000;
+$tango-red-d: #a40000;
+
+$tango-aluminum-1: #eeeeec;
+$tango-aluminum-2: #d3d7cf;
+$tango-aluminum-3: #babdb6;
+$tango-aluminum-4: #888a85;
+$tango-aluminum-5: #555753;
+$tango-aluminum-6: #2e3436;
+
+@use 'base/base.scss' as * with (
+    $color-title: $tango-orange-l,
+    $color-accent: $tango-orange-m,
+    $color-bg-light: $tango-aluminum-1,
+    $color-bg-dark: $tango-aluminum-6,
+    $color-header-bg: black,
+    $color-header-text: white
+);

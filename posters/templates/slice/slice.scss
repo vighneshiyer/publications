@@ -1,0 +1,26 @@
+// Berkeley Colors
+// https://brand.berkeley.edu/identity-and-visual-design/color
+
+$berkeley-blue: #003262;
+$cal-gold: #FDB515;
+$wellman-tile: #D9661F;
+$gray: #f4f4f4;
+
+@use 'base/base.scss' with (
+  $color-title: $cal-gold,
+  $color-accent: $wellman-tile,
+  $color-bg-light: $gray,
+  $color-bg-dark: $berkeley-blue,
+  $color-header-bg: white,
+  $color-header-text: black
+);
+
+body {
+  > footer {
+    border-top: 0.25rem solid $berkeley-blue;
+  }
+
+  > header {
+    border-bottom: 0.25rem solid $berkeley-blue;
+  }
+}

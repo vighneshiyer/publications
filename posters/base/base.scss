@@ -9,51 +9,6 @@ The above copyright notice and this permission notice shall be included in all c
 THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-//////////////////
-// Tango colors //
-//////////////////
-
-$tango-butter-l: #fce94f;
-$tango-butter-m: #edd400;
-$tango-butter-d: #c4a000;
-
-$tango-orange-l: #fcaf3e;
-$tango-orange-m: #f57900;
-$tango-orange-d: #ce5c00;
-
-$tango-chocolate-l: #e9b96e;
-$tango-chocolate-m: #c17d11;
-$tango-chocolate-d: #8f5902;
-
-$tango-chameleon-l: #8ae234;
-$tango-chameleon-m: #73d216;
-$tango-chameleon-d: #4e9a06;
-
-$tango-blue-l: #729fcf;
-$tango-blue-m: #3465a4;
-$tango-blue-d: #204a87;
-
-$tango-plum-l: #ad7fa8;
-$tango-plum-m: #75507b;
-$tango-plum-d: #5c3566;
-
-$tango-red-l: #ef2929;
-$tango-red-m: #cc0000;
-$tango-red-d: #a40000;
-
-$tango-aluminum-1: #eeeeec;
-$tango-aluminum-2: #d3d7cf;
-$tango-aluminum-3: #babdb6;
-$tango-aluminum-4: #888a85;
-$tango-aluminum-5: #555753;
-$tango-aluminum-6: #2e3436;
-
-//////////////////////
-// Berkeley Colors  //
-//////////////////////
-$cal-gold: #FDB515; // california gold
-$berkeley-blue: #003262; // berkeley blue
-$gray: #f4f4f4; // gray
 
 //////////////////////
 // Global variables //
@@ -75,10 +30,12 @@ $thick-space-em: 0.75em;
 
 $grid-gap: 1rem;
 
-$color-title: $cal-gold; //$tango-orange-l;
-$color-accent: $tango-orange-m;
-$color-bg-light: $gray; //$tango-aluminum-1;
-$color-bg-dark: $berkeley-blue; //$tango-aluminum-6;
+$color-title: #ffffff !default;
+$color-accent: #FFBF00 !default;
+$color-bg-light: #F5F5DC !default;
+$color-bg-dark: #000000 !default;
+$color-header-bg: #ffffff !default;
+$color-header-text: #000000 !default;
 
 ///////////////////
 // Poster layout //
@@ -104,9 +61,6 @@ b {
     display: block;
     text-align: center;
     font-weight: 500;
-
-    // &::before { content: "▶  "; }
-    // &::after { content: "  ◀"; }
 }
 
 // https://stackoverflow.com/questions/42176419/targeting-flex-items-on-the-last-or-specific-row
@@ -232,23 +186,16 @@ body {
 
     > header, > footer {
         align-items: center;
-        //background: black;
-        //color: white;
-        background: white;
-        color: black;
+        background: $color-header-bg;
+        color: $color-header-text;
         display: grid;
         grid-gap: $mid-space;
         padding: $mid-space;
         text-align: center;
     }
 
-    > footer {
-        border-top: 0.25rem solid $berkeley-blue;
-    }
-
     > header {
         font-size: 80%;
-        border-bottom: 0.25rem solid $berkeley-blue;
 
         img {
             max-height: $header-img-height;
@@ -336,7 +283,6 @@ article {
     hyphens: none;
     line-height: 1.35;
     padding: 0 $mid-space $mid-space $mid-space;
-    // text-align: justify;
 
     p, ul, ol, pre, div, figure, hr {
         margin: 0;
