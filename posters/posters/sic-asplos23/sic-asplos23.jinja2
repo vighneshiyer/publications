@@ -88,14 +88,14 @@
 
     <p><strong>3.</strong> New RTL hardware languages lack support for source-level coverage collection</p>
 
-    <img src="./figs/sic-asplos23/losing_semantics.svg" />
+    <img src="./figs/sic-asplos23/3_coverage_line_coverage_of_verilog.svg" />
   </article>
 
   <article>
     <header><h3>Our Proposal</h3></header>
     <p class="center">Implement coverage instrumentation with compiler passes on a hardware IR vs. baking coverage instrumentation into each simulator</p>
 
-    <img src="./figs/sic-asplos23/coverage_figure_m_n.svg" width=80% />
+    <img src="./figs/sic-asplos23/1_coverage_figure_m_n.svg" width=80% />
 
   </article>
 
@@ -132,13 +132,13 @@
   <article>
     <header><h3>Implementing Line Coverage</h3></header>
 
-    <img src="./figs/sic-asplos23/coverage_line_coverage.svg" width=100% />
+    <img src="./figs/sic-asplos23/5_coverage_line_coverage.svg" width=100% />
   </article>
 
   <article>
     <header><h3>Implementing Toggle Coverage</h3></header>
 
-    <img src="./figs/sic-asplos23/coverage_toggle_coverage.svg" width=80% />
+    <img src="./figs/sic-asplos23/6_coverage_toggle_coverage.svg" width=80% />
 
     <ul>
       <li>Capture a net's value in the previous clock cycle with a register</li>
@@ -157,7 +157,7 @@
       <li>We analyze each next state expression to determine feasible transitions</li>
     </ul>
 
-    <img src="./figs/sic-asplos23/coverage_fsm_coverage.svg" width=90% />
+    <img src="./figs/sic-asplos23/7_coverage_fsm_coverage.svg" width=90% />
   </article>
   -->
 
@@ -174,7 +174,7 @@
 
     <p class="center">Does our coverage instrumentation methodology come with performance overheads over a simulator's "built-in" coverage instrumentation?</p>
 
-    <img src="./figs/sic-asplos23/sic-overhead.png" width=80% />
+    <img src="./figs/sic-asplos23/8_verilator_overhead.png" width=80% />
 
     <p class="center">There is no performance overhead! <small></small></p>
   </article>
@@ -186,7 +186,7 @@
       <li>Adding support for the FIRRTL <code>cover</code> primitive adds support for all coverage metrics!</li>
     </ul>
 
-    <img src="./figs/sic-asplos23/coverage_firesim_scan_chain.svg" width=80% />
+    <img src="./figs/sic-asplos23/4_coverage_firesim_scan_chain.svg" width=80% />
 
     <ul>
       <li>The <code>cover</code> primitive is implemented with a saturating counter connected to a scan chain</li>
@@ -196,7 +196,7 @@
   <article>
     <header><h3>Area Overhead of Firesim Coverage</h3></header>
 
-    <img src="./figs/sic-asplos23/firesim_utilization.png" width=80% />
+    <img src="./figs/sic-asplos23/9_firesim_utilization.png" width=80% />
     <ul>
       <li>8-bit coverage counters provide sufficient resolution with minimal overhead</li>
     </ul>
@@ -206,7 +206,7 @@
   <article>
     <header><h3>Performance Overhead of Firesim Coverage</h3></header>
 
-    <img src="./figs/sic-asplos23/firesim_fmax.png" width=80% />
+    <img src="./figs/sic-asplos23/10_firesim_fmax.png" width=80% />
 
     <ul>
       <li>Similarly, \(f_{max}\) is not affected for small counter widths</li>
