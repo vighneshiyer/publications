@@ -9,7 +9,8 @@ $gray: #f4f4f4;
 @use 'base/base.scss' with (
   $color-title: $cal-gold,
   $color-accent: $wellman-tile,
-  $color-bg-light: $gray,
+  //$color-bg-light: $gray,
+  $color-bg-light: white,
   $color-bg-dark: $berkeley-blue,
   $color-header-bg: white,
   $color-header-text: black
@@ -23,4 +24,8 @@ body {
   > header {
     border-bottom: 0.25rem solid $berkeley-blue;
   }
+}
+
+article {
+  border: 2px solid $berkeley-blue;
 }
