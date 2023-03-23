@@ -1,0 +1,24 @@
+#!/usr/bin/env python
+
+from livereload import Server, shell
+
+if __name__ == "__main__":
+    server = Server()
+
+    # Base template
+    server.watch('base/base.jinja2', shell('make all'))
+    server.watch('base/base.scss', shell('make all'))
+
+    # Poster template
+    server.watch('templates/**/*.jinja2', shell('make all'))
+    server.watch('templates/**/*.scss', shell('make all'))
+
+    # Poster content
+    server.watch('posters/**/*.jinja2', shell('make all'))
+    server.watch('posters/**/*.scss', shell('make all'))
+
+    # Global figures
+    server.watch('figs/**/*.png')
+    server.watch('figs/**/*.svg')
+
+    server.serve()

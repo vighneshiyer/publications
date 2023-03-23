@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "puppeteer": "^19.7.5"
+  },
+  "scripts": {
+    "pdf": "./scripts/pdf"
+  }
+}

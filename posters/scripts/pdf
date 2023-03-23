@@ -1,0 +1,17 @@
+#!/usr/bin/env node
+
+const puppeteer = require('puppeteer');
+
+async function generatePDF(url, outputPath, scaleValue) {
+  const browser = await puppeteer.launch();
+  const page = await browser.newPage();
+  await page.goto(url, { waitUntil: 'networkidle0' });
+  await page.pdf({ path: outputPath, width: '40in', height: '30in', printBackground: true, scale: scaleValue });
+  await browser.close();
+}
+
+// example usage: npm run pdf https://www.google.com ./google.pdf 100[:200][:5]
+const url = process.argv[2]
+const outputPath = process.argv[3]
+const scale = Number(process.argv[4]) / 100
+generatePDF(url, outputPath, scale);
