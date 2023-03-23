@@ -88,23 +88,18 @@ imply complete line coverage of the Chisel source.
 
 <article>
 <header><h3>Our Solution: Simulator Independent Coverage</h3></header>
-<img src="./figs/sic-asplos23/coverage_poster_overview.svg" style="width: 80%;" />
+<img src="./figs/sic-asplos23/coverage_poster_overview.svg" style="width: 95%;" />
 <figcaption>
 We show how a single new <code>cover</code> statement allows us to move all coverage instrumentation into the firrtl compiler.
 Adding support for the <code>cover</code> statement to a simulator is fairly simple.
 </figcaption>
 </article>
 
-<article>
-<header><h3>The <code>cover</code> Statement</h3></header>
-<img src="./figs/sic-asplos23/presentation_cover.svg" style="width: 70%;" />
-<figcaption>
-</figcaption>
-</article>
+
 
 <article>
 <header><h3>Line Coverage</h3></header>
-<img src="./figs/sic-asplos23/5_coverage_line_coverage.svg" style="width: 70%;" />
+<img src="./figs/sic-asplos23/5_coverage_line_coverage.svg" style="width: 80%;" />
 <figcaption>
 The line coverage pass instruments every <code>when</code>
 statement in the FIRRTL circuit. The mapping from lines to
@@ -113,19 +108,11 @@ counts reported by the simulator.
 </figcaption>
 </article>
 
-<article>
-<header><h3>Toggle Coverage</h3></header>
-<img src="./figs/sic-asplos23/6_coverage_toggle_coverage.svg" style="width: 70%;" />
-<figcaption>
-The toggle coverage pass adds a register and a xor
-gate. It avoids redundant instrumentation for signals that
-always have the same value.
-</figcaption>
-</article>
+
 
 <article>
 <header><h3>Finite State Machine Coverage</h3></header>
-<img src="./figs/sic-asplos23/7_coverage_fsm_coverage.svg" style="width: 70%;" />
+<img src="./figs/sic-asplos23/7_coverage_fsm_coverage.svg" style="width: 80%;" />
 <figcaption>
 Finite state machine (FSM) coverage assumes that
 the state register uses a ChiselEnum. We first analyze all possible
@@ -137,7 +124,7 @@ for all states and possible transitions.
 
 <article>
 <header><h3>Verilator: <code>cover</code> Statement Support</h3></header>
-<img src="./figs/sic-asplos23/cover.svg" style="width: 70%;" />
+<img src="./figs/sic-asplos23/cover.svg" style="width: 80%;" />
 </article>
 
 
@@ -152,6 +139,27 @@ line coverage is close to zero.
 </article>
 
 <article>
+<header><h3>The <code>cover</code> Statement</h3></header>
+<img src="./figs/sic-asplos23/presentation_cover.svg" style="width: 80%;" />
+<figcaption>
+</figcaption>
+</article>
+
+<article>
+<header><h3>Toggle Coverage</h3></header>
+<img src="./figs/sic-asplos23/6_coverage_toggle_coverage.svg" style="width: 70%;" />
+<figcaption>
+The toggle coverage pass adds a register and a xor
+gate. It avoids redundant instrumentation for signals that
+always have the same value.
+</figcaption>
+</article>
+
+
+
+
+
+<article>
 <header><h3>FireSim: <code>cover</code> Statement Support on FPGA</h3></header>
 <img src="./figs/sic-asplos23/4_coverage_firesim_scan_chain.svg" width=70% />
 <figcaption>We generate saturating counters and a scan chain
@@ -161,14 +169,16 @@ line coverage is close to zero.
 
   <article>
     <header><h3>FireSim: Utilization and f_max</h3></header>
-    <img src="./figs/sic-asplos23/9_firesim_utilization.png" width=60% />
-    <img src="./figs/sic-asplos23/10_firesim_fmax.png" width=60% />
+    <div class="columns-center" style="grid-template-columns: 50fr 50fr">
+    <img src="./figs/sic-asplos23/9_firesim_utilization.png" width=100% />
+    <img src="./figs/sic-asplos23/10_firesim_fmax.png" width=100% />
+    </div>
   </article>
 
 
 <article>
 <header><h3>Extensive Simulator Support</h3></header>
-<img src="./figs/sic-asplos23/upshot.svg" width=70% />
+<img src="./figs/sic-asplos23/upshot.svg" width=100% />
 </article>
 
 
@@ -183,8 +193,8 @@ line coverage is close to zero.
   <li>Formal cover trace generation</li>
 </ul>
 </div><div>
-<img src="./figs/sic-asplos23/project_page_qr.png" width=50% />
-<p>Paper PDF, Code & Slides</p>
+<img src="./figs/sic-asplos23/project_page_qr.png" width=100% />
+<figcaption>Paper PDF, Code & Slides</figcaption>
 </div></div>
 </article>
 
