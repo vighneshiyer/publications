@@ -1,3 +1,11 @@
 @use 'templates/slice/slice.scss';
 
 html { font-size: 1.15rem }
+
+@media print {
+    header > aside {
+        img {
+            max-width: 215px;
+        }
+    }
+}
