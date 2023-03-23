@@ -10,7 +10,7 @@
 {# ‘webpage_title’ is displayed in the browser’s top bar #}
 {% set webpage_title = poster_title + " — " + venue %}
 {# ‘project_url’ is used in the footer and for the logo #}
-{% set project_url = "https://github.com/ekiwi/simulator-independent-coverage/" %}
+{% set project_url = "https://kevinlaeufer.com/papers/simulator_independent_coverage_asplos2023.html" %}
 
 {# Publication info is hidden by default (.publication-info in CSS) #}
 {% set pub_datetime_iso = "2023-03-25" %}
@@ -65,175 +65,131 @@
 {# Contents are individual boxes (typically ‘article’s or ‘figure’s).  Each
    ‘article’ contains a header and some contents. #}
 {% block contents %}
-  <article>
-    <header><h3>Introduction</h3></header>
+<article>
+<header><h3>Coverage: Who tests the testers?</h3></header>
+<img src="./figs/sic-asplos23/coverage_poster_why_coverage.svg" />
+</article>
 
-    <ul>
-      <li>Dynamic simulation is the workhorse of pre-silicon verification</li>
-      <li>RTL-level coverage is used to approximate the thoroughness of verification</li>
-      <li>Support for multiple automated coverage metrics is a critical feature for RTL simulators</li>
-    </ul>
-  </article>
+<article>
+<header><h3>Problem 1: Most open-source simulators lack coverage</h3></header>
+<ul>
+  <li>Verilator only supports line and toggle coverage</li>
+  <li>Treadle (Chisel interpreter), ESSENT and FireSim have no coverage support</li>
+</ul>
+</article>
 
-  <article>
-    <header><h3>RTL Coverage Instrumentation and Collection Today</h3></header>
+<article>
+<header><h3>Problem 2: Verilog coverage inadequate replacement for native Chisel coverage</h3></header>
+<img src="./figs/sic-asplos23/3_coverage_line_coverage_of_verilog.svg" style="width: 80%;" />
+<figcaption>
+In this example, the translation to structural Verilog
+replaces a branch with a conditional assignment. Therefore,
+100% line coverage on the generated Verilog does not necessarily
+imply complete line coverage of the Chisel source.
+</figcaption>
+</article>
 
-    <p><strong>1.</strong> Open source and research simulators lack support for a wide range of automated coverage metrics</p>
-    <ul>
-      <li>Verilator only supports line/toggle coverage</li>
-      <li>ESSENT and FireSim do not support coverage</li>
-    </ul>
+<article>
+<header><h3>Our Solution: Simulator Independent Coverage</h3></header>
+<img src="./figs/sic-asplos23/coverage_poster_overview.svg" style="width: 80%;" />
+<figcaption>
+We show how a single new <code>cover</code> statement allows us to move all coverage instrumentation into the firrtl compiler.
+Adding support for the <code>cover</code> statement to a simulator is fairly simple.
+</figcaption>
+</article>
 
-    <p><strong>2.</strong> Merging coverage across simulators (SW, FPGA, formal) requires uniform coverage instrumentation</p>
+<article>
+<header><h3>The <code>cover</code> Statement</h3></header>
+<img src="./figs/sic-asplos23/presentation_cover.svg" style="width: 70%;" />
+<figcaption>
+</figcaption>
+</article>
 
-    <p><strong>3.</strong> New RTL hardware languages lack support for source-level coverage collection</p>
+<article>
+<header><h3>Line Coverage</h3></header>
+<img src="./figs/sic-asplos23/5_coverage_line_coverage.svg" style="width: 70%;" />
+<figcaption>
+The line coverage pass instruments every <code>when</code>
+statement in the FIRRTL circuit. The mapping from lines to
+branches is used to generate the coverage report from the
+counts reported by the simulator.
+</figcaption>
+</article>
 
-    <img src="./figs/sic-asplos23/3_coverage_line_coverage_of_verilog.svg" />
-  </article>
+<article>
+<header><h3>Toggle Coverage</h3></header>
+<img src="./figs/sic-asplos23/6_coverage_toggle_coverage.svg" style="width: 70%;" />
+<figcaption>
+The toggle coverage pass adds a register and a xor
+gate. It avoids redundant instrumentation for signals that
+always have the same value.
+</figcaption>
+</article>
 
-  <article>
-    <header><h3>Our Proposal</h3></header>
-    <p class="center">Implement coverage instrumentation with compiler passes on a hardware IR vs. baking coverage instrumentation into each simulator</p>
+<article>
+<header><h3>Finite State Machine Coverage</h3></header>
+<img src="./figs/sic-asplos23/7_coverage_fsm_coverage.svg" style="width: 70%;" />
+<figcaption>
+Finite state machine (FSM) coverage assumes that
+the state register uses a ChiselEnum. We first analyze all possible
+next states by simplifying the state update expression for
+each possible current state. We then add cover statements
+for all states and possible transitions.
+</figcaption>
+</article>
 
-    <img src="./figs/sic-asplos23/1_coverage_figure_m_n.svg" width=80% />
+<article>
+<header><h3>Verilator: <code>cover</code> Statement Support</h3></header>
+<img src="./figs/sic-asplos23/cover.svg" style="width: 70%;" />
+</article>
 
-  </article>
 
-  <article>
-    <header><h3>Benefits of Our Approach</h3></header>
+<article>
+<header><h3>Verilator: Coverage Instrumentation Overhead</h3></header>
+<img src="./figs/sic-asplos23/8_verilator_overhead.png" width=60% />
+<figcaption>
+Coverage instrumentation overhead on Verilator
+v4.034. For TLRAM, the measured overhead of our FIRRTL
+line coverage is close to zero.
+</figcaption>
+</article>
 
-    <ul>
-      <li>Uniform coverage specification for all simulators<br />
-          <span style="line-height:1.6;"><strong>→</strong> Trivial merging of coverage across simulators</span>
-      </li>
-      <li>Simulators only have to implement one coverage primitive<br />
-          <span style="line-height:1.6;"><strong>→</strong> New simulators instantly get automated coverage</span>
-      </li>
-      <li>Source HDL mapping captured during coverage instrumentation for report annotation</li>
-      <li>Unified report generator for different coverage metrics and simulators</li>
-    </ul>
-  </article>
-
-  <article>
-    <header><h3>The Cover Primitive</h3></header>
-    <p class="center"><code>cover(clock, predicate, enable)</code></p>
-
-    <ul>
-      <li><code>cover</code> is injected by coverage instrumentation passes in the hardware IR (e.g. FIRRTL) compiler</li>
-    </ul>
-
-    <img src="./figs/sic-asplos23/cover.svg" />
-
-    <ul>
-      <li>All simulators implement <code>cover</code> as a counter which increments when the <code>predicate</code> is true on a <code>clock</code> edge</li>
-    </ul>
-  </article>
-
-  <article>
-    <header><h3>Implementing Line Coverage</h3></header>
-
-    <img src="./figs/sic-asplos23/5_coverage_line_coverage.svg" width=100% />
-  </article>
-
-  <article>
-    <header><h3>Implementing Toggle Coverage</h3></header>
-
-    <img src="./figs/sic-asplos23/6_coverage_toggle_coverage.svg" width=80% />
-
-    <ul>
-      <li>Capture a net's value in the previous clock cycle with a register</li>
-      <li>Cover the output of an XOR between the register output and the current net value</li>
-      <li>Compiler pass performs alias analysis and can selectively instrument register, IOs, memories, and wires</li>
-    </ul>
-  </article>
-
-  <!--
-  <article>
-    <header><h3>Implementing FSM Coverage</h3></header>
-
-    <ul>
-      <li>Designers typically use <code>ChiselEnum</code> to specify FSM states</li>
-      <li>The FSM coverage pass designates registers that contain values from a <code>ChiselEnum</code> as FSM state registers</li>
-      <li>We analyze each next state expression to determine feasible transitions</li>
-    </ul>
-
-    <img src="./figs/sic-asplos23/7_coverage_fsm_coverage.svg" width=90% />
-  </article>
-  -->
-
-  <article>
-    <header><h3>Overhead of Coverage Instrumentation</h3></header>
-    <!--
-    <p class="center">Coverage instrumentation implemented via hardware IR compiler passes has benefits</p>
-
-    <ul>
-      <li>Unifies coverage specification and report generation across simulators</li>
-      <li>Makes merging coverage across simulators easy</li>
-    </ul>
-    -->
-
-    <p class="center">Does our coverage instrumentation methodology come with performance overheads over a simulator's "built-in" coverage instrumentation?</p>
-
-    <img src="./figs/sic-asplos23/8_verilator_overhead.png" width=80% />
-
-    <p class="center">There is no performance overhead! <small></small></p>
-  </article>
+<article>
+<header><h3>FireSim: <code>cover</code> Statement Support on FPGA</h3></header>
+<img src="./figs/sic-asplos23/4_coverage_firesim_scan_chain.svg" width=70% />
+<figcaption>We generate saturating counters and a scan chain
+  for all <code>cover</code> statements for FPGA-accelerated simulation
+  with FireSim.</figcaption>
+</article>
 
   <article>
-    <header><h3>Coverage for FPGA Emulation (Firesim)</h3></header>
-
-    <ul>
-      <li>Adding support for the FIRRTL <code>cover</code> primitive adds support for all coverage metrics!</li>
-    </ul>
-
-    <img src="./figs/sic-asplos23/4_coverage_firesim_scan_chain.svg" width=80% />
-
-    <ul>
-      <li>The <code>cover</code> primitive is implemented with a saturating counter connected to a scan chain</li>
-    </ul>
+    <header><h3>FireSim: Utilization and f_max</h3></header>
+    <img src="./figs/sic-asplos23/9_firesim_utilization.png" width=60% />
+    <img src="./figs/sic-asplos23/10_firesim_fmax.png" width=60% />
   </article>
 
-  <article>
-    <header><h3>Area Overhead of Firesim Coverage</h3></header>
 
-    <img src="./figs/sic-asplos23/9_firesim_utilization.png" width=80% />
-    <ul>
-      <li>8-bit coverage counters provide sufficient resolution with minimal overhead</li>
-    </ul>
-  </article>
+<article>
+<header><h3>Extensive Simulator Support</h3></header>
+<img src="./figs/sic-asplos23/upshot.svg" width=70% />
+</article>
 
-  <!--
-  <article>
-    <header><h3>Performance Overhead of Firesim Coverage</h3></header>
 
-    <img src="./figs/sic-asplos23/10_firesim_fmax.png" width=80% />
+<article>
 
-    <ul>
-      <li>Similarly, \(f_{max}\) is not affected for small counter widths</li>
-    </ul>
-  </article>
-  -->
+<div class="columns-center" style="grid-template-columns: 60fr 40fr"><div>
+<header><h3>More Features</h3></header>
+<ul>
+  <li>Applicable to other hardware languages.</li>
+  <li>Feedback-Directed Fuzz Testing</li>
+  <li>Coverage merging</li>
+  <li>Formal cover trace generation</li>
+</ul>
+</div><div>
+<img src="./figs/sic-asplos23/project_page_qr.png" width=50% />
+<p>Paper PDF, Code & Slides</p>
+</div></div>
+</article>
 
-  <!--
-  <article>
-    <header><h3>Coverage Merging and Pruning</h3></header>
-
-    <ul>
-      <li>Instrumenting every coverpoint for Firesim is wasteful since many coverpoints are trivially covered in RTL simulation</li>
-      <li>By pruning coverpoints that were covered 10+ times in RTL simulation with a RISC-V test suite, we can <em>prune the number of coverpoints by <strong>42%</strong></em></li>
-    </ul>
-  </article>
-  -->
-
-  <article>
-    <header><h3>Extensive Simulator Support</h3></header>
-
-    <img src="./figs/sic-asplos23/upshot.svg" width=100% />
-
-    <ul>
-      <li>Before this work, Verilator only supported line and toggle coverage. The other simulators didn't support any coverage.</li>
-      <li>Now, three RTL simulators (Verilator, Treadle, ESSENT), an FPGA-based simulator (Firesim), and a formal tool (Symbiyosys) support all these coverage metrics</li>
-    </ul>
-  </article>
 
 {% endblock %}
