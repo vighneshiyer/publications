@@ -16,6 +16,8 @@ $1: posters/$1/index.css posters/$1/index.html
 posters += $1
 endef
 
+# Add posters here:
+# $(call poster,<poster name>,<template name>)
 $(eval $(call poster,tutorial,mit))
 $(eval $(call poster,sic-asplos23,slice))
 

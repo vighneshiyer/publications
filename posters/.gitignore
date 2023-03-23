@@ -3,3 +3,4 @@
 posters/*/*.html
 posters/*/figs
 node_modules
+*.pdf
