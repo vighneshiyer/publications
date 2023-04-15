@@ -1,3 +1,10 @@
+@use "base/base.scss" as *;
+
+// bordered = each article box has a white background and a blue border
+// shaded = each article box has a very light shade of blue background (no border)
+
+$style: "bordered" !default;
+
 // Berkeley Colors
 // https://brand.berkeley.edu/identity-and-visual-design/color
 
@@ -6,11 +13,17 @@ $cal-gold: #FDB515;
 $wellman-tile: #D9661F;
 $gray: #f4f4f4;
 
-@use 'base/base.scss' with (
+$article-bg: black; // should be overridden by conditional below
+@if $style == "bordered" {
+  $article-bg: white;
+} @else {
+  $article-bg: $gray;
+}
+
+@include base(
   $color-title: $cal-gold,
   $color-accent: $wellman-tile,
-  //$color-bg-light: $gray,
-  $color-bg-light: white,
+  $color-bg-light: $article-bg,
   $color-bg-dark: $berkeley-blue,
   $color-header-bg: white,
   $color-header-text: black
@@ -26,6 +39,8 @@ body {
   }
 }
 
-article {
-  border: 2px solid $berkeley-blue;
+@if $style == "bordered" {
+  article {
+    border: 2px solid $berkeley-blue;
+  }
 }

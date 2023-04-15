@@ -1,3 +1,5 @@
+@use "base/base.scss" as *;
+
 //////////////////
 // Tango colors //
 //////////////////
@@ -37,7 +39,7 @@ $tango-aluminum-4: #888a85;
 $tango-aluminum-5: #555753;
 $tango-aluminum-6: #2e3436;
 
-@use 'base/base.scss' as * with (
+@include base(
     $color-title: $tango-orange-l,
     $color-accent: $tango-orange-m,
     $color-bg-light: $tango-aluminum-1,

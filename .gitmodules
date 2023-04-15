@@ -1,0 +1,5 @@
+[submodule "papers/templates/acmart"]
+	path = papers/templates/acmart
+	url = git@github.com:borisveytsman/acmart
+	branch = primary
+	ignore = dirty
