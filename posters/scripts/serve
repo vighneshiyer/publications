@@ -21,4 +21,4 @@ if __name__ == "__main__":
     server.watch('figs/**/*.png')
     server.watch('figs/**/*.svg')
 
-    server.serve()
+    server.serve(root="posters")

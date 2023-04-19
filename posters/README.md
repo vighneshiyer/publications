@@ -21,4 +21,4 @@ My modifications include:
 
 A poster consists of a jinja2 template file (`posters/tutorial/index.jinja2`) and a scss file (`posters/tutorial/index.scss`).
 To get started, verify that you can build the all posters in this repo with `make all`.
-
+To serve the posters as a webpage, run `./scripts/serve` and browse to `localhost:5500/tutorial`.

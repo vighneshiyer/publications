@@ -1,4 +1,4 @@
-@use 'templates/slice/slice.scss';
+@use 'templates/slice/slice.scss' with ($style: "bordered");
 
 html { font-size: 1.15rem }
 

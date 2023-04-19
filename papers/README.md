@@ -6,4 +6,4 @@
 
 - Run `git submodule update --init --recursive .` (to fetch the `acmart` submodule)
 - Go to `templates/acmart` and edit the `Makefile` to replace `pdflatex-dev` with `pdflatex` (same thing with `xelatex-dev` and `lualatex-dev`)
-- Run `make` to build `acmart.cls` and the samples
+- Run `make acmart.cls` to build `acmart.cls`

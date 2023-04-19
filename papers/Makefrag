@@ -1,0 +1,19 @@
+main = $(notdir $(shell pwd))
+figs = $(shell find ../../figs/ -type f)
+
+pdf: $(main)_quick.pdf
+full-pdf: $(main).pdf
+
+$(main).pdf: $(main).tex $(figs)
+	texfot pdflatex -shell-escape $<
+	texfot bibtex $(main)
+	texfot pdflatex -shell-escape $<
+	texfot pdflatex -shell-escape $<
+
+$(main)_quick.pdf: $(main).tex $(figs)
+	texfot pdflatex -shell-escape $<
+
+clean:
+	rm -rf *.pdf *.aux *.out *.log _minted* *.bbl *.blg comment.cut
+
+.PHONY: pdf clean
