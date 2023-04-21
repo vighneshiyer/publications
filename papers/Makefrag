@@ -11,7 +11,7 @@ $(main).pdf: $(main).tex $(figs)
 	texfot pdflatex -shell-escape $<
 
 $(main)_quick.pdf: $(main).tex $(figs)
-	texfot pdflatex -shell-escape $<
+	texfot pdflatex -jobname=$(main)_quick -shell-escape $<
 
 clean:
 	rm -rf *.pdf *.aux *.out *.log _minted* *.bbl *.blg comment.cut

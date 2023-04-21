@@ -3,3 +3,4 @@
 *.pdf
 *.out
 comment.cut
+_minted*
