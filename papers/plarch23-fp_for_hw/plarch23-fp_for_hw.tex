@@ -4,6 +4,9 @@
 \usepackage{makecell}
 \usepackage{booktabs}
 \graphicspath{ {./figs/} }
+\newcommand\aste{%
+$^{(\ast)}$
+}
 
 % https://tex.stackexchange.com/questions/655620/how-to-make-acmart-stop-complaining-about-missing-country-in-affiliation
 \makeatletter
@@ -89,7 +92,7 @@
 %% The "title" command has an optional parameter,
 %% allowing the author to define a "short title" to be used in page headers.
 \title{Separating Description from Interpretation}
-\subtitle{Functional-Esque APIs for Hardware Design and Verification}
+\subtitle{The Case For Functional-Esque APIs as eDSLs for Hardware Design and Verification}
 
 %%
 %% The "author" command and its associated commands are used to define
@@ -120,8 +123,9 @@
 %% of authors' names for this purpose.
 % \renewcommand{\shortauthors}{Trovato et al.}
 
+
 \begin{abstract}
-Over the past few decades, many hardware design languages (e.g. Lava, Chisel, PyMTL3) have been implemented as DSLs embedded in a general purpose programming language.
+Over the past few decades, many hardware design languages (e.g. Lava\cite{lava}, Chisel\cite{chisel}, PyMTL3\cite{pymtl3}) have been implemented as DSLs embedded in a general purpose programming language.
 This approach takes advantage of the host language`s features and ecosystem, such as its type system, libraries, build tools, IDEs, and unittest frameworks.
 We make the case that embedded DSLs are an ideal platform for hardware design languages, by leveraging them to build \textit{functional APIs} for RTL simulation, stimulus generation, temporal property specification, and FSM construction.
 We invite discussion on what other primitives can be embedded in a general-purpose language to enhance RTL design and verification.
@@ -138,13 +142,20 @@ We invite discussion on what other primitives can be embedded in a general-purpo
 
 \maketitle
 
+\begin{figure}[h]
+\includegraphics[width=0.7\linewidth]{simcommand/functional_apis.pdf}
+\caption{The fundamental abstractions used in a eDSL}
+\label{fig:functional_apis}
+\end{figure}
+
+
 \section{Functional Principles}
 % ADTs
 % Separating description from interpretation + combinators
 % Customizable interpreters
 % This technique has been applied to RTL-level HW design, but what other areas can we apply this to?
 
-Building APIs on the practical foundations of functional programming provides several benefits beyond the mostly theoretical notions of referential transparency.
+Building APIs on the practical foundations of functional programming provides several benefits beyond the mostly theoretical notions of referential transparency\cite{fpinscala}.
 Importantly, functional APIs seperate \textit{what to do} (the description) from \textit{how it is done} (the interpreter).
 
 This notion is already well understood in the context of HDLs implemented as eDSLs.
@@ -158,8 +169,8 @@ The same principle of separating description from interpretation has many other 
 \section{A Functional Testbench API}
 
 While you can write testbenches in SystemVerilog for any circuit generated from embedded HDLs, it is more ergonomic to write testbenches in the same host language you use to write RTL, so you can share parameters and exploit the features of the host language.
-However, existing testbench APIs, such as chiseltest and cocotb (\textbf{cite}), suffer from poor performance due to their implementation of the \texttt{fork/join} primitive used to express testbench parallelism.
-We propose a functional eDSL and API, SimCommand (\textbf{cite}), which achieves fast \texttt{fork/join} by embedding testbench primitives in Scala and separating testbench description and interpretation.
+However, existing testbench APIs, such as chiseltest\cite{chiseltest} and cocotb\cite{cocotb}, suffer from poor performance due to their implementation of the \texttt{fork/join} primitive used to express testbench parallelism.
+We propose a functional eDSL and API, SimCommand\cite{simcommand}, which achieves fast \texttt{fork/join} by embedding testbench primitives in Scala and separating testbench description and interpretation.
 
 \begin{figure}
 \begin{minted}[breaklines,fontsize=\small]{scala}
@@ -185,22 +196,21 @@ val v = dequeue(queue.io).unsafeRun(queue.clock)
 \end{figure}
 
 \begin{figure*}
-\textbf{add cites for each base type}
-\begin{tabular}{p{2.5cm}p{5cm}p{3cm}p{4cm}}\toprule
+\begin{tabular}{p{3cm}p{5cm}p{4cm}p{4cm}}\toprule
 ADT Base Type & ADT Primitives / Combinators & Composition Primitives & Interpreter Result\\\midrule
-\mintinline[]{scala}{Data} & \texttt{UInt}, \texttt{SInt} (base hardware datatypes) \newline \texttt{Bundle}, \texttt{Vec} (aggregate types) \newline \texttt{Mux}, \texttt{+}, \texttt{|}, $\dots$ (operators) \newline \texttt{Reg}, \texttt{SyncReadMem} (state types) & \texttt{Module}, \texttt{Input}, \texttt{Output}, \texttt{Wire}, \texttt{:=} (connect) & FIRRTL representation of the circuit\\\midrule
-\mintinline[]{scala}{Command[R]} & \texttt{Poke}, \texttt{Peek}, \texttt{Step} (basic testbench ops) \newline \texttt{Fork}, \texttt{Join} (simulation threading) \newline \texttt{MakeChannel}, \texttt{Put}, \texttt{Get} (channels) & Monadic bind & Interaction with an RTL simulator terminating with a value of type \texttt{R}\\\midrule
-\mintinline[]{scala}{Gen[A]} & \texttt{uniform}, \texttt{range}, \texttt{normal}, \texttt{oneOf} & Monadic bind & Values of type \texttt{A} conforming to the generative constraints\\\midrule
-\mintinline[]{scala}{Property[T, S]} & \texttt{AtomicProp}, \texttt{||}, \texttt{\&\&}, \texttt{|->} & \texttt{Concat}, \texttt{Intersect} & Monitor automaton for the \texttt{Property} using local state \texttt{S} $^{(\ast)}$ over traces of type \texttt{T} $^{(\ast)}$\\\midrule
-\mintinline[]{scala}{Recipe} & \texttt{action}, \texttt{tick}, \texttt{fork} $^{(\ast)}$ & \texttt{sequential}, \texttt{while}, \texttt{ifThenElse} & Chisel RTL circuit that implements the imperative \texttt{Recipe} \\
+\mintinline[]{scala}{Data} \cite{chisel} & \texttt{UInt}, \texttt{SInt} (base hardware datatypes) \newline \texttt{Bundle}, \texttt{Vec} (aggregate types) \newline \texttt{Mux}, \texttt{+}, \texttt{|}, $\dots$ (operators) \newline \texttt{Reg}, \texttt{SyncReadMem} (state types) & \texttt{Module}, \texttt{Input}, \texttt{Output}, \texttt{Wire}, \texttt{:=} (connect) & FIRRTL representation of a circuit constructed from running a Scala program \\\midrule
+\mintinline[]{scala}{Command[R]} \cite{simcommand} & \texttt{Poke}, \texttt{Peek}, \texttt{Step} (basic testbench ops) \newline \texttt{Fork}, \texttt{Join} (simulation threading) \newline \texttt{MakeChannel}, \texttt{Put}, \texttt{Get} (channels) & Monadic bind & Interaction with an RTL simulator, terminating with a value of type \texttt{R}\\\midrule
+\mintinline[]{scala}{Gen[A]} \cite{randomapi} & \texttt{uniform}, \texttt{range}, \texttt{normal}, \texttt{oneOf}, \texttt{constraint}\aste & Monadic bind & Values of type \texttt{A} conforming to the constraints\\\midrule
+\mintinline[]{scala}{Property[T, S]} \cite{chisel_sequences} & \texttt{AtomicProp}, \texttt{||}, \texttt{\&\&}, \texttt{|->} & \texttt{Concat}, \texttt{Intersect} & Monitor automaton for the \texttt{Property} using local state \texttt{S}\aste over traces of type \texttt{T}\aste\\\midrule
+\mintinline[]{scala}{Recipe} \cite{chisel_recipes} & \texttt{action}, \texttt{tick}, \texttt{fork}\aste & \texttt{sequential}, \texttt{while}, \texttt{ifThenElse} & Chisel RTL circuit that implements the imperative \texttt{Recipe} \\
 \bottomrule
 \end{tabular}
-\caption{Overview of the primitives and generated output of eDSLs in the Chisel HDL ecosystem. {\small $^{(\ast)}$ = hypothetical / incomplete implementation}}
+\caption{Overview of the primitives and generated output of eDSLs in the Chisel HDL ecosystem. {\small \aste = hypothetical / incomplete implementation}}
 \end{figure*}
 
 Other implementations use JVM threads and mutexes (chiseltest) or Python's async/await coroutines (cocotb) to implement \texttt{fork/join} simulation threads.
 These techniques cannot keep up with the high frequency of suspend/resume operations in simulation threads.
-In contrast, SimCommand uses monadic composition of testbench primitives (\textbf{cite hardcaml\_step\_tb}) to implement cooperatively yielding simulation threads that can suspend/resume quickly.
+In contrast, SimCommand uses monadic composition of testbench primitives\cite{hardcaml_step_testbench} to implement cooperatively yielding simulation threads that can suspend/resume quickly.
 
 The core datatype of SimCommand is \texttt{Command[R]}, which describes a testbench operation that eventually terminates with a value of type \texttt{R}.
 The primitives include testbench operations such as \texttt{peek} and \texttt{poke} to sense and drive RTL signals, \texttt{step} to advance the clock, and \texttt{fork} and \texttt{join} to implement simulation threads.
@@ -220,13 +230,33 @@ Separating description and interpretation yields an API that's 5-30x faster than
 % Fixpoint iteration
 % Catching thread ordering issues at runtime
 
+\section{Parametric Stimulus Generation}
+
+Traditionally, stimulus generation is done either with implicitly constrained generators (e.g. \texttt{Gen} - QuickCheck\cite{quickcheck}) or declarative constraint solvers (e.g. SystemVerilog + UVM constrained random\cite{riscv_dv}).
+We propose an API that combines the sequential composition (and instrumentation opportunities) of \texttt{Gen}-style generators and the preciseness of declarative constraints.
+Additionally, our API supports 
+
+Separating the \textit{description of how} random stimulus is generated, from the actual generation itself, 
+
+\begin{figure}
+\includegraphics[width=\linewidth]{fuzzing/parametric_fuzzing_hw.pdf}
+\caption{Using a parametric generator to fuzz hardware with legal and controllable stimulus}
+\label{fig:parametric_fuzzing}
+\end{figure}
+
+\section{Temporal Property eDSL}
+
+\section{Imperative Code as FSMs}
+
+\cite{blarney}
 
 \section{Conclusion}
 % Leverage Scala's for-comprehension (similar to Haskell's do-notation) for monadic composition.
+% Very powerful technique
 
 \begin{acks}
-The example libraries in this paper are worked on by: Young-Jin Park, Rohit Agarwal, Andy Lin, and Bryan Ngo.
-TODO: ask Bora for other acks.
+Young-Jin Park, Rohit Agarwal, Oliver Yu, Lixiang (Andy) Yin, and Bryan Ngo work on the eDSLs presented in this paper.
+Research was partially funded by SLICE Lab industrial sponsors and affiliates Amazon, AMD, Apple, Google, Intel, and Qualcomm.
 \end{acks}
 
 \bibliographystyle{ACM-Reference-Format}
