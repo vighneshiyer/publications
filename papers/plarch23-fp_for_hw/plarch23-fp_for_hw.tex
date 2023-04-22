@@ -7,6 +7,7 @@
 \newcommand\aste{%
 $^{(\ast)}$
 }
+\usepackage[subtle]{savetrees}
 
 % https://tex.stackexchange.com/questions/655620/how-to-make-acmart-stop-complaining-about-missing-country-in-affiliation
 \makeatletter
@@ -92,7 +93,7 @@ $^{(\ast)}$
 %% The "title" command has an optional parameter,
 %% allowing the author to define a "short title" to be used in page headers.
 \title{Separating Description from Interpretation}
-\subtitle{The Case For Functional-Esque APIs as eDSLs for Hardware Design and Verification}
+\subtitle{The Case For Functional-Esque eDSLs for Hardware Design and Verification}
 
 %%
 %% The "author" command and its associated commands are used to define
@@ -100,19 +101,21 @@ $^{(\ast)}$
 %% Of note is the shared affiliation of the first two authors, and the
 %% "authornote" and "authornotemark" commands
 %% used to denote shared contribution to the research.
-\author{Vighnesh Iyer}
-\email{vighnesh.iyer@berkeley.edu}
+
+%Young-Jin Park, Rohit Agarwal, Oliver Yu, Lixiang (Andy) Yin, and Bryan Ngo have worked on the eDSLs presented in this paper.
+\author{Vighnesh Iyer, Young-Jin Park, Rohit Agarwal, Lixiang Yin, Bryan Ngo, Oliver Yu, Borivoje Nikolić}
+\email{{vighnesh.iyer,yjp20,rohaga,lyin19,bryanngo,oliveryu,bora}@berkeley.edu}
 \orcid{0000-0001-6934-6577}
 \affiliation{%
   \institution{UC Berkeley}
 }
 
-\author{Borivoje Nikolić}
-\email{bora@eecs.berkeley.edu}
-\orcid{0000-0003-2324-1715}
-\affiliation{%
-  \institution{UC Berkeley}
-}
+% \author{Borivoje Nikolić}
+% \email{bora@eecs.berkeley.edu}
+% \orcid{0000-0003-2324-1715}
+% \affiliation{%
+%   \institution{UC Berkeley}
+% }
 
 
 %%
@@ -127,8 +130,8 @@ $^{(\ast)}$
 \begin{abstract}
 Over the past few decades, many hardware design languages (e.g. Lava\cite{lava}, Chisel\cite{chisel}, PyMTL3\cite{pymtl3}) have been implemented as DSLs embedded in a general purpose programming language.
 This approach takes advantage of the host language`s features and ecosystem, such as its type system, libraries, build tools, IDEs, and unittest frameworks.
-We make the case that embedded DSLs are an ideal platform for hardware design languages, by leveraging them to build \textit{functional APIs} for RTL simulation, stimulus generation, temporal property specification, and FSM construction.
-We invite discussion on what other primitives can be embedded in a general-purpose language to enhance RTL design and verification.
+We make the case that embedded DSLs are an ideal platform for hardware design languages, by leveraging their host languages to build \textit{functional APIs} for other aspects of hardware design and verification, such as RTL simulation, stimulus generation, temporal property specification, and control flow compilation.
+%We invite discussion on what other primitives can be embedded in a general-purpose language to enhance RTL design and verification.
 % we're already familiar with this concept for HDLs implemented as eDSLs - but where else can we use this concept? I demonstrate 3 use cases: simcommand, parametric generators, sequences, recipes
 % embedding is not only good because of ecosystem, but also because it allows you to leverage features of the host language like its FP support
 %compared to freestanding DSLs or custom compilers.
@@ -143,11 +146,10 @@ We invite discussion on what other primitives can be embedded in a general-purpo
 \maketitle
 
 \begin{figure}[h]
-\includegraphics[width=0.7\linewidth]{simcommand/functional_apis.pdf}
-\caption{The fundamental abstractions used in a eDSL}
+\includegraphics[width=\linewidth]{simcommand/functional_apis.pdf}
+\caption{The elements of a generic eDSL}
 \label{fig:functional_apis}
 \end{figure}
-
 
 \section{Functional Principles}
 % ADTs
@@ -155,22 +157,24 @@ We invite discussion on what other primitives can be embedded in a general-purpo
 % Customizable interpreters
 % This technique has been applied to RTL-level HW design, but what other areas can we apply this to?
 
-Building APIs on the practical foundations of functional programming provides several benefits beyond the mostly theoretical notions of referential transparency\cite{fpinscala}.
-Importantly, functional APIs seperate \textit{what to do} (the description) from \textit{how it is done} (the interpreter).
+Building APIs on the practical elements of functional programming provides several benefits beyond the mostly theoretical notions of referential transparency\cite{fpinscala}.
+Importantly, functional APIs seperate \textit{what to do} (the description) from \textit{how it is done} (the interpreter) (Figure \ref{fig:functional_apis}).
 
 This notion is already well understood in the context of HDLs implemented as eDSLs.
 eDSLs embed hardware primitives (datatypes, registers, memories, logical / arithmetic operators) and `connection' primitives (modules, IO ports, wires, bindings) in the host language as a set of algebraic datatypes (ADTs).
 The RTL designer instantiates the primitives and connects them together with a normal program written in the host language.
-Here, \textit{the description}, is an in-memory representation of a circuit that is constructed when the program is executed, while \textit{the interpreter} turns that representation into some output (e.g. FIRRTL, Circt IR, Verilog, SMT, btor).
+Here, \textit{the description}, is an in-memory representation of a circuit that is constructed when the program is executed, while \textit{the interpreter} turns that representation into some output (e.g. FIRRTL, Circt IR, Verilog, SMT).
 
-The same principle of separating description from interpretation has many other useful applications in hardware design and verification, albeit with different primitives and interpreters.
+The core features of the host language that enable functional eDSLs are 1) algebraic data types, 2) monadic composition sugar (or direct style alternatives\cite{dotty_cps_async, koka}), and 3) a strong macro system for source annotations.
+We will discuss three examples of functional eDSLs that leverage these features of the Scala language.
+%The same principle of separating description from interpretation has many other useful applications in hardware design and verification, albeit with different primitives and interpreters.
 
 %\section{SimCommand: Functional Testbench API}
 \section{A Functional Testbench API}
 
-While you can write testbenches in SystemVerilog for any circuit generated from embedded HDLs, it is more ergonomic to write testbenches in the same host language you use to write RTL, so you can share parameters and exploit the features of the host language.
-However, existing testbench APIs, such as chiseltest\cite{chiseltest} and cocotb\cite{cocotb}, suffer from poor performance due to their implementation of the \texttt{fork/join} primitive used to express testbench parallelism.
-We propose a functional eDSL and API, SimCommand\cite{simcommand}, which achieves fast \texttt{fork/join} by embedding testbench primitives in Scala and separating testbench description and interpretation.
+While you can write testbenches in SystemVerilog for any circuit, it is more ergonomic to use the same host language as your HDL, to exploit its features and share code.
+However, existing testbench APIs in general-purpose languages, such as chiseltest\cite{chiseltest} and cocotb\cite{cocotb}, have poor performance from their implementation of \texttt{fork/join} used for simulation threads.
+We propose a functional eDSL, SimCommand\cite{simcommand}, which achieves fast \texttt{fork/join}, by embedding testbench primitives in Scala and separating testbench description and interpretation.
 
 \begin{figure}
 \begin{minted}[breaklines,fontsize=\small]{scala}
@@ -181,7 +185,6 @@ def dequeue[T](io: DecoupledIO[T]): Command[T] = for {
     value <- peek(io.bits)
     _ <- step(1)
 } yield value
-
 // Actually running the Command with unsafeRun
 val v = dequeue(queue.io).unsafeRun(queue.clock)
 \end{minted}
@@ -196,16 +199,17 @@ val v = dequeue(queue.io).unsafeRun(queue.clock)
 \end{figure}
 
 \begin{figure*}
+\small
 \begin{tabular}{p{3cm}p{5cm}p{4cm}p{4cm}}\toprule
 ADT Base Type & ADT Primitives / Combinators & Composition Primitives & Interpreter Result\\\midrule
 \mintinline[]{scala}{Data} \cite{chisel} & \texttt{UInt}, \texttt{SInt} (base hardware datatypes) \newline \texttt{Bundle}, \texttt{Vec} (aggregate types) \newline \texttt{Mux}, \texttt{+}, \texttt{|}, $\dots$ (operators) \newline \texttt{Reg}, \texttt{SyncReadMem} (state types) & \texttt{Module}, \texttt{Input}, \texttt{Output}, \texttt{Wire}, \texttt{:=} (connect) & FIRRTL representation of a circuit constructed from running a Scala program \\\midrule
 \mintinline[]{scala}{Command[R]} \cite{simcommand} & \texttt{Poke}, \texttt{Peek}, \texttt{Step} (basic testbench ops) \newline \texttt{Fork}, \texttt{Join} (simulation threading) \newline \texttt{MakeChannel}, \texttt{Put}, \texttt{Get} (channels) & Monadic bind & Interaction with an RTL simulator, terminating with a value of type \texttt{R}\\\midrule
 \mintinline[]{scala}{Gen[A]} \cite{randomapi} & \texttt{uniform}, \texttt{range}, \texttt{normal}, \texttt{oneOf}, \texttt{constraint}\aste & Monadic bind & Values of type \texttt{A} conforming to the constraints\\\midrule
-\mintinline[]{scala}{Property[T, S]} \cite{chisel_sequences} & \texttt{AtomicProp}, \texttt{||}, \texttt{\&\&}, \texttt{|->} & \texttt{Concat}, \texttt{Intersect} & Monitor automaton for the \texttt{Property} using local state \texttt{S}\aste over traces of type \texttt{T}\aste\\\midrule
+\mintinline[]{scala}{Property[T, S]} \cite{chiselsequences} & \texttt{AtomicProp}, \texttt{||}, \texttt{\&\&}, \texttt{|->} & \texttt{Concat}, \texttt{Intersect} & Monitor automaton for the \texttt{Property} using local state \texttt{S}\aste over traces of type \texttt{T}\aste\\\midrule
 \mintinline[]{scala}{Recipe} \cite{chisel_recipes} & \texttt{action}, \texttt{tick}, \texttt{fork}\aste & \texttt{sequential}, \texttt{while}, \texttt{ifThenElse} & Chisel RTL circuit that implements the imperative \texttt{Recipe} \\
 \bottomrule
 \end{tabular}
-\caption{Overview of the primitives and generated output of eDSLs in the Chisel HDL ecosystem. {\small \aste = hypothetical / incomplete implementation}}
+\caption{Overview of the primitives and final outputs of eDSLs for HW design and verification. {\small \aste = hypothetical / incomplete}}
 \end{figure*}
 
 Other implementations use JVM threads and mutexes (chiseltest) or Python's async/await coroutines (cocotb) to implement \texttt{fork/join} simulation threads.
@@ -232,11 +236,30 @@ Separating description and interpretation yields an API that's 5-30x faster than
 
 \section{Parametric Stimulus Generation}
 
-Traditionally, stimulus generation is done either with implicitly constrained generators (e.g. \texttt{Gen} - QuickCheck\cite{quickcheck}) or declarative constraint solvers (e.g. SystemVerilog + UVM constrained random\cite{riscv_dv}).
-We propose an API that combines the sequential composition (and instrumentation opportunities) of \texttt{Gen}-style generators and the preciseness of declarative constraints.
-Additionally, our API supports 
+Traditionally, stimulus generation used either implicitly constrained generators (e.g. \texttt{Gen} from QuickCheck\cite{quickcheck}) or declarative constraint solvers (e.g. SystemVerilog + UVM constrained random\cite{riscv_dv}).
+We propose a hybrid API that mixes the sequential chaining support of \texttt{Gen}-style generators with the efficiency of declarative constrained random.
+Our API supports typical PRNG-sourced randomness and parametric randomness which uses a user-provided bytestream as a source of ``randomness''.
+This feature enables our API to perform parametric fuzzing\cite{zest} of hardware designs (Figure \ref{fig:parametric_fuzzing}).
 
-Separating the \textit{description of how} random stimulus is generated, from the actual generation itself, 
+\begin{figure}
+\begin{minted}[breaklines,fontsize=\small]{scala}
+val seqGen: Gen[Seq[Int]] = for {
+  lit <- Gen.range(1, 100)
+  tailGen <- Gen.oneOf(Gen(Seq()) -> 0.1, seqGen -> 0.9),
+  seqn <- tailGen.map(t => lit +: t)
+} yield seqn
+seqGen.generate(ScalaRandom(seed=10))
+seqGen.generate(ParametricRandom(Seq[Byte](...)))
+\end{minted}
+%// Seq(9, 8, 3)
+%// Seq(6, 7, 0, 9, 0, 7)
+\caption{Generating a sequence of integers between 0 and 100 with an average length of 10. The same description can be interpreted with PRNG or parametric randomness sources.}
+\label{fig:randomapi}
+\end{figure}
+
+Separating the \textit{description of how} to generate stimulus, from the actual generation itself, provides a clean separtion between the generation algorithm and the source of randomness (Figure \ref{fig:randomapi}).
+There are also opportunities to instrument the interpreter to produce a decision tree, which can serve as a high-level embedding of the stimulus.
+%opportunity to inject instrumentation in the interpreter to capture random decisions
 
 \begin{figure}
 \includegraphics[width=\linewidth]{fuzzing/parametric_fuzzing_hw.pdf}
@@ -244,18 +267,54 @@ Separating the \textit{description of how} random stimulus is generated, from th
 \label{fig:parametric_fuzzing}
 \end{figure}
 
-\section{Temporal Property eDSL}
+% This section is too immature and doesn't reflect the Property[T,S] type signature
+% \section{Temporal Property eDSL}
+%
+% A temporal property specification language (similar to SVA\cite{sva_book} or PSL\cite{psl_book}) can also be expressed as a frontend API\cite{cha} that separates property specification from how it is implemented.
+% We have prototyped an eDSL\cite{chisel_sequences} for defining temporal properties inside Chisel \texttt{Modules} and an interpreter which can convert properties to step-by-step monitor automata or optimized automata using Spot\cite{spot2}.
+%
+% \begin{figure}
+% \begin{minted}[breaklines,fontsize=\small]{scala}
+% class MemXactor extends Module {
+%   val prop: Property = (io.req |-> ###(1,2) io.ack)
+% }
+% \end{minted}
+% \caption{This API is hypothetical.}
+% \end{figure}
 
-\section{Imperative Code as FSMs}
+\section{Compiling Imperative Control Flow to FSMs}
 
-\cite{blarney}
+Manually translating imperative control flow to FSMs in RTL is error prone and laborious.
+To address this, we have developed an eDSL\cite{chisel_recipes}, based on Blarney's Recipe construct\cite{blarney} that allows you to describe a sequence of imperative actions that are compiled down to RTL (Figure \ref{fig:recipes}).
+Since the control description and FSM compiler are cleanly separated, in the future, we could use a lightweight HLS IR (e.g. Calyx\cite{calyx}) to produce an optimized FSM.
+The FSM compiler can inject debug \texttt{printf}s that fire when a line is entered and exited, and the Scala source line numbers are injected into each primitive instantiation via implicits\cite{sourcecode}.
+
+\begin{figure}
+\begin{minted}[breaklines,fontsize=\small]{scala}
+val readOnce = Recipe(
+  waitUntil(axi.ar_valid === 1.B, active=axi.ar_ready),
+  action {
+    axi.r_data := mem.read(axi.ar_addr)
+    axi.r_valid := 1.B
+  },
+  waitUntil(axi.r_ready === 1.B, active=axi.r_valid),
+  tick()
+)
+forever(readOnce).compile()
+\end{minted}
+\caption{An imperative description of reading from a memory from an AXI4-Lite port. Note that we can tap the `\texttt{active}' signal of any line to set external signals.}
+\label{fig:recipes}
+\end{figure}
 
 \section{Conclusion}
+
+We make the case that eDSLs need not be limited to HDLs, but can also model other tools used in hardware design and verification.
+Leveraging the functional programming support of the host language and existing embedded HDLs, makes it straightforward to write APIs for RTL testbenches, stimulus generation, and control flow automation.
+What other aspects of hardware design ought to be first-class DSLs?
 % Leverage Scala's for-comprehension (similar to Haskell's do-notation) for monadic composition.
-% Very powerful technique
+% Very powerful technique, should be applied even more! What else can we embed in a host language and interact with existing HDLs (e.g. Chisel)?
 
 \begin{acks}
-Young-Jin Park, Rohit Agarwal, Oliver Yu, Lixiang (Andy) Yin, and Bryan Ngo work on the eDSLs presented in this paper.
 Research was partially funded by SLICE Lab industrial sponsors and affiliates Amazon, AMD, Apple, Google, Intel, and Qualcomm.
 \end{acks}
 

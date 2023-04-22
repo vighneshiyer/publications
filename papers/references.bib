@@ -3,23 +3,49 @@
 %% Our Github Projects
 
 @misc{simcommand,
-  title = {simcommand: SimCommand is a library for writing multi-threaded high-performance RTL testbenches in Scala.},
+  author = {Iyer, Vighnesh},
+  title = {simcommand - SimCommand is a library for writing multi-threaded high-performance RTL testbenches in Scala.},
   howpublished = {\url{https://github.com/vighneshiyer/simcommand}}
 }
 
 @misc{randomapi,
-  title = {randomapi: A Functional, Random Generative API for QuickCheck-like Fuzzing},
+  author = {Agarwal, Rohit},
+  title = {randomapi - A Functional, Random Generative API for QuickCheck-like Fuzzing},
   howpublished = {\url{https://github.com/girantinas/randomapi}}
 }
 
-@misc{chisel_sequences,
+@misc{chiselsequences,
+  author = {Laeufer, Kevin},
   title = {chisel-sequences},
   howpublished = {\url{https://github.com/ekiwi/chisel-sequences}}
 }
 
 @misc{chisel_recipes,
+  author = {Ngo, Bryan},
   title = {chisel-recipes},
   howpublished = {\url{https://github.com/bdngo/chisel-recipes}}
+}
+
+%% Scala / Programming
+
+@misc{sourcecode,
+  author = {Haoyi, Li},
+  title = {sourcecode - Scala library providing "source" metadata to your program},
+  howpublished = {\url{https://github.com/com-lihaoyi/sourcecode}}
+}
+
+@article{dotty_cps_async,
+  title={Embedding generic monadic transformer into Scala},
+  author={Shevchenko, Ruslan},
+  journal={arXiv preprint arXiv:2209.10941},
+  year={2022}
+}
+
+@techreport{koka,
+  title={Algebraic effects for functional programming},
+  author={Leijen, Daan},
+  year={2016},
+  institution={Technical Report. MSR-TR-2016-29. Microsoft Research technical report}
 }
 
 %% Stimulus generation
@@ -40,19 +66,58 @@ series = {ICFP '00}
 }
 
 @misc{riscv_dv,
-  title = {riscv-dv: Random instruction generator for RISC-V processor verification},
+  author = {Google},
+  title = {riscv-dv - Random instruction generator for RISC-V processor verification},
   howpublished = {\url{https://github.com/chipsalliance/riscv-dv}}
+}
+
+%% Temporal properties / specification languages / automata
+
+@book{sva_book,
+  title={A practical guide for SystemVerilog assertions},
+  author={Vijayaraghavan, Srikanth and Ramanathan, Meyyappan},
+  year={2005},
+  publisher={Springer Science \& Business Media}
+}
+
+@book{psl_book,
+  title={Using PSL/Sugar for formal and dynamic verification: Guide to Property Specification Language for Assertion-based Verification},
+  author={Cohen, Ben and Venkataramanan, Srinivasan and Kumari, Ajeetha},
+  year={2004},
+  publisher={VhdlCohen Publishing}
+}
+
+@InProceedings{spot2,
+  author="Duret-Lutz, Alexandre and Lewkowicz, Alexandre and Fauchille, Amaury and Michaud, Thibaud and Renault, {\'E}tienne and Xu, Laurent",
+  editor="Artho, Cyrille and Legay, Axel and Peled, Doron",
+  title="Spot 2.0 --- A Framework for LTL and {\$}{\$}{\backslash}omega {\$}{\$}-Automata Manipulation",
+  booktitle="Automated Technology for Verification and Analysis",
+  year="2016",
+  publisher="Springer International Publishing",
+  address="Cham",
+  pages="122--129",
+  isbn="978-3-319-46520-3"
+}
+
+@inproceedings{cha,
+  title={CHA: Supporting SVA-like assertions in formal verification of Chisel programs (tool paper)},
+  author={Yu, Shizhen and Dong, Yifan and Liu, Jiuyang and Li, Yong and Wu, Zhilin and Jansen, David N and Zhang, Lijun},
+  booktitle={Software Engineering and Formal Methods: 20th International Conference, SEFM 2022, Berlin, Germany, September 26--30, 2022, Proceedings},
+  pages={324--331},
+  year={2022},
+  organization={Springer}
 }
 
 %% Testbench APIs
 
 @misc{chiseltest,
-  title = {chiseltest: The official testing library for Chisel circuits.},
+  author = {Lin, Richard},
+  title = {chiseltest - The official testing library for Chisel circuits.},
   howpublished = {\url{https://github.com/ucb-bar/chiseltest}}
 }
 
 @inproceedings{cocotb,
-  title={Cocotb: a Python-based digital logic verification framework},
+  title={Cocotb - a Python-based digital logic verification framework},
   author={Rosser, Benjamin John},
   booktitle={Micro-electronics Section seminar},
   year={2018},
@@ -60,7 +125,8 @@ series = {ICFP '00}
 }
 
 @misc{hardcaml_step_testbench,
-  title = {hardcaml_step_testbench: Hardcaml Testbench Monad},
+  author = {Jane Street},
+  title = {hardcaml{\_}step{\_}testbench: Hardcaml Testbench Monad},
   howpublished = {\url{https://github.com/janestreet/hardcaml_step_testbench}}
 }
 
@@ -137,6 +203,24 @@ series = {ISSTA 2019}
 }
 
 @misc{blarney,
+  author = {Naylor, Matthew},
   title = {blarney: Haskell library for hardware description},
   howpublished = {\url{https://github.com/blarney-lang/blarney}}
+}
+
+@inproceedings{calyx,
+  author = {Nigam, Rachit and Thomas, Samuel and Li, Zhijing and Sampson, Adrian},
+  title = {A Compiler Infrastructure for Accelerator Generators},
+  year = {2021},
+  isbn = {9781450383172},
+  publisher = {Association for Computing Machinery},
+  address = {New York, NY, USA},
+  url = {https://doi.org/10.1145/3445814.3446712},
+  doi = {10.1145/3445814.3446712},
+  booktitle = {Proceedings of the 26th ACM International Conference on Architectural Support for Programming Languages and Operating Systems},
+  pages = {804–817},
+  numpages = {14},
+  keywords = {Intermediate Language, Accelerator Design},
+  location = {Virtual, USA},
+  series = {ASPLOS '21}
 }

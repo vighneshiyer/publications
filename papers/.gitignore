@@ -4,3 +4,5 @@
 *.out
 comment.cut
 _minted*
+*.bbl
+*.blg
