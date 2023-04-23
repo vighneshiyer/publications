@@ -1,17 +1,53 @@
-#!/usr/bin/env node
+#!/usr/bin/env python
 
-const puppeteer = require('puppeteer');
+import sys
+from argparse import ArgumentParser
+import asyncio
+from playwright.async_api import async_playwright
 
-async function generatePDF(url, outputPath, scaleValue) {
-  const browser = await puppeteer.launch();
-  const page = await browser.newPage();
-  await page.goto(url, { waitUntil: 'networkidle0' });
-  await page.pdf({ path: outputPath, width: '40in', height: '30in', printBackground: true, scale: scaleValue });
-  await browser.close();
-}
+async def main():
+    parser = ArgumentParser()
+    parser.add_argument("--url", type=str, required=True, help="poster URL to print")
+    parser.add_argument("--outputFile", type=str, required=True, help="path to output PDF file")
+    parser.add_argument("--scale", type=int, required=True, choices=range(10, 201), metavar="[10-200]", help="scaling factor")
+    parser.add_argument("--width", type=str, default="40in", help="poster width, see https://playwright.dev/python/docs/api/class-page#page-pdf for options")
+    parser.add_argument("--height", type=str, default="30in", help="poster height")
+    parser.add_argument("--watch", action="store_true", help="watch for changes and regenerate the PDF file live")
+    args = parser.parse_args()
+    scale = round(args.scale / 100, 2)
 
-// example usage: npm run pdf https://www.google.com ./google.pdf 100[:200][:5]
-const url = process.argv[2]
-const outputPath = process.argv[3]
-const scale = Number(process.argv[4]) / 100
-generatePDF(url, outputPath, scale);
+    async with async_playwright() as playwright:
+        print("Launching headless chromium")
+        browser = await playwright.chromium.launch()
+        print(f"Browsing to {args.url}")
+        page = await browser.new_page()
+        await page.goto(args.url)
+        await page.wait_for_load_state("networkidle")
+
+        if args.watch:
+            pass
+
+            # # Base template
+            # server.watch('base/base.jinja2', shell('make all'))
+            # server.watch('base/base.scss', shell('make all'))
+
+            # # Poster template
+            # server.watch('templates/**/*.jinja2', shell('make all'))
+            # server.watch('templates/**/*.scss', shell('make all'))
+
+            # # Poster content
+            # server.watch('posters/**/*.jinja2', shell('make all'))
+            # server.watch('posters/**/*.scss', shell('make all'))
+
+            # # Global figures
+            # server.watch('figs/**/*.png')
+            # server.watch('figs/**/*.svg')
+
+            # server.serve(root="posters")
+        else:
+            print("Dumping PDF")
+            await page.pdf(path=args.outputFile, scale=scale, width=args.width, height=args.height, print_background=True)
+            await browser.close()
+            sys.exit(0)
+
+asyncio.run(main())

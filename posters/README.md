@@ -11,14 +11,14 @@ My modifications include:
 
 ## Setup
 
-- Install the dependencies:
-    - jinja2 (`pip install jinja2`)
-    - sass (`npm install -g sass`) or (`pacman -S dart-sass`), https://sass-lang.com/install
-    - livereload (`pip install livereload`)
-- Install the npm project (`npm install`)
+### Dependencies
+
+- **sass**: `pacman -S dart-sass` (ArchLinux), [static binaries available here](https://github.com/sass/dart-sass/releases)
+- **pip dependencies**: `pip install jinja2 livereload playwright watchdog`
+- **playwright browser**: `playwright install chromium`
 
 ## Quickstart
 
 A poster consists of a jinja2 template file (`posters/tutorial/index.jinja2`) and a scss file (`posters/tutorial/index.scss`).
 To get started, verify that you can build the all posters in this repo with `make all`.
-To serve the posters as a webpage, run `./scripts/serve` and browse to `localhost:5500/tutorial`.
+To serve the posters, run `./scripts/serve` and browse to `localhost:5500/tutorial`.
