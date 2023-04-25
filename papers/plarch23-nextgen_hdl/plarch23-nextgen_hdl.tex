@@ -1,0 +1,238 @@
+\documentclass[sigplan,review,nonacm,9pt]{acmart}
+
+\usepackage{minted}
+\usepackage{makecell}
+\usepackage{booktabs}
+\graphicspath{ {./figs/} }
+\newcommand\aste{%
+$^{(\ast)}$
+}
+\usepackage[subtle]{savetrees}
+
+% https://tex.stackexchange.com/questions/655620/how-to-make-acmart-stop-complaining-about-missing-country-in-affiliation
+\makeatletter
+\def\@ACM@checkaffil{% Only warnings
+    \if@ACM@instpresent\else
+    \ClassWarningNoLine{\@classname}{No institution present for an affiliation}%
+    \fi
+    \if@ACM@citypresent\else
+    \ClassWarningNoLine{\@classname}{No city present for an affiliation}%
+    \fi
+    \if@ACM@countrypresent\else
+        \ClassWarningNoLine{\@classname}{No country present for an affiliation}%
+    \fi
+}
+\makeatother
+
+%%
+%% \BibTeX command to typeset BibTeX logo in the docs
+\AtBeginDocument{%
+  \providecommand\BibTeX{{%
+    Bib\TeX}}}
+
+%% Rights management information.  This information is sent to you
+%% when you complete the rights form.  These commands have SAMPLE
+%% values in them; it is your responsibility as an author to replace
+%% the commands and values with those provided to you when you
+%% complete the rights form.
+\setcopyright{acmcopyright}
+\copyrightyear{2023}
+\acmYear{2023}
+%\acmDOI{XXXXXXX.XXXXXXX}
+
+%% These commands are for a PROCEEDINGS abstract or paper.
+\acmConference[PLARCH '23]{PLARCH 2023}{June 17, 2023}{Orlando, FL}
+%%
+%%  Uncomment \acmBooktitle if the title of the proceedings is different
+%%  from ``Proceedings of ...''!
+%%
+%%\acmBooktitle{Woodstock '18: ACM Symposium on Neural Gaze Detection,
+%%  June 03--05, 2018, Woodstock, NY}
+%\acmPrice{15.00}
+%\acmISBN{978-1-4503-XXXX-X/18/06}
+
+
+%%
+%% Submission ID.
+%% Use this when submitting an article to a sponsored event. You'll
+%% receive a unique submission ID from the organizers
+%% of the event, and this ID should be used as the parameter to this command.
+%%\acmSubmissionID{123-A56-BU3}
+
+%%
+%% For managing citations, it is recommended to use bibliography
+%% files in BibTeX format.
+%%
+%% You can then either use BibTeX with the ACM-Reference-Format style,
+%% or BibLaTeX with the acmnumeric or acmauthoryear sytles, that include
+%% support for advanced citation of software artefact from the
+%% biblatex-software package, also separately available on CTAN.
+%%
+%% Look at the sample-*-biblatex.tex files for templates showcasing
+%% the biblatex styles.
+%%
+
+%%
+%% The majority of ACM publications use numbered citations and
+%% references.  The command \citestyle{authoryear} switches to the
+%% "author year" style.
+%%
+%% If you are preparing content for an event
+%% sponsored by ACM SIGGRAPH, you must use the "author year" style of
+%% citations and references.
+%% Uncommenting
+%% the next command will enable that style.
+%%\citestyle{acmauthoryear}
+\settopmatter{printacmref=false}
+
+%%
+%% end of the preamble, start of the body of the document source.
+\begin{document}
+
+%%
+%% The "title" command has an optional parameter,
+%% allowing the author to define a "short title" to be used in page headers.
+\title{Elements of a Next-Gen HDL}
+% \subtitle{}
+
+%%
+%% The "author" command and its associated commands are used to define
+%% the authors and their affiliations.
+%% Of note is the shared affiliation of the first two authors, and the
+%% "authornote" and "authornotemark" commands
+%% used to denote shared contribution to the research.
+
+\author{Vighnesh Iyer}
+\email{vighnesh.iyer@berkeley.edu}
+\orcid{0000-0001-6934-6577}
+\affiliation{%
+  \institution{UC Berkeley}
+}
+
+\author{Borivoje Nikolić}
+\email{bora@eecs.berkeley.edu}
+\orcid{0000-0003-2324-1715}
+\affiliation{%
+  \institution{UC Berkeley}
+}
+
+
+%%
+%% By default, the full list of authors will be used in the page
+%% headers. Often, this list is too long, and will overlap
+%% other information printed in the page headers. This command allows
+%% the author to define a more concise list
+%% of authors' names for this purpose.
+% \renewcommand{\shortauthors}{Trovato et al.}
+
+
+\begin{abstract}
+% In the past, HDLs have been 1) focused on one-level of abstraction (RTL, event-driven simulation, HLS), 2) not aware of cross-cutting concerns outside their domain, 3) more-or-less ad-hoc approaches to hardware design
+% Let's analyze the past HDLs and try to pull new ideas to determine what the next-generation HDL ought to look like
+We have seen many HDLs (Lava, Chisel, PyMTL3) emerge in the past few years as well as new IRs (FIRRTL, CoreIR, Circt / MLIR) and databases (UHDM).
+What is missing is a hollistic view of the design, verification, and implementation process.
+We will discuss problems to solve in frontend, middle-end, and backend implementations of HDLs to motivate the design of the next-generation HDL.
+\end{abstract}
+
+% \received{20 February 2007}
+% \received[revised]{12 March 2009}
+% \received[accepted]{5 June 2009}
+
+\maketitle
+
+% - Next generation hardware design environment (Kami + LiveHD + Chisel + HLS + PyMTL + perf modeling correlation + formal + ....)
+% - Modeling + perf/functional correlation automation
+% - Incremental and dynamically refined simulation support
+% - Mixing full-blown HLS, lightweight abstractions, RTL, and event-driven models (simulation only) in the same design
+% - Type-level encoding of things (e.g. clock/reset/power domains, one-hot signals) - is this really worth it?
+% - semantics preserving
+% - multi-abstraction
+% - SoC architecture - diplomacy
+% - what type of implementation to use?
+% - unified language vs unified representation (see UHDM) - approaches to polyglot systems
+% - What IR to use? SSA vs graph oriented. Single abstraction vs multiple abstractions
+% build system integration - fully incremental and cloud cache aware (can use cached build artifacts) - dependencies are completely specified - need to be able to generically split elaboration at function level, verilog or otherwise simulator compilation, testbench compilation, and runtime (with even runtime caching since everything should be deterministic)
+
+% incremental first - see unison - incremental in between generations too, not only in the same generation (e.g. with memoization) - need a way to know dependencies of general purpose code!
+% how to express multi-level IRs in the type system without copying between different ADTs? is there a language with support for this - perhaps with refinement types?
+% SSA vs graph representation of a circuit - see LiveHD compiler for an example of strong parallelism that is difficult to do inside LLVM / MLIR
+% using effect handlers to switch between different API modes - interpretation in the front-end, fully lazy compilation into a circuit, JIT'ed segments of the interpretation for good perf/compile tradeoff
+
+\section{Hardware Modeling Abstractions}
+
+\subsection{Abstraction Levels}
+% The case for multi-paradigm / mixed-abstraction HDLs
+% Leverage multi-level IRs
+% Be able to use the abstraction most suited for your problem
+% Have a formal semantics for each IR and how they interact with each other, move away from "Verilog simulation as truth"
+% Leverage the simulation throughput vs fidelity tradeoffs to get better simulation performance and improve productivity
+
+Hardware can be modeled at various levels of abstraction spanning from low-level transistor-level constructs to high-level algorithmic constructs (see Figure \ref{fig:abstractions}).
+Most modern HDLs have focused on the RTL abstraction solely, but we make the case for an HDL with constructs at several different
+
+We believe that 
+
+
+
+\begin{figure*}
+\small
+\begin{tabular}{p{3cm}p{3cm}p{3cm}p{3cm}p{3cm}p{3cm}p{3cm}}\toprule
+\textbf{Abstraction Level} & Primitives & Simulation Technique & Examples & Utility & Values & Time \\\midrule
+Transistor-level & PDK transistor models, wires, passives, physical geometry & Solving systems of differential equations & SPICE, Spectre & Analog circuit design, standard cell characterization &  & \\\midrule
+Gate-level & PDK standard cells & Event-driven simulation & Structural Verilog with SDF annotations & & & \\
+\bottomrule
+\end{tabular}
+\caption{Overview of different abstraction levels for describing hardware designs and }
+\label{fig:abstractions}
+\end{figure*}
+
+The vast majority of new HDLs target the register-transfer level
+
+X's (link to previous LATTE paper from Gilbert)
+
+
+What primitives should exist? How can we capture the complexity of mapping to ASIC/FPGA primitives in different PDKs?
+
+
+\section{Frontend Implementation Details}
+
+\section{Implementation Strategies}
+
+freestanding DSL, eDSL, custom compiler, user-level tracing (e.g. Jax)
+
+\subsection{Freestanding DSLs}
+
+The role of the type system
+
+\section{Hollistic View of Hardware Design}
+
+
+
+\section{Features}
+\subsection{Semantics Preserving}
+
+\subsection{Incremental-First}
+
+\subsubsection{Injection points}
+chisel aspects, multi-level macros
+
+\subsection{Visual first, Iterative Dev}
+
+\subsection{Refined Simulation}
+
+interpretation, JIT, compilation, optimization
+
+
+\section{Modules: What Are They Good For?}
+
+\begin{acks}
+Research was partially funded by SLICE Lab industrial sponsors and affiliates Amazon, AMD, Apple, Google, Intel, and Qualcomm.
+\end{acks}
+
+\bibliographystyle{ACM-Reference-Format}
+\bibliography{references}
+
+% \appendix
+
+\end{document}
+\endinput

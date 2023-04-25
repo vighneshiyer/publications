@@ -2,10 +2,14 @@
 
 import sys
 from argparse import ArgumentParser
+import time
+import fnmatch
 import asyncio
 from playwright.async_api import async_playwright
+from watchdog.observers import Observer
+from watchdog.events import FileSystemEventHandler, FileCreatedEvent, FileModifiedEvent
 
-async def main():
+def main():
     parser = ArgumentParser()
     parser.add_argument("--url", type=str, required=True, help="poster URL to print")
     parser.add_argument("--outputFile", type=str, required=True, help="path to output PDF file")
@@ -16,38 +20,52 @@ async def main():
     args = parser.parse_args()
     scale = round(args.scale / 100, 2)
 
-    async with async_playwright() as playwright:
+    with async_playwright() as playwright:
         print("Launching headless chromium")
         browser = await playwright.chromium.launch()
         print(f"Browsing to {args.url}")
         page = await browser.new_page()
         await page.goto(args.url)
         await page.wait_for_load_state("networkidle")
+        print("Page loaded")
+        print("Dumping PDF")
+        await page.pdf(path=args.outputFile, scale=scale, width=args.width, height=args.height, print_background=True)
 
+        
         if args.watch:
-            pass
-
-            # # Base template
-            # server.watch('base/base.jinja2', shell('make all'))
-            # server.watch('base/base.scss', shell('make all'))
-
-            # # Poster template
-            # server.watch('templates/**/*.jinja2', shell('make all'))
-            # server.watch('templates/**/*.scss', shell('make all'))
-
-            # # Poster content
-            # server.watch('posters/**/*.jinja2', shell('make all'))
-            # server.watch('posters/**/*.scss', shell('make all'))
-
-            # # Global figures
-            # server.watch('figs/**/*.png')
-            # server.watch('figs/**/*.svg')
-
-            # server.serve(root="posters")
+            print("Watching for changes...")
+            observer = Observer()
+            event_handler = PDFRefresher(page, args, scale)
+            observer.schedule(event_handler, path="./", recursive=True)
+            observer.start()
+            try:
+                while True:
+                    time.sleep(1)
+            finally:
+                observer.stop()
+                observer.join()
+                browser.close()
+                sys.exit(0)
         else:
-            print("Dumping PDF")
-            await page.pdf(path=args.outputFile, scale=scale, width=args.width, height=args.height, print_background=True)
             await browser.close()
             sys.exit(0)
 
-asyncio.run(main())
+class PDFRefresher(FileSystemEventHandler):
+    def __init__(self, page, args, scale):
+        self.page = page
+        self.args = args
+        self.scale = scale
+        self.loading = False
+
+    def on_any_event(self, event):
+        if isinstance(event, FileCreatedEvent) or isinstance(event, FileModifiedEvent):
+            if fnmatch.fnmatch(event.src_path, "*.scss") or fnmatch.fnmatch(event.src_path, "*.jinja2"):
+                #if self.loading == True:
+                #    continue  # throw away new events if a previous event is still being processed
+                self.loading = True
+                self.page.reload(wait_until="networkidle")
+                self.page.pdf(path=self.args.outputFile, scale=self.scale, width=self.args.width, height=self.args.height, print_background=True)
+                self.loading = False
+
+if __name__ == "__main__":
+    main()
