@@ -286,6 +286,7 @@ There are also opportunities to instrument the interpreter to produce a decision
 
 Manually translating imperative control flow to FSMs in RTL is error prone and laborious.
 To address this, we have developed an eDSL\cite{chisel_recipes}, based on Blarney's Recipe construct\cite{blarney} that allows you to describe a sequence of imperative actions that are compiled down to RTL (Figure \ref{fig:recipes}).
+Since designers often want to set external signals based on which ``line'' of code is active, the Recipe primitives have an `\texttt{active}' signal tap that can be assigned to a user-defined wire.
 Since the control description and FSM compiler are cleanly separated, in the future, we could use a lightweight HLS IR (e.g. Calyx\cite{calyx}) to produce an optimized FSM.
 The FSM compiler can inject debug \texttt{printf}s that fire when a line is entered and exited, and the Scala source line numbers are injected into each primitive instantiation via implicits\cite{sourcecode}.
 
@@ -302,7 +303,8 @@ val readOnce = Recipe(
 )
 forever(readOnce).compile()
 \end{minted}
-\caption{An imperative description of reading from a memory from an AXI4-Lite port. Note that we can tap the `\texttt{active}' signal of any line to set external signals.}
+\caption{An imperative description of reading from a memory from an AXI4-Lite port}
+% Note that we can tap the `\texttt{active}' signal of any line to set external signals.
 \label{fig:recipes}
 \end{figure}
 

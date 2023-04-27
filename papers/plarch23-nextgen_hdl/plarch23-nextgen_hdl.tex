@@ -1,8 +1,9 @@
-\documentclass[sigplan,review,nonacm,9pt]{acmart}
+\documentclass[sigplan,review,nonacm]{acmart}
 
 \usepackage{minted}
 \usepackage{makecell}
 \usepackage{booktabs}
+\usepackage{dblfloatfix}    % To enable figures at the bottom of page
 \graphicspath{ {./figs/} }
 \newcommand\aste{%
 $^{(\ast)}$
@@ -129,9 +130,10 @@ $^{(\ast)}$
 \begin{abstract}
 % In the past, HDLs have been 1) focused on one-level of abstraction (RTL, event-driven simulation, HLS), 2) not aware of cross-cutting concerns outside their domain, 3) more-or-less ad-hoc approaches to hardware design
 % Let's analyze the past HDLs and try to pull new ideas to determine what the next-generation HDL ought to look like
-We have seen many HDLs (Lava, Chisel, PyMTL3) emerge in the past few years as well as new IRs (FIRRTL, CoreIR, Circt / MLIR) and databases (UHDM).
+We have seen many HDLs (Lava, Chisel, PyMTL3) emerge in the past few years as well as new IRs (FIRRTL, CoreIR, CIRCT / MLIR) and databases (UHDM).
 What is missing is a hollistic view of the design, verification, and implementation process.
 We will discuss problems to solve in frontend, middle-end, and backend implementations of HDLs to motivate the design of the next-generation HDL.
+We argue that the HDL of the future needs to support composition of multiple abstraction levels and capture design elements from the complete flow of hardware design, verification, and fabrication.
 \end{abstract}
 
 % \received{20 February 2007}
@@ -140,10 +142,112 @@ We will discuss problems to solve in frontend, middle-end, and backend implement
 
 \maketitle
 
+\section{Hardware Modeling Abstractions}
+
+\begin{figure*}[!hbt]
+\small
+\begin{tabular}{p{3cm}p{3cm}p{3cm}p{3cm}p{3cm}p{3cm}p{3cm}}\toprule
+\textbf{Abstraction Level} & Primitives & Simulation Technique & Examples & Utility & Values & Time \\\midrule
+Transistor-level & PDK transistor models, wires, passives, physical geometry & Solving systems of differential equations & SPICE, Spectre & Analog circuit design, standard cell characterization &  & \\\midrule
+Gate-level & PDK standard cells & Event-driven simulation & Structural Verilog with SDF annotations & & & \\\midrule
+Register-transfer level & & & & & & \\\midrule
+Discrete Event Models & & & & & & \\\midrule
+Dataflow Pipelines & & & & & & \\\midrule
+Algorithms & & & & & & \\\bottomrule
+\end{tabular}
+\caption{Overview of different abstraction levels for describing hardware designs and }
+\label{fig:abstractions}
+\end{figure*}
+
+% Overview of multiple levels of abstraction used in real HDLs
+
+Hardware can be modeled at various levels of abstraction spanning from low-level transistor-level constructs to high-level algorithmic constructs (see Figure \ref{fig:abstractions}).
+Most modern HDLs (Lava, Chisel, PyMTL3) have focused on providing a metaprogramming layer on the register-transfer level (RTL) abstraction, since this is the usual abstraction used by digital designers.
+Some HDLs work at a higher-level, abstracting away explicit state instantiations or control flow logic: they can be based on guarded atomic actions (e.g. BlueSpec Verilog), decoupled dataflow pipelines (e.g. PipelineC, DFiant\cite{dfiant}, Shakeflow), highly-controllable lightweight-HLS constructs (e.g. Calyx, XLS), or largely automated heavyweight-HLS from SystemC/C++ (e.g. Vivado HLS, Catapult, LegUp).
+Some HDLs, like Verilog, work at an arguably ``lower-level'' than RTL, opting to describe hardware as a generic discrete event simulation.
+
+% The IR question + the benefits of rigorously defined semantics vs Verilog
+
+While some of these HDLs directly emit Verilog or VHDL, others target an intermediate representation (IR) with well defined semantics, that is incrementally lowered by a compiler to a form resembling structural Verilog.
+Relying on formally defined semantics for an IR (to check equivalence of transformations, to perform simulation\cite{hwsemantics}, and to specify undefined behavior) is an improvement\cite{cider} over relying on the poorly defined semantics of Verilog.
+
+% New multi-level IRs (CIRCT)
+% Have a formal semantics for each IR and how they interact with each other
+% Move away from "Verilog simulation as truth", don't just be a Verilog emitter / metaprogramming layer
+% Preserve the semantics of each abstraction level vs lowering things to verilog and blackboxing.
+
+Recently, the CIRCT project\cite{circt} has developed several IRs that span RTL (the ``hw'' + ``seq'' + ``comb'' dialects) and higher-level abstractions (the ``handshake'', ``esi'', ``ssp'', and ``calyx''\cite{calyx} dialects).
+While these dialects may not have formal semantics yet, there is an opportunity to precisely define them (including undefined behaviors), and move away from the idea of ``Verilog simulation as truth"".
+For now, these IRs do not interact with each other, and are either simulated entirely in their own context, or are composed by, first lowering to the RTL abstraction dialect, and then connecting them.
+However, there exists an opportunity to define the semantics of the \textit{composition} and \textit{interaction} of circuits expressed in different IRs.
+We make the case that the next-gen HDL should support mixed-abstraction circuit definitions.
+
+\section{Mixed-Abstraction HDLs}
+
+% The case for mixed-abstraction/paradigm HDLs and how to leverage multi-level IRs (CIRCT)
+% Mix full-blown HLS, lightweight HLS-like abstractions, RTL, and event-driven models (simulation only) in the same design
+% Be able to use the abstraction most suited for your problem and mix them together
+% Leverage the simulation throughput vs fidelity tradeoffs to get better simulation performance and improve productivity
+% High level for algorithms and custom HLS light flows
+
+We already understand that dataflow algorithms are more ergonomic to implement, and easier to optimize, when written in a high-level abstraction (above RTL).
+Ideally, we wouldn't have to write the accelerator in a different HDL, lower it to Verilog, then simulate it with the rest of the RTL, integrated as a Verilog blackbox.
+Instead, the HDL should leverage Circt's multiple IR dialects to support mixed-abstraction simulation to yield higher simulation performance and improve integration ergonomics\cite{pymtl3}.
+Such an approach also enables an ergonomic flow for refinement proofs from high-level models to RTL, as well as performance correlation checking between timed and untimed models.
+
+% Low level for clocks, even lower for mixed signal, what about async resets (iffy simulation semantics leak into FIRRTL), timing simulation
+
+A next-gen HDL should not only support mixing of abstractions above RTL, but also those below, in particular, generic event driven simulation constructs.
+HDLs designed for vanilla synchronous digital logic struggle to define precise simulation semantics for common circuit features such as asynchronous resets.
+In simulation, clocks are a special construct, often hardcoded as a fixed frequency, continuous signal rather than something specified in an event-driven IR that's composed with an RTL IR.
+Finally, behavioral models for circuits\cite{llhd} like PHYs are critical for system-level verification, and ideally would have clean semantics for interaction with vanilla RTL.
+By separating different abstractions into different IRs, a simulator is able to understand which parts of the design need what level of simulation fidelity and flexibility.
+
+\subsection{Mixed-Abstraction Interaction}
+
+The interaction of high-level abstractions, such as HLS'ed blocks and software models, with RTL is relatively straightforward: transaction-level modeling and decoupled latency-insensitive interfaces provide a canonical solution\cite{umoc}.
+However, a mixed-abstraction HDL should also support \textit{shared state} between the HLS'ed block and RTL.
+This requires an integrated compiler approach that can understand both IRs and how they interact.
+
+A greater challenge exists when trying to couple generic event-driven simulation constructs or software models with RTL.
+Often, one will want to execute arbitrary code in between events to process a transaction or update state.
+The simulator may want to statically analyze the code (e.g. a clock generator) to make optimizations (e.g. use per-cycle simulation rather than event loop-based simulation when the clock input is a fixed frequency, always-on waveform).
+Approaches to address this include expressing arbitrary code as LLVM IR that's called by a CIRCT IR routine or forgoing static analysis.
+
+\subsection{IR Primitives}
+
+% What primitives should exist? How can we capture the complexity of mapping to ASIC/FPGA primitives in different PDKs?
+
+A related and open question is: how should hardware primitives be modeled in a HDL?
+Existing approaches expose common primitives (e.g. SRAMs) through HDL primitives (e.g. Chisel's SyncReadMem), which work for the common case, but are unable to cleanly express custom SRAM features such as ECC or BIST.
+One ``solution'' is to use a Verilog blackbox around the custom SRAM marco, but we lose understanding of the primitive's semantics.
+Another ``solution'' is to model the custom macro using the available HDL primitives, and replace it with the Verilog blackbox during compilation, but we run the risk of inaccurately modeling the macro.
+Mixed-abstraction HDLs have the potential to enable description of custom primitives in a way that capture's its semantics while also validating that blackbox substitutions have the same behavior.
+
+\subsection{Other HDL Concerns}
+
+We discuss some practical 
+
+% \subsection{Preserving Semantics Through Lowering}
+
+% Xs for synthesis
+% case statements, interfaces / structs
+% balance simplicity of IR and pass complexity with avoiding semantics reconstruction
+% lgraph claims to be very simple, but does that come at costs?
+
+% \subsection{Modules: What Are They Good For?}
+
+% \section{Frontend Implementation Details}
+%
+% \subsection{Implementation Strategies}
+%
+% freestanding DSL, eDSL, custom compiler, user-level tracing (e.g. Jax)
+%
+% \subsubsection{Freestanding DSLs}
+
 % - Next generation hardware design environment (Kami + LiveHD + Chisel + HLS + PyMTL + perf modeling correlation + formal + ....)
-% - Modeling + perf/functional correlation automation
+% - Modeling + perf/functional correlation automation (PyMTL3)
 % - Incremental and dynamically refined simulation support
-% - Mixing full-blown HLS, lightweight abstractions, RTL, and event-driven models (simulation only) in the same design
 % - Type-level encoding of things (e.g. clock/reset/power domains, one-hot signals) - is this really worth it?
 % - semantics preserving
 % - multi-abstraction
@@ -158,55 +262,7 @@ We will discuss problems to solve in frontend, middle-end, and backend implement
 % SSA vs graph representation of a circuit - see LiveHD compiler for an example of strong parallelism that is difficult to do inside LLVM / MLIR
 % using effect handlers to switch between different API modes - interpretation in the front-end, fully lazy compilation into a circuit, JIT'ed segments of the interpretation for good perf/compile tradeoff
 
-\section{Hardware Modeling Abstractions}
-
-\subsection{Abstraction Levels}
-% The case for multi-paradigm / mixed-abstraction HDLs
-% Leverage multi-level IRs
-% Be able to use the abstraction most suited for your problem
-% Have a formal semantics for each IR and how they interact with each other, move away from "Verilog simulation as truth"
-% Leverage the simulation throughput vs fidelity tradeoffs to get better simulation performance and improve productivity
-
-Hardware can be modeled at various levels of abstraction spanning from low-level transistor-level constructs to high-level algorithmic constructs (see Figure \ref{fig:abstractions}).
-Most modern HDLs have focused on the RTL abstraction solely, but we make the case for an HDL with constructs at several different
-
-We believe that 
-
-
-
-\begin{figure*}
-\small
-\begin{tabular}{p{3cm}p{3cm}p{3cm}p{3cm}p{3cm}p{3cm}p{3cm}}\toprule
-\textbf{Abstraction Level} & Primitives & Simulation Technique & Examples & Utility & Values & Time \\\midrule
-Transistor-level & PDK transistor models, wires, passives, physical geometry & Solving systems of differential equations & SPICE, Spectre & Analog circuit design, standard cell characterization &  & \\\midrule
-Gate-level & PDK standard cells & Event-driven simulation & Structural Verilog with SDF annotations & & & \\
-\bottomrule
-\end{tabular}
-\caption{Overview of different abstraction levels for describing hardware designs and }
-\label{fig:abstractions}
-\end{figure*}
-
-The vast majority of new HDLs target the register-transfer level
-
-X's (link to previous LATTE paper from Gilbert)
-
-
-What primitives should exist? How can we capture the complexity of mapping to ASIC/FPGA primitives in different PDKs?
-
-
-\section{Frontend Implementation Details}
-
-\section{Implementation Strategies}
-
-freestanding DSL, eDSL, custom compiler, user-level tracing (e.g. Jax)
-
-\subsection{Freestanding DSLs}
-
-The role of the type system
-
 \section{Hollistic View of Hardware Design}
-
-
 
 \section{Features}
 \subsection{Semantics Preserving}
@@ -214,14 +270,14 @@ The role of the type system
 \subsection{Incremental-First}
 
 \subsubsection{Injection points}
-chisel aspects, multi-level macros
+
+% chisel aspects, multi-level macros
 
 \subsection{Visual first, Iterative Dev}
 
 \subsection{Refined Simulation}
 
-interpretation, JIT, compilation, optimization
-
+% interpretation, JIT, compilation, optimization
 
 \section{Modules: What Are They Good For?}
 
