@@ -124,7 +124,7 @@ $^{(\ast)}$
 %% other information printed in the page headers. This command allows
 %% the author to define a more concise list
 %% of authors' names for this purpose.
-% \renewcommand{\shortauthors}{Trovato et al.}
+\renewcommand{\shortauthors}{Iyer, Vighnesh et al.}
 
 
 \begin{abstract}
@@ -164,11 +164,13 @@ To show the value of this approach, we demonstrate three new eDSLs, embedded in 
 
 \maketitle
 
+\vspace{-0.5cm}
 \begin{figure}[h]
 \includegraphics[width=\linewidth]{simcommand/functional_apis.pdf}
 \caption{The elements of a generic eDSL}
 \label{fig:functional_apis}
 \end{figure}
+\vspace{-0.5cm}
 
 % \section{Functional Principles}
 \section{Seperating Description from Interpretation}
@@ -189,24 +191,31 @@ Here, \textit{the description}, is an in-memory representation of a circuit that
 
 % In this paper we focus on functional embedded DSLs in Scala
 An eDSL that splits description and interpretation is particularly well suited for a functional monadic implementation, leveraging three features of the host language: 1) algebraic data types, 2) monadic composition sugar (or direct style alternatives\cite{dotty_cps_async, koka}), and 3) a strong macro system for source annotations.
-We will discuss three examples of functional eDSLs that leverage these features of the Scala language.
+We will discuss three examples of functional eDSLs that leverage these features of the Scala language (Figure \ref{fig:edsl_overview}).
 %The same principle of separating description from interpretation has many other useful applications in hardware design and verification, albeit with different primitives and interpreters.
 
 %\section{SimCommand: Functional Testbench API}
 \section{A Functional Testbench API}
 
 % In Systmverilog you can design hardware and write testbenches, but in most modern eDSL HDLs
-Popular testbench frameworks written in general-purpose languages already exist, such as cocotb\cite{cocotb} library (Python) and chiseltest\cite{chiseltest} (Scala).
-Writing testbenches in a general-purpose language is highly ergonomic since it allows us to take advantage of the language's type system, libraries, build tools, IDEs, and testing frameworks.
-However, these testbench libraries suffer from poor performance.
-We propose a functional eDSL that enables 
+Popular testbench frameworks written in general-purpose languages already exist, such as cocotb\cite{cocotb} (Python) and chiseltest\cite{chiseltest} (Scala).
+Writing testbenches in a general-purpose language is ergonomic and productive since it allows us to take advantage of the language's type system, libraries, build tools, IDEs, and testing frameworks.
+However, these testbench libraries suffer from poor performance due to their implementation of \texttt{fork/join} used for simulation threading.
+We propose a functional eDSL for writing testbenches, SimCommand\cite{simcommand}, which achieves fast \texttt{fork/join}, by embedding testbench primitives in Scala, and separating testbench description and interpretation.
 
-%There are existing popular testbench frameworks... they are good because - general-purpose language allows you to make use of libraryes, debugging, etc.
-But the problem is they have poor performance, and we propose a functional eDSLs for chiseltest that shows significant perf improvmeent.
+% There are existing popular testbench frameworks... they are good because - general-purpose language allows you to make use of libraryes, debugging, etc.
+% But the problem is they have poor performance, and we propose a functional eDSLs for chiseltest that shows significant perf improvmeent.
 % While you can write testbenches in SystemVerilog, it is more ergonomic to use the same host language as your HDL, to exploit its features and share code.
 
-However, existing testbench APIs in general-purpose languages, such as chiseltest\cite{chiseltest} and cocotb\cite{cocotb}, have poor performance due to their implementation of \texttt{fork/join} used for simulation threading.
-We propose a functional eDSL, SimCommand\cite{simcommand}, which achieves fast \texttt{fork/join}, by embedding testbench primitives in Scala and separating testbench description and interpretation.
+%However, existing testbench APIs in general-purpose languages, such as chiseltest\cite{chiseltest} and cocotb\cite{cocotb}, have poor performance due to their implementation of \texttt{fork/join} used for simulation threading.
+%We propose a functional eDSL, SimCommand\cite{simcommand}, which achieves fast \texttt{fork/join}, by embedding testbench primitives in Scala and separating testbench description and interpretation.
+
+% Chiseltest uses JVM threads and mutexes, while cocotb uses Python's async/await coroutines to implement \texttt{fork/join}.
+% Only talk about chiseltest!
+
+To implement \texttt{fork/join}, chiseltest spawns a new JVM thread for each simulation thread, and uses mutexes to synchronize and yield control between threads.
+This technique cannot keep up with the high frequency of suspend/resume operations in simulation threads, since it is bottlenecked by the overhead of mutex synchronization and thread parking and resumption.
+In contrast, SimCommand uses monadic composition of testbench primitives\cite{hardcaml_step_testbench} to implement cooperatively yielding simulation threads that can suspend/resume quickly.
 
 \begin{figure}
 \begin{minted}[breaklines,fontsize=\small]{scala}
@@ -246,21 +255,18 @@ ADT Base Type & ADT Primitives / Combinators & Composition Primitives & Interpre
 \bottomrule
 \end{tabular}
 \caption{Overview of the primitives and final outputs of eDSLs for HW design and verification. {\small \aste = hypothetical / incomplete}}
+\label{fig:edsl_overview}
 \end{figure*}
 
-% Chiseltest uses JVM threads and mutexes, while cocotb uses Python's async/await coroutines to implement \texttt{fork/join}.
-Only talk about chiseltest!
-These techniques cannot keep up with the high frequency of suspend/resume operations in simulation threads.
-In contrast, SimCommand uses monadic composition of testbench primitives\cite{hardcaml_step_testbench} to implement cooperatively yielding simulation threads that can suspend/resume quickly.
-
-The core ADT is \texttt{Command[R]}, which describes a testbench operation that eventually terminates with a value of type \texttt{R}.
-The primitives include testbench operations such as \texttt{peek} and \texttt{poke} to sense and drive RTL signals, \texttt{step} to advance the clock, and \texttt{fork} and \texttt{join} to emulate simulation threads.
-See the example in Figure \ref{fig:simcommand} which uses Scala's for-comprehension syntax to compose \texttt{Command} primitives into a larger program.
+The core ADT is a \texttt{Command[R]}, which describes a testbench operation that eventually terminates with a value of type \texttt{R}.
+The primitives include testbench operations such as \texttt{peek} and \texttt{poke} to sense and drive RTL signals, \texttt{step} to advance the clock, and \texttt{fork} and \texttt{join} to describe simulation threads.
+See the example in Figure \ref{fig:simcommand} which uses Scala's for-comprehension syntax to sequentially compose \texttt{Command} primitives into a larger program using continuation-passing style under-the-hood.
 
 The SimCommand interpreter works as follows (Figure \ref{fig:simcommand_interp}): on every timestep, each thread (a pointer to a \texttt{Command}), is run until it hits a \texttt{step} or \texttt{join} (a yield point).
-Once all threads have run to their yield point, and all recursively spawned threads have done the same, the scheduler steps the clock in the underlying RTL simulator, and repeats the process until the main thread finishes.
+Once all threads have run to their yield point, the scheduler steps the clock in the underlying RTL simulator, and repeats the process until the main thread finishes.
+% and all recursively spawned threads have done the same,
 
-SimCommand has several other features such as channels for inter-thread communication, cycle skipping optimizations, and runtime checks for thread order dependencies.
+SimCommand has several other features including channels for inter-thread communication, cycle skipping optimizations, and runtime checks for thread order dependencies.
 Separating description and interpretation yields an API that's 10-30x faster than cocotb and chiseltest, while being purely functional.
 
 % Advantages:
@@ -298,10 +304,10 @@ Separating the \textit{description of how} to generate stimulus, from the actual
 % cleanly separates the generation algorithm from the source of randomness (Figure \ref{fig:randomapi}).
 This design decision also allows us to easily capture random decisions made during stimulus generation.
 % to obtain a detailed \textit{description of the interpretation}.
-These decisions made by the generator can be used to improve the stimulus generation, either by mutating them in a fuzzer 
-The fuzzer can operate directly on the decisoin tree or 
-One more sentence about ML
-There are also opportunities to instrument the interpreter to produce a decision tree, which can serve as a high-level embedding of the stimulus.
+These decisions made by the generator can be used to improve the stimulus generation by having a fuzzer's mutator operate directly on the decision tree.
+% One more sentence about ML
+The decision tree can also be used to produce an embedding of the generated stimulus, to train ML models for e.g. coverage prediction.
+% There are also opportunities to instrument the interpreter to produce a decision tree, which can serve as a high-level embedding of the stimulus.
 %opportunity to inject instrumentation in the interpreter to capture random decisions
 
 \begin{figure}
@@ -335,7 +341,7 @@ The FSM compiler can inject debug \texttt{printf}s that fire when a line is ente
 
 \begin{figure}
 \begin{minted}[breaklines,fontsize=\small]{scala}
-val readOnce = Recipe(
+val readOnce = recipe(
   waitUntil(axi.ar_valid === 1.B, active=axi.ar_ready),
   action {
     axi.r_data := mem.read(axi.ar_addr)
@@ -343,8 +349,7 @@ val readOnce = Recipe(
   },
   waitUntil(axi.r_ready === 1.B, active=axi.r_valid),
   tick()
-)
-forever(readOnce).compile()
+).compile()
 \end{minted}
 \caption{An imperative description of reading from a memory from an AXI4-Lite port}
 % Note that we can tap the `\texttt{active}' signal of any line to set external signals.
@@ -357,7 +362,7 @@ forever(readOnce).compile()
 % Very powerful technique, should be applied even more! What else can we embed in a host language and interact with existing HDLs (e.g. Chisel)?
 
 We make the case that eDSLs need not be limited to HDLs, and can also model other abstractions used in hardware design and verification.
-Leveraging the functional programming constructs of the host language and existing embedded HDLs, makes it straightforward to write APIs for RTL testbenches, stimulus generation, and control flow automation.
+Leveraging the functional programming constructs of the host language and existing embedded HDLs, makes it straightforward to write APIs for RTL testbenches, stimulus generation, and control flow compilation.
 What other aspects of hardware design ought to be first-class DSLs?
 
 \begin{acks}
