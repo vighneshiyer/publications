@@ -224,7 +224,7 @@ The SimCommand interpreter works as shown in Figure \ref{fig:simcommand_interp}:
 Once all threads have run to their yield point, and all recursively spawned threads have done the same, the scheduler steps the clock in the underlying RTL simulator, and repeats until the main thread terminates.
 
 SimCommand has several other features such as channels for inter-thread communication, cycle skipping optimizations, and runtime checks for thread order dependencies.
-Separating description and interpretation yields an API that's 5-30x faster than cocotb and chiseltest, while being purely functional.
+Separating description and interpretation yields an API that's 10-30x faster than cocotb and chiseltest, while being purely functional.
 
 % Advantages:
 % Fast fork/join
