@@ -1,4 +1,4 @@
-\documentclass[sigplan,review,nonacm]{acmart}
+\documentclass[sigplan,review,nonacm,9pt]{acmart}
 
 \usepackage{minted}
 \usepackage{makecell}
@@ -93,8 +93,8 @@ $^{(\ast)}$
 %%
 %% The "title" command has an optional parameter,
 %% allowing the author to define a "short title" to be used in page headers.
-\title{Elements of a Next-Gen HDL}
-\subtitle{A Case for Mixed-Abstraction HDLs and Discussing Other Aspects of HDL Design}
+% \title{Elements of a Next-Gen HDL}
+\title{Mixed-Abstraction HDLs and A Discussion on Other Aspects of HDL Design}
 
 %%
 %% The "author" command and its associated commands are used to define
@@ -139,9 +139,9 @@ $^{(\ast)}$
 % How should HDLs capture design elements from the complete flow of hardware design, verification, and fabrication.
 % We will discuss problems to solve in frontend, middle-end, and backend implementations of HDLs to motivate the design of the next-generation HDL.
 
-Many new hardware design languages (HDLs) (freestanding DSLs and eDSLs), IRs (FIRRTL\cite{firrtl}, CoreIR\cite{coreir}, CIRCT\cite{circt}) and HDL databases (UHDM\cite{uhdm}) have emerged in the past decade.
+Many new hardware design languages (HDLs) (including freestanding DSLs and eDSLs), IRs (FIRRTL, CoreIR, CIRCT) and HDL databases (UHDM) have emerged in the past decade.
 Looking forward to the next generation of HDLs, we argue that composition of hardware descriptions from multiple abstraction levels is critical to continued improvements in design productivity.
-We also discuss other HDL implementation questions such as the primitives an IR should support, how design semantics should be preserved through lowering, the role of modules, and the potential for incremental elaboration.
+We also discuss other HDL implementation questions such as what primitives an IR should support, how design semantics should be preserved through lowering, the role of modules, and the potential for incremental elaboration.
 \end{abstract}
 
 % \received{20 February 2007}
@@ -154,24 +154,24 @@ We also discuss other HDL implementation questions such as the primitives an IR 
 
 \begin{figure*}[!hbt]
 \small
-\begin{tabular}{>{\raggedright\arraybackslash}p{2cm}p{3cm}p{2cm}p{3cm}p{3cm}p{2cm}}\toprule
+\begin{tabular}{>{\raggedright\arraybackslash}p{2cm}>{\raggedright\arraybackslash}p{3cm}>{\raggedright\arraybackslash}p{2cm}>{\raggedright\arraybackslash}p{3cm}>{\raggedright\arraybackslash}p{3cm}>{\raggedright\arraybackslash}p{2cm}}\toprule
 \textbf{Abstraction} & \textbf{Primitives} & \textbf{Simulation} & \textbf{Examples} & \textbf{Utility} & \textbf{Domain} \\\midrule
 Transistor-level & PDK transistor models, wires, passives, physical geometry & Solving systems of differential equations & SPICE, Spectre & Analog circuit design, standard cell characterization & Continuous time and voltage\\\midrule
-Gate-level & PDK standard cells, arbitrary time advancement & Event-driven simulation & Structural Verilog with SDF annotations & Post-syn verification, timing validation & Discrete time, 4-valued state\\\midrule
+Gate-level & PDK standard cells, arbitrary time advancement & Event-driven simulation & Structural Verilog with SDF annotation & Post-syn verification, timing validation & Discrete time, 4-valued state\\\midrule
 Register-transfer level & Flops, SRAMs, logic/arithmetic operators, wires & Transition system simulation & Lava\cite{lava}, Chisel\cite{chisel}, Amaranth\cite{amaranth}, PyMTL3\cite{pymtl3} & Synchronous digital circuit design and verification & Regular clock ticks, 2/4 valued signals\\\midrule
-Digital discrete-event modeling & State, event-triggered blocks & Event-driven simulation & Verilog, VHDL & Behavioral modeling of digital/analog IPs & Discrete time, 4-valued signals\\\midrule
+Digital discrete-event modeling & State, event-triggered blocks, delays & Event-driven simulation & Verilog, VHDL & Behavioral modeling of digital/analog IPs & Discrete time, 4-valued signals\\\midrule
 Pipelines & Token streams, ordered operations, dataflow history & Ordered token processing & DFiant\cite{dfiant}, TL-Verilog\cite{tlverilog}, PipelineC\cite{pipelinec}, Shakeflow\cite{shakeflow} & Dataflow circuits, auto-pipelining & Tokens in, tokens out\\\midrule
-Imperative control flow & &  & Calyx\cite{calyx}, XLS\cite{xls} & System-level modeling, high-level synthesis & Transaction traces\\\midrule
+Imperative control & State, update blocks, control blocks & Interpretation & Calyx\cite{calyx}, XLS\cite{xls} & High-level synthesis & Steps in the control block\\\midrule
 Transaction-level models & Ports / channels, threads, imperative code & TLM kernel & SystemC-TLM, PyMTL3 & System-level modeling, high-level synthesis & Transaction traces\\\bottomrule
 \end{tabular}
-\caption{Overview of different abstraction levels for describing hardware designs.}
+\caption{Overview of abstraction levels for describing hardware designs. The boundaries of above-RTL abstractions are fuzzy.}
 \label{fig:abstractions}
 \end{figure*}
 
 % Overview of multiple levels of abstraction used in real HDLs
 
 Hardware can be modeled at various levels of abstraction spanning from low-level transistor-level constructs to high-level algorithmic constructs (see Figure \ref{fig:abstractions}).
-Most modern HDLs have focused on providing a metaprogramming layer on the register-transfer level (RTL) abstraction, since this is the usual abstraction used by digital designers.
+Most modern HDLs have focused on providing a metaprogramming layer on the register-transfer level (RTL) abstraction, since this is the typical abstraction used by digital designers.
 Some HDLs work at a higher-level, abstracting away explicit state instantiations or control flow logic: they can be based on guarded atomic actions (e.g. BlueSpec Verilog\cite{bluespecverilog}), decoupled dataflow pipelines (e.g. PipelineC\cite{pipelinec}, DFiant\cite{dfiant}, Shakeflow\cite{shakeflow}), highly-controllable lightweight-HLS constructs (e.g. Calyx\cite{calyx}, XLS\cite{xls}), or largely automated heavyweight-HLS from SystemC/C++ (e.g. Vivado HLS, Catapult, LegUp\cite{legup}).
 Some HDLs, like Verilog, work at an arguably ``lower-level'' than RTL, opting to describe hardware as a generic discrete event simulation.
 
@@ -179,8 +179,7 @@ Some HDLs, like Verilog, work at an arguably ``lower-level'' than RTL, opting to
 
 While some of these HDLs directly emit Verilog or VHDL, others target an intermediate representation (IR) with well defined semantics, that is incrementally lowered by a compiler to a form resembling structural Verilog.
 % only a subset of Verilog makes sense for synthesizable hardware
-%
-Relying on formally defined semantics for an IR (to check equivalence of transformations, to perform simulation\cite{hwsemantics}, and to specify undefined behavior) is an improvement\cite{cider} over relying on the poorly defined semantics of Verilog.
+Relying on formally defined semantics for an IR (to check equivalence of transformations, to perform simulation\cite{hwsemantics}, and to specify undefined behavior) is an improvement\cite{cider} over relying on the semantics of Verilog, which are only well defined for specific event-based constructs that represent synthesizable hardware.
 
 % New multi-level IRs (CIRCT)
 % Have a formal semantics for each IR and how they interact with each other
@@ -189,6 +188,7 @@ Relying on formally defined semantics for an IR (to check equivalence of transfo
 
 Recently, the CIRCT project\cite{circt} has developed several IRs that span RTL (the ``hw'' + ``seq'' + ``comb'' dialects) and higher-level abstractions (the ``handshake'', ``esi'', ``ssp'', and ``calyx''\cite{calyx} dialects).
 While these dialects may not have formal semantics yet, there is an opportunity to precisely define them (including undefined behaviors), and move away from the idea of ``Verilog simulation as truth''.
+
 For now, these IRs do not interact with each other, and are either simulated entirely in their own context, or are composed by, first lowering to the RTL abstraction dialect, and then connecting them.
 However, there exists an opportunity to define the semantics of the \textit{composition} and \textit{interaction} of circuits expressed in different IRs.
 We make the case that the next-gen HDL should support mixed-abstraction circuit definitions.
@@ -201,16 +201,16 @@ We make the case that the next-gen HDL should support mixed-abstraction circuit 
 % Leverage the simulation throughput vs fidelity tradeoffs to get better simulation performance and improve productivity
 % High level for algorithms and custom HLS light flows
 
-We already understand that dataflow algorithms are more ergonomic to implement, and easier to optimize, when written in a high-level abstraction (above RTL).
-Ideally, we wouldn't have to write the accelerator in a different HDL, lower it to Verilog, then simulate it with the rest of the RTL, integrated as a Verilog blackbox.
-Instead, the HDL should leverage Circt's multiple IR dialects to support mixed-abstraction simulation to yield higher simulation performance and improve integration ergonomics\cite{pymtl3, esi}.
-Such an approach also enables an ergonomic flow for refinement proofs from high-level models to RTL, as well as performance correlation checking between timed and untimed models.
+Dataflow algorithms are more ergonomic to implement, and easier to optimize, when written in a high-level abstraction (above RTL).
+Ideally, we would not write the accelerator in a different HDL, lower it to Verilog, and then simulate it with the rest of the RTL, integrated as a Verilog blackbox.
+Instead, a single HDL should leverage Circt's multiple IR dialects to support mixed-abstraction simulation to yield higher simulation performance and improve integration ergonomics\cite{pymtl3, esi}.
+Such an approach also enables an ergonomic flow for refinement proofs from high-level models to RTL, as well as performance correlation checking between timed models and RTL.
 
 % Low level for clocks, even lower for mixed signal, what about async resets (iffy simulation semantics leak into FIRRTL), timing simulation
 
-A next-gen HDL should not only support mixing of abstractions above RTL, but also those below, in particular, generic event driven simulation constructs.
-HDLs designed for vanilla synchronous digital logic struggle to define precise simulation semantics for common circuit features such as asynchronous resets.
-In simulation, clocks are a special construct, often hardcoded as a fixed frequency, continuous signal rather than something specified in an event-driven IR that's composed with an RTL IR.
+An HDL should not only support mixing of abstractions above RTL, but also those below, in particular, generic event driven simulation constructs.
+HDLs designed for vanilla synchronous digital logic struggle to define precise simulation semantics for common circuit features such as asynchronous resets, clock gates, and level-sensitive latches.
+In simulation, clocks are a special construct, often hardcoded as a fixed frequency, continuous signal rather than something specified in an event-driven IR that is composed with an RTL IR.
 Finally, behavioral models for circuits\cite{llhd} like PHYs are critical for system-level verification, and ideally would have clean semantics for interaction with vanilla RTL.
 By separating different abstractions into different IRs, a simulator is able to understand which parts of the design need what level of simulation fidelity and flexibility.
 
@@ -220,10 +220,10 @@ The interaction of high-level abstractions, such as HLS'ed blocks and software m
 However, a mixed-abstraction HDL should also support \textit{shared state} between the HLS'ed block and RTL.
 This requires an integrated compiler approach that can understand both IRs and how they interact.
 
-A greater challenge exists when trying to couple generic event-driven simulation constructs or software models with RTL.
+A greater challenge exists when trying to couple generic event-driven simulation constructs with RTL.
 Often, one will want to execute arbitrary code in between events to process a transaction or update state.
-The simulator may want to statically analyze the code (e.g. a clock generator) to make optimizations (e.g. use per-cycle simulation rather than event loop-based simulation when the clock input is a fixed frequency, always-on waveform).
-Approaches to address this include expressing arbitrary code as LLVM IR that's called by a CIRCT IR routine or forgoing static analysis.
+The simulator may want to statically analyze the code (e.g. a clock generator) to make optimizations (e.g. use per-cycle simulation rather than event loop-based simulation when the clock input is a fixed frequency).
+Approaches to address this include expressing arbitrary code as LLVM IR that is called by a CIRCT IR routine or forgoing static analysis.
 
 \section{Practical HDL Implementation Questions}
 
@@ -237,6 +237,7 @@ An open question is: how should hardware primitives be modeled in a HDL?
 Existing approaches expose common primitives (e.g. SRAMs) through HDL primitives (e.g. Chisel's SyncReadMem), which work for the common case, but are unable to cleanly express custom SRAM features such as ECC or BIST.
 One ``solution'' is to use a Verilog blackbox around the custom SRAM marco, but we lose understanding of the primitive's semantics.
 Another ``solution'' is to model the custom macro using the available HDL primitives, and replace it with the Verilog blackbox during compilation, but we run the risk of inaccurately modeling the macro.
+The mainstream approach of using Verilog on both the behavioral model and RTL side is reasonable, but is too design and process specific to be portable.
 % TODO: fix this sentence below: - has nothing to do with mixed-abstraction HDLs
 % Mixed-abstraction HDLs have the potential to enable description of custom primitives in a way that capture's its semantics while also validating that blackbox substitutions have the same behavior.
 
@@ -248,23 +249,24 @@ Another ``solution'' is to model the custom macro using the available HDL primit
 % balance simplicity of IR and pass complexity with avoiding semantics reconstruction
 % lgraph claims to be very simple, but does that come at costs?
 
-Often, there is a fight between IRs trying to minimize their primitive count to make pass writing easier, and frontends trying to map all their constructs as cases of the IR primitive set.
+Often, there is a conflict between IRs trying to minimize their primitive count to make pass writing easier, and frontends trying to map all their constructs as cases of the IR primitive set.
 One issue is that synthesis tools have been refined over decades to recognize patterns in human written Verilog to reconstruct useful semantics (e.g. SRAM and FSM inference).
-How can we preserve semantics (using Xs for boolean optimization, unique case statements, interfaces / structs) from the frontend HDL so that they are passed onto the synthesis tool as if a human had written them?
+How can we preserve semantics (using Xs for boolean optimization, unique case statements, interfaces / structs) from the frontend HDL so that they are passed onto the synthesis tool as if a human had written them, while keeping passes easy to write?
 If we could design a synthesis frontend from scratch, what semantics would be most valuable to preserve, and how would it differ from existing RTL IRs?
 
 \subsection{Modules: What Are They Good For?}
 
 We often take the module construct in Verilog as integral to digital design, but it necessitates special support for features like cross-module references and regrouping for hierarchical VLSI.
 Modules have three use-cases: 1) stamping out duplicate instances of a circuit, 2) providing a boundary of parameterization for circuits, 3) adding hierarchy to the design to improve UX when searching for signals.
-We note the following analogies: \textit{modules : functions}, \textit{parameters : function arguments}, \textit{hierarchy : call stack}.
+We note the following analogies between hardware and software languages: \textit{modules : functions}, \textit{parameters : function arguments}, \textit{hierarchy : call stack}.
 Few HDLs, such as Pyrope\cite{pyrope}, elide the module concept altogether, but perhaps it's time to rethink how HDLs should express instances, parameterization, and hierarchy.
 
 \subsection{Incremental-First HDLs}
 
-Most HDLs today, constructed as eDSLs, have no idea about how a design changes from run-to-run, thus making incremental elaboration difficult.
+Most HDLs today, constructed as eDSLs, have no knowledge of source-level dependencies that lead to generated output dependencies after elaboration.
 This is an area where freestanding DSLs such as Pyrope have an advantage, since source level dependency tracking for eDSLs requires analysis of arbitary code written in the host language.
 There is hope that new \textit{content-addressable} languages, such as Unison\cite{unison}, will make such dependency tracking, and thus incremental elaboration viable for HDLs implemented as eDSLs.
+% no idea about how a design changes from run-to-run, thus making incremental elaboration difficult.
 
 % \section{Frontend Implementation Details}
 %
