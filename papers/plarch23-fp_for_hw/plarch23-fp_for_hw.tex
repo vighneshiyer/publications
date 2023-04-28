@@ -129,8 +129,9 @@ $^{(\ast)}$
 
 \begin{abstract}
 Over the past few decades, many hardware design languages (e.g. Lava\cite{lava}, Chisel\cite{chisel}, PyMTL3\cite{pymtl3}) have been implemented as DSLs embedded in a general purpose programming language.
-This approach takes advantage of the host language`s features and ecosystem, such as its type system, libraries, build tools, IDEs, and unittest frameworks.
-We make the case that embedded DSLs are an ideal platform for hardware design languages, by leveraging their host languages to build \textit{functional APIs} for other aspects of hardware design and verification, such as RTL simulation, stimulus generation, temporal property specification, and control flow compilation.
+This approach takes advantage of the host language's features and ecosystem, such as its type system, libraries, build tools, IDEs, and testing frameworks.
+We make the case that embedded DSLs are an ideal platform for HDLs, by leveraging their host languages to build \textit{functional APIs} for various aspects of hardware design and verification, such as RTL simulation, stimulus generation, and control flow compilation.
+% temporal property specification
 %We invite discussion on what other primitives can be embedded in a general-purpose language to enhance RTL design and verification.
 % we're already familiar with this concept for HDLs implemented as eDSLs - but where else can we use this concept? I demonstrate 3 use cases: simcommand, parametric generators, sequences, recipes
 % embedding is not only good because of ecosystem, but also because it allows you to leverage features of the host language like its FP support
@@ -162,8 +163,8 @@ Importantly, functional APIs seperate \textit{what to do} (the description) from
 
 This notion is already well understood in the context of HDLs implemented as eDSLs.
 eDSLs embed hardware primitives (datatypes, registers, memories, logical / arithmetic operators) and `connection' primitives (modules, IO ports, wires, bindings) in the host language as a set of algebraic datatypes (ADTs).
-The RTL designer instantiates the primitives and connects them together with a normal program written in the host language.
-Here, \textit{the description}, is an in-memory representation of a circuit that is constructed when the program is executed, while \textit{the interpreter} turns that representation into some output (e.g. FIRRTL, Circt IR, Verilog, SMT).
+The RTL designer instantiates the primitives and connects them together in a regular program written in the host language.
+Here, \textit{the description}, is an in-memory representation of a circuit that is constructed when the program is executed, while \textit{the interpreter} turns that representation into output (e.g. FIRRTL\cite{firrtl}, CIRCT\cite{circt} IR, Verilog, SMT).
 
 The core features of the host language that enable functional eDSLs are 1) algebraic data types, 2) monadic composition sugar (or direct style alternatives\cite{dotty_cps_async, koka}), and 3) a strong macro system for source annotations.
 We will discuss three examples of functional eDSLs that leverage these features of the Scala language.
@@ -172,8 +173,8 @@ We will discuss three examples of functional eDSLs that leverage these features 
 %\section{SimCommand: Functional Testbench API}
 \section{A Functional Testbench API}
 
-While you can write testbenches in SystemVerilog for any circuit, it is more ergonomic to use the same host language as your HDL, to exploit its features and share code.
-However, existing testbench APIs in general-purpose languages, such as chiseltest\cite{chiseltest} and cocotb\cite{cocotb}, have poor performance from their implementation of \texttt{fork/join} used for simulation threads.
+While you can write testbenches in SystemVerilog, it is more ergonomic to use the same host language as your HDL, to exploit its features and share code.
+However, existing testbench APIs in general-purpose languages, such as chiseltest\cite{chiseltest} and cocotb\cite{cocotb}, have poor performance due to their implementation of \texttt{fork/join} used for simulation threading.
 We propose a functional eDSL, SimCommand\cite{simcommand}, which achieves fast \texttt{fork/join}, by embedding testbench primitives in Scala and separating testbench description and interpretation.
 
 \begin{figure}
@@ -200,28 +201,28 @@ val v = dequeue(queue.io).unsafeRun(queue.clock)
 
 \begin{figure*}
 \small
-\begin{tabular}{p{3cm}p{5cm}p{4cm}p{4cm}}\toprule
+\begin{tabular}{p{3cm}>{\raggedright\arraybackslash}p{5cm}>{\raggedright\arraybackslash}p{4cm}>{\raggedright\arraybackslash}p{4cm}}\toprule
 ADT Base Type & ADT Primitives / Combinators & Composition Primitives & Interpreter Result\\\midrule
 \mintinline[]{scala}{Data} \cite{chisel} & \texttt{UInt}, \texttt{SInt} (base hardware datatypes) \newline \texttt{Bundle}, \texttt{Vec} (aggregate types) \newline \texttt{Mux}, \texttt{+}, \texttt{|}, $\dots$ (operators) \newline \texttt{Reg}, \texttt{SyncReadMem} (state types) & \texttt{Module}, \texttt{Input}, \texttt{Output}, \texttt{Wire}, \texttt{:=} (connect) & FIRRTL representation of a circuit constructed from running a Scala program \\\midrule
 \mintinline[]{scala}{Command[R]} \cite{simcommand} & \texttt{Poke}, \texttt{Peek}, \texttt{Step} (basic testbench ops) \newline \texttt{Fork}, \texttt{Join} (simulation threading) \newline \texttt{MakeChannel}, \texttt{Put}, \texttt{Get} (channels) & Monadic bind & Interaction with an RTL simulator, terminating with a value of type \texttt{R}\\\midrule
 \mintinline[]{scala}{Gen[A]} \cite{randomapi} & \texttt{uniform}, \texttt{range}, \texttt{normal}, \texttt{oneOf}, \texttt{constraint}\aste & Monadic bind & Values of type \texttt{A} conforming to the constraints\\\midrule
-\mintinline[]{scala}{Property[T, S]} \cite{chiselsequences} & \texttt{AtomicProp}, \texttt{||}, \texttt{\&\&}, \texttt{|->} & \texttt{Concat}, \texttt{Intersect} & Monitor automaton for the \texttt{Property} using local state \texttt{S}\aste over traces of type \texttt{T}\aste\\\midrule
+%\mintinline[]{scala}{Property[T, S]} \cite{chiselsequences} & \texttt{AtomicProp}, \texttt{||}, \texttt{\&\&}, \texttt{|->} & \texttt{Concat}, \texttt{Intersect} & Monitor automaton for the \texttt{Property} using local state \texttt{S}\aste over traces of type \texttt{T}\aste\\\midrule
 \mintinline[]{scala}{Recipe} \cite{chisel_recipes} & \texttt{action}, \texttt{tick}, \texttt{fork}\aste & \texttt{sequential}, \texttt{while}, \texttt{ifThenElse} & Chisel RTL circuit that implements the imperative \texttt{Recipe} \\
 \bottomrule
 \end{tabular}
 \caption{Overview of the primitives and final outputs of eDSLs for HW design and verification. {\small \aste = hypothetical / incomplete}}
 \end{figure*}
 
-Other implementations use JVM threads and mutexes (chiseltest) or Python's async/await coroutines (cocotb) to implement \texttt{fork/join} simulation threads.
+Chiseltest uses JVM threads and mutexes, while cocotb uses Python's async/await coroutines to implement \texttt{fork/join}.
 These techniques cannot keep up with the high frequency of suspend/resume operations in simulation threads.
 In contrast, SimCommand uses monadic composition of testbench primitives\cite{hardcaml_step_testbench} to implement cooperatively yielding simulation threads that can suspend/resume quickly.
 
-The core datatype of SimCommand is \texttt{Command[R]}, which describes a testbench operation that eventually terminates with a value of type \texttt{R}.
-The primitives include testbench operations such as \texttt{peek} and \texttt{poke} to sense and drive RTL signals, \texttt{step} to advance the clock, and \texttt{fork} and \texttt{join} to implement simulation threads.
-See the example in Figure \ref{fig:simcommand} which demonstrates Scala's for-comprehension syntax for composing \texttt{Command} primitives and the \textit{separation of description and interpretation}.
+The core ADT is \texttt{Command[R]}, which describes a testbench operation that eventually terminates with a value of type \texttt{R}.
+The primitives include testbench operations such as \texttt{peek} and \texttt{poke} to sense and drive RTL signals, \texttt{step} to advance the clock, and \texttt{fork} and \texttt{join} to emulate simulation threads.
+See the example in Figure \ref{fig:simcommand} which uses Scala's for-comprehension syntax to compose \texttt{Command} primitives into a larger program.
 
-The SimCommand interpreter works as shown in Figure \ref{fig:simcommand_interp}: on every timestep, each thread, stored as a pointer to a \texttt{Command}, is run until it hits a \texttt{step} or \texttt{join} (a yield point).
-Once all threads have run to their yield point, and all recursively spawned threads have done the same, the scheduler steps the clock in the underlying RTL simulator, and repeats until the main thread terminates.
+The SimCommand interpreter works as follows (Figure \ref{fig:simcommand_interp}): on every timestep, each thread (a pointer to a \texttt{Command}), is run until it hits a \texttt{step} or \texttt{join} (a yield point).
+Once all threads have run to their yield point, and all recursively spawned threads have done the same, the scheduler steps the clock in the underlying RTL simulator, and repeats the process until the main thread finishes.
 
 SimCommand has several other features such as channels for inter-thread communication, cycle skipping optimizations, and runtime checks for thread order dependencies.
 Separating description and interpretation yields an API that's 10-30x faster than cocotb and chiseltest, while being purely functional.
@@ -238,8 +239,8 @@ Separating description and interpretation yields an API that's 10-30x faster tha
 
 Traditionally, stimulus generation used either implicitly constrained generators (e.g. \texttt{Gen} from QuickCheck\cite{quickcheck}) or declarative constraint solvers (e.g. SystemVerilog + UVM constrained random\cite{riscv_dv}).
 We propose a hybrid API that mixes the sequential chaining support of \texttt{Gen}-style generators with the efficiency of declarative constrained random.
-Our API supports typical PRNG-sourced randomness and parametric randomness which uses a user-provided bytestream as a source of ``randomness''.
-This feature enables our API to perform parametric fuzzing\cite{zest} of hardware designs (Figure \ref{fig:parametric_fuzzing}).
+The API's interpreter lets us specify a source of randomness; either an external library or a user-provided bytestream.
+This feature enables parametric fuzzing\cite{zest} of hardware designs (Figure \ref{fig:parametric_fuzzing}).
 
 \begin{figure}
 \begin{minted}[breaklines,fontsize=\small]{scala}
@@ -257,7 +258,8 @@ seqGen.generate(ParametricRandom(Seq[Byte](...)))
 \label{fig:randomapi}
 \end{figure}
 
-Separating the \textit{description of how} to generate stimulus, from the actual generation itself, provides a clean separtion between the generation algorithm and the source of randomness (Figure \ref{fig:randomapi}).
+Separating the \textit{description of how} to generate stimulus, from the actual generation itself, cleanly separates the generation algorithm from the source of randomness (Figure \ref{fig:randomapi}).
+This design decision allows us to capture random decisions made during stimulus generation to obtain a detailed \textit{description of the interpretation}.
 There are also opportunities to instrument the interpreter to produce a decision tree, which can serve as a high-level embedding of the stimulus.
 %opportunity to inject instrumentation in the interpreter to capture random decisions
 
@@ -285,10 +287,10 @@ There are also opportunities to instrument the interpreter to produce a decision
 \section{Compiling Imperative Control Flow to FSMs}
 
 Manually translating imperative control flow to FSMs in RTL is error prone and laborious.
-To address this, we have developed an eDSL\cite{chisel_recipes}, based on Blarney's Recipe construct\cite{blarney} that allows you to describe a sequence of imperative actions that are compiled down to RTL (Figure \ref{fig:recipes}).
-Since designers often want to set external signals based on which ``line'' of code is active, the Recipe primitives have an `\texttt{active}' signal tap that can be assigned to a user-defined wire.
+To address this, we have developed an eDSL\cite{chisel_recipes}, based on Blarney's Recipe construct\cite{blarney}, that lets you describe a sequence of imperative actions that are compiled to RTL (Figure \ref{fig:recipes}).
+Since designers often want to set external signals based on which ``line'' of code is active, the Recipe primitives have an `\texttt{active}' signal tap that can be routed to a user-defined wire.
 Since the control description and FSM compiler are cleanly separated, in the future, we could use a lightweight HLS IR (e.g. Calyx\cite{calyx}) to produce an optimized FSM.
-The FSM compiler can inject debug \texttt{printf}s that fire when a line is entered and exited, and the Scala source line numbers are injected into each primitive instantiation via implicits\cite{sourcecode}.
+The FSM compiler can inject debug \texttt{printf}s that fire when a line is entered and exited, and we leverage Scala's implicits\cite{sourcecode} to inject source line numbers into each primitive instantiation.
 
 \begin{figure}
 \begin{minted}[breaklines,fontsize=\small]{scala}
@@ -310,11 +312,12 @@ forever(readOnce).compile()
 
 \section{Conclusion}
 
-We make the case that eDSLs need not be limited to HDLs, but can also model other tools used in hardware design and verification.
-Leveraging the functional programming support of the host language and existing embedded HDLs, makes it straightforward to write APIs for RTL testbenches, stimulus generation, and control flow automation.
-What other aspects of hardware design ought to be first-class DSLs?
 % Leverage Scala's for-comprehension (similar to Haskell's do-notation) for monadic composition.
 % Very powerful technique, should be applied even more! What else can we embed in a host language and interact with existing HDLs (e.g. Chisel)?
+
+We make the case that eDSLs need not be limited to HDLs, and can also model other abstractions used in hardware design and verification.
+Leveraging the functional programming constructs of the host language and existing embedded HDLs, makes it straightforward to write APIs for RTL testbenches, stimulus generation, and control flow automation.
+What other aspects of hardware design ought to be first-class DSLs?
 
 \begin{acks}
 Research was partially funded by SLICE Lab industrial sponsors and affiliates Amazon, AMD, Apple, Google, Intel, and Qualcomm.
