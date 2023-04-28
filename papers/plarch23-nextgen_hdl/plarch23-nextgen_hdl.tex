@@ -130,6 +130,7 @@ $^{(\ast)}$
 %   research/hdl.md
 %   research/phd_planning/idea_archive/chisel.md
 %   research/conf_retreats/asplos23_latchup23.md
+%   PL for HW reading group notes about HDL implementation strategies (https://docs.google.com/document/d/1QxIwArsHW6GMoEqYOqNAx8P1vQu7ARf1n9dMm0lHCOE/edit)
 
 \begin{abstract}
 % In the past, HDLs have been 1) focused on one-level of abstraction (RTL, event-driven simulation, HLS), 2) not aware of cross-cutting concerns outside their domain, 3) more-or-less ad-hoc approaches to hardware design
@@ -138,9 +139,9 @@ $^{(\ast)}$
 % How should HDLs capture design elements from the complete flow of hardware design, verification, and fabrication.
 % We will discuss problems to solve in frontend, middle-end, and backend implementations of HDLs to motivate the design of the next-generation HDL.
 
-Hardware design languages (HDLs) have emerged in many flavors (including freestanding DSLs and eDSLs), in addition to new IRs (FIRRTL\cite{firrtl}, CoreIR\cite{coreir}, CIRCT\cite{circt}) and HDL databases (UHDM\cite{uhdm}).
-Looking at the current infrastructure and existing HDLs, we argue that the next-gen HDL should support composition of descriptions from multiple abstraction levels.
-We also discuss other HDL implementation questions such as what primitives should an IR support, how design semantics should be preserved through lowering, the role of modules, and incremental elaboration.
+Many new hardware design languages (HDLs) (freestanding DSLs and eDSLs), IRs (FIRRTL\cite{firrtl}, CoreIR\cite{coreir}, CIRCT\cite{circt}) and HDL databases (UHDM\cite{uhdm}) have emerged in the past decade.
+Looking forward to the next generation of HDLs, we argue that composition of hardware descriptions from multiple abstraction levels is critical to continued improvements in design productivity.
+We also discuss other HDL implementation questions such as the primitives an IR should support, how design semantics should be preserved through lowering, the role of modules, and the potential for incremental elaboration.
 \end{abstract}
 
 % \received{20 February 2007}
@@ -153,14 +154,14 @@ We also discuss other HDL implementation questions such as what primitives shoul
 
 \begin{figure*}[!hbt]
 \small
-\begin{tabular}{p{2cm}p{3cm}p{2cm}p{3cm}p{3cm}p{2cm}}\toprule
+\begin{tabular}{>{\raggedright\arraybackslash}p{2cm}p{3cm}p{2cm}p{3cm}p{3cm}p{2cm}}\toprule
 \textbf{Abstraction} & \textbf{Primitives} & \textbf{Simulation} & \textbf{Examples} & \textbf{Utility} & \textbf{Domain} \\\midrule
 Transistor-level & PDK transistor models, wires, passives, physical geometry & Solving systems of differential equations & SPICE, Spectre & Analog circuit design, standard cell characterization & Continuous time and voltage\\\midrule
-Gate-level & PDK standard cells & Event-driven simulation & Structural Verilog with SDF annotations & Post-syn verification, timing validation & Discrete time, 4-valued state\\\midrule
-Register-transfer level & Flops, SRAMs, logic/arithmetic operators, wires & Transition system simulation & Lava\cite{lava}, Chisel\cite{chisel}, Amaranth\cite{amaranth} & Synchronous digital circuit design and verification & Regular clock ticks, 2/4 valued signals\\\midrule
-Digital discrete-event modeling & State, event-triggered blocks & Event-driven simulation & Verilog, PyMTL3\cite{pymtl3} & Behavioral modeling of digital/analog IPs & Discrete time, 4-valued signals\\\midrule
+Gate-level & PDK standard cells, arbitrary time advancement & Event-driven simulation & Structural Verilog with SDF annotations & Post-syn verification, timing validation & Discrete time, 4-valued state\\\midrule
+Register-transfer level & Flops, SRAMs, logic/arithmetic operators, wires & Transition system simulation & Lava\cite{lava}, Chisel\cite{chisel}, Amaranth\cite{amaranth}, PyMTL3\cite{pymtl3} & Synchronous digital circuit design and verification & Regular clock ticks, 2/4 valued signals\\\midrule
+Digital discrete-event modeling & State, event-triggered blocks & Event-driven simulation & Verilog, VHDL & Behavioral modeling of digital/analog IPs & Discrete time, 4-valued signals\\\midrule
 Pipelines & Token streams, ordered operations, dataflow history & Ordered token processing & DFiant\cite{dfiant}, TL-Verilog\cite{tlverilog}, PipelineC\cite{pipelinec}, Shakeflow\cite{shakeflow} & Dataflow circuits, auto-pipelining & Tokens in, tokens out\\\midrule
-Imperative control flow & &  & Calyx\cite{calyx}, XLS\cite{xls} & System-level modeling, high-level synthesis & Transaction traces\\\bottomrule
+Imperative control flow & &  & Calyx\cite{calyx}, XLS\cite{xls} & System-level modeling, high-level synthesis & Transaction traces\\\midrule
 Transaction-level models & Ports / channels, threads, imperative code & TLM kernel & SystemC-TLM, PyMTL3 & System-level modeling, high-level synthesis & Transaction traces\\\bottomrule
 \end{tabular}
 \caption{Overview of different abstraction levels for describing hardware designs.}
@@ -177,6 +178,8 @@ Some HDLs, like Verilog, work at an arguably ``lower-level'' than RTL, opting to
 % The IR question + the benefits of rigorously defined semantics vs Verilog
 
 While some of these HDLs directly emit Verilog or VHDL, others target an intermediate representation (IR) with well defined semantics, that is incrementally lowered by a compiler to a form resembling structural Verilog.
+% only a subset of Verilog makes sense for synthesizable hardware
+%
 Relying on formally defined semantics for an IR (to check equivalence of transformations, to perform simulation\cite{hwsemantics}, and to specify undefined behavior) is an improvement\cite{cider} over relying on the poorly defined semantics of Verilog.
 
 % New multi-level IRs (CIRCT)
@@ -234,7 +237,9 @@ An open question is: how should hardware primitives be modeled in a HDL?
 Existing approaches expose common primitives (e.g. SRAMs) through HDL primitives (e.g. Chisel's SyncReadMem), which work for the common case, but are unable to cleanly express custom SRAM features such as ECC or BIST.
 One ``solution'' is to use a Verilog blackbox around the custom SRAM marco, but we lose understanding of the primitive's semantics.
 Another ``solution'' is to model the custom macro using the available HDL primitives, and replace it with the Verilog blackbox during compilation, but we run the risk of inaccurately modeling the macro.
-Mixed-abstraction HDLs have the potential to enable description of custom primitives in a way that capture's its semantics while also validating that blackbox substitutions have the same behavior.
+% TODO: fix this sentence below: - has nothing to do with mixed-abstraction HDLs
+% Mixed-abstraction HDLs have the potential to enable description of custom primitives in a way that capture's its semantics while also validating that blackbox substitutions have the same behavior.
+
 
 \subsection{Preserving Semantics Through IR Lowering}
 
