@@ -140,9 +140,9 @@ $^{(\ast)}$
 % What else can we embed to enable more expressive or performant hardware design and verification?
 
 % HDLs as eDSLs
-Over the past few decades, many hardware design languages (e.g., Lava, Chisel, PyMTL3, Amaranth) have been implemented as DSLs embedded in a general-purpose programming language.
+Over the past few decades, many RTL hardware design languages like Lava, Chisel, PyMTL3, and Amaranth have been implemented as DSLs embedded in a general-purpose programming language.
 % Why we need more eDSLs beyond HW description for verif/design/collateral (e.g. for hammer)
-These HDLs focus on RTL design, but other aspects of hardware design and verification would be served well with their own specialized DSLs.
+Beyond RTL design, we believe that many other aspects of hardware design and verification would be served well with their own specialized DSLs.
 % such as writing testbenches and stimulus generators, and designing control flow machines, would be served well with specialized DSLs.
 % There are several aspects of hardware design and verification, that are not captured with existing eDSLs that mostly focus on RTL design.
 % Embedded DSLs (eDSLs) should be leveraged to describe several aspects of hardware design and verification, beyond RTL design, to
@@ -166,7 +166,7 @@ To show the value of this approach, we demonstrate three new eDSLs, embedded in 
 \vspace{-0.5cm}
 \begin{figure}[h]
 \includegraphics[width=\linewidth]{simcommand/functional_apis.pdf}
-\caption{The elements of a generic eDSL}
+\caption{The elements of a generic eDSL.}
 \label{fig:functional_apis}
 \end{figure}
 \vspace{-0.5cm}
@@ -181,6 +181,24 @@ To show the value of this approach, we demonstrate three new eDSLs, embedded in 
 
 % Building APIs on the practical elements of functional programming provides several benefits beyond the mostly theoretical notions of referential transparency\cite{fpinscala}.
 %Importantly, functional APIs seperate \textit{what to do} (the description) from \textit{how it is done} (the interpreter) (Figure \ref{fig:functional_apis}).
+
+\begin{figure}[t]
+  \begin{minted}[breaklines,fontsize=\small]{scala}
+  // A pure functional description of a testbench action
+  def dequeue[T](io: DecoupledIO[T]): Command[T] = for {
+      _ <- waitUntil(io.valid, 1)
+      _ <- poke(io.ready, 1)
+      value <- peek(io.bits)
+      _ <- step(1)
+  } yield value
+  // Actually running the Command with unsafeRun
+  val v = dequeue(queue.io).unsafeRun(queue.clock)
+  \end{minted}
+  \vspace{-4mm}
+  \caption{A \textit{description} of dequeuing data from a ready-valid interface, followed by invoking the SimCommand interpreter to \textit{run} that description in RTL simulation.}
+  \label{fig:simcommand}
+  \vspace{-4.5mm}
+  \end{figure}
 
 %This notion is already well understood in the context of HDLs implemented as eDSLs.
 The notion of separating \textit{what to do} (the description) from \textit{how it is done} (the interpreter) is already well understood in the context of HDLs implemented as eDSLs (Figure \ref{fig:functional_apis}).
@@ -216,25 +234,12 @@ This technique cannot keep up with the high frequency of suspend/resume operatio
 To alleviate this problem, we propose a functional eDSL for writing testbenches, SimCommand\cite{simcommand}, which achieves fast \texttt{fork/join}, by embedding testbench primitives in Scala and separating testbench description and interpretation.
 Cooperatively yielding simulation threads that can suspend/resume quickly are implemented through a monadic composition of testbench primitives\cite{hardcaml_step_testbench}.
 
-\begin{figure}
-\begin{minted}[breaklines,fontsize=\small]{scala}
-// A pure functional description of a testbench action
-def dequeue[T](io: DecoupledIO[T]): Command[T] = for {
-    _ <- waitUntil(io.valid, 1)
-    _ <- poke(io.ready, 1)
-    value <- peek(io.bits)
-    _ <- step(1)
-} yield value
-// Actually running the Command with unsafeRun
-val v = dequeue(queue.io).unsafeRun(queue.clock)
-\end{minted}
-\caption{A \textit{description} of dequeuing data from a ready-valid interface, followed by invoking the interpreter to \textit{run} that description in RTL simulation using the SimCommand interpreter}
-\label{fig:simcommand}
-\end{figure}
 
-\begin{figure}
+
+\begin{figure}[b]
+\vspace{-3.5mm}
 \includegraphics[scale=1]{simcommand/scheduler.pdf}
-\caption{Scheduling simulation threads on a single executor thread in the SimCommand interpreter}
+\caption{Scheduling simulation threads on a single executor thread in the SimCommand interpreter.}
 \label{fig:simcommand_interp}
 \end{figure}
 
@@ -283,7 +288,7 @@ We propose a hybrid API that mixes the sequential chaining support of \texttt{Ge
 Our interpreter lets us specify a source of randomness; either an external library or a user-provided byte stream.
 This feature enables parametric fuzzing\cite{zest} of hardware designs (Figure \ref{fig:parametric_fuzzing}).
 
-\begin{figure}
+\begin{figure}[b]
 \begin{minted}[breaklines,fontsize=\small]{scala}
 val seqGen: Gen[Seq[Int]] = for {
   lit <- Gen.range(1, 100)
@@ -309,9 +314,9 @@ The decision tree can also be used to produce an embedding of the generated stim
 % There are also opportunities to instrument the interpreter to produce a decision tree, which can serve as a high-level embedding of the stimulus.
 %opportunity to inject instrumentation in the interpreter to capture random decisions
 
-\begin{figure}
+\begin{figure}[b]
 \includegraphics[width=\linewidth]{fuzzing/parametric_fuzzing_hw.pdf}
-\caption{Using a parametric generator to fuzz hardware with legal and controllable stimulus}
+\caption{Using a parametric generator to fuzz hardware with legal and controllable stimulus.}
 \label{fig:parametric_fuzzing}
 \end{figure}
 
@@ -350,7 +355,7 @@ val readOnce = recipe(
   tick()
 ).compile()
 \end{minted}
-\caption{An imperative description of reading from a memory from an AXI4-Lite port}
+\caption{An imperative description of reading from a memory from an AXI4-Lite port.}
 % Note that we can tap the `\texttt{active}' signal of any line to set external signals.
 \label{fig:recipes}
 \end{figure}
