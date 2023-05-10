@@ -48,7 +48,7 @@
 
 {% block footer_right %}
 <span class="credits">
-  Based on an <a href="https://github.com/cpitclaudel/academic-poster-template">open poster template</a>.
+  Based on a <a href="https://github.com/vighneshiyer/publications/tree/master/posters">modified HTML poster template</a>.
 </span>
 {% endblock %}
 
@@ -61,71 +61,29 @@
     {# Using <h3> inside the <header> makes the structure evident to screen readers #}
     <header><h3>Abstract</h3></header>
 
-    <p>Academic posters are usually designed using presentation software and distributed as images or PDFs.</p>
+    <p>Most academic posters today are designed with Powerpoint/Keynote or Beamerposter.</p>
 
-    <p>While PDFs are fine for printing posters, they are not particularly user-friendly: they are hard to read on small screens, don't support resizing text or increasing contrast, and often don't work nicely with screen readers.</p>
+    <p>However, they aren't ideal when it comes to version control, collaboration, accessibility, and ease-of-use.</p>
 
-    <p>The recent shift to online conferences is a great opportunity to reconsider our poster-making tools, and it turns out that plain HTML5 + CSS works pretty well for making (more) accessible posters.</p>
-
-    <p>This template is released under a permissive license: all we ask if you use it for your own posters is that you leave a one-line comment in the HTML sources.</p>
+    <p>HTML posters, on the other hand, are easy to template and version control, automatically reflow, support accessibility features (such as high contrast text and screen readers), are easy to style (with CSS), and can produce both web posters and PDFs.</p>
   </article>
 
   <article>
-    <header><h3>Using this template</h3></header>
-    <p>There are two ways to use this template: directly editing the HTML, and using Jinja2 templates.</p>
-  </article>
-
-  <article>
-    <header><h3>Editing the HTML directly</h3></header>
-
-    <p>This is the simplest way to get started, since it just requires a text editor:</p>
-
-    <ol>
-      <li>Download the <a href="https://github.com/cpitclaudel/academic-poster-template/releases/latest">latest release</a> of this template (or download the <a href="https://raw.githubusercontent.com/cpitclaudel/academic-poster-template/main/docs/tutorial/poster.html">webpage</a> and the corresponding <a href="https://raw.githubusercontent.com/cpitclaudel/academic-poster-template/main/docs/poster.css">stylesheet</a> directly from the <a href="https://github.com/cpitclaudel/academic-poster-template/tree/main/docs/tutorial/">repository</a>).</li>
-      <li>Adjust the metadata and add blocks to the <code>main</code> section.</li>
-    </ol>
-  </article>
-
-  <article>
-    <header><h3>Using Jinja2</h3></header>
+    <header><h3>Creating a Poster</h3></header>
 
     <p>The poster is a Jinja2 template, so you can inherit from it and fill in the relevant fields and the contents.</p>
 
     <ol>
-      <li>Clone the <a href="https://github.com/cpitclaudel/academic-poster-template/">GitHub repository</a>.</li>
-      <li>Install jinja2 (<code>pip install jinja2</code>)</li>
-      <li>Create your own jinja2 template, starting from <a href="https://github.com/cpitclaudel/academic-poster-template/tree/main/docs/tutorial.jinja2">this tutorial</a>.</li>
-      <li>Render to HTML using the <code>render.py</code> script:<br/>
-        <code>./render.py your_jinja2_poster.jinja output.html</code>
-      </li>
+      <li>Clone the <a href="https://github.com/vighneshiyer/publications/">GitHub repository</a></li>
+      <li>Install the <a href="https://github.com/vighneshiyer/publications/tree/master/posters#setup">dependencies listed here</a></li>
+      <li>Create a new poster by copying the tutorial template (<code>cd posters/posters && cp -r tutorial my-new-poster</code>)</li>
+      <li>Add the poster to the <code>Makefile</code> (<code>$(eval $(call poster,my-new-poster,mit))</code>)
+      <li>Launch a server by running <code>./scripts/serve</code></li>
+      <li>Browse to <a href="http://localhost:5500/my-new-poster/">localhost:5500/my-new-poster</a></li>
+      <li>Make changes in <code>my-new-poster/index.jinja2</code>, save them, and your browser will automatically load the changes</li>
     </ol>
 
-    <b>The template for this tutorial includes documentation for each variable and block.</b>
-  </article>
-
-  <article>
-    <header><h3>Editing the Less Stylesheet</h3></header>
-
-    <p>This poster is styled with a <a href="https://lesscss.org/">Less stylesheet</a>. Edit the stylesheet to customize colors and font sizes.</p>
-
-    <ol>
-      <li>Install lessc (<code>npm install less -g</code>)</li>
-      <li>Edit <code>poster.less</code></li>
-      <li>Run: <code>lessc poster.less docs/poster.css</code></li>
-    </ol>
-  </article>
-
-  <article>
-    <header><h3>Livereload</h3></header>
-
-    <p>To avoid manually regenerating .html/.css from .jinja2/.less on every edit, use livereload to watch for changes, regenerate files, and refresh the browser.</p>
-
-    <ol>
-      <li>Install livereload (<code>pip install livereload</code>)</li>
-      <li>Run <code>./serve.py</code>
-      <li>Browse to <code>localhost:5500/docs/tutorial/poster.html</code>
-      <li>Make changes to a .jinja2/.less file, save, and see the update in the browser</li>
-    </ol>
+    <b>The template for this tutorial (<code>index.jinja2</code>) includes documentation for each variable and block.</b>
   </article>
 
   <article>
@@ -289,8 +247,7 @@
 
     <p>This poster template loads <a href="https://highlightjs.org/">highlight.js</a> by default to highlight code blocks.</p>
 
-    <pre class="center-self">
-&lt;<a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/pre">pre</a>&gt;&lt;<a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/code">code</a> class="language-python"&gt;
+    <pre class="center-self">&lt;<a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/pre">pre</a>&gt;&lt;<a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/code">code</a> class="language-python"&gt;
   <var>code snippet</var>
   <var>...</var>
 &lt;/code&gt;&lt;/pre&gt;</pre>
@@ -299,7 +256,7 @@
     for nbr in range(2, num+1):
         nb1, nb2 = nb2, nb1 + nb2
     return nb2</code></pre>
-    <small>Copy tags <a href="https://cdnjs.com/libraries/highlight.js">from here</a> into poster.jinja2 to add support for more exotic languages or to change the highlight styling</small>
+    <small>You can override the <code>highlightjs_theme</code> and <code>highlightjs_langs</code> blocks from <code>base/base.jinja2</code> to add support for more languages or change the styling</small>
   </article>
 
   <article>
@@ -327,7 +284,22 @@
     </small>
   </article>
 
-  <figure style="flex-grow: 9999999">
+  <article>
+    <header><h3>Poster Templates</h3></header>
+    <p>Poster templates consist of a stylesheet (<code>.scss</code>) and HTML template (<code>.jinja2</code>) and are located in <code>templates</code>.</p>
+
+    <p>To use a template, inherit its </code>scss</code> file from <code>index.scss</code> and its <code>jinja2</code> file from <code>index.jinja2</code>, and override any styles you want.</p>
+  </article>
+
+  <article>
+    <header><h3>Generating PDFs</h3></header>
+
+    <pre><code class="small language-bash">./scripts/pdf --url http://localhost:5500/tutorial \
+--outputFile poster.pdf --width "40in" \
+--height "30in" --scale 125</code></pre>
+  </article>
+
+  <figure>
     <img style="width: 70%" src="figs/csail/logo.svg" alt="Project logo" />
     <figcaption>A stand-alone figure to fill the remaining space.</figcaption>
   </figure>

@@ -9,7 +9,7 @@ from playwright.async_api import async_playwright
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler, FileCreatedEvent, FileModifiedEvent
 
-def main():
+async def main():
     parser = ArgumentParser()
     parser.add_argument("--url", type=str, required=True, help="poster URL to print")
     parser.add_argument("--outputFile", type=str, required=True, help="path to output PDF file")
@@ -20,7 +20,7 @@ def main():
     args = parser.parse_args()
     scale = round(args.scale / 100, 2)
 
-    with async_playwright() as playwright:
+    async with async_playwright() as playwright:
         print("Launching headless chromium")
         browser = await playwright.chromium.launch()
         print(f"Browsing to {args.url}")
@@ -31,7 +31,6 @@ def main():
         print("Dumping PDF")
         await page.pdf(path=args.outputFile, scale=scale, width=args.width, height=args.height, print_background=True)
 
-        
         if args.watch:
             print("Watching for changes...")
             observer = Observer()
@@ -68,4 +67,4 @@ class PDFRefresher(FileSystemEventHandler):
                 self.loading = False
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())
