@@ -1,0 +1,491 @@
+{% extends "templates/slice/slice.jinja2" %}
+
+{## Header ##}
+
+{% set poster_title = "SimCommand: A High-Performance RTL Testbench API" %}
+{# ‘poster_subtitle’ is optional; use "" to hide it #}
+{% set poster_subtitle = "" %}
+{# Change ‘venue’ to a conference or workshop name if any #}
+{% set venue = "OSCAR 22" %}
+{# ‘webpage_title’ is displayed in the browser’s top bar #}
+{% set webpage_title = poster_title + " — " + poster_subtitle %}
+{# ‘project_url’ is used in the footer and for the logo #}
+{% set project_url = "https://github.com/vighneshiyer/simcommand" %}
+
+{# Publication info is hidden by default (.publication-info in CSS) #}
+{% set pub_datetime_iso = "2020-09-08" %}
+{% set pub_date = "September 8, 2020" %}
+
+{# Custom styles and JS for a particular poster #}
+{% block custom_head %}
+{% endblock %}
+{% block authors %}
+  {# Put authors here, with one link per author. #}
+  <a property="author">Vighnesh Iyer</a>,
+  <a property="author">Kevin Laeufer</a>,
+  <a property="author">Koushik Sen</a>,
+  <a property="author">Borivoje Nikolic</a>
+{% endblock %}
+
+{% block affiliations %}
+  <a property="sourceOrganization">UC Berkeley</a>
+{% endblock %}
+
+{### Footer ##}
+
+{% block footer_left %}
+  <a href="{{ project_url }}">{{ project_url }}</a>
+{% endblock %}
+
+{% block footer_center %}
+  <!--<address class="monospace" style="font-weight:400;">-->
+    vighnesh.iyer@berkeley.edu
+  <!--</address>-->
+{% endblock %}
+
+{% block footer_right %}
+  <span class="credits">
+    Open-Source Computer Architecture Research (OSCAR) Workshop @ ISCA 2022
+  </span>
+{% endblock %}
+
+{### Contents ###}
+
+{# Contents are individual boxes (typically ‘article’s or ‘figure’s).  Each
+   ‘article’ contains a header and some contents. #}
+{% block contents %}
+<article>
+  {# Using <h3> inside the <header> makes the structure evident to screen readers #}
+  <header><h3>Testbench APIs</h3></header>
+  <p class="center">Testbench APIs provide an interface between <i>testbench logic</i> and a <i>simulator backend</i>.</p>
+
+  <p><strong>Simulator backends</strong>: Verilator, Icarus, VCS</p>
+
+  <p><strong>Native Testbench APIs</strong>: C++, SystemVerilog</p>
+
+  <ul>
+    <li>Compiled into simulator → performant</li>
+    <li>C++ with Verilator does not suppport fork/join</li>
+    <li>SystemVerilog verification features (e.g. OOP, SVA) not supported by open source tools</li>
+  </ul>
+
+  <p><strong>General-Purpose Testbench APIs</strong>: cocotb (Python), chiseltest (Scala)</p>
+
+  <ul>
+  <!--<li>Support for fork/join testbench threading</li>-->
+    <li>Portability across simulator backends</li>
+    <li>Reuse of host language libraries and ecosystem</li>
+    <!--<li>Mainstream IDE support</li>-->
+  </ul>
+</article>
+
+<article>
+  <header><h3>Testbench API Primitives</h3></header>
+
+  <!--<p class="center">All APIs support three basic primitives</p>-->
+  <ul>
+  <li><strong><code>poke</code></strong>: <code>dut.signal = 100</code></li>
+  <li><strong><code>peek</code></strong>: <code>value = dut.signal</code></li>
+  <li><strong><code>step</code></strong>: <code>repeat (cycles) @(posedge clk)</code></li>
+  <li><strong><code>fork/join</code></strong> to express testbench parallelism</li>
+  </ul>
+  <!-- <p class="center">Some also support fork/join primitives to express testbench parallelism</p>-->
+</article>
+
+<article>
+  <header><h3>Expressing Parallelism</h3></header>
+  <pre><code class="language-verilog medium">module example (input clk, input [31:0] a, b);</code></pre>
+  <div class="container">
+
+    <div class="col fragment">
+<pre><code class="language-scala medium">a.poke(1)
+clk.step(4)
+a.poke(2)</code></pre>
+    </div>
+
+    <div class="col fragment">
+<pre><code class="language-scala medium">b.poke(100)
+clk.step(2)
+b.poke(200)
+clk.step(4)
+b.poke(300)</code></pre>
+    </div>
+  </div>
+
+  <!--<p class="fragment center">We want to run both code segments in parallel, synchronized on clock edges.</p>-->
+  <!-- <p class="center">Without parallelism primitives, we can describe threads as cycle-by-cycle FSMs in the testbench</p>-->
+  <div class="container">
+    <div class="col fragment">
+      <p class="center medium">Manual thread interleaving</p>
+      <pre><code class="language-scala small">trait Thread {
+  def step(): Unit
+  def done(): Boolean
+}
+class a extends Thread {
+  var cycle = 0
+  def step() = {
+    if (cycle == 0)
+      dut.a.poke(1.U)
+    else if (cycle >= 4)
+      dut.a.poke(2.U)
+    cycle = cycle + 1
+  }
+  def done() = (cycle == 5)
+}
+val threads = Seq(a(), b())
+while (!threads.all(_.done))
+threads.forEach(_.step())</code></pre>
+  </div>
+<div class="col fragment" style="hyphens:none"><!--; display:grid; align-content:center;">-->
+  <!--<ul>
+    <li class="fragment">Step each thread until they are all done</li>
+    <li class="fragment">Can emulate any simulation threading scenario</li>
+    <li class="fragment">Reusable</li>
+    <li class="fragment"><i>However</i>, painful to write and debug</li>
+    </ul>-->
+<p class="center medium">fork/join threading</p>
+<pre><code class="language-scala medium">val a = fork {
+  a.poke(1.U)
+  clk.step(4)
+  a.poke(2.U)
+}
+val b = fork {
+  b.poke(100.U)
+  clk.step(2)
+  b.poke(200.U)
+  clk.step(4)
+  b.poke(300.U)
+}
+a.join
+b.join</code></pre>
+</div>
+</div>
+<p class="center">Threads are synchronized on clock edges</p>
+</article>
+
+<!-- hidden -->
+<article style="display: none;">
+  <header><h3>Fork/Join Construct</h3></header>
+  <p class="center"><code>fork/join</code> is a universal primitive to express testbench logic parallelism</p>
+  <div class="container">
+  <div class="col">
+  </div>
+  <div class="col" style="display:grid; align-content:center;">
+  <ul>
+    <li class="fragment">fork spawns a simulation thread
+    <li class="fragment">join blocks until the child thread is done</li>
+  <!--<ul class="small"><li>returns a handle that can be ‘join’ed later</li></ul>-->
+    <li class="fragment">Threads are synchronized on clock steps
+    <ul class="small">
+      <li>Once the main thread steps, all child threads are advanced until they step</li>
+      <!--<li>Advance a cycle in the RTL simulator</li>-->
+      <!--<li>Repeat until main thread ends</li>-->
+    </ul>
+    </li>
+  </ul>
+  </div>
+  </div>
+</article>
+
+<article>
+  <header><h3>Motivation: Overhead of Fork/Join</h3></header>
+  <table class="small fragment" style="caption-side: bottom;">
+  <caption>DecoupledGCD benchmark on Verilator</caption>
+  <thead>
+  <tr>
+  <th>Platform</th>
+  <th>Throughput</th>
+  <th>Slowdown</th>
+  </tr>
+  </thead>
+  <tbody>
+  <!--<tr>
+  <td>SystemVerilog + commercial simulator</td>
+  <td>412 kHz</td>
+  <td>-</td>
+  </tr>-->
+  <tr>
+  <td>Chiseltest with manual thread interleaving</td>
+  <td>220 kHz</td>
+  <!--<td>1.9x</td>-->
+  <td>-</td>
+  </tr>
+  <tr>
+  <td>Chiseltest with fork/join threading</td>
+  <td>7.8 kHz</td>
+  <!--<td>53x</td>-->
+  <td>28x</td>
+  </tr>
+  <tr>
+  <td>cocotb with async/await</td>
+  <td>3.8 kHz</td>
+  <td>108x</td>
+  <!--<td>58x</td>-->
+  </tr>
+  </tbody>
+  </table>
+
+  <p class="center">We want to design an open-source, <strong>high-performance</strong>, general-purpose testbench API with fork/join support.</p>
+  <!-- The overhead of simulation threads in chiseltest is too high.</p> -->
+</article>
+
+<article>
+  <header><h3>Sources of Perf Overhead <span class="small">in chiseltest</span></h3></header>
+  <ul>
+    <li class="fragment">Fork-ing spawns a <em>new</em> JVM thread</li>
+    <!--<li class="fragment">On every timestep, the chiseltest scheduler runs each thread, one at a time. Each thread can:
+    <ul class="small">
+      <li>Terminate, peek / poke, fork new threads, yield (step or join)</li>
+      </ul></li>-->
+    <li class="fragment">Parking and unparking threads is <strong>slow</strong></li>
+  </ul>
+</article>
+
+<article>
+  <header><h3>A Functional Testbench API</h3></header>
+  <p class="center"><strong>FP Principle</strong>: Separate description from interpretation</p>
+  <pre class="fragment"><code class="language-scala small">sealed trait Command[R] // R = return type of the Command
+case class Peek(signal: I) extends Command[I]
+case class Poke(signal: I, value: I) extends Command[Unit]
+case class Step(cycles: Int) extends Command[Unit]</pre></code>
+  <p class="center">Instances of these classes only <em>describe</em> the actions of peeking, poking, or stepping.</p>
+  <!--<ul class="fragment">-->
+  <!--<li>Instantiating these classes doesn’t <em>do anything</em></li>-->
+  <!--<li>They only <em>describe</em> the actions of peeking, poking, or stepping</li>-->
+  <!--<li>An <em>interpreter</em> actually runs the actions</li>-->
+  <!--</ul>-->
+</article>
+
+<article>
+  <header><h3>Command Continuations</h3></header>
+  <p class="center"><code>flatMap</code> 'unwraps' the return value of a <code>Command</code>, and continues with another function.<//p>
+  <!--<pre class="fragment"><code class="language-scala small">case class Return[R](retval: R) extends Command[R]
+  case class Cont[R1, R2](c: Command[R1],
+    then: R1 => Command[R2]) extends Command[R2]</pre></code>
+  <pre class="fragment"><code class="language-scala small">def flatMap[R1, R2](c: Command[R1],
+      f: R1 => Command[R2]): Command[R2] =
+    c match {
+      case Return(retval) => f(retval)
+      case cmd: Command[R1] => Cont(cmd, f)
+    }
+    </pre></code>-->
+
+  <pre class="fragment"><code class="language-scala medium">val program: Command[Boolean] = for {
+    _ <- Poke(dut.enq.valid, 1.B)
+    _ <- Step(1)
+    p <- Peek(dut.deq.valid)
+} yield p.litValue == 1</pre></code>
+
+  <p class="center">Scala for-comprehensions desugar to nested <code>flatMap</code>s. <code>program</code> is a <em>value</em>, but <em>looks</em> like imperative code.</p>
+
+  <!--<p class="center fragment">We can describe executing a command after another</p>-->
+
+  <!--<pre class="fragment"><code class="language-scala small">val program: Command[Boolean] =
+  Poke(dut.enq.valid, 1.B).flatMap {
+    _ => Step(1).flatMap {
+      _ => Peek(dut.deq.valid).map {
+        p => p.litValue == 1
+      }
+    }
+  }</pre></code>-->
+  <img class="fragment" src="./figs/simcommand/command_sequencing.svg"/>
+</article>
+
+<!-- hidden -->
+<article style="display: none;">
+  <header><h3>For-Comprehension Sugar</h3></header>
+  <pre class="fragment"><code class="language-scala small">val program: Command[Boolean] = for {
+    _ <- Poke(dut.enq.valid, 1.B)
+    _ <- Step(1)
+    p <- Peek(dut.deq.valid)
+} yield p.litValue == 1</pre></code>
+  <p class="fragment center"><code>program</code> is just a value, but <em>looks</em> like imperative code</p>
+</article>
+
+<!-- hidden -->
+<article style="display:none;">
+  <header><h3>Imperative vs Functional Testbench</h3></header>
+  <div class="container">
+    <div class="col">
+      <p>Imperative, statements, eager</p>
+      <pre><code class="language-scala small">dut.peek()
+dut.clk.step()
+dut.poke()</code></pre>
+    </div>
+    <div class="col">
+      <p>Functional, a value (data), lazy</p>
+      <pre><code class="language-scala small">val program = for {
+  _ <- poke
+  _ <- step
+  _ <- peek
+} yield ()</code></pre>
+    </div>
+  </div>
+</article>
+
+<!--    // Repeats a command n times
+def repeat(cmd: Command[_], n: Int): Command[Unit] -->
+<!--// Run this program continuously
+def forever(cmd: Command[_]): Command[Nothing]</pre></code>
+def while(cond: Command[Boolean], action: Command[_]): Command[Unit]-->
+<article>
+  <header><h3>Command Combinators</h3></header>
+  <p class="center medium">Commands are values → can be manipulated by ordinary functions</p>
+  <pre class="fragment"><code class="language-scala small">// Run a list of programs sequentially
+def concat[R](cmds: Seq[Command[R]]): Command[Unit]
+
+// Run a list of programs and aggregate their results
+def sequence[R](cmds: Seq[Command[R]]): Command[Seq[R]]</pre></code>
+
+  <p class="center medium">Library of stack-safe functions that emulate imperative loops</p>
+  <pre class="fragment"><code class="language-scala small">// Run this program until it returns false
+def doWhile(cmd: Command[Boolean]): Command[Unit]
+
+// Step the clock until the signal == value
+def stepUntil(signal: I, value: I): Command[Unit]</pre></code>
+</article>
+
+<!-- hidden -->
+<article style="display: none;">
+  <header><h3>UART TX Example</h3></header>
+  <pre class="fragment"><code class="language-scala small">def sendBit(bit: Int): Command[Unit] = for {
+  _ <- poke(uartIn, bit.B)
+  _ <- step(cyclesPerBit)
+} yield ()</pre></code>
+
+  <pre class="fragment"><code class="language-scala small">def sendByte(byte: Int): Command[Unit] = for {
+  _ <- sendBit(0)
+  _ <- concat((0 until 8).map(
+    i => sendBit((byte >> i) & 0x1)))
+  _ <- sendBit(1)
+} yield ()</pre></code>
+
+  <p class="fragment center">For-loops → list of function invocations</p>
+</article>
+
+<article>
+  <header><h3>Ready-Valid Example</h3></header>
+  <pre class="fragment"><code class="language-scala medium">def enqueue(data: T): Command[Unit] = for {
+  _ <- poke(io.bits, data)
+  _ <- poke(io.valid, true.B)
+  _ <- stepUntil(io.ready, true.B)
+  _ <- step(1)
+  _ <- poke(io.valid, false.B)
+} yield ()</pre></code>
+  <pre class="fragment"><code class="language-scala medium">def dequeue(): Command[T] = for {
+  _ <- stepUntil(io.valid, true.B)
+  _ <- poke(io.ready, true.B)
+  value <- peek(io.bits)
+  _ <- step(1)
+} yield value</pre></code>
+</article>
+
+<article>
+  <header><h3>Fork/Join Example</h3></header>
+  <!--<pre class="fragment"><code class="language-scala small" data-trim data-noescape>
+def fork[R](c: Command[R]): Command[ThreadHandle[R]]
+def join[R](c: ThreadHandle[R]): Command[R]
+  </pre></code>-->
+
+  <pre class="fragment"><code class="language-scala medium">val queueTest: Command[Boolean] = for {
+    enqThread <- fork(enqueue(100.U))
+    deqThread <- fork(dequeue())
+    _         <- join(enqThread)
+    data      <- join(deqThread)
+} yield data.litValue == 100
+
+test(new Queue(UInt(32.W))) { dut =>
+  val itWorks: Boolean = run(queueTest)
+  assert(itWorks)
+}</pre></code>
+</article>
+
+<article>
+  <header><h3>Interpreter / Scheduler Algorithm</h3></header>
+  <img width="80%" src="./figs/simcommand/command_interpretation.svg"/>
+  <p class="fragment center medium">The interpreter has full control of a thread (a pointer to a <code>Command</code>).</p>
+  <img src="./figs/simcommand/scheduler.png" style="align-self:center;" width="80%"/>
+  <ul>
+    <li class="fragment">On each timestep
+      <ul class="small">
+        <li>Run every thread until a step, join, or return</li>
+        <li>Collect any new threads spawned</li>
+        <li>Repeat until a fixpoint is reached</li>
+      </ul>
+    </li>
+    <li class="fragment">Step the clock</li>
+    <li class="fragment">Repeat until the main thread returns</li>
+  </ul>
+</article>
+
+<article>
+  <header><h3>Results</h3></header>
+  <table style="font-size: 0.75em;">
+    <thead>
+      <tr>
+        <th style="width:35%;">Platform</th>
+        <th colspan="2">DecoupledGCD</th>
+        <th colspan="2">NeuromorphicProcessor</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="fragment" data-fragment-index="2">
+        <td>SystemVerilog + commercial simulator</td>
+        <td>0.40 s</td>
+        <td>412 kHz</td>
+        <td>0:30 min</td>
+        <td>1782 kHz</td>
+      </tr>
+      <tr>
+        <td>Chiseltest with manual thread interleaving</td>
+        <td>0.75 s</td>
+        <td>220 kHz</td>
+        <td>2:03 min</td>
+        <td>432 kHz</td>
+      </tr>
+      <tr class="fragment" data-fragment-index="1">
+        <td><strong>Chiseltest with SimCommand</strong></td>
+        <td><strong>2.4 s</strong></td>
+        <td><strong>67 kHz</strong></td>
+        <td><strong>5:23 min</strong></td>
+        <td><strong>165 kHz</strong></td>
+      </tr>
+      <tr>
+        <td>Chiseltest with fork/join threading</td>
+        <td>21 s</td>
+        <td>7.8 kHz</td>
+        <td>27:21 min</td>
+        <td>32.6 kHz</td>
+      </tr>
+      <tr>
+        <td>cocotb</td>
+        <td>43.2 s</td>
+        <td>3.8 kHz</td>
+        <td>89:38 min</td>
+        <td>9.9 kHz</td>
+      </tr>
+    </tbody>
+    </table>
+    <p class="center"><strong>17x</strong> faster than cocotb, <strong>5x</strong> faster than chiseltest</p>
+</article>
+
+<article>
+  <header><h3>Conclusion</h3></header>
+  <p class="center">Encoding simulation commands as values and using a single-threaded user-level scheduler enables the <strong>fastest general-purpose testbench API with fork/join support</strong>.</p>
+  <!--
+  Using Command descriptions and the user-level scheduler, this is the fastest ...
+  <p class="fragment center">Encoding simulation commands as values enables a fast runtime using only 1 thread.</p>
+  <p class="fragment center">Fastest general-purpose testbench API with simulation threading support.</p>
+  -->
+  <div class="fragment">
+    <p style="padding-bottom:0.25rem;">Coming up:</p>
+
+    <ul>
+      <li>Channels for inter-thread communication</li>
+      <li>Better debug capabilities, thread tracing</li>
+      <li>TileLink / AXI VIPs</li>
+      <li>Performance parity with SystemVerilog</li>
+    </ul>
+  </div>
+</article>
+{% endblock %}

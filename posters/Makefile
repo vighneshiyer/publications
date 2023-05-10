@@ -20,6 +20,7 @@ endef
 # $(call poster,<poster name>,<template name>)
 $(eval $(call poster,tutorial,mit))
 $(eval $(call poster,sic-asplos23,slice))
+$(eval $(call poster,simcommand-oscar22,slice))
 
 all: $(posters)
 
