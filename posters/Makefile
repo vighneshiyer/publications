@@ -24,7 +24,24 @@ $(eval $(call poster,2023-slice_winter-cov_model,slice))
 $(eval $(call poster,2023-slice_winter-verif_projects,slice))
 $(eval $(call poster,2023-asplos-sic,slice))
 
-all: $(posters)
+all: $(posters) posters/index.html
+
+define write
+echo $(1) >> $(2);
+endef
+
+posters/index.html: $(addsuffix /index.html,$(addprefix posters/,$(posters)))
+	echo "<!DOCTYPE html>" > $@
+	echo '<html lang="en">' >> $@
+	echo '  <head>' >> $@
+	echo '    <title>Poster Index</title>' >> $@
+	echo '  </head>' >> $@
+	echo '  <body>' >> $@
+	echo '    <ul>' >> $@
+	$(foreach p,$(posters),$(call write,"      <li><a href=\"./$(p)/index.html\">$(p)</li>",$@))
+	echo '    </ul>' >> $@
+	echo '  </body>' >> $@
+	echo '</html>' >> $@
 
 define del
 rm -f $(1);
@@ -34,5 +51,6 @@ clean:
 	$(foreach p,$(posters),$(call del,posters/$(p)/index.css))
 	$(foreach p,$(posters),$(call del,posters/$(p)/index.css.map))
 	$(foreach p,$(posters),$(call del,posters/$(p)/index.html))
+	rm -f posters/index.html
 
 .PHONY: all $(posters) clean

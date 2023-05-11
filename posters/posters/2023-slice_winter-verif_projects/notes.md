@@ -1,0 +1,14 @@
+- [x] SimCommand
+    - [x] Overview
+    - [x] Channels
+    - [x] Recursive vs imperative interpreter
+    - [x] Experiments with tailRecM primitives
+    - [x] Perf improvements via chiseltest
+- [x] Recipes for Chisel
+- [x] Temporal Property Specification Language
+    - [x] Images of automaton and PSL formula
+- [x] Parametric random API for Parametric Fuzzing
+- [x] Hardware coverage visualizer (brief mention)
+- ~~[ ] FIRRTL -> Graph pass for circuit structure/function embedding~~ (on other poster + not enough space here)
+- ~~[ ] VIPs and SimCommand verif collateral development (Shawn)~~ (not enough space / interesting progress)
+- ~~[ ] Simulator Independent Coverage~~ (no space left)

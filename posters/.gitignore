@@ -1,5 +1,6 @@
 *.css
 *.css.map
 posters/*/*.html
+posters/index.html
 node_modules
 *.pdf
