@@ -1,0 +1,253 @@
+{% extends "templates/slice/slice.jinja2" %}
+
+{## Header ##}
+
+{% set poster_title = "Building an RTL Coverage Proxy Model" %}
+{# ‘poster_subtitle’ is optional; use "" to hide it #}
+{% set poster_subtitle = "" %}
+{# Change ‘venue’ to a conference or workshop name if any #}
+{% set venue = "CS294" %}
+{# ‘webpage_title’ is displayed in the browser’s top bar #}
+{% set webpage_title = poster_title + " — " + poster_subtitle %}
+{# ‘project_url’ is used in the footer and for the logo #}
+{% set project_url = "https://github.com/vighneshiyer/cov-proxy-model" %}
+
+{# Publication info is hidden by default (.publication-info in CSS) #}
+{% set pub_datetime_iso = "2020-09-08" %}
+{% set pub_date = "September 8, 2020" %}
+
+{# Custom styles and JS for a particular poster #}
+{% block custom_head %}
+{% endblock %}
+{% block authors %}
+  {# Put authors here, with one link per author. #}
+  <a property="author">Vighnesh Iyer</a>
+{% endblock %}
+
+{% block affiliations %}
+  <a property="sourceOrganization">UC Berkeley</a>
+{% endblock %}
+
+{### Footer ##}
+
+{% block footer_left %}
+  <a href="{{ project_url }}">{{ project_url }}</a>
+{% endblock %}
+
+{% block footer_center %}
+    vighnesh.iyer@berkeley.edu
+{% endblock %}
+
+{% block footer_right %}
+    CS294 Project
+{% endblock %}
+
+{### Contents ###}
+
+{# Contents are individual boxes (typically ‘article’s or ‘figure’s).  Each
+   ‘article’ contains a header and some contents. #}
+{% block contents %}
+<article>
+  {# Using <h3> inside the <header> makes the structure evident to screen readers #}
+  <header><h3>Digital Hardware</h3></header>
+  <ul>
+  <li>Digital circuits embody <em>state</em> and <em>update rules</em> function of top-level circuit <em>inputs</em> and the current state.</li>
+  <li>State is updated on a special <em>clock</em> signal.</li>
+  <li>This abstraction is register-transfer level (RTL).</li>
+  </ul>
+
+  <p class="center">Any synchronous digital circuit (RTL) is a transition system \( T = (S, I, PI, R, PO) \)</p>
+
+  <ul class="small">
+  <li>\(S = \) set of state variables (bitvectors)</li>
+  <li>\(I = \) set of initial state assignments</li>
+  <li>\(PI = \) top-level inputs (bitvectors)</li>
+  <li>\(R = \) transition relation \( R: S \times PI \rightarrow S \)</li>
+  <li>\(PO = \) top-level outputs \( PO: S \times PI \)</li>
+  </ul>
+
+</article>
+
+<article>
+  <header><h3>Hardware Design Languages (HDL)</h3></header>
+  <ul>
+    <li>HDLs can describe digital circuits at different abstraction levels (algorithm, dataflow, RTL, gate-level)</li>
+    <li>Most popular RTL-level HDL is Verilog</li>
+  </ul>
+  <pre><code class="language-verilog medium">module alu(input [7:0] a, b,
+           input op, clk, output [8:0] o);
+  always_ff @(clk)
+    if (op) o <= a + b;
+    else o <= a - b;
+endmodule</code></pre>
+</article>
+
+<article>
+  <header><h3>Dynamic RTL Simulation</h3></header>
+  <ul>
+    <li>RTL simulators implement a function \( s \) to simulate the underlying transition system</li>
+    <li>\( s(T, PI_{0}, \dots, PI_{n}) = (PO_{0}, \dots, PO_{n}) \)</li>
+    <li>Given a sequence of inputs, return the sequence of outputs</li>
+  </ul>
+</article>
+
+<article>
+  <header><h3>Dynamic Verification</h3></header>
+  <div class="container">
+    <div class="col" style="display:grid;">
+      <img src="./figs/cov-model/dynamic_verif.svg" />
+    </div>
+    <div class="col">
+      <ul>
+        <li>Unlike software, there aren't <em>universal</em> hardware bugs (e.g. segfault, stack overflow)</li>
+        <li>Bugs are detected by RTL assertions and the verification environment</li>
+        <li>For CPUs, bugs are detected by comparing instruction commit logs between RTL simulation and an ISA simulator</li>
+      </ul>
+    </div>
+  </div>
+</article>
+
+<article>
+  <header><h3>Stimulus Generators</h3></header>
+  <img src="./figs/cov-model/stimgen.svg" />
+  <ul>
+    <li>Hardware stimulus generators use declarative constraints and ultimately produce stimulus that desugars to a sequence of inputs</li>
+  </ul>
+</article>
+
+<article>
+  <header><h3>Verification Loop</h3></header>
+  <img src="./figs/cov-model/typical_verif_flow.svg" />
+  <!--How do we typically use stim gen + dynamic RTL simulation to verify our RTL?-->
+  <!--Coverage driven feedback (manual) and coverage closure.-->
+  <!--Going beyond closure to special case consideration (signals toggling together - other types of 'unachievable' coverage metrics to maximally exercise RTL-->
+  <ul>
+    <li>RTL simulation is slow, so can we use automated or semi-automated techniques to hit desired coverpoints?</li>
+  </ul>
+</article>
+
+<article>
+  <header><h3>Coverage Proxy Models</h3></header>
+  <!--Compare RTL stimgen feedback via blackbox / bayesian models to typical software fuzzing-->
+  <!--Talk about the issue in doing this (very slow RTL simulation) - can't just tweak gen params and rerun simulation - too many iteration cycles required.-->
+  <!--+ hardware fuzzing is inherently stateful-->
+  <ul>
+    <li>Can we predict RTL-level coverage from pre-RTL-simulation data?</li>
+  </ul>
+  <img src="./figs/cov-model/cov_proxy_model_usage.svg" />
+</article>
+
+<!--
+<article style="hyphens:none;">
+  <header><h3>Coverage Proxy Models</h3></header>
+  Talk about what these are. What are we predicting from what features?
+</article>
+-->
+
+<article>
+  <header><h3>Experimental Setup</h3></header>
+  <ul>
+    <li>riscv-dv (Google's UVM-based RISC-V program generator) - 23 knobs (4 integer, 19 boolean)</li>
+    <li>Rocket-chip RV32IMC core</li>
+    <li>Verilator RTL simulator with line coverage collection harness</li>
+    <li>100 tests, 5 seed iterations per test</li>
+  </ul>
+</article>
+
+<article>
+  <header><h3>Exploring Coverage Correlations</h3></header>
+  <img src="./figs/cov-model/cov_heatmap.png" />
+  <ul>
+    <li>Heatmap of coverpoints hit at least once (x-axis) vs test configuration (y-axis)</li>
+    <li><strong>Observations</strong>: line coverpoints are highly correlated, certain points require specific knob settings and lucky seeds, only 10 dominant singular values</li>
+  </ul>
+  <!--<img src="./figs/cov-model/svd.png" width="50%"/>-->
+  <!--Very quick SVD plot of the coverage matrix-->
+  <!--Very quick heatmap of coverpoints and frequency they are hit at with different test configs-->
+</article>
+
+<article>
+  <header><h3>Proxy Model Weight Analysis</h3></header>
+  <ul>
+    <li>Classical models are more interpretable vs DNNs - more useful for DV engineers</li>
+    <li>Idx 10 (AXI4 to MMIO) - correlated with <code>enable_misaligned_instr</code> and inversely with <code>illegal_instr_ratio</code></li>
+    <li>Idx 401 (ALU divider) - correlated with <code>no_branch_jump</code> and inversely with <code>set_mstatus_mprv</code></li>
+  </ul>
+  <!--Nice thing about linear / boosted tree models is ability to analyze what makes a coverpoint be hit-->
+  <!--Can we say anything about the combination of various knobs wrt what they cause downstream in the RTL?-->
+</article>
+
+<article>
+  <header><h3>Blackbox Coverage Prediction</h3></header>
+  <ul>
+    <li>Avg absolute error of 0.0004 hits/cycle for ridge regressor. Not bad, but a few outliers.</li>
+  </ul>
+  <img src="./figs/cov-model/error_vs_seen_freq.png" />
+  <ul>
+    <li>Unexpected trajectory of coverpoint prediction error as a function of frequency that a coverpoint is seen in training</li>
+  </ul>
+  <!--Results from a linear regressor - raw numbers-->
+  <!--Plot of how coverage prediction accuracy varies as a function of frequency of coverpoint hits seen in the training set-->
+</article>
+
+
+<article>
+  <header><h3>Stimulus-Level Functional Coverage as an Input Feature</h3></header>
+  <img src="./figs/cov-model/variance.png" />
+  <ul>
+    <li>Plotted is the variance for a given coverpoint across different seeds of a fixed config</li>
+    <li><strong>Observation:</strong> There is a large amount (10-25%) of variance of coverpoint hitting frequency across seeds, this motivates usage of stimulus-specific features</li>
+  </ul>
+  <!--We also capture the coverage database of riscv-dv itself when run - this is a stronger indicator of what the stimulus actually contains-->
+  <!--Can we use these features to improve model accuracy?-->
+</article>
+
+<article>
+  <header><h3>Notes on riscv-dv</h3></header>
+  <ul>
+    <li>It is easy to increase <code>num_sub_tests</code> or <code>instr_cnt</code> to make it more likely a coverpoint will be hit. In this work we normalize across cycles (unlike design2vec)</li>
+    <li>Each test has very few distinguishing characteristics - coverage across different configs is nearly identical</li>
+    <li>Knobs provide very little control, beyond coincidental control, of stimulus that is produced</li>
+  </ul>
+  <!--
+  riscv-dv
+  just increase num_tests or num_sub_tests or instr_cnt = this is just hacking the system!
+  no normalization for test duration (number of cycles simulation took)!
+  results seem bogus - parameters that shoulnd't have influence actually end up having!?
+  relationship between knobs and coverpoints is completely fuzzy! although relationships between coverpoints are captured
+  they only consider 10-90% covered points - on a very simple 3 stage RISC-V CPU (no virtual memory, no FPU, no caches)
+  - this means the less than 10% covered points can't be predicted!
+  no controllability from the knobs alone - they are very coarse grained
+  functional coverage is much better of a feature, but then we need an extra model to train - which is doable however
+  after randomization, functions inside each class are called again to mutate the final state of the class - this is just a mess of code with mutable state everywhere - impossible to track information flow and thus randomization hierarchy
+
+  coverage analysis shows that the tests have very few distinguishing characteristics - the coverage they achieve across iterations and different seeds is almost identical
+  -->
+</article>
+
+<article>
+  <header><h3>Towards Coverpoint Extrapolation</h3></header>
+  <img src="./figs/cov-model/cov_extrapolation.svg" />
+  <p class="center">WIP: <a href="https://github.com/vighneshiyer/rtl2graph">github.com/vighneshiyer/rtl2graph</a>. A common graph representation compiler for FIRRTL.</p>
+</article>
+
+<article>
+  <header><h3>Parametric RISC-V CPU Fuzzing</h3></header>
+  <p class="center">WIP: <a href="https://github.com/girantinas/randomapi">github.com/girantinas/randomapi</a>. A parameteric hardware stimgen API written in Scala.</p>
+  <pre><code class="language-scala medium">enum Operator: case Add, Sub, Mul, Div
+
+def sexpr(operator: Gen[Operator],
+  literal1: Gen[Int],
+  literal2: Gen[Int]): Gen[SExpr] = for {
+    op <- operator
+    lit1 <- literal1
+    lit2 <- literal2
+} yield SExpr.Expression(...)
+
+val opGen = Gen.oneOf(Operator.values)
+val lit1 = Gen.range(0, 10)
+val lit2 = Gen.range(11, 20)
+sexpr(...).generate(ScalaRandom)
+sexpr(...).generate(Stream[Byte])</code></pre>
+</article>
+{% endblock %}

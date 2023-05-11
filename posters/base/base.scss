@@ -366,6 +366,10 @@ THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR I
                 }
             }
         }
+
+        th {
+            border-bottom: 1px solid;
+        }
     }
 
     ////////////////////////////////
@@ -407,6 +411,12 @@ THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR I
         display: grid;
         grid-auto-flow: column;
         grid-gap: $mid-space;
+    }
+
+    .container {
+        display: grid;
+        grid-auto-flow: column;
+        column-gap: 1em;
     }
 
     .columns-top { align-items: start; }
