@@ -19,6 +19,7 @@ endef
 # Add posters here:
 # $(call poster,<poster name>,<template name>)
 $(eval $(call poster,tutorial,mit))
+$(eval $(call poster,2022-bwrc_fall-simcommand,bwrc))
 $(eval $(call poster,2022-oscar-simcommand,slice))
 $(eval $(call poster,2023-slice_winter-cov_model,slice))
 $(eval $(call poster,2023-slice_winter-verif_projects,slice))

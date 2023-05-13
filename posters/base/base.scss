@@ -137,7 +137,7 @@ THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR I
                     text-align: left;
                     padding-left: $grid-gap;
                 }
-                aside:last-of-type {
+                aside:nth-of-type(2) {
                     text-align: right;
                     padding-right: $grid-gap;
                     grid-template-columns: auto auto;
@@ -217,7 +217,7 @@ THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR I
                 margin-top: $thin-space;
             }
 
-            aside:last-of-type {
+            aside:nth-of-type(2) {
                 display:grid;
                 grid-template-columns: auto auto;
                 a {
