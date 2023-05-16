@@ -1,0 +1,18 @@
+- Col 1
+    - [x] The RTL sim environment is very complex, want automated way to cover various things, automatically generate stimulus
+    - [x] Motivation - automatic bug hunting
+    - [x] The DV environment as a whole
+- Col 2 + 3
+    - [x] Description of generic software fuzzing for hardware
+        - Why doesn't it work?
+    - [x] Description of parametric fuzzing through example
+        - Describe the controllability benefits
+    - [x] Describe parametric fuzzing loop
+    - [x] Our parametric generation API
+    - [ ] Results for mark guided mutation for s expressions
+- Col 4
+    - [x] Describe CPU stimulus generators
+    - [ ] Discuss old cov model work using riscv-dv and why that's a problem
+    - [x] Experimental setup
+    - [x] Results from spike fuzzing
+    - [ ] Conclusion and future direction

@@ -24,6 +24,7 @@ $(eval $(call poster,2022-oscar-simcommand,slice))
 $(eval $(call poster,2023-slice_winter-cov_model,slice))
 $(eval $(call poster,2023-slice_winter-verif_projects,slice))
 $(eval $(call poster,2023-asplos-sic,slice))
+$(eval $(call poster,2023-slice_summer-fuzzing,slice))
 
 all: $(posters) posters/index.html
 

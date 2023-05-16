@@ -1,0 +1,172 @@
+{% extends "templates/slice/slice.jinja2" %}
+
+{## Header ##}
+{% set poster_title = "Parametric Stimulus Generators for Controllable RTL Fuzzing" %}
+{# ‘poster_subtitle’ is optional; use "" to hide it #}
+{% set poster_subtitle = "" %}
+{# Change ‘venue’ to a conference or workshop name if any #}
+{% set venue = "SLICE Summer 2023 Retreat" %}
+{# ‘webpage_title’ is displayed in the browser’s top bar #}
+{% set webpage_title = poster_title %}
+{# ‘project_url’ is used in the footer and for the logo #}
+{% set project_url = "https://github.com/girantinas/randomapi/" %}
+
+{# Publication info is hidden by default (.publication-info in CSS) #}
+{% set pub_datetime_iso = "2023-05-21" %}
+{% set pub_date = "May 21, 2023" %}
+
+{# Custom styles and JS for a particular poster #}
+{% block custom_head %}
+{% endblock %}
+
+{% block authors %}
+  {# Put authors here, with one link per author. #}
+  <a property="author">Rohit Agarwal</a>,
+  <a property="author">Vighnesh Iyer</a>,
+  <a property="author">Bora Nikolic</a>
+{% endblock %}
+
+{% block affiliations %}
+  <a property="sourceOrganization">UC Berkeley</a>
+{% endblock %}
+
+{### Footer ##}
+
+{% block footer_left %}
+  <a href="{{ project_url }}">{{ project_url }}</a>
+{% endblock %}
+
+{% block footer_center %}
+    {rohaga, vighnesh.iyer}@berkeley.edu
+{% endblock %}
+
+{% block footer_right %}
+  <span class="credits">
+    SLICE Retreat, Summer 2023
+  </span>
+{% endblock %}
+
+{### Contents ###}
+
+{# Contents are individual boxes (typically ‘article’s or ‘figure’s).  Each
+   ‘article’ contains a header and some contents. #}
+{% block contents %}
+<article>
+  <header><h3>Motivation</h3></header>
+  <img src="./figs/fuzzing/rtl_sim_inputs_and_outputs.svg" />
+  <ul>
+    <li>RTL simulation is the workhorse of and golden reference for uArch evaluation</li>
+    <li>Good stimulus generation is critical to hit desired post-RTL-simulation metrics, but is time-consuming and manual</li>
+    <li>Fuzzing can theoretically generate stimulus to target any user-defined metric or for bughunting</li>
+    <li><em>How do we build good stimulus generators for hardware fuzzing?</em></li>
+    <!-- <li>automatic metric optimization</li> -->
+    <!-- <li>bughunting</li> -->
+  </ul>
+</article>
+
+<article>
+  <header><h3>The Dynamic RTL Simulation Environment</h3></header>
+  <img src="./figs/fuzzing/dv_environment.svg" />
+  <ol>
+    <li><strong>Testbench API</strong>: interface between testbench and RTL simulator <small>(SystemVerilog, SimCommand, cocotb)</small></li>
+    <li><strong>Feedback metrics</strong>: can include coverage and/or uArch metrics to guide simulation</li>
+    <li><strong>Input generator</strong>: produces stimulus for DUT</li>
+    <li><strong>Tuner</strong>: adjusts generator parameters based on feedback (usually a human)</li>
+    <li><strong>Bug inducers</strong>: circuit modifications that make bugs more likely to surface (e.g. backpressure randomization)</li>
+    <li><strong>Behavior checker</strong>: DUT-specific, golden models or temporal properties</li>
+  </ol>
+</article>
+
+<article>
+  <header><h3>Adapting SW Fuzzing for HW</h3></header>
+  <img src="./figs/fuzzing/naive_fuzzing_loop.svg" />
+  <ul>
+    <li>DUT ports driven directly from sequences of bytes</li>
+    <li>New inputs created via <em>random mutation</em></li>
+    <li>Naive fuzzing produces illegal stimulus and fails to reach interesting DUT states</li>
+    <li>An <em>input generator</em> can produce legal and structural stimulus</li>
+  </ul>
+</article>
+
+<article>
+  <header><h3>PRNG-Based Input Generators</h3></header>
+  <img src="./figs/fuzzing/prng_random_api.svg" />
+  <ul>
+    <li>Each random decision is pulled from a PRNG</li>
+    <li>We can only control the seed! No fine control over the stimulus</li>
+  </ul>
+</article>
+
+<article>
+  <header><h3>Parametric Input Generators</h3></header>
+  <img src="./figs/fuzzing/param_random_api.svg" />
+  <ul>
+    <li>"Random" decisions come from a user-provided bytestream</li>
+    <li>We gain precise control over the stimulus</li>
+    <li>"Marks" annotate bytes with how they are used in stimulus construction</li>
+  </ul>
+</article>
+
+<article>
+  <header><h3>Parametric Hardware Fuzzing</h3></header>
+  <img src="./figs/fuzzing/parametric_fuzzing_loop.svg" />
+  <ul>
+    <li>Parametric generators give the mutator fine control over the semantics of the legal stimulus it generates</li>
+    <li>Marks guide mutation rates of different bytes</li>
+  </ul>
+</article>
+
+<article>
+  <header><h3>Generative Parametric Random Stimulus API</h3></header>
+  <ul>
+    <!-- <li>Existing declarative constrained random APIs do not permit <em>controllable</em> randomness; only a single seed can be set</li> -->
+    <li>A functional API for random stimulus generation that is backed by a source of randomness or a controllable bytestream</li>
+  </ul>
+
+  <strong>TODO: a code snippet for s-expr generation</strong>
+
+  <pre><code class="language-scala small">val seqGen: Gen[Seq[Int]] = for {
+  lit <- Gen.range(0, 10)
+  tailGen <- Gen.oneOf(Gen(Seq()) -> 0.1,
+    seqGen -> 0.9),
+  seqn <- tailGen.map(t => lit +: t)
+} yield seqn
+seqGen.generate(ParametricRandom(Seq[Byte]))
+// Seq(6, 7, 0, 9, 0, 7)
+seqGen.generate(ScalaRandom(seed=10))
+// Seq(9, 8, 3)</code></pre>
+</article>
+
+<article>
+  <header><h3>Mark-Driven Mutation For SExpr Generation</h3></header>
+  <strong>Insert figure of convergence with different per-mark-type mutation strategies</strong>
+  <ul>
+    <li>Mutating different types of bytes has a substantial impact on convergence time</li>
+  </ul>
+</article>
+
+<article>
+  <header><h3>Sequence-Based CPU Instruction Generators</h3></header>
+  <img src="./figs/fuzzing/trad_cpu_instgen.svg" />
+  <ul>
+    <li>Stimulus made up of sequences</li>
+    <li>Sequences manually written to target uArch features</li>
+    <li>Sequences query knobs to make random decisions</li>
+  </ul>
+</article>
+
+<article>
+  <header><h3>RV64UI StimGen Fuzzing</h3></header>
+  <ul>
+    <li>A rv32ui stimulus generator with basic sequences (Inst, RAW, Loop, Branch) was created using this API</li>
+    <li>The generator is put in a parametric fuzzing loop with spike's memory model</li>
+  </ul>
+  <img src="./figs/fuzzing/spike_fuzzing.svg" />
+  <img src="./figs/fuzzing/spike_fuzzing_result.png" width="70%"/>
+</article>
+
+<article>
+  <header><h3>Conclusion</h3></header>
+  <p class="center">A controllable, parametric stimulus generator with instrumentation enables effective hardware fuzzing.</p>
+</article>
+{% endblock %}
