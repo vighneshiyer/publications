@@ -1,0 +1,58 @@
+{% extends "templates/slice/slice.jinja2" %}
+
+{## Header ##}
+{% set poster_title = "Chisel Recipes: An eDSL for Imperative Control Flow" %}
+{# ‘poster_subtitle’ is optional; use "" to hide it #}
+{% set poster_subtitle = "" %}
+{# Change ‘venue’ to a conference or workshop name if any #}
+{% set venue = "SLICE Summer 2023 Retreat" %}
+{# ‘webpage_title’ is displayed in the browser’s top bar #}
+{% set webpage_title = poster_title %}
+{# ‘project_url’ is used in the footer and for the logo #}
+{% set project_url = "https://github.com/bdngo/chisel-recipes" %}
+
+{# Publication info is hidden by default (.publication-info in CSS) #}
+{% set pub_datetime_iso = "2023-05-21" %}
+{% set pub_date = "May 21, 2023" %}
+
+{# Custom styles and JS for a particular poster #}
+{% block custom_head %}
+{% endblock %}
+
+{% block authors %}
+  {# Put authors here, with one link per author. #}
+  <a property="author">Vighnesh Iyer</a>,
+  <a property="author">Bryan Ngo</a>,
+  <a property="author">Bora Nikolic</a>
+{% endblock %}
+
+{% block affiliations %}
+  <a property="sourceOrganization">UC Berkeley</a>
+{% endblock %}
+
+{### Footer ##}
+
+{% block footer_left %}
+  <a href="{{ project_url }}">{{ project_url }}</a>
+{% endblock %}
+
+{% block footer_center %}
+    {rohaga, vighnesh.iyer}@berkeley.edu
+{% endblock %}
+
+{% block footer_right %}
+  <span class="credits">
+    SLICE Retreat, Summer 2023
+  </span>
+{% endblock %}
+
+{### Contents ###}
+
+{# Contents are individual boxes (typically ‘article’s or ‘figure’s).  Each
+   ‘article’ contains a header and some contents. #}
+{% block contents %}
+<article>
+  <header><h3>Motivation</h3></header>
+</article>
+
+{% endblock %}

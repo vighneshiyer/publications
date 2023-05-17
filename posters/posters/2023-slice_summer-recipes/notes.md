@@ -1,0 +1,19 @@
+- Col 1
+    - [ ] Imperative control flow is annoying and error-prone to turn into an FSM
+    - [ ] Often we want to compose HLS-generated control flow machines with explicit RTL state
+    - [ ] Also we want to have precise cycle-level control of the control flow
+    - [ ] Can we design an API to do this automatically?
+    - [ ] Give an example
+- Col 2
+    - [ ] We present an API for recipes based on Blarney's recipe construct
+    - [ ] Introduce the primitives
+    - [ ] Show that recipes are compositional (pieces can be defined separately and then integrated)
+    - [ ] Give examples of recipes for GCD and DecoupledGCD
+    - [ ] Show how recipes are compiled with the go -> (active, done) interface
+- Col 3
+    - [ ] Talk about debugging features with source locators
+        - [ ] Waveform signal debugging
+        - [ ] Printf debugging
+    - [ ] AXI mem reader example
+    - [ ] Conclusion
+        - The power of embedded DSLs with existing embedded HDLs!

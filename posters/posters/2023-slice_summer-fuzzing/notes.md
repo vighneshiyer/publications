@@ -12,7 +12,7 @@
     - [ ] Results for mark guided mutation for s expressions
 - Col 4
     - [x] Describe CPU stimulus generators
-    - [ ] Discuss old cov model work using riscv-dv and why that's a problem
+    - [ ] ~~Discuss old cov model work using riscv-dv and why that's a problem~~
     - [x] Experimental setup
     - [x] Results from spike fuzzing
-    - [ ] Conclusion and future direction
+    - [x] Conclusion and future direction
