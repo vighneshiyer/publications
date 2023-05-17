@@ -122,27 +122,35 @@
     <!-- <li>Existing declarative constrained random APIs do not permit <em>controllable</em> randomness; only a single seed can be set</li> -->
     <li>A functional API for random stimulus generation that is backed by a source of randomness or a controllable bytestream</li>
   </ul>
+  <pre><code class="language-scala small">enum SExpr:
+  case Expression(operator: Op, e1: SExpr, e2: SExpr)
+  case Num(n: Int)
 
-  <strong>TODO: a code snippet for s-expr generation</strong>
-
-  <pre><code class="language-scala small">val seqGen: Gen[Seq[Int]] = for {
-  lit <- Gen.range(0, 10)
-  tailGen <- Gen.oneOf(Gen(Seq()) -> 0.1,
-    seqGen -> 0.9),
-  seqn <- tailGen.map(t => lit +: t)
-} yield seqn
-seqGen.generate(ParametricRandom(Seq[Byte]))
-// Seq(6, 7, 0, 9, 0, 7)
-seqGen.generate(ScalaRandom(seed=10))
-// Seq(9, 8, 3)</code></pre>
+val maxDepth = 10
+val maxNum = 30
+/* Makes calculator expressions recursively. */
+def genSExpr(depth: Int = 0): Gen[SExpr] =
+  for {
+    goDeeperProb <- Gen.double.mark(Struct)
+    expr <- if (goDeeperProb < 1 - depth / maxDepth) 
+      then for {
+        op <- genOperator.mark(Op)
+        exp1 <- genSExpr(depth + 1)
+        exp2 <- genSExpr(depth + 1)
+      } yield (Expression(op, exp1, exp2))
+      else for {
+        n <- Gen.range(0, maxNum).mark(Num)
+      } yield (Num(n))
+  } yield (expr)</code></pre>
 </article>
 
 <article>
   <header><h3>Mark-Driven Mutation For SExpr Generation</h3></header>
-  <strong>Insert figure of convergence with different per-mark-type mutation strategies</strong>
   <ul>
-    <li>Mutating different types of bytes has a substantial impact on convergence time</li>
+    <li>Mutating different types of bytes with different probabilities has a substantial impact on convergence time</li>
+    <li><mjx-container>Feedback metric: \(L\) is the length of the expression and \(V\) its value, \(\textrm{max } \frac{V}{(1.5)^L}\)</mjx-container></li>
   </ul>
+  <img src="./figs/fuzzing/marked_sexpr_convergence.svg" width="60%">
 </article>
 
 <article>
@@ -162,11 +170,12 @@ seqGen.generate(ScalaRandom(seed=10))
     <li>The generator is put in a parametric fuzzing loop with spike's memory model</li>
   </ul>
   <img src="./figs/fuzzing/spike_fuzzing.svg" />
-  <img src="./figs/fuzzing/spike_fuzzing_result.png" width="70%"/>
+  <img src="./figs/fuzzing/spike_fuzzing_result.png" width="60%"/>
 </article>
 
 <article>
-  <header><h3>Conclusion</h3></header>
-  <p class="center">A controllable, parametric stimulus generator with instrumentation enables effective hardware fuzzing.</p>
+  <header><h3>Conclusion and Future Directions</h3></header>
+  <p class="center">We still need to test our generator against existing software fuzzing methods, such as AFL.</p>
+  <p class="center">However, we demonstrate a controllable, parametric stimulus generator with instrumentation enables effective hardware fuzzing.</p>
 </article>
 {% endblock %}
