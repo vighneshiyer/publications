@@ -1,0 +1,17 @@
+- Simcommand
+    - [x] Overview
+    - [x] Channels
+    - [x] Better interpreter
+    - [x] Tail recursion
+    - [x] Testing Commands with Commands
+    - [x] Thread order dependency detection and manual ordering support
+    - [x] High performance interpreter with cycle skipping
+- Chiseltest FFI
+    - [x] Showing the difference between JNA vs JNI FFI for Verilator (create a diagram)
+    - [x] Show the performance impact per call (> 100x)
+- Temporal properties
+    - [x] Introduce the API
+    - [x] Rehash the same thing from last time as per compilation
+    - [x] Also show Scala sequences support using Spot
+    - [ ] ~~Propose new API with explicit per-instance and across property instances state (read-only)~~
+

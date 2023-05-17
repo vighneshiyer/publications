@@ -1,0 +1,258 @@
+{% extends "templates/slice/slice.jinja2" %}
+
+{## Header ##}
+{% set poster_title = "SimCommand and Chiseltest: High-Performance RTL Testbench APIs" %}
+{# ‘poster_subtitle’ is optional; use "" to hide it #}
+{% set poster_subtitle = "" %}
+{# Change ‘venue’ to a conference or workshop name if any #}
+{% set venue = "SLICE Summer 2023 Retreat" %}
+{# ‘webpage_title’ is displayed in the browser’s top bar #}
+{% set webpage_title = poster_title %}
+{# ‘project_url’ is used in the footer and for the logo #}
+{% set project_url = "https://github.com/vighneshiyer/simcommand/" %}
+
+{# Publication info is hidden by default (.publication-info in CSS) #}
+{% set pub_datetime_iso = "2023-05-21" %}
+{% set pub_date = "May 21, 2023" %}
+
+{# Custom styles and JS for a particular poster #}
+{% block custom_head %}
+{% endblock %}
+
+{% block authors %}
+  {# Put authors here, with one link per author. #}
+  <a property="author">Vighnesh Iyer</a>,
+  <a property="author">Young-Jin Park</a>,
+  <a property="author">Oliver Yu</a>,
+  <a property="author">Andy Lin</a>,
+  <a property="author">Kevin Laeufer</a>,
+  <a property="author">Bora Nikolic</a>
+{% endblock %}
+
+{% block affiliations %}
+  <a property="sourceOrganization">UC Berkeley</a>
+{% endblock %}
+
+{### Footer ##}
+
+{% block footer_left %}
+  <a href="{{ project_url }}">{{ project_url }}</a>
+{% endblock %}
+
+{% block footer_center %}
+    {vighnesh.iyer, yjp20, oliveryu, lyin19, laeufer, bora}@berkeley.edu
+{% endblock %}
+
+{% block footer_right %}
+  <span class="credits">
+    SLICE Retreat, Summer 2023
+  </span>
+{% endblock %}
+
+{### Contents ###}
+
+{# Contents are individual boxes (typically ‘article’s or ‘figure’s).  Each
+   ‘article’ contains a header and some contents. #}
+{% block contents %}
+<article>
+  <header><h3>Motivation</h3></header>
+  <ul>
+    <li>Move beyond SystemVerilog + UVM without compromising on features or performance</li>
+    <li>Leverage general-purpose languages and their libraries, build systems, IDEs, and test frameworks</li>
+  </ul>
+</article>
+
+<article>
+  <header><h3>SimCommand Overview</h3></header>
+  <p><strong>Goal:</strong> A Scala-embedded testbench API with fork/join support and performance parity with SystemVerilog testbenches</p>
+  <!--<p><strong>Implementation:</strong> fork/join with cooperatively yielding 'threads', leverage chiseltest as simulator API</p>-->
+  <ul>
+    <li>Separation of description and interpretation of testbench actions</li>
+    <li>Threads are just pointers to continuations → fast thread pause/resume</li>
+    <li>A <code>Command[R]</code> is a <em>description</em> of testbench actions which terminates with a value of type <code>R</code></li>
+  </ul>
+
+  <pre class="fragment"><code class="language-scala medium">val program: Command[Boolean] = for {
+    _ <- poke(dut.enq.valid, 1.B)
+    _ <- step(1)
+    p <- peek(dut.deq.valid)
+} yield p.litValue == 1</pre></code>
+
+  <img class="fragment" src="./figs/simcommand/command_sequencing.svg"/>
+
+  <p class="center">SimCommand is <strong>> 10x faster</strong> than chiseltest's built-in fork/join threading</p>
+</article>
+
+<article>
+  <header><h3>SimCommand Interpreter</h3></header>
+  <!-- <img width="80%" src="./figs/simcommand/command_interpretation.svg"/> -->
+  <img width="80%" src="./figs/simcommand/scheduler.png"/>
+
+  <ul>
+    <li class="fragment">On each timestep
+      <ul class="small">
+        <li>Run every thread until a step, join, or return</li>
+        <li>Collect any new threads spawned</li>
+        <li>Repeat until a fixpoint is reached</li>
+      </ul>
+    </li>
+    <li class="fragment">Step the clock</li>
+    <li class="fragment">Repeat until the main thread returns</li>
+  </ul>
+</article>
+
+<article>
+  <header><h3>SimCommand Example - UART</h3></header>
+
+  <pre><code class="language-scala small">def sendBit(bit: Int, io: Bool): Command[Unit] = for {
+    _ <- poke(io, bit.B)
+    _ <- step(cyclesPerBit)
+} yield ()
+
+def sendByte(byte: Int, io: Bool): Command[Unit] = for {
+    _ <- sendBit(0)
+    _ <- concat((0 until 8).map(
+         i => sendBit((byte >> i) & 0x1, io)))
+    _ <- sendBit(1)
+} yield ()</code></pre>
+</article>
+
+<article>
+  <header><h3>SimCommand Channels</h3></header>
+  <p class="center">Channels enable deterministic thread-to-thread communication, similar to SystemVerilog mailboxes or golang channels.</p>
+
+  <pre class="fragment"><code class="language-scala medium">ch <- makeChannel[Integer](size=10)
+_ <- put(ch, 1)
+t <- fork(for { v <- getBlocking(ch) } yield v)
+v <- join(t)</pre></code>
+
+  <ul>
+    <li>Threads can block on a channel having data to receive</li>
+    <li>Channels enable UVM-style port/export message sharing</li>
+  </ul>
+</article>
+
+<article>
+  <header><h3>SimCommand Imperative Interpreter</h3></header>
+  <ul>
+    <li>Older purely recursive interpreter used no mutable data structures and required unnecessary allocations</li>
+    <li>New imperative interpreter maintains an explicit heap-allocated stack per thread and <strong>improves performance by 30%</strong></li>
+  </ul>
+</article>
+
+<article>
+  <header><h3>SimCommand Tail Recursion Primitive</h3></header>
+  <ul>
+    <li>Naive monadic recursion can blow up the stack</li>
+    <li>One solution is <em>trampolining</em> where the stack is dumped to the heap on every recursive call.</li>
+  </ul>
+
+  <pre class="fragment"><code class="language-scala small">def tailRecM[S, R](s: S)
+  (f: S => Command[Either[S, R]]): Command[R] = {
+  f(s).flatMap {
+    case Left(value) => tailRecM(value)(f)
+    case Right(value) => lift(value)
+  }
+}</pre></code>
+
+  <p class="center">However, trampolining is slow. A recursion <em>primitive</em> that elides trampolining demonstrates <strong>400% performance improvement</strong>.</p>
+</article>
+
+<article>
+  <header><h3>Testing Commands with Commands</h3></header>
+
+  <ul>
+    <li>Often, we want to test a Command <em>itself</em> (i.e. unit test a VIP)</li>
+    <li>Traditionally, this would be difficult without running RTL simulation with a DUT</li>
+    <li>However, since Commands are <em>pure descriptions</em>, they can be interpreted in RTL simulation <em>or</em> stand alone</li>
+  </ul>
+
+  <pre><code class="language-scala medium">// bindings mimic DUT IOs
+val uartPin: Bool = binding(init=1.B)
+val test = for {
+  _ <- fork(sendByte(0x8d.U, uartPin))
+  t <- fork(receiveByte(uartPin))
+  v <- join(t)
+} yield v
+assert(run(test) == 0x8d)</code></pre>
+</article>
+
+<article>
+  <header><h3>Thread Order Dependency Detection</h3></header>
+
+  <ul>
+    <li>Multi-threaded chiseltest has support for detecting read-after-write conditions through combinational paths in the DUT from 2 different threads</li>
+    <li>SimCommand now also supports dependency detection and will throw an exception unless thread order is manually defined. The performance overhead is marginal.</li>
+  </ul>
+
+  <pre><code class="language-scala medium">test(new Queue(UInt(8.W), flow=true)) { dut =>
+  val test = for {
+    e <- fork(enqueue(dut.enq, 4.U))
+    d <- fork(dequeue(dut.deq))
+    _ <- joinall(e, d)
+  }.run() // will throw an exception
+}</code></pre>
+</article>
+
+<article>
+  <header><h3>Opportunistic Cycle Skipping</h3></header>
+
+  <div class="container">
+    <div>
+      <pre><code class="language-scala medium">val t1 = for {
+  _ <- step(10)
+}
+val t2 = for {
+  _ <- step(1)
+  _ <- step(5)
+}</code></pre>
+    </div>
+    <div>
+      <pre><code class="language-scala medium">for {
+  _ <- fork(t1)
+  _ <- fork(t2)
+  _ <- joinall(t1, t2)
+}</code></pre>
+    </div>
+  </div>
+
+  <ul>
+    <li>The interpreter will step as many cycles as possible at a time (in this example: 1, 4, 5) and will only wake up threads that are ready to run</li>
+    <li>A system-level testbench that took 25 minutes with chiseltest, now takes 5 seconds (faster than SystemVerilog + VCS too)</li>
+  </ul>
+</article>
+
+<article>
+  <header><h3>Chiseltest ⬌ RTL Simulator FFI</h3></header>
+  <img width="80%" src="./figs/simcommand/command_interpretation.svg"/>
+
+  <ul>
+    <li>The foreign function interface (FFI) linking chiseltest on the JVM and the RTL simulator (Verilator) in C++ is a bottleneck</li>
+  </ul>
+
+  <img src="./figs/simcommand/jni_vs_jna.svg" />
+
+  <ul>
+    <li>Using JNI vs JNA as the FFI API <strong>improves performance by up to 100x</strong>
+    <li>Integrated into chiseltest</li>
+  </ul>
+</article>
+
+
+<article>
+  <header><h3>"SVA" for Chisel</h3></header>
+  <ul>
+    <li>Sequence library to describe temporal properties in Chisel</li>
+    <li>Supports a subset of linear PSL (sequence combinators + bounded delays + LTL operators)</li>
+    <li>2 backends: naive monitor automata synthesis, SPOT-driven optimized automata synthesis</li>
+  </ul>
+  <pre class="fragment"><code class="language-scala small">class Example extends Module {
+  val a, b = Reg(Bool())
+  val c = Reg(UInt(8.W))
+  assert(a |=> b)
+  assert(a ###1 b |=> (c > 15.U))
+}</pre></code>
+  <img src="./figs/sequences/psl_spot.svg" />
+  <p class="small center"><a href="https://github.com/ekiwi/chisel-sequences">github.com/ekiwi/chisel-sequences</a></p>
+</article>
+{% endblock %}
