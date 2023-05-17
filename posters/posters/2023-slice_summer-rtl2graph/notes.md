@@ -1,0 +1,14 @@
+- [ ] Motivation for rtl2graph
+    - Graph representation learning for circuits
+    - Metric prediction
+    - Coverpoint extrapolation
+- [ ] Implementation details
+    - FIRRTL pass details, operates on LoFirrtl
+    - Listing of graph node and edge features
+- [ ] Evaluation
+    - Testing framework (visualization)
+    - Examples of graphs extracted from circuits
+    - Translation to GML (or other format)
+- [ ] Next steps
+    - Pre-training of GNN for circuit representation embeddings
+    - Fine tuning / augmented network for specific downstream tasks

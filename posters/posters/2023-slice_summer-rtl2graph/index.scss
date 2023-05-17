@@ -1,0 +1,13 @@
+@use 'templates/slice/slice.scss' with ($style: "shaded");
+
+@media print {
+    header > aside {
+        img {
+            max-width: 215px;
+        }
+    }
+}
+
+html {
+    font-size: 1.15rem
+}
