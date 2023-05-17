@@ -9,7 +9,7 @@
         - Describe the controllability benefits
     - [x] Describe parametric fuzzing loop
     - [x] Our parametric generation API
-    - [ ] Results for mark guided mutation for s expressions
+    - [X] Results for mark guided mutation for s expressions
 - Col 4
     - [x] Describe CPU stimulus generators
     - [ ] ~~Discuss old cov model work using riscv-dv and why that's a problem~~
