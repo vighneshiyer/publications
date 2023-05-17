@@ -1,7 +1,7 @@
 {% extends "templates/slice/slice.jinja2" %}
 
 {## Header ##}
-{% set poster_title = "Chisel Recipes: An eDSL for Imperative Control Flow" %}
+{% set poster_title = "Chisel Recipes: An eDSL for Imperative Control Flow Machines" %}
 {# ‘poster_subtitle’ is optional; use "" to hide it #}
 {% set poster_subtitle = "" %}
 {# Change ‘venue’ to a conference or workshop name if any #}
@@ -37,7 +37,7 @@
 {% endblock %}
 
 {% block footer_center %}
-    {rohaga, vighnesh.iyer}@berkeley.edu
+    {vighnesh.iyer, bryanngo}@berkeley.edu
 {% endblock %}
 
 {% block footer_right %}
@@ -53,6 +53,142 @@
 {% block contents %}
 <article>
   <header><h3>Motivation</h3></header>
+
+  <p class="center">Conversion of imperative control flow to its FSM encoding is a common, mechanical, and error-prone process in RTL design</p>
+
+  <pre><code class="language-scala">io.ready = true
+waitUntil(io.valid)
+data = io.bits
+while(popcount(data) >= 3) {
+    data = data >> 1
+}</code></pre>
 </article>
 
+<article>
+  <header><h3>Why Not HLS?</h3></header>
+
+  <p class="center">High-level synthesis can automatically convert a subset of C to RTL, including imperative control flow. <em>But:</em></p>
+
+  <ul>
+    <li>HLS-ed code is designed to work as a standalone circuit rather than being closely integrated with hand-written RTL</li>
+    <li>HLS does not give fine control over cycle-level timing</li>
+    <li>HLS frontends are often in a different language than the RTL HDL</li>
+  </ul>
+</article>
+
+<article>
+  <header><h3>Our Proposal</h3></header>
+  <p class="center"><a href="">chisel-recipes</a> is an embedded DSL for describing and compiling control flow machines at cycle granularity</p>
+
+  <pre><code class="language-scala">val data = Reg(...)
+recipe (
+  action { io.ready := true.B },
+  waitUntil(io.valid),
+  action { data := io.bits },
+  tick(),
+  whileLoop(popcount(data) >= 3.U) {
+      action { data := data >> 1.U }
+  }
+).compile()</code></pre>
+</article>
+
+<article>
+  <header><h3>chisel-recipes Primitives</h3></header>
+
+  <p class="center">The control flow primitives in <code>chisel-recipes</code> are modeled after those in Blarney (an eDSL embedded in Haskell)</p>
+
+  <ul>
+    <li><code>Action</code>: Combinational immediate assignments composed of arbitrary Chisel code</li>
+    <li><code>Tick</code>: Advance one cycle</li>
+    <li><code>Recipe</code>: Execute sub-recipes in sequential order</li>
+    <li><code>While</code>: Execute the body until the condition is false</li>
+    <li><code>When</code> / <code>ITE</code>: Conditionally execute a sub-recipe</li>
+    <li><code>Parallel</code>* / <code>Background</code>*: Concurrently execute sub-recipes</li>
+  </ul>
+</article>
+
+<article>
+  <header><h3>Recipe Combinators</h3></header>
+
+  <p class="center">Since recipe primitives are just Scala datatypes, we can write regular Scala functions to compose new recipes.</p>
+
+  <pre><code class="language-scala medium">def waitUntil(cond: chisel3.Bool): Recipe =
+    whileLoop(cond, tick())
+def forever(r: Recipe): Recipe =
+    whileLoop(true.B, r)</code></pre>
+
+  <p class="center">Recipes can be defined and composed just like Chisel circuits.</p>
+
+  <pre><code class="language-scala small">def fetchDecoupled[T](io: DecoupledIO[T], dataReg: T) =
+  recipe (
+    waitUntil(io.valid, active=io.ready),
+    action { data := io.bits },
+    tick()
+  )</code></pre>
+
+  <p class="center">Recipes have an <code>active</code> signal, which can be used in the RTL.</p>
+</article>
+
+<!--
+<article>
+  <header><h3>Recipe Composition</h3></header>
+</article>
+-->
+
+<article>
+  <header><h3>Example - AXI4-Lite Slave</h3></header>
+
+  <pre><code class="language-scala small">val readOnce = recipe (
+  waitUntil(axi.ar_valid === 1.B, active=axi.ar_ready),
+  action {
+    axi.r_data := mem.read(axi.ar_addr)
+    axi.r_valid := 1.B
+  },
+  waitUntil(axi.r_ready === 1.B, active=axi.r_valid),
+  tick()
+)
+forever(readOnce).compile()</code></pre>
+</article>
+
+<article>
+  <header><h3>Example - Decoupled GCD Circuit</h3></header>
+
+  <pre><code class="language-scala small">doWhile (
+  waitUntil(input.valid, active=input.ready),
+  action {
+    x := input.bits.value1
+    y := input.bits.value2
+  },
+  tick(),
+  whileLoop(x > 0.U && y > 0.U)(
+    action {
+      when(x > y) {
+        x := x - y
+      }.otherwise {
+        y := y - x
+      }
+    },
+    tick()
+  ),
+  action {
+    when(x === 0.U) {
+      output.bits.gcd := y
+    }.otherwise {
+      output.bits.gcd := x
+    }
+  },
+  waitUntil(output.ready, active=output.valid),
+)(cond=true.B).compile()</code></pre>
+</article>
+
+<article>
+  <header><h3>Compiling Recipes</h3></header>
+
+  <img src="./figs/recipes/recipe_compilation.svg" style="background:white; padding-top: 1rem; padding-bottom:1rem;"/>
+
+  <ul>
+    <li>Each recipe primitive is a small circuit with top-level <code>go</code> and <code>done</code> signals <small>(the active signal is also elaborated if used)</small></li>
+    <li><code>go</code> and <code>done</code> are single-cycle wide pulses</li>
+  </ul>
+</article>
 {% endblock %}
