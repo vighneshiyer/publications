@@ -9,11 +9,11 @@
     - [x] Introduce the primitives
     - [x] Show that recipes are compositional (pieces can be defined separately and then integrated)
     - [x] Give examples of recipes for AXI slave and DecoupledGCD
-    - [ ] Show how recipes are compiled with the go -> (active, done) interface
+    - [x] Show how recipes are compiled with the go -> (active, done) interface
 - Col 4
-    - [ ] Talk about debugging features with source locators
-        - [ ] Waveform signal debugging
-        - [ ] Printf debugging
+    - [x] Talk about debugging features with source locators
+        - [x] Waveform signal debugging
+        - [x] Printf debugging
     - [ ] Conclusion
         - The power of embedded DSLs with existing embedded HDLs!
         - Next steps: optimized recipes with static analysis (minimal state), PPA analysis, bounded fork/join functionality, show utility in real examples

@@ -110,7 +110,7 @@ recipe (
 <article>
   <header><h3>Recipe Combinators</h3></header>
 
-  <p class="center">Since recipe primitives are just Scala datatypes, we can write regular Scala functions to compose new recipes.</p>
+  <p class="center">Since recipe primitives are just Scala datatypes, regular Scala functions can be used to construct new recipes.</p>
 
   <pre><code class="language-scala medium">def waitUntil(cond: chisel3.Bool): Recipe =
     whileLoop(cond, tick())
@@ -153,7 +153,7 @@ forever(readOnce).compile()</code></pre>
 <article>
   <header><h3>Example - Decoupled GCD Circuit</h3></header>
 
-  <pre><code class="language-scala small">doWhile (
+  <pre><code class="language-scala medium">doWhile (
   waitUntil(input.valid, active=input.ready),
   action {
     x := input.bits.value1
@@ -189,6 +189,41 @@ forever(readOnce).compile()</code></pre>
   <ul>
     <li>Each recipe primitive is a small circuit with top-level <code>go</code> and <code>done</code> signals <small>(the active signal is also elaborated if used)</small></li>
     <li><code>go</code> and <code>done</code> are single-cycle wide pulses</li>
+    <li>Recipes are compiled recursively and are driven with a pulse generator at the top-level</li>
+  </ul>
+</article>
+
+<article>
+  <header><h3>Debugging Recipes - Printf Instrumentation</h3></header>
+
+  <p class="center">When compiling a recipe, it can be instrumented with Chisel <code>printf</code>s with source locators.</p>
+
+  <pre><code class="small language-text">time=[0] [doWhile] has started (GCDRecipe.scala:1)
+time=[0] [waitUntil] has started (GCDRecipe.scala:2)
+time=[0] [waitUntil] has finished (GCDRecipe.scala:2)
+time=[0] [action] is active (GCDRecipe.scala:3)
+time=[0] [tick] about to tick (GCDRecipe.scala:7)
+
+time=[1] [whileLoop] has started (GCDRecipe.scala:8)
+time=[1] [action] is active (GCDRecipe.scala:9)
+time=[1] [tick] about to tick (GCDRecipe.scala:16)</code></pre>
+</article>
+
+<article>
+  <header><h3>Debugging Recipes - Waveform Instrumentation</h3></header>
+
+  <img src="./figs/recipes/waveform_debugging.png" />
+
+  <p class="center">All recipe primitives and combinators have named go/active/done signals with source locators, injected in the RTL.</p>
+</article>
+
+<article>
+  <header><h3>Conclusion and Future Work</h3></header>
+
+  <ul>
+    <li>New eDSLs leveraging existing embedded HDLs (Chisel) are powerful and useful</li>
+    <li>Chisel recipes is a new eDSL with immediate value to RTL designers</li>
+    <li>Future work: optimized recipes with static analysis, PPA tradeoff analysis, bounded fork/join functionality, demonstrate applications in accelerator / peripheral / cache design</li>
   </ul>
 </article>
 {% endblock %}
