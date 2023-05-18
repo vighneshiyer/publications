@@ -72,10 +72,10 @@ where many machines can access a shared structure.
 
     <p>A Packed-Memory Array (PMA) [1] is a fast set data structure which supports
     polylogarithmic time and cache-friendly database operations, such as updates, point queries, and range queries. </p>
-    <img src="./figs/distpcsr/pma.svg" width="60%" />
+    <img src="./figs/distpcsr/pma.svg" width="80%" />
 
     <p> A Packed-Compressed Sparse Row Matrix (PCSR) [2] utilizes the cache locality of the PMA to execute fast graph search algorithms. PCSRs were previously parallelized in shared memory model as PPCSRs [3]. </p>
-    <img src="./figs/distpcsr/pcsr.svg" width="60%" />
+    <img src="./figs/distpcsr/pcsr.svg" />
   </article>
 
   <article>
@@ -86,7 +86,7 @@ where many machines can access a shared structure.
     <li>On <strong>query</strong> or <strong>insert</strong>, we route a request to the correct server, based on the requesting server's view of subranges.
     <li>Inserts are received in a buffer; if any PCSR gets too full, we have it redistribute with its neighbors before handling more inserts.
     </ul>
-    <img src="./figs/distpcsr/distpcsr.svg" width="80%"/>
+    <img src="./figs/distpcsr/distpcsr.svg"/>
   </article>
 
   <article>
@@ -122,7 +122,7 @@ where many machines can access a shared structure.
     <header><h3>Testing Insert Throughput</h3></header>
     <p> We compared several settings of our data structure (LF is the load-factor in the active case) against an idealized model on the LiveJournal social network graph, with roughly 8.5 million edges (identical to [2]). We also tested against
     state-of-the-art shared-memory graph processing data structures, but we are not competitive. </p>
-    <img src="./figs/distpcsr/insert.svg", width="70%">
+    <img src="./figs/distpcsr/insert.svg", width="90%">
   </article>
 
   <article>
