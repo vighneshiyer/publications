@@ -21,11 +21,11 @@
 
 {% block authors %}
   {# Put authors here, with one link per author. #}
-  <a property="author">Ansa Schmulbach*</a>,
+  <a property="author">Viansa Schmulbach*</a>,
   <a property="author">Nikhil Jha*</a>,
   <a property="author">Josh Kang</a>,
   <a property="author">Vighnesh Iyer</a>,
-  <a property="author">John Wawrzynek</a>
+  <a property="author">John Wawrzynek</a>,
   <a property="author">Bora Nikolic</a>
 {% endblock %}
 
@@ -40,7 +40,7 @@
 {% endblock %}
 
 {% block footer_center %}
-    {TBD TBD TBD}@berkeley.edu
+  {ansa, nikhiljha, minwoo_kang, vighnesh.iyer, johnw, bora}@berkeley.edu
 {% endblock %}
 
 {% block footer_right %}
@@ -56,5 +56,92 @@
 {% block contents %}
 <article>
   <header><h3>Motivation</h3></header>
+  <ul> 
+    <li>Running digital simulation and elaboration tools to check test coverage and get estimates for power and area is time-consuming.</li>
+    <li>Digital designs are hierarchical in how we design them, so leveraging this hierarchy may allow self-supervised learning (SSL) techniques to learn useful latent representations of netlists.</li>
+    <li>Different information is available at different levels of abstraction (hi-FIRRTL vs lo-FIRRTL), and so we may need to use different techniques to get the best representation for each.</li>
+  </ul>
+</article>
+<article>
+  <header><h3>Our Proposal</h3></header>
+  <img src="./figs/rtl2graph-examples/proposal.svg" />
+  <ul>
+  <li>We may be able to use a GNN to learn a good latent representation of a FIRRTL netlist. Because collecting a full dataset with critical path and coverage data is expensive, we instead train the model on small subgraphs by masking out certain nodes and asking it to predict what node is present there.</li>
+  <li>Use this representation in a downstream network to predict test coverage before tests are run, and to estimate power and area metrics without running expensive synthesis.</li>
+  </ul>
+</article>
+<article>
+  <header><h3>Graph Implementation</h3></header>
+  <ul>  
+    <li> The lo-FIRRTL AST is analyzed in two passes: the first pass instantiates nodes for each hardware structure, and the second pass creates edges to represent input/output connections.</li>
+    <li> Different node types represent module inputs, module outputs, primary operators, muxes, registers, and memory so that the model can distinguish between these components. Left inputs and right inputs, as edges, are also distinguished where applicable. 
+    </li>
+    <ul>
+    <li> Combinatorial primary operators (ex. and, or) are represented by the same node type but have an operator field within the node which distinguishes different operators.
+    </li>
+    </ul>
+    <li> Subfield references (ex. <code>a.b.c <- d</code>) are "unwrapped" such that the expression's right-hand side is connected to the topmost expression of the left-hand side (<code>d</code> is connected as an input to <code>a</code>).
+    </li>
+  </ul> 
+</article>
+<article>
+  <header><h3>Chisel Arbiter</h3></header>
+  <img src="./figs/rtl2graph-examples/arbiter.svg" />
+</article>
+<article>
+  <header><h3>Chisel Queue</h3></header>
+  <img src="./figs/rtl2graph-examples/queue.svg" />
+</article>
+<article>
+  <header><h3>Blinky (Chisel Tutorial)</h3></header>
+  <pre class="fragment"><code class="language-scala small">class Blinky(freq: Int, startOn: Boolean = false) extends Module {
+      val io = IO(new Bundle {
+        val led0 = Output(Bool())
+      })
+      // Blink LED every second using Chisel built-in util.Counter
+      val led = RegInit(startOn.B)
+      val (_, counterWrap) = Counter(true.B, freq / 2)
+      when(counterWrap) {
+        led := ~led
+      }
+      io.led0 := led
+    }
+}</pre></code>
+  <pre class="fragment"><code class="small">module Blinky :
+    input clock : Clock
+    input reset : UInt<1>
+    output io_led0 : UInt<1>
+    reg led : UInt<1>, clock with :
+      reset => (UInt<1>("h0"), led)
+    reg counterWrap_c_value : UInt<9>, clock with :
+      reset => (UInt<1>("h0"), counterWrap_c_value)
+    node counterWrap_wrap_wrap = eq(counterWrap_c_value, UInt<9>("h1f3"))
+    node _counterWrap_wrap_value_T = add(counterWrap_c_value, UInt<1>("h1"))
+    node _counterWrap_wrap_value_T_1 = tail(_counterWrap_wrap_value_T, 1)
+    node _GEN_0 = mux(counterWrap_wrap_wrap, UInt<1>("h0"), _counterWrap_wrap_value_T_1)
+    node _GEN_1 = mux(UInt<1>("h1"), _GEN_0, counterWrap_c_value)
+    node _GEN_2 = mux(UInt<1>("h1"), counterWrap_wrap_wrap, UInt<1>("h0"))
+    node _led_T = not(led)
+    node counterWrap = _GEN_2
+    node _GEN_3 = mux(counterWrap, _led_T, led)
+    io_led0 = led
+    led = mux(reset, UInt<1>("h0"), _GEN_3)
+    counterWrap_c_value = mux(reset, UInt<9>("h0"), _GEN_1)</pre></code>
+<img src="./figs/rtl2graph-examples/blinky.svg" />
+</article>
+<article> 
+  <header><h3>Evaluation</h3></header>
+  <ul>  
+    <li> For very small graphs, tests were implemented by ensuring the output graph matched a manually constructed expected graph.
+    </li>
+    <li> For larger graphs, test were done by exporting the graph to Graphviz format and inspecting the output graph. </li>
+  </ul>
+</article>
+<article>
+<header><h3>Next Steps</h3></header>
+  <ul>  
+    <li>Pre-train a GNN for circuit representation embeddings by masking out patches of the graphs we have generated.</li>
+    <li>Fine-tune or augment the GNN for our target downstream tasks (metric estimation, coverpoint estimation).</li>
+  </ul>
 </article>
 {% endblock %}
