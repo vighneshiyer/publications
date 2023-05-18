@@ -132,7 +132,7 @@ val maxNum = 30
 def genSExpr(depth: Int = 0): Gen[SExpr] =
   for {
     goDeeperProb <- Gen.double.mark(Struct)
-    expr <- if (goDeeperProb < 1 - depth / maxDepth) 
+    expr <- if (goDeeperProb < 1 - depth / maxDepth)
       then for {
         op <- genOperator.mark(Op)
         exp1 <- genSExpr(depth + 1)
