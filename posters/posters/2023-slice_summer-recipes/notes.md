@@ -14,6 +14,6 @@
     - [x] Talk about debugging features with source locators
         - [x] Waveform signal debugging
         - [x] Printf debugging
-    - [ ] Conclusion
+    - [x] Conclusion
         - The power of embedded DSLs with existing embedded HDLs!
         - Next steps: optimized recipes with static analysis (minimal state), PPA analysis, bounded fork/join functionality, show utility in real examples

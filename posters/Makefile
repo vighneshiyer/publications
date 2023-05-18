@@ -26,6 +26,8 @@ $(eval $(call poster,2023-slice_winter-verif_projects,slice))
 $(eval $(call poster,2023-asplos-sic,slice))
 $(eval $(call poster,2023-slice_summer-fuzzing,slice))
 $(eval $(call poster,2023-slice_summer-recipes,slice))
+$(eval $(call poster,2023-slice_summer-simcommand_chiseltest,slice))
+$(eval $(call poster,2023-slice_summer-rtl2graph,slice))
 $(eval $(call poster,2023-slice_summer-distpcsr,slice))
 
 all: $(posters) posters/index.html
