@@ -1,0 +1,178 @@
+{% extends "templates/slice/slice.jinja2" %}
+
+{## Header ##}
+{% set poster_title = "A Packed-Memory Data Structure for Distributed Graph Streaming" %}
+{# ‘poster_subtitle’ is optional; use "" to hide it #}
+{% set poster_subtitle = "" %}
+{# Change ‘venue’ to a conference or workshop name if any #}
+{% set venue = "SLICE Summer 2023 Retreat" %}
+{# ‘webpage_title’ is displayed in the browser’s top bar #}
+{% set webpage_title = poster_title %}
+{# ‘project_url’ is used in the footer and for the logo #}
+{% set project_url = "https://github.com/girantinas/267-pma-project" %}
+
+{# Publication info is hidden by default (.publication-info in CSS) #}
+{% set pub_datetime_iso = "2023-05-21" %}
+{% set pub_date = "May 21, 2023" %}
+
+{# Custom styles and JS for a particular poster #}
+{% block custom_head %}
+{% endblock %}
+
+{% block authors %}
+  {# Put authors here, with one link per author. #}
+  <a property="author">Rohit Agarwal<sup>a</sup></a>,
+  <a property="author">Alec James<sup>a</sup></a>,
+  <a property="author">Joshua You<sup>a</sup></a>,
+  <a property="author">Aydin Buluc<sup>a, b</sup></a>
+{% endblock %}
+
+{% block affiliations %}
+  <sup>a</sup><a property="sourceOrganization">UC Berkeley</a>,
+  <sup>b</sup><a property="sourceOrganization">Lawrence Berkeley National Laboratory</a>
+{% endblock %}
+
+{### Footer ##}
+
+{% block footer_left %}
+  <address class="monospace" style="font-weight:400;">
+    <a href="{{ project_url }}">{{ project_url }}</a>
+  </address>
+{% endblock %}
+
+{% block footer_center %}
+  <address class="monospace" style="font-weight:400;">
+    {rohaga, alehero, jyou12, abuluc}@berkeley.edu
+  </address>
+{% endblock %}
+
+{% block footer_right %}
+<span class="credits">
+  SLICE Retreat, Summer 2023
+</span>
+{% endblock %}
+
+{### Contents ###}
+
+{% block contents %}
+  <article>
+    <header><h3>Motivation</h3></header>
+    <ul>
+    <li>Extremely large sparse dynamic graph workloads are common for many modern database problems.
+    <li>Thus, it is necessary to have
+graph data structures that have high update and query throughput while also operating in a distributed manner,
+where many machines can access a shared structure. 
+    <li>Graph algorithms like breadth-first search use locality of edges incident to the same vertex to maximize performance.
+    </ul>
+   <p><em> Can we maintain a sparse graph data structure, distributed amongst several servers, that can remain consistent in the face of concurrent queries, updates, and common graph processing algorithms? </em> </p>
+  </article>
+
+  <article>
+    <header><h3>Background</h3></header>
+
+    <p>A Packed-Memory Array (PMA) [1] is a fast set data structure which supports
+    polylogarithmic time and cache-friendly database operations, such as updates, point queries, and range queries. </p>
+    <img src="./figs/distpcsr/pma.svg" width="60%" />
+
+    <p> A Packed-Compressed Sparse Row Matrix (PCSR) [2] utilizes the cache locality of the PMA to execute fast graph search algorithms. PCSRs were previously parallelized in shared memory model as PPCSRs [3]. </p>
+    <img src="./figs/distpcsr/pcsr.svg" width="60%" />
+  </article>
+
+  <article>
+    <header><h3>Data Structure Design</h3></header>
+    Our data structure, the DistPCSR, answers queries and stores the graph with a distributed network of servers.
+    <ul>
+    <li>Each server owns a particular subrange of the edges; we keep a PCSR storing edges in that subrange (and put a maximum on the size of this PCSR).
+    <li>On <strong>query</strong> or <strong>insert</strong>, we route a request to the correct server, based on the requesting server's view of subranges.
+    <li>Inserts are received in a buffer; if any PCSR gets too full, we have it redistribute with its neighbors before handling more inserts.
+    </ul>
+    <img src="./figs/distpcsr/distpcsr.svg" width="80%"/>
+  </article>
+
+  <article>
+    <header><h3>Fixed vs. Active Redistribution</h3></header>
+    On a redistribute, there are two strategies we can use:
+    <ul>
+    <li>Give up and hope we never see this case in practice. Thus, the subranges will stay <em>fixed</em>.
+    <li>Alternatively, we can allow <em>active</em> subranges that can change as the data structure evolves. To do so:
+    <ul>
+    <li> Figure out how many neighbors you need to redistribute with and notify them.
+    <li> Dynamically change you and your neighbors subranges according to the element redistribution. 
+    <li> Use a global lock; only one global redistribute allowed at a time. 
+    <li> After a redistribute, a request may need to be re-forwarded to its final destination. 
+    </ul>  </ul>
+    <p> In the active case, we were able to show the following guarantee: </p>
+    <p class="center"> <em> The data structure does not drop, duplicate, or infinitely route any edges. </em> </p>
+  </article>
+
+  <article>
+  <header><h3>UPC++ Implementation</h3></header>
+  <ul>
+  <li>Queries and inserts are both implemented using the Remote Procedure Call (RPC) mechanism in UPC++.
+  <li>The query RPC is straightforward, as it simply performs a local query 
+  on a remote machine then returns the result.
+  <li>Inserts are less straightforward, since any insert could trigger a call to redistribute, which requires the 
+  use of synchronization operations not available within an RPC function. Thus, we implemented inserts as an RPC which would place a request within the remote 
+  machine's insert queue, which it would then flush within its own progress loop.
+  <li>To check consistency, we can add UPC++ barriers to clearly separate insert and query phases.
+  </ul>
+  </article>
+
+  <article>
+    <header><h3>Testing Insert Throughput</h3></header>
+    <p> We compared several settings of our data structure (LF is the load-factor in the active case) against an idealized model on the LiveJournal social network graph, with roughly 8.5 million edges (identical to [2]). We also tested against
+    state-of-the-art shared-memory graph processing data structures, but we are not competitive. </p>
+    <img src="./figs/distpcsr/insert.svg", width="70%">
+  </article>
+
+  <article>
+    <header><h3>Running Graph Algorithms</h3></header>
+    <ul>
+    <li>Breadth-first search (<strong>BFS</strong>) and PageRank (<strong>PR</strong>) are two graph algorithms that are commonly run in a distributed setting and used as benchmarks for graph processing systems.
+    <li>Generally, both algorithms have low computational intensity, and thus the latency and bandwidth of accessing the data structure cannot be hidden.
+    <li>The distributed PCSR fares even worse, as many of its accesses incur an additional cost of network serialization / deserialization, which can be an order of magnitude slower than accessing main memory. 
+    </ul>
+    <div class="columns-center">
+      <div class="columns-center">
+        <img src="./figs/distpcsr/pagerank.svg", width="100%">
+      </div>
+      <div class="columns-center">
+        <img src="./figs/distpcsr/bfs.svg", width="100%">
+      </div>
+
+    </div>
+  </article>
+
+  <article>
+    <header><h3>Conclusion and Future Directions</h3></header>
+    Some ideas we still need to explore to improve performance:
+    <ul>
+    <li><em>Fine-grained locking</em> will ensure the single global redistribute 
+    lock is not a serial bottleneck. On more servers, this would quickly become an issue that prevents further scaling. 
+    May need a system similar to that used in [2] to avoid deadlocks between different ranks
+    trying to redistribute simultaneously.
+    <li><em>2-dimensional distribution</em> wherein each server is in charge of a rectangular block of the 
+    adjacency matrix, since in combination with graph partitioning, 
+    it can dramatically reduce the cost of communication for sparse matrix-vector operations.
+    </ul>
+
+    <p>We demonstrate the usefulness of Packed-Memory Array Data Structures in the distributed memory model.</p>
+  </article>
+
+  <article>
+    <header><h3>Acknowledgements</h3></header>
+    <p> We submitted this as our CS267 Project. Thank you to the course staff for acquainting us with UPC++ and other frameworks. In addition, thank you
+    to Helen Xu and Brian Wheatman, the authors of previous packed-memory data structures, for sharing some serial PMA code and realistic graph workloads for us to use. </p>
+  </article>
+
+  <article>
+    <header><h3>References</h3></header>
+    <ol>
+    <li> M. A. Bender and H. Hu. <em>An adaptive packed-memory array</em>, ACM TODS, 32 (2007), p.26.
+    <li> B. Wheatman and H. Xu, <em>Packed compressed sparse row: A dynamic graph representation</em>, in 2018 IEEE HPEC, 2018.
+    <li> B. Wheatman and H. Xu. <em>A parallel packed memory array to store dynamic graphs</em>. In 2021 ALENEX, pages 31–45.
+    </ol>
+  </article>
+
+  
+{% endblock %}
