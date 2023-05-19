@@ -93,7 +93,7 @@
   <img src="./figs/fuzzing/prng_random_api.svg" />
   <ul>
     <li>Each random decision is pulled from a PRNG</li>
-    <li>We can only control the seed! No fine control over the stimulus</li>
+    <li>We can only control the seed! No precise or semantic control over the stimulus</li>
   </ul>
 </article>
 
@@ -175,7 +175,13 @@ def genSExpr(depth: Int = 0): Gen[SExpr] =
 
 <article>
   <header><h3>Conclusion and Future Directions</h3></header>
-  <p class="center">We still need to test our generator against existing software fuzzing methods, such as AFL.</p>
-  <p class="center">However, we demonstrate a controllable, parametric stimulus generator with instrumentation enables effective hardware fuzzing.</p>
+  <p class="center">We demonstrate that a parametric stimulus generator with instrumentation enables effective hardware fuzzing.</p>
+  <!--<p><em>Future work</em></p>-->
+  <h4>Future Work</h4>
+  <ul>
+    <li>Comparison against AFL-style fuzzers</li>
+    <li>Feature complete rv64 instruction generator</li>
+    <li>RTL coverage-driven feedback</li>
+  </ul>
 </article>
 {% endblock %}
