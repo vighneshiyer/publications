@@ -95,7 +95,7 @@ recipe (
 <article>
   <header><h3>chisel-recipes Primitives</h3></header>
 
-  <p class="center">The control flow primitives in <code>chisel-recipes</code> are modeled after those in Blarney (an eDSL embedded in Haskell)</p>
+  <p class="center">The control flow primitives are modeled after those in Blarney (an eDSL embedded in Haskell)</p>
 
   <ul>
     <li><code>Action</code>: Combinational immediate assignments composed of arbitrary Chisel code</li>
@@ -106,7 +106,7 @@ recipe (
     <li><code>Parallel</code>* / <code>Background</code>*: Concurrently execute sub-recipes</li>
   </ul>
 
-  <pre><code>enum RecipePrimitive:
+  <pre><code class="medium">enum RecipePrimitive:
   case Tick()
   case Action(() => Bool)
   case Recipe(Seq[Recipe])
@@ -198,15 +198,15 @@ forever(readOnce).compile()</code></pre>
 
   <img src="./figs/recipes/recipe_compilation.svg" style="background:white; padding-top: 1rem; padding-bottom:1rem;"/>
 
-  <ul>
-    <li>Each recipe primitive is a small circuit with top-level <code>go</code> and <code>done</code> signals <small>(the active signal is also elaborated if used)</small></li>
-    <li><code>go</code> and <code>done</code> are single-cycle wide pulses</li>
-    <li>Recipes are compiled recursively and are driven with a pulse generator at the top-level</li>
-  </ul>
   <ol>
-    <li><code>chisel-recipes</code> combinators are expanded into primitives</li>
-    <li>Primitives are converted into modules with <i>go</i> and <i>done</i> signals connected together</li>
-    <li>Chisel compiles the modules into RTL (e.g. FIRRTL, Verilog)</code></li>
+    <li>Combinators are expanded into primitives</li>
+    <li>Primitives become circuits with <i>go</i> and <i>done</i> signals</li>
+    <ul style="margin-left: 2rem; margin-bottom: 0.5rem;">
+      <li><small><code>go</code> and <code>done</code> are single-cycle wide pulses</small></li>
+      <li><small>The active signal is also elaborated if used</small></li>
+    </ul>
+    <!--<li>Recipes are compiled recursively and are driven with a pulse generator at the top-level</li>-->
+    <li>Chisel compiles the composed recipe circuit to RTL</code></li>
   </ol>
 </article>
 
@@ -239,8 +239,8 @@ time=[1] [tick] about to tick (GCDRecipe.scala:16)</code></pre>
 
   <ul>
     <li>New eDSLs leveraging existing embedded HDLs (Chisel) are powerful and useful</li>
-    <li>Chisel recipes is a new eDSL with immediate value to RTL designers</li>
-    <li>Future work: optimized recipes with static analysis, PPA tradeoff analysis, bounded fork/join functionality, demonstrate applications in accelerator/peripheral/cache design</li>
+    <li>Chisel recipes is a new, debug-friendly, eDSL to help RTL designers describe control flow machines</li>
+    <li><em>Future work</em>: optimized recipes with static analysis, PPA tradeoff analysis, bounded fork/join functionality, demonstrate applications in accelerator/peripheral/cache design</li>
   </ul>
 </article>
 {% endblock %}
