@@ -84,7 +84,8 @@ where many machines can access a shared structure.
     <ul>
     <li>Each server owns a particular subrange of the edges; we keep a PCSR storing edges in that subrange (and put a maximum on the size of this PCSR).
     <li>On <strong>query</strong> or <strong>insert</strong>, we route a request to the correct server, based on the requesting server's view of subranges.
-    <li>Inserts are received in a buffer; if any PCSR gets too full, we have it redistribute with its neighbors before handling more inserts.
+    <li>If any PCSR gets too full, we have it redistribute with its neighbors before handling more inserts.
+    <li>Inserts are received in a queue; to process an insert one checks if it needs to be re-routed (perhaps the subrange has changed), otherwise, it adds it to a local PCSR.
     </ul>
     <img src="./figs/distpcsr/distpcsr.svg"/>
   </article>
@@ -94,12 +95,13 @@ where many machines can access a shared structure.
     On a redistribute, there are two strategies we can use:
     <ul>
     <li>Give up and hope we never see this case in practice. Thus, the subranges will stay <em>fixed</em>.
-    <li>Alternatively, we can allow <em>active</em> subranges that can change as the data structure evolves. To do so:
+    <li>Alternatively, we can allow <em>active</em> subranges that can change as the data structure evolves. To do a redistribute from server S:
     <ul>
-    <li> Figure out how many neighbors you need to redistribute with and notify them.
-    <li> Dynamically change you and your neighbors subranges according to the element redistribution. 
-    <li> Use a global lock; only one global redistribute allowed at a time. 
-    <li> After a redistribute, a request may need to be re-forwarded to its final destination. 
+    <li>S figures out how many neighbors it needs to redistribute with and notifies them.
+    <li>Dynamically change S and S's neighbors' subranges according to the element redistribution.
+    <li>Propagate these changes to the other servers asynchronously.
+    <li>Use a global lock; only one global redistribute allowed at a time. 
+    <li>After a redistribute, a request may need to be re-forwarded to its final destination. 
     </ul>  </ul>
     <p> In the active case, we were able to show the following guarantee: </p>
     <p class="center"> <em> The data structure does not drop, duplicate, or infinitely route any edges. </em> </p>
@@ -120,8 +122,7 @@ where many machines can access a shared structure.
 
   <article>
     <header><h3>Testing Insert Throughput</h3></header>
-    <p> We compared several settings of our data structure (LF is the load-factor in the active case) against an idealized model on the LiveJournal social network graph, with roughly 8.5 million edges (identical to [2]). We also tested against
-    state-of-the-art shared-memory graph processing data structures, but we are not competitive. </p>
+    <p> We compared several settings of our data structure (LF is the load factor, which is the maximum fraction of the global data structure that is allowed to be full) against an idealized model on the LiveJournal social network graph, with roughly 8.5 million edges (identical to [2]). </p>
     <img src="./figs/distpcsr/insert.svg", width="90%">
   </article>
 
