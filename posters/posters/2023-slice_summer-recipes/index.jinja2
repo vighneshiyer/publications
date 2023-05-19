@@ -105,6 +105,16 @@ recipe (
     <li><code>When</code> / <code>ITE</code>: Conditionally execute a sub-recipe</li>
     <li><code>Parallel</code>* / <code>Background</code>*: Concurrently execute sub-recipes</li>
   </ul>
+
+  <pre><code>enum RecipePrimitive:
+  case Tick()
+  case Action(() => Bool)
+  case Recipe(Seq[Recipe])
+  case While(Bool, Recipe)
+  case When(Bool, Recipe)
+  case IfThenElse(Bool, Recipe, Recipe)
+  case Parallel(Seq[Recipe])
+  case Background(Seq[Recipe])</code></pre>
 </article>
 
 <article>
@@ -179,6 +189,8 @@ forever(readOnce).compile()</code></pre>
   },
   waitUntil(output.ready, active=output.valid),
 )(cond=true.B).compile()</code></pre>
+
+  <img src="./figs/recipes/gcd-flow.svg" style="background:white; padding-top: 1rem; padding-bottom:1rem;"/>
 </article>
 
 <article>
@@ -191,6 +203,11 @@ forever(readOnce).compile()</code></pre>
     <li><code>go</code> and <code>done</code> are single-cycle wide pulses</li>
     <li>Recipes are compiled recursively and are driven with a pulse generator at the top-level</li>
   </ul>
+  <ol>
+    <li><code>chisel-recipes</code> combinators are expanded into primitives</li>
+    <li>Primitives are converted into modules with <i>go</i> and <i>done</i> signals connected together</li>
+    <li>Chisel compiles the modules into RTL (e.g. FIRRTL, Verilog)</code></li>
+  </ol>
 </article>
 
 <article>
@@ -223,7 +240,7 @@ time=[1] [tick] about to tick (GCDRecipe.scala:16)</code></pre>
   <ul>
     <li>New eDSLs leveraging existing embedded HDLs (Chisel) are powerful and useful</li>
     <li>Chisel recipes is a new eDSL with immediate value to RTL designers</li>
-    <li>Future work: optimized recipes with static analysis, PPA tradeoff analysis, bounded fork/join functionality, demonstrate applications in accelerator / peripheral / cache design</li>
+    <li>Future work: optimized recipes with static analysis, PPA tradeoff analysis, bounded fork/join functionality, demonstrate applications in accelerator/peripheral/cache design</li>
   </ul>
 </article>
 {% endblock %}

@@ -1,0 +1,20 @@
+direction: right
+
+go
+go.style.double-border: true
+go.shape: circle
+
+go -> doWhile
+doWhile: {
+  waitUntil1: waitUntil
+  waitUntil1 -> whileLoop: done
+  whileLoop: {
+    action -> tick
+  }
+  waitUntil2: waitUntil
+  whileLoop -> action: done
+  action -> waitUntil2: done
+  action
+}
+output: output.bits
+doWhile.action -> output
