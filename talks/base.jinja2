@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>{{ title }}</title>
+    <meta name="description" content="{{ description }}">
+    <meta name="author" content="{{ author }}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    {% block custom_head %}
+    {% endblock %}
+  </head>
+
+  <body vocab="http://schema.org/" typeof="PresentationDigitalDocument">
+    <span property="publisher" style="display: none;">{{ venue }}</span>
+    <time pubdate property="datePublished" datetime="{{ pub_datetime_iso }}" style="display: none;">{{ pub_date }}</time>
+    <div class="reveal">
+        <div class="slides">
+            {% block slides %}
+            {% endblock %}
+        </div>
+    </div>
+
+    <script type="module">
+    import 'reveal.js/dist/reset.css'
+    import 'reveal.js/dist/reveal.css'
+    import 'reveal.js/dist/theme/black.css'
+    import 'reveal.js/plugin/highlight/monokai.css'
+
+    import Markdown from 'reveal.js/plugin/markdown/markdown.esm.js';
+    import Notes from 'reveal.js/plugin/notes/notes.esm.js';
+    import Highlight from 'reveal.js/plugin/highlight/highlight.esm.js';
+    import Zoom from 'reveal.js/plugin/zoom/zoom.esm.js';
+    import Reveal from 'reveal.js';
+    Reveal.initialize({
+       controls: true,
+       progress: true,
+       center: true,
+       hash: true,
+       plugins: [ Markdown, Notes, Highlight, Zoom ]
+    });
+    </script>
+  </body>
+</html>
