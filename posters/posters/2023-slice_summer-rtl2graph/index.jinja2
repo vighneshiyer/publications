@@ -54,107 +54,138 @@
 {# Contents are individual boxes (typically ‘article’s or ‘figure’s).  Each
    ‘article’ contains a header and some contents. #}
 {% block contents %}
+
 <article>
   <header><h3>Motivation</h3></header>
-  <ul> 
+  <ul>
     <li>Running digital simulation and elaboration tools to check test coverage and get estimates for power and area is time-consuming.</li>
     <li>Digital designs are hierarchical in how we design them, so leveraging this hierarchy may allow self-supervised learning (SSL) techniques to learn useful latent representations of netlists.</li>
     <li>Different information is available at different levels of abstraction (hi-FIRRTL vs lo-FIRRTL), and so we may need to use different techniques to get the best representation for each.</li>
   </ul>
 </article>
+
 <article>
   <header><h3>Our Proposal</h3></header>
   <img src="./figs/rtl2graph-examples/proposal.svg" />
   <ul>
-  <li>Because collecting a full dataset with critical path and coverage data is expensive, we first train the model with pre-text tasks relevant to learning the structure and semantics of netlists (e.g learning to predict randomly masked node attributes).</li>
-  <li>Then, we fine-tune the pre-trained model on downstream tasks of predicting verification test coverage and estimating power and area metrics without running expensive synthesis.</li>
+    <li>Because collecting a full dataset with critical path and coverage data is expensive, we first train the model with pre-text tasks relevant to learning the structure and semantics of netlists (e.g learning to predict randomly masked node attributes).</li>
+    <li>Then, we fine-tune the pre-trained model on downstream tasks of predicting verification test coverage and estimating power and area metrics without running expensive synthesis.</li>
   </ul>
+  <p class="center">We built a tool (<code>rtl2graph</code>) that transforms a FIRRTL netlist into a graph that can be used for GNN-based representation learning.</p>
 </article>
+
 <article>
-  <header><h3>Graph Implementation</h3></header>
-  <p>The lo-FIRRTL AST is analyzed in two passes: the first pass instantiates nodes for each hardware structure, and the second pass creates edges to represent input/output connections.</p>
+  <header><h3>Graph Transform Implementation</h3></header>
+  <p class="center">The lo-FIRRTL AST is analyzed in two passes</p>
+  <ol>
+    <li>The first pass instantiates nodes for each hardware structure (IOs, operators, registers, memories)</li>
+    <li>The second pass creates edges to represent inter-node connections</li>
+  </ol>
 </article>
+
 <article>
   <header><h3>Chisel Arbiter</h3></header>
-  <img src="./figs/rtl2graph-examples/arbiter.svg" />
+  <pre><code class="language-scala small">class Arbiter[T](gen: T, n: Int) extends Module {
+  val io = IO(new Bundle {
+    val in = Flipped(Vec(n, Decoupled(gen)))
+    val out = Decoupled(gen)
+  })
+  // ... more RTL
+}</code></pre>
+  <img src="./figs/rtl2graph-examples/arbiter.svg" style="padding-top: 0.5rem; padding-bottom: 0.5rem; background: white;"/>
 </article>
+
 <article>
   <header><h3>Node and Edge Representations</h3></header>
-  <ul>  
-    <li> Different node types represent module inputs, module outputs, primary operators, muxes, registers, and memory so that the model can distinguish between these components. Left inputs and right inputs, as edges, are also distinguished where applicable. 
-    </li>
-    <li> Combinatorial primary operators (ex. and, or) are represented by the same node type but have an operator field within the node which distinguishes different operators.
-    </li>
-  </ul> 
-  <pre class="fragment"><code class="language-scala small">
-    class Adder extends Module {
-      val io = IO(new Bundle {
-        val a = Input(UInt(8.W))
-        val b = Input(UInt(8.W))
-        val c = Output(UInt(9.W))
-      })
-      io.c := io.a +& io.b
-    }
-  </code></pre>
-  <pre class="fragment"><code class="small">
-    circuit Adder :
-    module Adder :
-      input io_a : UInt<8>
-      input io_b : UInt<8>
-      output io_c : UInt<9>
+  <ul>
+    <li>Different node types represent module inputs, module outputs, primary operators, muxes, registers, and memory so that the model can distinguish between these components. Left inputs and right inputs, as edges, are also distinguished where applicable.</li>
+    <li>Combinatorial primary operators (e.g. <code>and</code>, <code>or</code>) are represented by the same node type but have an node attribute to distinguish different operators.</li>
+  </ul>
+  <pre class="fragment"><code class="language-scala small">class Adder extends Module {
+  val io = IO(new Bundle {
+    val a = Input(UInt(8.W))
+    val b = Input(UInt(8.W))
+    val c = Output(UInt(9.W))
+  })
+  io.c := io.a +& io.b
+}</code></pre>
+  <pre class="fragment"><code class="small">circuit Adder :
+  module Adder :
+    input io_a : UInt<8>
+    input io_b : UInt<8>
+    output io_c : UInt<9>
 
-      node _io_c_T = add(io_a, io_b)
-      io_c <= _io_c_T
-  </code></pre>
+    node _io_c_T = add(io_a, io_b)
+    io_c <= _io_c_T</code></pre>
   <img src="./figs/rtl2graph-examples/add.svg" />
 </article>
+
 <article>
-  <header><h3>Node and Edge Representations</h3></header>
-  <p> Subfield references (ex. <code>a.b.c <- d</code>) are "unwrapped" such that the expression's right-hand side is connected to the topmost expression of the left-hand side (<code>d</code> is connected as an input to <code>a</code>). </p>
+  <header><h3>Subfield Reference Simplification</h3></header>
+  <p>Subfield references (ex. <code>a.b.c <- d</code>) are "unwrapped" such that the expression's right-hand side is connected to the topmost expression of the left-hand side (<code>d</code> is connected as an input to <code>a</code>).</p>
   <img src="./figs/rtl2graph-examples/subfield.svg" />
+  <p>Edges to and from SRAMs are modeled uniformly, without regard to their underlying semantics (address, data, mask).</p>
 </article>
+
 <article>
   <header><h3>Chisel Queue</h3></header>
-  <img src="./figs/rtl2graph-examples/queue.svg" />
+  <pre><code class="language-scala small">class Queue[T](gen: T, entries: Int) extends Module {
+  val io = IO(new QueueIO(gen, entries, hasFlush))
+  val ram = SyncReadMem(entries, gen)
+  val enq_ptr = Counter(entries)
+  val deq_ptr = Counter(entries)
+  when(io.enq.fire) {
+    ram(enq_ptr.value) := io.enq.bits
+    enq_ptr.inc()
+  }
+  when(do_deq) {
+    deq_ptr.inc()
+  }
+  io.deq.valid := !empty
+  io.enq.ready := !full
+  // ... more RTL
+}</code></pre>
+  <img src="./figs/rtl2graph-examples/queue.svg" style="padding-top: 0.5rem; padding-bottom: 0.5rem; background: white;"/>
 </article>
+
 <article>
   <header><h3>Complete Example (with Chisel + FIRRTL)</h3></header>
-  <pre class="fragment"><code class="language-scala small">class ExampleClass() extends Module {
-      val io = IO(new Bundle {
-        val a = Input(UInt(8.W))
-        val b = Input(UInt(8.W))
-        val c = Input(Bool())
-        val out = Output(UInt(16.W))
-      })
-      val pipeA = RegNext(io.a)
-      val pipeB = RegNext(io.b)
-      val outPipe = RegNext(pipeA + pipeB)
-      io.out := chisel3.Mux(io.c, outPipe, pipeB)
-    }</pre></code>
-  <pre class="fragment"><code class="small">module ExampleClass :
-    [declarations omitted]
-    node _outPipe_T = add(pipeA, pipeB)
-    node _outPipe_T_1 = tail(_outPipe_T, 1)
-    node _io_out_T = mux(io_c, outPipe, pipeB)
-    
-    io_out = pad(_io_out_T, 16)
-    pipeA = io_a
-    pipeB = io_b
-    outPipe = _outPipe_T_1
-  </code></pre>
+  <pre class="fragment"><code class="language-scala small">class ExampleClass extends Module {
+  val io = IO(new Bundle {
+    val a = Input(UInt(8.W))
+    val b = Input(UInt(8.W))
+    val c = Input(Bool())
+    val out = Output(UInt(16.W))
+  })
+  val pipeA = RegNext(io.a)
+  val pipeB = RegNext(io.b)
+  val outPipe = RegNext(pipeA + pipeB)
+  io.out := chisel3.Mux(io.c, outPipe, pipeB)
+}</pre></code>
+  <pre class="fragment"><code class="small language-text">module ExampleClass :
+  [declarations omitted]
+  node _outPipe_T = add(pipeA, pipeB)
+  node _outPipe_T_1 = tail(_outPipe_T, 1)
+  node _io_out_T = mux(io_c, outPipe, pipeB)
+
+  io_out = pad(_io_out_T, 16)
+  pipeA = io_a
+  pipeB = io_b
+  outPipe = _outPipe_T_1</code></pre>
   <img src="./figs/rtl2graph-examples/example.svg"/>
 </article>
-<article> 
+
+<article>
   <header><h3>Evaluation</h3></header>
-  <ul>  
-    <li> For very small graphs, tests were implemented by ensuring the output graph matched a manually constructed expected graph.
-    </li>
-    <li> For larger graphs, test were done by exporting the graph to Graphviz format and inspecting the output graph. </li>
+  <ul>
+    <li>For very small graphs, tests were implemented by ensuring the output graph matched a manually constructed expected graph.</li>
+    <li>For larger graphs, test were done by exporting the graph to Graphviz format and inspecting the output graph.</li>
   </ul>
 </article>
+
 <article>
-<header><h3>Next Steps</h3></header>
-  <ul>  
+  <header><h3>Next Steps</h3></header>
+  <ul>
     <li>Pre-train a GNN for circuit representation embeddings by masking out patches of the graphs we have generated.</li>
     <li>Fine-tune or augment the GNN for our target downstream tasks (metric estimation, coverpoint estimation).</li>
   </ul>
