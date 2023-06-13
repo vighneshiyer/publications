@@ -4,13 +4,13 @@ figs = $(shell find ../../figs/ -type f)
 quick: $(main)_quick.pdf
 pdf: $(main).pdf
 
-$(main).pdf: $(main).tex $(figs)
+$(main).pdf: $(main).tex $(figs) ../references.bib
 	texfot pdflatex -shell-escape $<
 	texfot bibtex $(main)
 	texfot pdflatex -shell-escape $<
 	texfot pdflatex -shell-escape $<
 
-$(main)_quick.pdf: $(main).tex $(figs)
+$(main)_quick.pdf: $(main).tex $(figs) ../references.bib
 	texfot pdflatex -jobname=$(main)_quick -shell-escape $<
 
 clean:

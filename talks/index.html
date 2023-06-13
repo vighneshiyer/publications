@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>PLARCH 2023</title>
+    <meta name="description" content="eDSLs for HW Design and Verification and a Discussion on Mixed-Abstraction HDLs">
+    <meta name="author" content="Vighnesh Iyer">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  </head>
+
+  <body vocab="http://schema.org/" typeof="PresentationDigitalDocument">
+    <span property="publisher" style="display: none;">PLARCH Workshop at ISCA 2023</span>
+    <time pubdate property="datePublished" datetime="2023-06-12" style="display: none;">June 12th, 2023</time>
+    <div class="reveal">
+        <div class="slides">
+
+<section>
+    <h3>New Embedded DSLs for Hardware Design and Verification</h3>
+    <p>
+        <small>Vighnesh Iyer, Kevin Laeufer, Young-Jin Park, Rohit Agarwal, Lixiang Yin, Bryan Ngo, Oliver Yu, Koushik Sen, Borivoje Nikolić</small>
+    </p>
+    <p>
+        <small>UC Berkeley</small>
+    </p>
+</section>
+
+<section>
+    <h3>HDL Implementation Techniques</h3>
+    <!-- freestanding DSLs, eDSLs, custom compilers, reflection-based AST analysis -->
+</section>
+
+<section>
+    <h3>The Virtues of eDSLs</h3>
+    <!-- make the complete case for eDSLs over the other approaches -->
+    <!-- they enable easy construction of new DSLs, which are crucial to *augment* existing HDLs -->
+    <!-- this is why HDLs should be written as eDSLs! -->
+    <!-- show the eDSL diagram -->
+</section>
+
+<section>
+    <h3>Three Examples in the Scala/Chisel Ecosystem</h3>
+</section>
+
+<section>
+    <h3>SimCommand</h3>
+    <!-- copy-paste a few slides from the earlier talk -->
+</section>
+
+<section>
+    <h3>Stimulus Generation as an eDSL</h3>
+    <!-- note down all the things I should mention from notes.md -->
+</section>
+
+<section>
+    <h3>Chisel-recipes</h3>
+    <!-- note down all the things I should mention from notes.md -->
+</section>
+
+<section>
+    <h3>Host Languages</h3>
+    <!-- what makes a good host language -->
+</section>
+
+<section>
+    <h3>eDSL Overview</h3>
+    <!-- summarize the table from the paper -->
+</section>
+
+<section>
+    <h3>Conclusion</h3>
+    <!-- restate the paper's final question -->
+</section>
+
+<section>
+    <h3>A Case for Mixed-Abstraction HDLs and a Discussion on Other Aspects of HDL Design</h3>
+    <p>
+        <small>Vighnesh Iyer, Borivoje Nikolić</small>
+    </p>
+    <p>
+        <small>UC Berkeley</small>
+    </p>
+</section>
+
+<section>
+    <h3>HDL Abstraction Levels</h3>
+    <!-- discuss abstraction levels, when each one is used, quickly summarize the table in the paper -->
+</section>
+
+<section>
+    <h3>Why Mixed Abstraction?</h3>
+    <!-- talk about the trends in circt, XLS - more integration of dialects, but no frontend solution! first time backends are being built before the frontends. -->
+</section>
+
+<section>
+    <h3>Mixing RTL and Higher-Level Abstractions</h3>
+    <!-- Discuss state sharing, simulation performance, perf model correlation -->
+</section>
+
+<section>
+    <h3>Mixing RTL and Event-Based Abstractions</h3>
+    <!-- Discuss clocking, latches, behavioral models -->
+</section>
+
+<section>
+    <h3>IR Primitives</h3>
+    <!-- What primitives belong in an IR? -->
+</section>
+
+<section>
+    <h3>Preserving Semantics Through IR Lowering</h3>
+    <!-- Related question: If we could design a synthesis frontend from scratch, what semantics are most valuable to preserve from the RTL or above? -->
+</section>
+
+<section>
+    <h3>Modules: What Are they Good For?</h3>
+    <!-- Can modules be inferred, what's the point!? -->
+</section>
+
+<section>
+    <h3>Incremental-First HDLs</h3>
+    <!-- Incrementalism has percolated through many things (from simple within-run memoization, to run-to-run caching of build descriptions ala Buck2/Bazel), we really need term-level incrementalism since HW generators suffer from the same problems as build system frontends as the build/HW design grow very large -->
+    <!-- Discuss within-run incrementalism and run-to-run incrementalism -->
+</section>
+
+    </div>
+</div>
+    <script type="module">
+    import 'reveal.js/dist/reset.css'
+    import 'reveal.js/dist/reveal.css'
+    import 'reveal.js/dist/theme/white.css'
+    import 'reveal.js/plugin/highlight/monokai.css'
+
+    import Markdown from 'reveal.js/plugin/markdown/markdown.esm.js';
+    import Notes from 'reveal.js/plugin/notes/notes.esm.js';
+    import Highlight from 'reveal.js/plugin/highlight/highlight.esm.js';
+    import Zoom from 'reveal.js/plugin/zoom/zoom.esm.js';
+    import Reveal from 'reveal.js';
+    Reveal.initialize({
+       controls: true,
+       progress: true,
+       center: true,
+       hash: true,
+       plugins: [ Markdown, Notes, Highlight, Zoom ]
+    });
+    </script>
+  </body>
+</html>
