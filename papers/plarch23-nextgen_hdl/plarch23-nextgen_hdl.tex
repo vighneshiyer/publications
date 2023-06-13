@@ -1,4 +1,4 @@
-\documentclass[sigplan,review,nonacm,9pt]{acmart}
+\documentclass[sigplan,review,nonacm,10pt]{acmart}
 
 \usepackage{minted}
 \usepackage{makecell}
@@ -156,13 +156,13 @@ We also discuss other HDL implementation questions such as what primitives an IR
 \small
 \begin{tabular}{>{\raggedright\arraybackslash}p{2cm}>{\raggedright\arraybackslash}p{3cm}>{\raggedright\arraybackslash}p{2cm}>{\raggedright\arraybackslash}p{3cm}>{\raggedright\arraybackslash}p{3cm}>{\raggedright\arraybackslash}p{2cm}}\toprule
 \textbf{Abstraction} & \textbf{Primitives} & \textbf{Simulation} & \textbf{Examples} & \textbf{Utility} & \textbf{Domain} \\\midrule
-Transistor-level & PDK transistor models, wires, passives, physical geometry & Solving systems of differential equations & SPICE, Spectre & Analog circuit design, standard cell characterization & Continuous time and voltage\\\midrule
+%Transistor-level & PDK transistor models, wires, passives, physical geometry & Solving systems of differential equations & SPICE, Spectre & Analog circuit design, standard cell characterization & Continuous time and voltage\\\midrule
 Gate-level & PDK standard cells, arbitrary time advancement & Event-driven simulation & Structural Verilog with SDF annotation & Post-syn verification, timing validation & Discrete time, 4-valued state\\\midrule
 Register-transfer level & Flops, SRAMs, logic/arithmetic operators, wires & Transition system simulation & Lava\cite{lava}, Chisel\cite{chisel}, Amaranth\cite{amaranth}, PyMTL3\cite{pymtl3} & Synchronous digital circuit design and verification & Regular clock ticks, 2/4 valued signals\\\midrule
 Digital discrete-event modeling & State, event-triggered blocks, delays & Event-driven simulation & Verilog, VHDL & Behavioral modeling of digital/analog IPs & Discrete time, 4-valued signals\\\midrule
-Pipelines & Token streams, ordered operations, dataflow history & Ordered token processing & DFiant\cite{dfiant}, TL-Verilog\cite{tlverilog}, PipelineC\cite{pipelinec}, Shakeflow\cite{shakeflow} & Dataflow circuits, auto-pipelining & Tokens in, tokens out\\\midrule
+Pipelines & Token streams, ordered operations, dataflow history & Ordered token processing & DFiant\cite{dfiant}, TL-Verilog\cite{tlverilog}, PipelineC\cite{pipelinec} & Dataflow circuits, auto-pipelining & Tokens in, tokens out\\\midrule
 Imperative control & State, update blocks, control blocks & Interpretation & Calyx\cite{calyx}, XLS\cite{xls} & High-level synthesis & Steps in the control block\\\midrule
-Transaction-level models & Ports / channels, threads, imperative code & TLM kernel & SystemC-TLM, PyMTL3 & System-level modeling, high-level synthesis & Transaction traces\\\bottomrule
+Transaction-level models & Ports, channels, threads, imperative code & TLM kernel & SystemC-TLM, PyMTL3 & System-level modeling, high-level synthesis & Transaction traces\\\bottomrule
 \end{tabular}
 \caption{Overview of abstraction levels for describing hardware designs. The boundaries of above-RTL abstractions are fuzzy.}
 \label{fig:abstractions}
@@ -203,16 +203,16 @@ We make the case that the next-gen HDL should support mixed-abstraction circuit 
 
 Dataflow algorithms are more ergonomic to implement, and easier to optimize, when written in a high-level abstraction (above RTL).
 Ideally, we would not write the accelerator in a different HDL, lower it to Verilog, and then simulate it with the rest of the RTL, integrated as a Verilog blackbox.
-Instead, a single HDL should leverage Circt's multiple IR dialects to support mixed-abstraction simulation to yield higher simulation performance and improve integration ergonomics\cite{pymtl3, esi}.
+Instead, a single HDL should leverage Circt's multiple IR dialects to support mixed-abstraction simulation to yield higher simulation performance and improve integration ergonomics\cite{pymtl3, esi, hector}.
 Such an approach also enables an ergonomic flow for refinement proofs from high-level models to RTL, as well as performance correlation checking between timed models and RTL.
 
 % Low level for clocks, even lower for mixed signal, what about async resets (iffy simulation semantics leak into FIRRTL), timing simulation
 
 An HDL should not only support mixing of abstractions above RTL, but also those below, in particular, generic event driven simulation constructs.
 HDLs designed for vanilla synchronous digital logic struggle to define precise simulation semantics for common circuit features such as asynchronous resets, clock gates, and level-sensitive latches.
-In simulation, clocks are a special construct, often hardcoded as a fixed frequency, continuous signal rather than something specified in an event-driven IR that is composed with an RTL IR.
-Finally, behavioral models for circuits\cite{llhd} like PHYs are critical for system-level verification, and ideally would have clean semantics for interaction with vanilla RTL.
-By separating different abstractions into different IRs, a simulator is able to understand which parts of the design need what level of simulation fidelity and flexibility.
+In simulation, clocks are a special construct, often hardcoded as a fixed frequency signal, rather than something specified in an event-driven IR that is composed with an RTL IR.
+Finally, behavioral modeling of mixed-signal circuits\cite{llhd}, such as PHYs, are critical for system-level verification, and ideally would have clean semantics for interaction with vanilla RTL.
+By separating different abstractions into different IRs, a simulator can understand which parts of the design need what level of simulation fidelity and flexibility.
 
 \subsection{Mixed-Abstraction Interaction}
 
@@ -223,7 +223,7 @@ This requires an integrated compiler approach that can understand both IRs and h
 A greater challenge exists when trying to couple generic event-driven simulation constructs with RTL.
 Often, one will want to execute arbitrary code in between events to process a transaction or update state.
 The simulator may want to statically analyze the code (e.g. a clock generator) to make optimizations (e.g. use per-cycle simulation rather than event loop-based simulation when the clock input is a fixed frequency).
-Approaches to address this include expressing arbitrary code as LLVM IR that is called by a CIRCT IR routine or forgoing static analysis.
+One approach may involve expressing arbitrary code as LLVM IR that is called by a CIRCT IR routine.
 
 \section{Practical HDL Implementation Questions}
 
@@ -233,14 +233,13 @@ Approaches to address this include expressing arbitrary code as LLVM IR that is 
 
 % What primitives should exist? How can we capture the complexity of mapping to ASIC/FPGA primitives in different PDKs?
 
-An open question is: how should hardware primitives be modeled in a HDL?
-Existing approaches expose common primitives (e.g. SRAMs) through HDL primitives (e.g. Chisel's SyncReadMem), which work for the common case, but are unable to cleanly express custom SRAM features such as ECC or BIST.
+An open question is: ``how should hardware primitives be modeled in a HDL''?
+Existing approaches expose common primitives (e.g. SRAMs) through HDL primitives (e.g. Chisel's SyncReadMem), which work for the common case, but are unable to cleanly express special SRAM features such as ECC or BIST or other memory elements such as CAMs.
 One ``solution'' is to use a Verilog blackbox around the custom SRAM marco, but we lose understanding of the primitive's semantics.
 Another ``solution'' is to model the custom macro using the available HDL primitives, and replace it with the Verilog blackbox during compilation, but we run the risk of inaccurately modeling the macro.
 The mainstream approach of using Verilog on both the behavioral model and RTL side is reasonable, but is too design and process specific to be portable.
 % TODO: fix this sentence below: - has nothing to do with mixed-abstraction HDLs
 % Mixed-abstraction HDLs have the potential to enable description of custom primitives in a way that capture's its semantics while also validating that blackbox substitutions have the same behavior.
-
 
 \subsection{Preserving Semantics Through IR Lowering}
 
@@ -249,10 +248,10 @@ The mainstream approach of using Verilog on both the behavioral model and RTL si
 % balance simplicity of IR and pass complexity with avoiding semantics reconstruction
 % lgraph claims to be very simple, but does that come at costs?
 
-Often, there is a conflict between IRs trying to minimize their primitive count to make pass writing easier, and frontends trying to map all their constructs as cases of the IR primitive set.
-One issue is that synthesis tools have been refined over decades to recognize patterns in human written Verilog to reconstruct useful semantics (e.g. SRAM and FSM inference).
+Often, there is a tension between IRs trying to minimize their primitive count to make writing passes easier, and frontends wanting to directly represent their constructs with IR primitives.
+Synthesis tools have been refined over decades to recognize patterns in human written Verilog to reconstruct useful semantics (e.g. SRAM and FSM inference).
 How can we preserve semantics (using Xs for boolean optimization, unique case statements, interfaces / structs) from the frontend HDL so that they are passed onto the synthesis tool as if a human had written them, while keeping passes easy to write?
-If we could design a synthesis frontend from scratch, what semantics would be most valuable to preserve, and how would it differ from existing RTL IRs?
+If we could design a synthesis frontend from scratch, what semantics would be most valuable to preserve, and how would it differ from existing RTL representations?
 
 \subsection{Modules: What Are They Good For?}
 
@@ -263,7 +262,8 @@ Few HDLs, such as Pyrope\cite{pyrope}, elide the module concept altogether, but 
 
 \subsection{Incremental-First HDLs}
 
-Most HDLs today, constructed as eDSLs, have no knowledge of source-level dependencies that lead to generated output dependencies after elaboration.
+Most HDLs today, constructed as eDSLs, have no general ability to cache partial results from run-to-run, since it requires analysis of source-level dependencies.
+% knowledge of source-level dependencies that lead to generated output dependencies after elaboration.
 This is an area where freestanding DSLs such as Pyrope have an advantage, since source level dependency tracking for eDSLs requires analysis of arbitary code written in the host language.
 There is hope that new \textit{content-addressable} languages, such as Unison\cite{unison}, will make such dependency tracking, and thus incremental elaboration viable for HDLs implemented as eDSLs.
 % no idea about how a design changes from run-to-run, thus making incremental elaboration difficult.
@@ -312,7 +312,8 @@ There is hope that new \textit{content-addressable} languages, such as Unison\ci
 % interpretation, JIT, compilation, optimization
 
 \begin{acks}
-Research was partially funded by SLICE Lab industrial sponsors and affiliates Amazon, AMD, Apple, Google, Intel, and Qualcomm.
+This work was supported in part by NSF CCRI ENS Chipyard Award \#2016662, DARPA RTML program (contract FA8650-20-2-7006), and SLICE Lab industrial sponsors and affiliates Amazon, AMD, Apple, Google, Intel, and Qualcomm.
+Any opinions, findings, conclusions, or recommendations in this paper are solely those of the authors and do not necessarily reflect the position or the policy of the sponsors.
 \end{acks}
 
 \bibliographystyle{ACM-Reference-Format}
