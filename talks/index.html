@@ -276,47 +276,209 @@ test(new Queue(UInt(8.W), 4)) { c =>
       </ul>
       <li class="fragment">We propose a hybrid API that:</li>
       <ul>
-        <li class="fragment">Enables both generator styles</li>
+        <li class="fragment">Can mix both generator types</li>
         <li class="fragment">Leverages Chisel for hardware datatypes and as a constraint language</li>
       </ul>
     </ul>
   </section>
-<!-- note down all the things I should mention from notes.md -->
+
+  <section>
+    <h3>Imperative Generation eDSL API</h3>
+
+    <pre class="fragment"><code class="language-scala small" data-trim data-noescape>
+val intGen: Gen[Int] = Gen[Int].range(0, 100)
+</pre></code>
+
+    <pre class="fragment"><code class="language-scala small" data-trim data-noescape>
+val seqGen: Gen[Seq[Int]] = for {
+  lit &lt;- Gen.range(1, 100)
+  tailGen &lt;- Gen.oneOf(Gen(Seq()) -&gt; 0.1, seqGen -&gt; 0.9),
+  seqn &lt;- tailGen.map(t =&gt; lit +: t)
+} yield seqn
+</pre></code>
+
+<p class="center fragment">Use Scala's for-comprehensions for monadic composition</p>
+  </section>
+
+  <section>
+    <h3>Generating Chisel Datatypes</h3>
+
+    <pre class="fragment"><code class="language-scala small" data-trim data-noescape>
+val hwUIntGen: Gen[UInt] = Gen[UInt].range(0, 100)
+</pre></code>
+
+    <pre class="fragment"><code class="language-scala small" data-trim data-noescape>
+object MemOp extends ChiselEnum
+case class MemTx extends Bundle {
+  val addr = UInt(32.W)
+  val data = UInt(64.W)
+  val op = MemOp
+}
+val memTxGen: Gen[MemTx] = Gen[MemTx].uniform
+</pre></code>
+  </section>
+
+  <section>
+    <h3>Leveraging Chisel for Constraints</h3>
+
+    <pre class="fragment"><code class="language-scala small" data-trim data-noescape>
+object MemOp extends ChiselEnum
+case class MemTx extends Bundle {
+  val addr = UInt(32.W)
+  val data = UInt(64.W)
+  val op = MemOp
+}
+val memTxGen: Gen[MemTx] = Gen[MemTx].constrained { memTx =&gt;
+  (memTx.op === MemOp.Write) && (addr(2,0) === 0.U)
+}
+</pre></code>
+    <p class="center fragment">Since Chisel is an eDSL, it can be leveraged for other hardware eDSLs</p>
+  </section>
+
+  <section>
+    <h3>Parametric Fuzzing</h3>
+
+    <pre class="fragment"><code class="language-scala small" data-trim data-noescape>
+Gen[MemTx].generate(ScalaRandom(seed=10))
+Gen[MemTx].generate(ParametricRandom(Seq[Byte](...)))
+</pre></code>
+    <p class="center fragment">Unify both imperative and declarative constraint generators and introduce parametric control</p>
+
+    <img class="fragment" src="./figs/fuzzing/parametric_fuzzing_loop.svg" />
+  </section>
+
+  <section>
+    <h3>The Stimulus Generation eDSL</h3>
+    <ul>
+      <li class="fragment">Core ADT type is a <code>Gen[A]</code> which describes a generator of values of type <code>A</code></li>
+      <li class="fragment">Leverage Chisel for datatypes and as a constraint language</li>
+      <li class="fragment">Leverage Scala's for-comprehension syntax for monadic composition of <code>Gen</code>s</li>
+    </ul>
+  </section>
 </section>
 
 <section>
-<h3>Chisel-recipes</h3>
-<!-- note down all the things I should mention from notes.md -->
+  <section>
+    <h3>Chisel-Recipes: A Cycle-Level Imperative Control Flow eDSL</h3>
+  </section>
+
+  <section>
+    <h3>Writing Control Flow Logic</h3>
+    <p class="center fragment">Often, hardware designers manually convert imperative control flow to an explicit FSM</p>
+    <p class="center fragment">This process is repetitive, mechanical, and error-prone</p>
+    <p class="center fragment">We can design an eDSL to directly express cycle-level control flow and an interpreter to turn it into RTL</p>
+  </section>
+
+  <section>
+    <h3>Chisel-Recipes eDSL</h3>
+    <ul>
+      <li class="fragment"><code>tick()</code>: advance a cycle</li>
+      <li class="fragment"><code>action { block }</code>: perform the assignments in the block now</li>
+      <li class="fragment"><code>whileLoop (cond) { recipe }</code>: loop until cond is false</li>
+      <li class="fragment"><code>when (cond) { recipe }</code>: if cond is true, execute sub-recipe</li>
+    </ul>
+
+    <pre class="fragment"><code class="language-scala small" data-trim data-noescape>
+def waitUntil(c: Bool) = whileLoop(!c, tick())
+def forever(r: Recipe) = whileLoop(true.B, r)
+</pre></code>
+  </section>
+
+  <section>
+    <h3>Example</h3>
+    <p class="fragment center">Reading a memory from an AXI-Lite port</p>
+
+    <pre class="fragment"><code class="language-scala small" data-trim data-noescape>
+val readOnce = recipe(
+  waitUntil(axi.ar_valid === 1.B, active=axi.ar_ready),
+  action {
+    axi.r_data := RegNext(mem.read(axi.ar_addr))
+    axi.r_valid := 1.B
+  },
+  waitUntil(axi.r_ready === 1.B, active=axi.r_valid),
+  tick()
+).compile()
+</pre></code>
+  </section>
+
+  <section>
+    <h3>Leveraging Chisel and Scala for Debug</h3>
+    <p class="center fragment">Use Scala macros to inject source line instrumentation into eDSL primitives</p>
+    <p class="center fragment">Use Chisel printf and naming APIs to inject source info into RTL</p>
+    <img class="fragment" src="./figs/recipes/waveform_debugging.png" />
+  </section>
+
+  <section>
+    <h3>Implementation</h3>
+
+    <img class="fragment" src="./figs/recipes/recipe_compilation.svg" />
+
+    <p class="center fragment">Each primitive is a go-done circuit</p>
+    <p class="center fragment">Opportunity to use a lightweight HLS IR (e.g. Calyx) to produce optimized FSMs</p>
+  </section>
+
+  <section>
+    <h3>The Chisel-Recipes eDSL</h3>
+    <ul>
+      <li class="fragment">Core ADT type is a <code>Recipe</code> which describes a control flow machine</li>
+      <li class="fragment">Leverage Chisel for RTL design and generation</li>
+      <li class="fragment">Leverage Scala's implicits for source instrumentation and the eDSL's frontend API</li>
+    </ul>
+  </section>
 </section>
 
 <section>
 <h3>Host Languages</h3>
-<!-- what makes a good host language -->
+<p class="center fragment">What makes a good host language for an eDSL?</p>
+<ul>
+  <li class="fragment">Algebraic data types</li>
+  <li class="fragment">Flexible and extensible + familiar syntax</li>
+  <li class="fragment">Monadic composition sugar <small>(or direct style alternatives)</small></li>
+  <li class="fragment">Strong macro system for source transformation and instrumentation</li>
+  <li class="fragment">Good IDE support, stdlib, library ecosystem</li>
+</ul>
+<p class="center fragment">Scala (3) is quite good!</p>
 </section>
 
+<!--
 <section>
 <h3>eDSL Overview</h3>
-<!-- summarize the table from the paper -->
+summarize the table from the paper
 </section>
+-->
 
 <section>
 <h3>Conclusion</h3>
+  <ul>
+    <li class="fragment">HDLs implemented as eDSLs provide an extensible foundation for other eDSLs</li>
+    <li class="fragment">There are many areas of hardware design and verification that would be served well with specialized eDSLs</li>
+  </ul>
+  <p class="fragment center">What new eDSLs should we work on?</p>
 <!-- restate the paper's final question -->
 </section>
 
 <section>
 <h3>A Case for Mixed-Abstraction HDLs and a Discussion on Other Aspects of HDL Design</h3>
-<p>
-<small>Vighnesh Iyer, Borivoje Nikolić</small>
-</p>
-<p>
-<small>UC Berkeley</small>
-</p>
+  <p>
+    <small><strong>Vighnesh Iyer</strong>, Borivoje Nikolić</small>
+  </p>
+  <p>
+    <small><strong>UC Berkeley</strong></small>
+  </p>
+  <p>
+    <small><strong>PLARCH 2023</strong></small>
+  </p>
 </section>
 
 <section>
-<h3>HDL Abstraction Levels</h3>
-<!-- discuss abstraction levels, when each one is used, quickly summarize the table in the paper -->
+  <!-- discuss abstraction levels, when each one is used, quickly summarize the table in the paper -->
+  <section>
+    <h3>HDL Abstraction Levels</h3>
+  </section>
+
+  <section>
+
+  </section>
 </section>
 
 <section>
@@ -373,6 +535,7 @@ test(new Queue(UInt(8.W), 4)) { c =>
        progress: true,
        center: true,
        hash: true,
+       slideNumber: true,
        plugins: [ Markdown, Notes, Highlight, Zoom ]
     });
     </script>
