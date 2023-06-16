@@ -477,13 +477,88 @@ summarize the table from the paper
   </section>
 
   <section>
+    <h3>Event-Driven Abstraction</h3>
 
+    <ul>
+      <li class="fragment"><strong>Examples:</strong> Verilog, VHDL, LLHD <small>(behavioral subset)</small></li>
+      <li class="fragment"><strong>Primitives:</strong> Digital state, event-triggered state updates, delays</li>
+      <li class="fragment"><strong>Domain:</strong> "Continuous" time, 2/4 valued signals</li>
+      <li class="fragment"><strong>Utility:</strong> Behavioral modeling of mixed-signal/digital IPs, RTL design* <small>(only a subset can be mechanically translated to hardware)</small></li>
+    </ul>
+  </section>
+
+  <section>
+    <h3>Register-Transfer Level</h3>
+
+    <ul>
+      <li class="fragment">A subset of what a generic event-driven abstraction can describe</li>
+      <li class="fragment"><strong>Examples:</strong> FIRRTL, LLHD <small>(structural subset)</small>, CIRCT HW dialect, Lava, Chisel, PyMTL3</li>
+      <li class="fragment"><strong>Primitives:</strong> Flops/SRAMs, boolean/arithmetic ops</li>
+      <li class="fragment"><strong>Domain:</strong> Discrete time, 2/4 valued signals</li>
+      <li class="fragment"><strong>Utility:</strong> Synchronous digital circuit design</li>
+    </ul>
+  </section>
+
+  <section>
+    <h3>Dataflow</h3>
+
+    <ul>
+      <li class="fragment"><strong>Examples:</strong> DFiant, TL-Verilog, PipelineC</li>
+      <li class="fragment"><strong>Primitives:</strong> Token streams, ordered operations, dataflow state</li>
+      <li class="fragment"><strong>Domain:</strong> Tokens in → tokens out</li>
+      <li class="fragment"><strong>Utility:</strong> Dataflow circuits, automated pipelining</li>
+    </ul>
+  </section>
+
+  <section>
+    <h3>Lightweight HLS</h3>
+
+    <ul>
+      <li class="fragment"><strong>Examples:</strong> Calyx IR, XLS</li>
+      <li class="fragment"><strong>Primitives:</strong> Digital state, imperative control blocks, scheduling, binding</li>
+      <li class="fragment"><strong>Domain:</strong> Control block statements</li>
+      <li class="fragment"><strong>Utility:</strong> Controllable HLS (explicit state, guided optimization)</li>
+    </ul>
+  </section>
+
+  <section>
+    <h3>Heavyweight HLS</h3>
+
+    <ul>
+      <li class="fragment"><strong>Examples:</strong> Legup, Vivado HLS, Catapult HLS</li>
+      <li class="fragment"><strong>Primitives:</strong> SystemC/C++</li>
+      <li class="fragment"><strong>Domain:</strong> Transaction-level</li>
+      <li class="fragment"><strong>Utility:</strong> Mostly automated state/control construction and optimization</li>
+    </ul>
   </section>
 </section>
 
 <section>
-<h3>Why Mixed Abstraction?</h3>
 <!-- talk about the trends in circt, XLS - more integration of dialects, but no frontend solution! first time backends are being built before the frontends. -->
+  <section>
+    <h3>The Emerging Multi-Abstraction World</h3>
+  </section>
+
+  <section>
+    <h3>Multi-Abstraction IRs</h3>
+
+    <ul>
+      <li class="fragment">CIRCT now has multiple dialects</li>
+      <ul>
+        <li class="fragment">RTL: <code>hw, seq, comb</code></li>
+        <li class="fragment">Dataflow: <code>handshake, esi</code></li>
+        <li class="fragment">Lightweight HLS: <code>ssp, calyx</code></li>
+      </ul>
+    </ul>
+
+    <p class="center fragment">There is a desire to use a suitable abstraction level for a given hardware block</p>
+  </section>
+
+  <section>
+    <h3>Why Mixed Abstraction?</h3>
+
+
+  </section>
 </section>
 
 <section>
