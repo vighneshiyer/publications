@@ -6,123 +6,356 @@
     <meta name="description" content="eDSLs for HW Design and Verification and a Discussion on Mixed-Abstraction HDLs">
     <meta name="author" content="Vighnesh Iyer">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+      h3 {
+        text-transform: none !important;
+      }
+      .reveal pre {
+        width: 100%;
+      }
+      .reveal pre code {
+        padding: 20px !important;
+      }
+      .container{
+        display: grid;
+        grid-auto-flow: column;
+        column-gap: 1em;
+      }
+    </style>
   </head>
 
   <body vocab="http://schema.org/" typeof="PresentationDigitalDocument">
     <span property="publisher" style="display: none;">PLARCH Workshop at ISCA 2023</span>
     <time pubdate property="datePublished" datetime="2023-06-12" style="display: none;">June 12th, 2023</time>
     <div class="reveal">
-        <div class="slides">
+      <div class="slides">
 
 <section>
-    <h3>New Embedded DSLs for Hardware Design and Verification</h3>
-    <p>
-        <small>Vighnesh Iyer, Kevin Laeufer, Young-Jin Park, Rohit Agarwal, Lixiang Yin, Bryan Ngo, Oliver Yu, Koushik Sen, Borivoje Nikolić</small>
-    </p>
-    <p>
-        <small>UC Berkeley</small>
-    </p>
+  <h3>New Embedded DSLs for Hardware Design and Verification</h3>
+  <p>
+    <small><strong>Vighnesh Iyer</strong>, Kevin Laeufer, Young-Jin Park, Rohit Agarwal, Lixiang Yin, Bryan Ngo, Oliver Yu, Koushik Sen, Borivoje Nikolić</small>
+  </p>
+  <p>
+    <small><strong>UC Berkeley</strong></small>
+  </p>
+  <p>
+    <small><strong>PLARCH 2023</strong></small>
+  </p>
 </section>
 
 <section>
+  <section>
     <h3>HDL Implementation Techniques</h3>
-    <!-- freestanding DSLs, eDSLs, custom compilers, reflection-based AST analysis -->
+    <ul>
+      <li class="fragment">Freestanding DSLs</li>
+      <span class="fragment">
+      <li>Custom compilers for existing languages</li>
+      <ul>
+        <li>"Reflection-based" AST analysis</li>
+      </ul>
+      </span>
+      <li class="fragment">Embedded DSLs (eDSLs)</li>
+    </ul>
+  </section>
+
+  <section>
+    <h3>Freestanding DSLs</h3>
+    <ul>
+      <li class="fragment">A custom language specialized for hardware design</li>
+      <li class="fragment"><strong>Examples</strong>: Verilog/VHDL, <a href="https://github.com/masc-ucsc/pyrope_artifacts">pyrope</a>, Bluespec Verilog, <a href="https://github.com/dalance/veryl">Veryl</a></li>
+    </ul>
+  </section>
+
+  <section>
+    <h3>Freestanding DSLs</h3>
+    <ul>
+      <li class="fragment">Full control over syntax and compiler</li>
+    </ul>
+
+<pre class="fragment"><code class="language-verilog small" data-trim data-noescape>
+ typedef union tagged {
+      bit  [4:0] Register;
+      bit [21:0] Literal;
+      struct {
+          bit  [4:0] regAddr;
+          bit  [4:0] regIndex;
+      } Indexed;
+ } InstrOperand;
+
+case (orand: InstrOperand) matches
+    tagged Register r : x = rf[r];
+    tagged Literal n : x = n;
+    tagged Indexed { ra, ri } : x = mem[rf[ra]+ri];
+endcase
+</pre></code>
+<p class="center fragment">Ergonomic runtime tagged unions in Bluespec Verilog</p>
+  </section>
+
+  <section>
+    <h3>Freestanding DSLs</h3>
+<pre><code class="language-verilog small" data-trim data-noescape>
+class Packet;
+    rand bit [3:0] data [];
+
+    constraint size { data.size() &gt; 5; data.size() &lt; 10; }
+
+    constraint values {
+        foreach(data[i]) {
+            data[i] == i + 1;
+            data[i] inside {[0:8]};
+        }
+    }
+endclass
+</pre></code>
+    <p class="center fragment">Ergonomic declarative constrained random API in SystemVerilog</p>
+  </section>
+
+  <section>
+    <h3>Freestanding DSLs</h3>
+    <ul>
+      <span class="fragment">
+      <li>Eventually, the need for general-purpose programming constructs becomes apparent</li>
+      <small><ul class="fragment">
+        <li>Functions, data structures, iteration, type system, FFI, stdlib</li>
+      </ul></small>
+      </span>
+      <!--<li class="fragment">Tooling can never compete with a general-purpose language with more investment</li>-->
+    </ul>
+    <p class="fragment"><strong>2 directions:</strong></p>
+    <ul>
+      <li class="fragment">Build a metaprogramming layer (e.g. Perl for Verilog)</li>
+      <li class="fragment">Augment the DSL with more features (e.g. SystemVerilog)</li>
+    </ul>
+  </section>
+
+  <section>
+    <h3>Custom Compilers</h3>
+
+    <ul>
+      <li class="fragment">Take an existing language and its frontend, and design a custom backend</li>
+      <li class="fragment"><strong>Examples:</strong> Clash, SystemC HLS, MyHDL*</li>
+      <li class="fragment"><strong>Advantages:</strong> Language reuse, direct simulation</li>
+      <li class="fragment"><strong>Disadvantages:</strong> Implementation burden, limited to a subset of the language, fine hardware control may be difficult</li>
+    </ul>
+  </section>
 </section>
 
 <section>
-    <h3>The Virtues of eDSLs</h3>
-    <!-- make the complete case for eDSLs over the other approaches -->
-    <!-- they enable easy construction of new DSLs, which are crucial to *augment* existing HDLs -->
-    <!-- this is why HDLs should be written as eDSLs! -->
-    <!-- show the eDSL diagram -->
+<!-- make the complete case for eDSLs over the other approaches -->
+<!-- they enable easy construction of new DSLs, which are crucial to *augment* existing HDLs -->
+<!-- this is why HDLs should be written as eDSLs! -->
+<!-- show the eDSL diagram -->
+  <section>
+    <h3>Embedded DSLs (eDSLs)</h3>
+    <ul>
+      <li class="fragment">Embed hardware primitives and operators in a general-purpose language</li>
+      <li class="fragment"><strong>Examples:</strong> Lava, Chisel, PyMTL3, Amaranth</li>
+      <li class="fragment">Leverage existing libraries, build tools, IDEs, testing frameworks, language features</li>
+      <li class="fragment"><strong>Disadvantages:</strong> syntax limitations, arbitrary code generators, preserving semantics is hard</li>
+    </ul>
+  </section>
+
+  <section>
+    <h3>eDSL Construction</h3>
+    <img src="figs/simcommand/functional_apis.svg" />
+    <ul>
+      <li class="fragment">eDSLs provide ADTs and APIs</li>
+      <li class="fragment">A regular program written in the host language is run to construct a <em>description</em></li>
+      <li class="fragment">An <em>interpreter</em> turns the description into some final output</li>
+    </ul>
+    <p class="fragment center"><small>For HDLs, the eDSL primitives are hardware components, and the interpreter turns a netlist description into FIRRTL, CIRCT IR, etc.</small></p>
+  </section>
+
+  <section>
+    <h3>Why eDSLs?</h3>
+    <p class="center fragment">HDLs implemented as eDSLs open the door for more eDSLs targeting other aspects of hardware design and verification</p>
+    <p class="center fragment">We should expand the horizons of eDSLs beyond RTL design into other complementary domains</p>
+    <p class="center fragment">We present three eDSLs that augment and use Chisel</p>
+  </section>
 </section>
 
 <section>
-    <h3>Three Examples in the Scala/Chisel Ecosystem</h3>
-</section>
+  <section>
+    <h3>SimCommand: an eDSL for High-Performance Testbenches in Scala</h3>
+  </section>
 
-<section>
+  <section>
+    <h3>Testbench APIs in General Purpose Languages</h3>
+    <ul class="fragment">
+      <li>Scala: chiseltest</li>
+      <li>Python: cocotb</li>
+    </ul>
+
+    <p class="fragment">Both provide all the benefits of being in a general-purpose language, <em>while having fork/join primitives</em></p>
+    <p class="fragment">However, their fork/join functionality <strong>is slow</strong></p>
+    <p class="fragment">We shouldn't have to compromise on performance</p>
+  </section>
+
+  <section>
     <h3>SimCommand</h3>
-    <!-- copy-paste a few slides from the earlier talk -->
-</section>
+    <ul>
+      <li class="fragment">Testbench API embedded in Scala</li>
+      <li class="fragment">Uses chiseltest as the simulator interface</li>
+      <li class="fragment">Purely functional: testbench description and interpretation are split</li>
+    </ul>
 
-<section>
-    <h3>Stimulus Generation as an eDSL</h3>
-    <!-- note down all the things I should mention from notes.md -->
-</section>
+    <pre class="fragment"><code class="language-scala small" data-trim data-noescape>
+def enqueue(data: T): Command[Unit] = for {
+    _ &lt;- poke(io.bits, data)
+    _ &lt;- poke(io.valid, true.B)
+    _ &lt;- waitUntil(io.ready, true.B)
+    _ &lt;- step(1)
+    _ &lt;- poke(io.valid, false.B)
+} yield ()
+    </pre></code>
+  </section>
 
-<section>
-    <h3>Chisel-recipes</h3>
-    <!-- note down all the things I should mention from notes.md -->
-</section>
+  <section>
+    <h3>Fork/Join</h3>
+    <pre class="fragment"><code class="language-scala small" data-trim data-noescape>
+val pushNPop: Command[Boolean] = for {
+    enqThread &lt;- fork(enqueue(100.U))
+    deqThread &lt;- fork(dequeue())
+    _         &lt;- join(enqThread)
+    data      &lt;- join(deqThread)
+} yield data.litValue == 100</pre></code>
 
-<section>
-    <h3>Host Languages</h3>
-    <!-- what makes a good host language -->
-</section>
+    <pre class="fragment"><code class="language-scala small" data-trim data-noescape>
+test(new Queue(UInt(8.W), 4)) { c =>
+    val allGood = run(pushNPop, c.clock)
+    assert(allGood)
+}</pre></code>
+  </section>
 
-<section>
-    <h3>eDSL Overview</h3>
-    <!-- summarize the table from the paper -->
-</section>
-
-<section>
-    <h3>Conclusion</h3>
-    <!-- restate the paper's final question -->
-</section>
-
-<section>
-    <h3>A Case for Mixed-Abstraction HDLs and a Discussion on Other Aspects of HDL Design</h3>
-    <p>
-        <small>Vighnesh Iyer, Borivoje Nikolić</small>
-    </p>
-    <p>
-        <small>UC Berkeley</small>
-    </p>
-</section>
-
-<section>
-    <h3>HDL Abstraction Levels</h3>
-    <!-- discuss abstraction levels, when each one is used, quickly summarize the table in the paper -->
-</section>
-
-<section>
-    <h3>Why Mixed Abstraction?</h3>
-    <!-- talk about the trends in circt, XLS - more integration of dialects, but no frontend solution! first time backends are being built before the frontends. -->
-</section>
-
-<section>
-    <h3>Mixing RTL and Higher-Level Abstractions</h3>
-    <!-- Discuss state sharing, simulation performance, perf model correlation -->
-</section>
-
-<section>
-    <h3>Mixing RTL and Event-Based Abstractions</h3>
-    <!-- Discuss clocking, latches, behavioral models -->
-</section>
-
-<section>
-    <h3>IR Primitives</h3>
-    <!-- What primitives belong in an IR? -->
-</section>
-
-<section>
-    <h3>Preserving Semantics Through IR Lowering</h3>
-    <!-- Related question: If we could design a synthesis frontend from scratch, what semantics are most valuable to preserve from the RTL or above? -->
-</section>
-
-<section>
-    <h3>Modules: What Are they Good For?</h3>
-    <!-- Can modules be inferred, what's the point!? -->
-</section>
-
-<section>
-    <h3>Incremental-First HDLs</h3>
-    <!-- Incrementalism has percolated through many things (from simple within-run memoization, to run-to-run caching of build descriptions ala Buck2/Bazel), we really need term-level incrementalism since HW generators suffer from the same problems as build system frontends as the build/HW design grow very large -->
-    <!-- Discuss within-run incrementalism and run-to-run incrementalism -->
-</section>
-
+  <section>
+    <h3>Interpreter / Scheduler</h3>
+    <div class="container" style="grid-template-columns: 1fr 1fr;">
+      <div class="col" style="display: grid;">
+        <img src="./figs/simcommand/scheduler_sans_serif.svg" style="align-self:center;" />
+      </div>
+      <div class="col">
+        <ul>
+          <li class="fragment">On each timestep
+            <ul class="small">
+              <li>Run every thread until a step, join, or return</li>
+              <li>Collect any new threads spawned</li>
+              <li>Repeat until a fixpoint is reached</li>
+            </ul>
+          </li>
+          <li class="fragment">Step the clock</li>
+          <li class="fragment">Repeat until the main thread returns</li>
+        </ul>
+      </div>
     </div>
+  </section>
+
+  <section>
+    <h3>The SimCommand eDSL</h3>
+    <ul>
+      <li class="fragment">Core ADT type is a <code>Command[R]</code> which describes a testbench operation that terminates with a value of type <code>R</code></li>
+      <li class="fragment">Leverage Chisel for RTL IO datatypes</li>
+      <li class="fragment">Leverage Scala's for-comprehension syntax for monadic composition of <code>Command</code>s</li>
+      <li class="fragment">10-20x faster than cocotb and chiseltest</li>
+    </ul>
+  </section>
+</section>
+
+<section>
+  <section>
+    <h3>An eDSL For Imperative and Declarative Parametric Stimulus Generation</h3>
+  </section>
+
+  <section>
+    <h3>Hybrid Stimulus Generators</h3>
+
+    <ul>
+      <li class="fragment">Two types of generators</li>
+      <ul>
+        <li class="fragment">Imperative generators (QuickCheck's <code>Gen</code>)</li>
+        <li class="fragment">Declarative constraint solvers (SystemVerilog constrained random)</li>
+      </ul>
+      <li class="fragment">We propose a hybrid API that:</li>
+      <ul>
+        <li class="fragment">Enables both generator styles</li>
+        <li class="fragment">Leverages Chisel for hardware datatypes and as a constraint language</li>
+      </ul>
+    </ul>
+  </section>
+<!-- note down all the things I should mention from notes.md -->
+</section>
+
+<section>
+<h3>Chisel-recipes</h3>
+<!-- note down all the things I should mention from notes.md -->
+</section>
+
+<section>
+<h3>Host Languages</h3>
+<!-- what makes a good host language -->
+</section>
+
+<section>
+<h3>eDSL Overview</h3>
+<!-- summarize the table from the paper -->
+</section>
+
+<section>
+<h3>Conclusion</h3>
+<!-- restate the paper's final question -->
+</section>
+
+<section>
+<h3>A Case for Mixed-Abstraction HDLs and a Discussion on Other Aspects of HDL Design</h3>
+<p>
+<small>Vighnesh Iyer, Borivoje Nikolić</small>
+</p>
+<p>
+<small>UC Berkeley</small>
+</p>
+</section>
+
+<section>
+<h3>HDL Abstraction Levels</h3>
+<!-- discuss abstraction levels, when each one is used, quickly summarize the table in the paper -->
+</section>
+
+<section>
+<h3>Why Mixed Abstraction?</h3>
+<!-- talk about the trends in circt, XLS - more integration of dialects, but no frontend solution! first time backends are being built before the frontends. -->
+</section>
+
+<section>
+<h3>Mixing RTL and Higher-Level Abstractions</h3>
+<!-- Discuss state sharing, simulation performance, perf model correlation -->
+</section>
+
+<section>
+<h3>Mixing RTL and Event-Based Abstractions</h3>
+<!-- Discuss clocking, latches, behavioral models -->
+</section>
+
+<section>
+<h3>IR Primitives</h3>
+<!-- What primitives belong in an IR? -->
+</section>
+
+<section>
+<h3>Preserving Semantics Through IR Lowering</h3>
+<!-- Related question: If we could design a synthesis frontend from scratch, what semantics are most valuable to preserve from the RTL or above? -->
+</section>
+
+<section>
+<h3>Modules: What Are they Good For?</h3>
+<!-- Can modules be inferred, what's the point!? -->
+</section>
+
+<section>
+<h3>Incremental-First HDLs</h3>
+<!-- Incrementalism has percolated through many things (from simple within-run memoization, to run-to-run caching of build descriptions ala Buck2/Bazel), we really need term-level incrementalism since HW generators suffer from the same problems as build system frontends as the build/HW design grow very large -->
+<!-- Discuss within-run incrementalism and run-to-run incrementalism -->
+</section>
+
+  </div>
 </div>
     <script type="module">
     import 'reveal.js/dist/reset.css'
