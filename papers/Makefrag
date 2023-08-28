@@ -3,14 +3,19 @@ figs = $(shell find ../../figs/ -type f)
 
 quick: $(main)_quick.pdf
 pdf: $(main).pdf
+references = $(shell find ../references/*.bib -type f)
+references_all = ../references/references.bib
 
-$(main).pdf: $(main).tex $(figs) ../references.bib
+$(references_all): $(references)
+	cat $^ > $@
+
+$(main).pdf: $(main).tex $(figs) $(references_all)
 	texfot pdflatex -shell-escape $<
 	texfot bibtex $(main)
 	texfot pdflatex -shell-escape $<
 	texfot pdflatex -shell-escape $<
 
-$(main)_quick.pdf: $(main).tex $(figs) ../references.bib
+$(main)_quick.pdf: $(main).tex $(figs) $(references_all)
 	texfot pdflatex -jobname=$(main)_quick -shell-escape $<
 
 clean:
