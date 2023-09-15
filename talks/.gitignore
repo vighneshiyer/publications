@@ -22,3 +22,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# All html files are generated from .jinja2 templates
+*.html

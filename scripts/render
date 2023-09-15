@@ -18,7 +18,7 @@ from jinja2 import *
 def main():
     parser = argparse.ArgumentParser(description='Render a Jinja2 template.')
     parser.add_argument("template_files", help="jinja2 template files", nargs='+')
-    parser.add_argument("output", help="output html file")
+    parser.add_argument("--output", required=True, help="output html file")
     args = parser.parse_args()
 
     srcdir = Path.cwd()

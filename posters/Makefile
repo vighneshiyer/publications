@@ -1,6 +1,6 @@
 base_jinja := base/base.jinja2
 base_sass := base/base.scss
-RENDER := scripts/render
+RENDER := ../scripts/render
 
 posters =
 
@@ -9,7 +9,7 @@ posters/$1/index.css: posters/$1/index.scss templates/$2/$2.scss $(base_sass)
 	sass --load-path=. $$< $$@
 
 posters/$1/index.html: posters/$1/index.jinja2 templates/$2/$2.jinja2 $(base_jinja)
-	$(RENDER) $$< $$@
+	$(RENDER) --output $$@ $$<
 
 $1: posters/$1/index.css posters/$1/index.html
 
