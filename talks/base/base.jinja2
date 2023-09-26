@@ -2,55 +2,22 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>Demo</title>
-    <meta name="description" content="Reveal.js Demo">
-    <meta name="author" content="Hakim">
+    <title>{{ webpage_title }}</title>
+    <meta name="description" content="{{ description }}">
+    <meta name="author" content="{{ author }}">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-      </head>
+    {% block custom_head %}
+    {% endblock %}
+  </head>
 
   <body vocab="http://schema.org/" typeof="PresentationDigitalDocument">
-    <span property="publisher" style="display: none;">Reveal.js Demo</span>
-    <time pubdate property="datePublished" datetime="2023-05-21" style="display: none;">May 21, 2023</time>
+    <span property="publisher" style="display: none;">{{ venue }}</span>
+    <time pubdate property="datePublished" datetime="{{ pub_datetime_iso }}" style="display: none;">{{ pub_date }}</time>
     <div class="reveal">
         <div class="slides">
-            <section>
-    <a href="https://revealjs.com">
-        <img src="https://static.slid.es/reveal/logo-v1/reveal-white-text.svg" alt="reveal.js logo" style="height: 180px; margin: 0 auto 4rem auto; background: transparent;" class="demo-logo">
-    </a>
-    <h3>The HTML Presentation Framework</h3>
-    <p>
-        <small>Created by <a href="http://hakim.se">Hakim El Hattab</a> and <a href="https://github.com/hakimel/reveal.js/graphs/contributors">contributors</a></small>
-    </p>
-</section>
-
-<section>
-asdfasdf
-</section>
-
-				<section>
-					<section>
-						<h2>Vertical Slides</h2>
-						<p>Slides can be nested inside of each other.</p>
-						<p>Use the <em>Space</em> key to navigate through all slides.</p>
-						<br>
-						<a href="#/2/1" class="navigate-down">
-							<img class="r-frame" style="background: rgba(255,255,255,0.1);" width="178" height="238" data-src="https://static.slid.es/reveal/arrow.png" alt="Down arrow">
-						</a>
-					</section>
-					<section>
-						<h2>Basement Level 1</h2>
-						<p>Nested slides are useful for adding additional detail underneath a high level horizontal slide.</p>
-					</section>
-					<section>
-						<h2>Basement Level 2</h2>
-						<p>That's it, time to go back up.</p>
-						<br>
-						<a href="#/2">
-							<img class="r-frame" style="background: rgba(255,255,255,0.1); transform: rotate(180deg);" width="178" height="238" data-src="https://static.slid.es/reveal/arrow.png" alt="Up arrow">
-						</a>
-					</section>
-				</section>
+            {% block slides %}
+            {% endblock %}
         </div>
     </div>
 
@@ -59,7 +26,6 @@ asdfasdf
     import 'reveal.js/dist/reveal.css'
     import 'reveal.js/dist/theme/black.css'
     import 'reveal.js/plugin/highlight/monokai.css'
-
     import Markdown from 'reveal.js/plugin/markdown/markdown.esm.js';
     import Notes from 'reveal.js/plugin/notes/notes.esm.js';
     import Highlight from 'reveal.js/plugin/highlight/highlight.esm.js';

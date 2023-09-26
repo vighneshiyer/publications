@@ -1,0 +1,53 @@
+/**
+ * Black theme for reveal.js. This is the opposite of the 'white' theme.
+ *
+ * By Hakim El Hattab, http://hakim.se
+ */
+
+
+// Default mixins and settings -----------------
+@import "node_modules/reveal.js/css/theme/template/mixins";
+@import "node_modules/reveal.js/css/theme/template/settings";
+// ---------------------------------------------
+
+// Include theme-specific fonts
+
+// Don't use the bundled fonts in reveal.js npm package
+// @import url(./fonts/source-sans-pro/source-sans-pro.css);
+
+// Source Sans Pro has been renamed to Source Sans 3
+// But this causes problems with unquoted font name in Firefox/Chrome due to the '3' in the font name
+// See: https://github.com/adobe-fonts/source-sans/issues/192#issuecomment-692807142
+// @import url(/node_modules/source-sans/source-sans-3.css);
+
+// Finally, we can just use the old font name with @fontsource/source-sans-pro
+@import url(/node_modules/@fontsource/source-sans-pro/latin.css);
+
+// Override theme settings (see ../template/settings.scss)
+$backgroundColor: #191919;
+
+$mainColor: #fff;
+$headingColor: #fff;
+
+$mainFontSize: 42px;
+$mainFont: 'Source Sans Pro', Helvetica, sans-serif;
+$headingFont: 'Source Sans Pro', Helvetica, sans-serif;
+$headingTextShadow: none;
+$headingLetterSpacing: normal;
+$headingTextTransform: uppercase;
+$headingFontWeight: 600;
+$linkColor: #42affa;
+$linkColorHover: lighten( $linkColor, 15% );
+$selectionBackgroundColor: rgba( $linkColor, 0.75 );
+
+$heading1Size: 2.5em;
+$heading2Size: 1.6em;
+$heading3Size: 1.3em;
+$heading4Size: 1.0em;
+
+// Change text colors against light slide backgrounds
+@include light-bg-text-color(#222);
+
+// Theme template ------------------------------
+@import "node_modules/reveal.js/css/theme/template/theme";
+// ---------------------------------------------

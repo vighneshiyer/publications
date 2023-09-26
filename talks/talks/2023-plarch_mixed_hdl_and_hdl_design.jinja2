@@ -1,0 +1,237 @@
+{% extends "base/base.jinja2" %}
+
+{# HTML title #}
+{% set webpage_title = "PLARCH 2023 - A Case for Mixed-Abstraction HDLs and a Discussion on Other Aspects of HDL Design" %}
+{# Short description #}
+{% set description = "A case for making a new HDL that can support designing in multiple abstractions and a discussion on practical implementation aspects of HDLs" %}
+{# List of authors #}
+{% set author = "Vighnesh Iyer, Borivoje Nikolić" %}
+{# Change ‘venue’ to a conference or workshop name if any #}
+{% set venue = "PLARCH Workshop @ ISCA 2023" %}
+{# Publication info (hidden by default) #}
+{% set pub_datetime_iso = "2023-06-17" %}
+{% set pub_date = "June 17, 2023" %}
+
+{# Custom styles and JS for a particular talk #}
+{% block custom_head %}
+<style>
+  h3 {
+    text-transform: none !important;
+  }
+  .reveal pre {
+    width: 100%;
+  }
+  .reveal pre code {
+    padding: 20px !important;
+  }
+  .container{
+    display: grid;
+    grid-auto-flow: column;
+    column-gap: 1em;
+  }
+</style>
+{% endblock %}
+
+{% block slides %}
+<section>
+<h3>A Case for Mixed-Abstraction HDLs and a Discussion on Other Aspects of HDL Design</h3>
+  <p>
+    <small><strong>Vighnesh Iyer</strong>, Borivoje Nikolić</small>
+  </p>
+  <p>
+    <small><strong>UC Berkeley</strong></small>
+  </p>
+  <p>
+    <small><strong>PLARCH 2023</strong></small>
+  </p>
+</section>
+
+<section>
+  <!-- discuss abstraction levels, when each one is used, quickly summarize the table in the paper -->
+  <section>
+    <h3>HDL Abstraction Levels</h3>
+  </section>
+
+  <section>
+    <h3>Event-Driven Abstraction</h3>
+
+    <ul>
+      <li class="fragment"><strong>Examples:</strong> Verilog, VHDL, LLHD <small>(behavioral subset)</small></li>
+      <li class="fragment"><strong>Primitives:</strong> Digital state, event-triggered state updates, delays</li>
+      <li class="fragment"><strong>Domain:</strong> "Continuous" time, 2/4 valued signals</li>
+      <li class="fragment"><strong>Utility:</strong> Behavioral modeling of mixed-signal/digital IPs, RTL design* <small>(only a subset can be mechanically translated to hardware)</small></li>
+    </ul>
+  </section>
+
+  <section>
+    <h3>Register-Transfer Level</h3>
+
+    <ul>
+      <li class="fragment">A subset of what a generic event-driven abstraction can describe</li>
+      <li class="fragment"><strong>Examples:</strong> FIRRTL, LLHD <small>(structural subset)</small>, CIRCT HW dialect, Lava, Chisel, PyMTL3</li>
+      <li class="fragment"><strong>Primitives:</strong> Flops/SRAMs, boolean/arithmetic ops</li>
+      <li class="fragment"><strong>Domain:</strong> Discrete time, 2/4 valued signals</li>
+      <li class="fragment"><strong>Utility:</strong> Synchronous digital circuit design</li>
+    </ul>
+  </section>
+
+  <section>
+    <h3>Dataflow</h3>
+
+    <ul>
+      <li class="fragment"><strong>Examples:</strong> DFiant, TL-Verilog, PipelineC</li>
+      <li class="fragment"><strong>Primitives:</strong> Token streams, ordered operations, dataflow state</li>
+      <li class="fragment"><strong>Domain:</strong> Tokens in → tokens out</li>
+      <li class="fragment"><strong>Utility:</strong> Dataflow circuits, automated pipelining</li>
+    </ul>
+  </section>
+
+  <section>
+    <h3>Lightweight HLS</h3>
+
+    <ul>
+      <li class="fragment"><strong>Examples:</strong> Calyx IR, XLS</li>
+      <li class="fragment"><strong>Primitives:</strong> Digital state, imperative control blocks, scheduling, binding</li>
+      <li class="fragment"><strong>Domain:</strong> Control block statements</li>
+      <li class="fragment"><strong>Utility:</strong> Controllable HLS (explicit state, guided optimization)</li>
+    </ul>
+  </section>
+
+  <section>
+    <h3>Heavyweight HLS</h3>
+
+    <ul>
+      <li class="fragment"><strong>Examples:</strong> Legup, Vivado HLS, Catapult HLS</li>
+      <li class="fragment"><strong>Primitives:</strong> SystemC/C++</li>
+      <li class="fragment"><strong>Domain:</strong> Transaction-level</li>
+      <li class="fragment"><strong>Utility:</strong> Mostly automated state/control construction and optimization</li>
+    </ul>
+  </section>
+</section>
+
+<section>
+<!-- talk about the trends in circt, XLS - more integration of dialects, but no frontend solution! first time backends are being built before the frontends. -->
+  <section>
+    <h3>The Emerging Multi-Abstraction World</h3>
+  </section>
+
+  <section>
+    <h3>Multi-Abstraction IRs</h3>
+
+    <ul>
+      <li class="fragment">CIRCT now has multiple dialects</li>
+      <ul>
+        <li class="fragment">RTL: <code>hw, seq, comb</code></li>
+        <li class="fragment">Dataflow: <code>handshake, esi</code></li>
+        <li class="fragment">Lightweight HLS: <code>ssp, calyx</code></li>
+      </ul>
+    </ul>
+
+    <p class="center fragment">There is a desire to use a suitable abstraction level for a given hardware block / model</p>
+  </section>
+
+  <section>
+    <h3>Mixed Abstraction HDLs</h3>
+
+    <ul>
+      <li class="fragment">Each dialect is isolated (for simulation and design), but we could define interaction semantics between them</li>
+      <li class="fragment">HDLs only target a specific dialect: mixing abstractions isn't well supported outside blackboxing</li>
+    </ul>
+
+    <p class="fragment center">The next iteration of HDLs should strive to support mixing abstractions in design</p>
+  </section>
+
+  <section>
+    <!-- Discuss state sharing, simulation performance, perf model correlation -->
+    <h3>Mixing RTL and Higher-Level Abstractions</h3>
+
+    <ul>
+      <li class="fragment">Transaction-level modeling and latency-insensitive interfaces are a canonical solution to the integration question</li>
+      <li class="fragment">At a finer design granularity, this breaks down when we want to <em>share state</em> between RTL and higher-level descriptions</li>
+      <li class="fragment">Simulation performance can be improved</li>
+    </ul>
+  </section>
+
+  <section>
+    <h3>Mixing RTL and Event-Based Abstractions</h3>
+    <!-- Discuss clocking, latches, behavioral models -->
+
+    <ul>
+      <li class="fragment">Many common circuit constructs (clock generators/muxes, async resets) are easier to describe in the event-driven paradigm</li>
+      <li class="fragment">Verilog's scheduling algorithm provides a starting point for mixing gate-level and evented blocks</li>
+    </ul>
+  </section>
+
+  <section>
+    <h3>Mixed-Abstraction HDLs</h3>
+
+    <ul>
+      <li class="fragment">How do the abstractions interact with each other, even when crossing multiple levels?</li>
+      <li class="fragment">What API do hardware designers want? For what circuits is abstraction most useful?</li>
+    </ul>
+  </section>
+</section>
+
+<section>
+  <section>
+    <h3>Other Implementation Questions for HDLs</h3>
+  </section>
+
+  <section>
+    <!-- What primitives belong in an IR? -->
+    <h3>HDL Primitives</h3>
+    <p class="fragment center">What primitives belong in an IR/HDL?</p>
+
+    <ul class="fragment">
+      <li>SRAMs (with what features?), CAMs</li>
+      <li>Should PDK primitives be directly representable or must they be blackboxed?</li>
+    </ul>
+  </section>
+
+  <section>
+    <h3>Preserving Semantics Through IR Lowering</h3>
+    <!-- Related question: If we could design a synthesis frontend from scratch, what semantics are most valuable to preserve from the RTL or above? -->
+
+    <p class="fragment center">IRs try to be minimal, but HDLs try to capture design semantics. How do we pass intent to synthesis?</p>
+
+    <p class="fragment center">If we could design a synthesis frontend from scratch, what semantics are most valuable to preserve from RTL or above?</li>
+  </section>
+
+  <section>
+    <!-- Can modules be inferred, what's the point!? -->
+    <h3>Modules: What Are they Good For?</h3>
+
+    <ul class="fragment">
+      <li>Modules are used for 1) instantiation, 2) parameterization boundary, 3) adding hierarchy</li>
+      <li>Let's consider the analogies - <em>modules:functions</em>, <em>parameters:function arguments</em>, <em>hierarchy:call stack</em></li>
+    </ul>
+
+    <p class="fragment center">Are modules a good abstraction? Can we infer them? Can we remove the need for XMRs?</p>
+  </section>
+
+  <section>
+    <!-- Incrementalism has percolated through many things (from simple within-run memoization, to run-to-run caching of build descriptions ala Buck2/Bazel), we really need term-level incrementalism since HW generators suffer from the same problems as build system frontends as the build/HW design grow very large -->
+    <!-- Discuss within-run incrementalism and run-to-run incrementalism -->
+    <h3>Incremental Elaboration for HDLs</h3>
+
+    <ul class="fragment">
+      <li>As hardware generators grow, elaboration becomes an iteration bottleneck</li>
+      <li>Run-to-run caching requires analysis of generator source code, not just simple function memoization</li>
+    </ul>
+
+    <p class="fragment center">How do we make run-to-run caching and incremental elaboration viable? Can content-addressable languages help?</p>
+  </section>
+
+  <section>
+    <h3>Questions</h3>
+
+    <ul class="fragment">
+      <li>What are the considerations when designing mixed-abstraction HDLs?</li>
+      <li>What primitives belong in an HDL / IR?</li>
+      <li>How can we preserve semantics through to synthesis?</li>
+      <li>Are modules still a good circuit abstraction in a mixed-abstraction world?</li>
+      <li>How can we design an HDL with automated incremental elaboration?</li>
+    </ul>
+  </section>
+</section>
+{% endblock %}

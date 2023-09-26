@@ -14,7 +14,9 @@
     "web": "https://vighneshiyer.com"
   },
   "devDependencies": {
-    "vite": "^4.3.2",
-    "reveal.js": "^4.5.0"
+    "reveal.js": "^4.5.0",
+    "sass": "^1.68.0",
+    "@fontsource/source-sans-pro": "^5.0.8",
+    "vite": "^4.3.2"
   }
 }
