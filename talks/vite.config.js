@@ -1,6 +1,7 @@
 import { resolve, extname } from 'path'
 import { readdirSync } from 'fs'
 import { defineConfig } from 'vite'
+import { run } from 'vite-plugin-run'
 
 const currentDirectory = process.cwd();
 
@@ -22,4 +23,13 @@ export default defineConfig({
       input: input
     },
   },
+  plugins: [
+    run([
+      {
+        name: 'Rebuild html files',
+        run: ['make', 'all'],
+        pattern: ['talks/*.jinja2']
+      }
+    ])
+  ]
 })

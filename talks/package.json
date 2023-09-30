@@ -14,9 +14,10 @@
     "web": "https://vighneshiyer.com"
   },
   "devDependencies": {
+    "@fontsource/source-sans-pro": "^5.0.8",
     "reveal.js": "^4.5.0",
     "sass": "^1.68.0",
-    "@fontsource/source-sans-pro": "^5.0.8",
-    "vite": "^4.3.2"
+    "vite": "^4.3.2",
+    "vite-plugin-run": "^0.5.1"
   }
 }
