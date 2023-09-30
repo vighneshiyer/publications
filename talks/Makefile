@@ -1,11 +1,13 @@
 base_jinja = base/base.jinja2
-themes_scss = $(wildcard themes/*.scss)
-themes_css = $(patsubst %.scss,%.css,$(themes_scss))
 
-%.css: %.scss
-	sass --load-path=. $^ > $@
-
-themes: $(themes_css)
+# sass compilation and hot reload is taken care of by vite
+# themes_scss = $(wildcard themes/*.scss)
+# themes_css = $(patsubst %.scss,%.css,$(themes_scss))
+#
+# %.css: %.scss
+# 	sass --load-path=. $^ > $@
+#
+# themes: $(themes_css)
 
 talks =
 
@@ -19,38 +21,38 @@ talks += $1
 endef
 
 # Add talks here:
-# $(call talk,<talk name>,<template name>)
-$(eval $(call talk,demo,base))
-$(eval $(call talk,2023-plarch_edsl,base))
-$(eval $(call talk,2023-plarch_plarch_mixed_hdl_and_hdl_design,base))
+# $(call talk,<talk name>)
+$(eval $(call talk,demo))
+$(eval $(call talk,2023-plarch_edsl))
+$(eval $(call talk,2023-plarch_mixed_hdl_and_hdl_design))
 
-# all: $(talks) talks/index.html
-# 
-# define write
-# echo $(1) >> $(2);
-# endef
-# 
-# talks/index.html: $(addsuffix /index.html,$(addprefix talks/,$(talks)))
-# 	echo "<!DOCTYPE html>" > $@
-# 	echo '<html lang="en">' >> $@
-# 	echo '  <head>' >> $@
-# 	echo '    <title>Talk Index</title>' >> $@
-# 	echo '  </head>' >> $@
-# 	echo '  <body>' >> $@
-# 	echo '    <ul>' >> $@
-# 	$(foreach p,$(posters),$(call write,"      <li><a href=\"./$(p)/index.html\">$(p)</li>",$@))
-# 	echo '    </ul>' >> $@
-# 	echo '  </body>' >> $@
-# 	echo '</html>' >> $@
-# 
-# define del
-# rm -f $(1);
-# endef
-# 
-# clean:
-# 	$(foreach p,$(posters),$(call del,posters/$(p)/index.css))
-# 	$(foreach p,$(posters),$(call del,posters/$(p)/index.css.map))
-# 	$(foreach p,$(posters),$(call del,posters/$(p)/index.html))
-# 	rm -f posters/index.html
+talks_output = $(addsuffix .html,$(talks))
 
-.PHONY: all $(posters) clean themes
+all: $(talks_output) index.html
+
+define write
+echo $(1) >> $(2);
+endef
+
+index.html: $(talks_output)
+	echo "<!DOCTYPE html>" > $@
+	echo '<html lang="en">' >> $@
+	echo '  <head>' >> $@
+	echo '    <title>Talk Index</title>' >> $@
+	echo '  </head>' >> $@
+	echo '  <body>' >> $@
+	echo '    <ul>' >> $@
+	$(foreach t,$(talks),$(call write,"      <li><a href=\"./$(t).html\">$(t)</li>",$@))
+	echo '    </ul>' >> $@
+	echo '  </body>' >> $@
+	echo '</html>' >> $@
+
+define del
+rm -f $(1);
+endef
+
+clean:
+	$(foreach t,$(talks),$(call del,$(t).html))
+	rm -f index.html
+
+.PHONY: all clean
