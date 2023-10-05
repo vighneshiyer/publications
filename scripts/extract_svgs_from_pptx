@@ -1,0 +1,100 @@
+#!/usr/bin/env python
+
+import argparse
+from pathlib import Path
+import shutil
+import subprocess
+import sys
+import pdb
+import xml.etree.ElementTree as ET
+
+def run_cmd(cmd: str, cwd: Path) -> subprocess.CompletedProcess:
+    print(f"running {cmd}")
+    result = subprocess.run(cmd, shell=True, stdout=sys.stdout, stderr=subprocess.STDOUT, cwd=cwd)
+    assert result.returncode == 0, f"{cmd} failed with returncode {result.returncode}"
+    return result
+
+def run_cmd_capture(cmd: str, cwd: Path) -> str:
+    print(f"running {cmd}")
+    result = subprocess.run(cmd, shell=True, capture_output=True, cwd=cwd)
+    stdout = result.stdout.decode('UTF-8').strip()
+    assert result.returncode == 0, f"{cmd} failed with returncode {result.returncode} and stdout {stdout}"
+    return stdout
+
+def main():
+    parser = argparse.ArgumentParser(description="Convert Google Slides PPTX to an SVG per slide. The filename (without the .svg suffix) for each exported SVG comes from the presenter notes for each slide.")
+    parser.add_argument("--working-dir", default='work', help="The working directory used by this script")
+    parser.add_argument("--out-dir", default='.', help="The directory where the extracted svg files will be placed")
+    parser.add_argument("--use-poppler-pdf-import", default=True, help="Use poppler to import PDFs in inkscape before SVG export. Handles fonts better.")
+    parser.add_argument("input", help="PPTX file")
+    args = parser.parse_args()
+    cwd = Path.cwd()
+    working_dir_path = Path(args.working_dir)
+    out_dir_path = Path(args.out_dir)
+    pptx = Path(args.input)
+
+    # Create the working directory (first, deleting it if it already exists)
+    if working_dir_path.exists():
+        shutil.rmtree(working_dir_path)
+    working_dir_path.mkdir()
+
+    # Extract the presenter notes from the PPTX which are the output SVG file names
+    run_cmd(f"unzip -q \"{pptx.absolute()}\" -d {working_dir_path}", cwd)
+    svg_filenames = []
+    for file in sorted((working_dir_path / "ppt" / "notesSlides").glob("notesSlide*.xml")):
+        tree = ET.parse(file)
+        root = tree.getroot()
+        texts = [x.text for x in root.iter() if x.text is not None]
+        svg_filenames.append(''.join(texts))
+
+    # Convert the PPTX to a PDF
+    run_cmd(f"soffice --headless --convert-to pdf --outdir {working_dir_path.absolute()} \"{pptx.absolute()}\"", cwd)
+
+    # Split the PDF into PDFs for each page
+    pdf_full_file = pptx.with_suffix(".pdf").name.replace(' ', '\\ ')
+    run_cmd(f"pdfseparate {pdf_full_file} page%d.pdf", cwd=working_dir_path)
+
+    # Verify that the number of pages equals the number of svg_filenames
+    pdfs = sorted(list(working_dir_path.glob("page*.pdf")))
+    assert len(pdfs) == len(svg_filenames), f"There are {len(pdfs)} slides in the PPTX, but {len(svg_filenames)} slides have presenter notes with the desired SVG filename"
+
+    # Convert each PDF to a SVG
+    for pdf in pdfs:
+        svg = pdf.with_suffix(".svg").name.replace(' ', '\\ ')
+        extra_arg = "--pdf-poppler" if args.use_poppler_pdf_import else ""
+        run_cmd(f"inkscape {extra_arg} --export-page=1 --export-type=\"svg\" --export-filename={svg} {pdf.name}", cwd=working_dir_path)
+
+    # Strip the background and slide paths for each SVG file
+    svgs = sorted(list(working_dir_path.glob("*.svg")))
+    for i, svg in enumerate(svgs):
+        tree = ET.parse(svg)
+        root = tree.getroot()
+        if not args.use_poppler_pdf_import:
+            # Figure out the paths we need to delete
+            group = root.find('{http://www.w3.org/2000/svg}g')
+            assert group
+            # There should only be one group with id g1
+            assert group.attrib['id'] == 'g1'
+            # There should be 2 paths that we need to delete
+            # make sure they are indeed what we're looking for and save their id's
+            for j in [0,1]:
+                assert 'fill:#ffffff' in group[j].attrib['style']
+            path_ids = [group[j].attrib['id'] for j in [0,1]]
+
+            # Perform the path deletions with inkscape and export a plain SVG
+            path_ids_str = ','.join(path_ids)
+            run_cmd(f'inkscape --actions "select-by-id:{path_ids_str}; delete-selection; select-all; fit-canvas-to-selection; export-filename: {svg.name}; export-plain-svg; export-do;" {svg.name}', cwd=working_dir_path)
+        else:
+            groups = sorted([int(x.attrib['id'][1:]) for x in root.findall('{http://www.w3.org/2000/svg}g')])
+            group_to_delete = f"g{groups[0]}"
+            run_cmd(f'inkscape --actions "select-by-id:{group_to_delete}; delete-selection; select-all; fit-canvas-to-selection; export-filename: {svg.name}; export-plain-svg; export-do;" {svg.name}', cwd=working_dir_path)
+
+        # Copy the exported SVG to the output directory with the correct name
+        shutil.copy(svg, cwd / f"{svg_filenames[i]}.svg")
+
+    # If we got here, then delete the working directory
+    shutil.rmtree(working_dir_path)
+    sys.exit(0)
+
+if __name__ == "__main__":
+    main()
