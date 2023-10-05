@@ -8,6 +8,9 @@ import sys
 import pdb
 import xml.etree.ElementTree as ET
 
+# This script 'works', but Libreoffice doesn't render all PPTX files correctly
+# A safer bet is to use the extract_svgs_from_pdf_slides script, but you will have to specify the filenames
+
 def run_cmd(cmd: str, cwd: Path) -> subprocess.CompletedProcess:
     print(f"running {cmd}")
     result = subprocess.run(cmd, shell=True, stdout=sys.stdout, stderr=subprocess.STDOUT, cwd=cwd)
@@ -25,7 +28,8 @@ def main():
     parser = argparse.ArgumentParser(description="Convert Google Slides PPTX to an SVG per slide. The filename (without the .svg suffix) for each exported SVG comes from the presenter notes for each slide.")
     parser.add_argument("--working-dir", default='work', help="The working directory used by this script")
     parser.add_argument("--out-dir", default='.', help="The directory where the extracted svg files will be placed")
-    parser.add_argument("--use-poppler-pdf-import", default=True, help="Use poppler to import PDFs in inkscape before SVG export. Handles fonts better.")
+    parser.add_argument("--dont-use-poppler", default=True, action="store_false", help="Don't use poppler to import PDFs in inkscape before SVG export.")
+    parser.add_argument("--keep-work", default=False, action="store_true", help="Don't delete the working directory")
     parser.add_argument("input", help="PPTX file")
     args = parser.parse_args()
     cwd = Path.cwd()
@@ -61,7 +65,7 @@ def main():
     # Convert each PDF to a SVG
     for pdf in pdfs:
         svg = pdf.with_suffix(".svg").name.replace(' ', '\\ ')
-        extra_arg = "--pdf-poppler" if args.use_poppler_pdf_import else ""
+        extra_arg = "" if args.dont_use_poppler else "--pdf-poppler"
         run_cmd(f"inkscape {extra_arg} --export-page=1 --export-type=\"svg\" --export-filename={svg} {pdf.name}", cwd=working_dir_path)
 
     # Strip the background and slide paths for each SVG file
@@ -69,7 +73,7 @@ def main():
     for i, svg in enumerate(svgs):
         tree = ET.parse(svg)
         root = tree.getroot()
-        if not args.use_poppler_pdf_import:
+        if args.dont_use_poppler:
             # Figure out the paths we need to delete
             group = root.find('{http://www.w3.org/2000/svg}g')
             assert group
@@ -90,10 +94,12 @@ def main():
             run_cmd(f'inkscape --actions "select-by-id:{group_to_delete}; delete-selection; select-all; fit-canvas-to-selection; export-filename: {svg.name}; export-plain-svg; export-do;" {svg.name}', cwd=working_dir_path)
 
         # Copy the exported SVG to the output directory with the correct name
-        shutil.copy(svg, cwd / f"{svg_filenames[i]}.svg")
+        out_dir_path.mkdir(exist_ok=True)
+        shutil.copy(svg, out_dir_path / f"{svg_filenames[i]}.svg")
 
     # If we got here, then delete the working directory
-    shutil.rmtree(working_dir_path)
+    if not args.keep_work:
+        shutil.rmtree(working_dir_path)
     sys.exit(0)
 
 if __name__ == "__main__":
