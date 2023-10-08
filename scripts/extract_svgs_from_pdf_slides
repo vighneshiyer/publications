@@ -1,0 +1,51 @@
+#!/usr/bin/env python
+
+import argparse
+from pathlib import Path
+import shutil
+import sys
+from utils import *
+
+def main():
+    parser = argparse.ArgumentParser(description="Convert Google Slides PDF to an SVG per page. The filenames for each SVG should \
+                                                 be provided as arguments to this script")
+    parser.add_argument("--working-dir", default='work', help="The working directory used by this script")
+    parser.add_argument("--out-dir", default='.', help="The directory where the extracted svg files will be placed")
+    parser.add_argument("--dont-use-poppler", default=False, action="store_true", help="Don't use poppler to import PDFs in inkscape before SVG export.")
+    parser.add_argument("--keep-work", default=False, action="store_true", help="Don't delete the working directory")
+    parser.add_argument("--pdf", required=True, type=str, help="The input PDF file")
+    parser.add_argument("filenames", nargs="+", help="Filenames (without the .svg extension) for each page of the input PDF")
+    args = parser.parse_args()
+    cwd = Path.cwd()
+    working_dir_path = Path(args.working_dir)
+    out_dir_path = Path(args.out_dir)
+    pdf = Path(args.pdf)
+
+    # Create the working directory (first, deleting it if it already exists)
+    if working_dir_path.exists():
+        shutil.rmtree(working_dir_path)
+    working_dir_path.mkdir()
+
+    # Get the number of pages in the PDF
+    n_pages = num_pages_in_pdf(pdf, working_dir_path)
+
+    # Verify that the number of pages equals the number of filenames
+    assert n_pages == len(args.filenames), f"There are {n_pages} pages in the PDF, but only {len(args.filenames)} filenames were provided as arguments to this script"
+
+    # Convert each page of the PDF to a SVG with the prefix "page" (page0.svg, page1.svg, ...)
+    pdf_to_svg(pdf, n_pages, "page", not args.dont_use_poppler, working_dir_path)
+
+    # Strip the background and slide paths for each SVG file
+    svgs = sorted(list(working_dir_path.glob("*.svg")))
+    out_dir_path.mkdir(exist_ok=True)
+    for i, svg in enumerate(svgs):
+        strip_svg_background(input_svg=svg, dest_svg=(out_dir_path / f"{args.filenames[i]}.svg"),
+                             poppler=not args.dont_use_poppler, wd=working_dir_path)
+
+    # If we got here, then delete the working directory
+    if not args.keep_work:
+        shutil.rmtree(working_dir_path)
+    sys.exit(0)
+
+if __name__ == "__main__":
+    main()
