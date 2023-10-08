@@ -16,10 +16,22 @@ def run_cmd_capture(cmd: str, cwd: Path) -> str:
     assert result.returncode == 0, f"{cmd} failed with returncode {result.returncode} and stdout {stdout}"
     return stdout
 
-def pdf_to_svg(pdf: Path, poppler: bool, wd: Path) -> None:
-    svg = pdf.with_suffix(".svg")
+def split_pdf(pdf: Path, dest_dir: Path, prefix: str, wd: Path) -> None:
+    pdf_path = str(pdf.absolute()).replace(' ', '\\ ') # pdfseparate is very picky about spaces in the path
+    run_cmd(f"pdfseparate {pdf_path} {dest_dir.absolute()}/{prefix}%d.pdf", wd)
+
+def num_pages_in_pdf(pdf: Path, wd: Path) -> int:
+    pages = run_cmd_capture(f"pdfinfo \"{pdf.absolute()}\" | grep Pages | cut --delimiter=':' --fields=2", wd)
+    return int(pages.strip())
+
+def single_pdf_to_svg(pdf: Path, page: int, svg: Path, poppler: bool, wd: Path) -> None:
     extra_arg = "" if not poppler else "--pdf-poppler"
-    run_cmd(f"inkscape {extra_arg} --export-page=1 --export-type=\"svg\" --export-filename={svg.absolute()} {pdf.absolute()}", wd)
+    run_cmd(f"inkscape {extra_arg} --pages={page} --export-type=\"svg\" --export-filename={svg.absolute()} \"{pdf.absolute()}\"", wd)
+
+def pdf_to_svg(pdf: Path, n_pages: int, prefix: str, poppler: bool, wd: Path) -> None:
+    for page in range(n_pages):
+        svg = pdf.parent / f"{prefix}{page}.svg"
+        single_pdf_to_svg(pdf, page+1, svg, poppler, wd)
 
 def strip_svg_background(input_svg: Path, dest_svg: Path, poppler: bool, wd: Path) -> None:
     tree = ET.parse(input_svg)

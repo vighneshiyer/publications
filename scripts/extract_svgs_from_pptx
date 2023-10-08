@@ -42,17 +42,20 @@ def main():
     # Convert the PPTX to a PDF
     run_cmd(f"soffice --headless --convert-to pdf --outdir {working_dir_path.absolute()} \"{pptx.absolute()}\"", cwd)
 
-    # Split the PDF into PDFs for each page
-    pdf_full_file = pptx.with_suffix(".pdf").name.replace(' ', '\\ ')
-    run_cmd(f"pdfseparate {pdf_full_file} page%d.pdf", cwd=working_dir_path)
+    # Get the number of pages in the PDF
+    pdf_full_file = working_dir_path / (pptx.with_suffix(".pdf").name)
+    pages = num_pages_in_pdf(pdf_full_file, working_dir_path)
+
+    # Split the PDF into PDFs for each page (no need to do this anymore, too complicated)
+    # split_pdf(pdf_full_file, working_dir_path, prefix="page", wd=working_dir_path)
+    # run_cmd(f"pdfseparate \"{pdf_full_file.absolute()}\" page%d.pdf", cwd=working_dir_path)
 
     # Verify that the number of pages equals the number of svg_filenames
-    pdfs = sorted(list(working_dir_path.glob("page*.pdf")))
-    assert len(pdfs) == len(svg_filenames), f"There are {len(pdfs)} slides in the PPTX, but {len(svg_filenames)} slides have presenter notes with the desired SVG filename"
+    # pdfs = sorted(list(working_dir_path.glob("page*.pdf")))
+    assert pages == len(svg_filenames), f"There are {pages} slides in the PPTX, but {len(svg_filenames)} slides have presenter notes with the desired SVG filename"
 
-    # Convert each PDF to a SVG
-    for pdf in pdfs:
-        pdf_to_svg(pdf, not args.dont_use_poppler, working_dir_path)
+    # Convert each page of the PDF to a SVG with the prefix "page" (page0.svg, page1.svg, ...)
+    pdf_to_svg(pdf_full_file, pages, "page", not args.dont_use_poppler, working_dir_path)
 
     # Strip the background and slide paths for each SVG file
     svgs = sorted(list(working_dir_path.glob("*.svg")))
