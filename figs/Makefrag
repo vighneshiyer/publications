@@ -1,0 +1,7 @@
+# This make fragment is loaded from another Makefile, so get the directory *this* Makefrag is in
+mkfile_path := $(abspath $(lastword $(MAKEFILE_LIST)))
+current_dir := $(dir $(mkfile_path))
+
+figs_static := $(shell find $(current_dir) -type f -not -path '*/dynamic/*')
+
+figs := $(figs_static)
