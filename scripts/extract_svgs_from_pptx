@@ -62,7 +62,7 @@ def main():
     out_dir_path.mkdir(exist_ok=True)
     for i, svg in enumerate(svgs):
         strip_svg_background(input_svg=svg, dest_svg=(out_dir_path / f"{svg_filenames[i]}.svg"),
-                             poppler=not args.dont_use_poppler, wd=working_dir_path)
+                             poppler=not args.dont_use_poppler, from_pptx=True, wd=working_dir_path)
 
     # If we got here, then delete the working directory
     if not args.keep_work:

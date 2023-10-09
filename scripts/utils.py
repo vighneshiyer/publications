@@ -2,6 +2,7 @@ import subprocess
 from pathlib import Path
 import sys
 import xml.etree.ElementTree as ET
+import pdb
 
 def run_cmd(cmd: str, cwd: Path) -> subprocess.CompletedProcess:
     print(f"running {cmd}")
@@ -33,7 +34,7 @@ def pdf_to_svg(pdf: Path, n_pages: int, prefix: str, poppler: bool, wd: Path) ->
         svg = wd / f"{prefix}{page}.svg"
         single_pdf_to_svg(pdf, page+1, svg, poppler, wd)
 
-def strip_svg_background(input_svg: Path, dest_svg: Path, poppler: bool, wd: Path) -> None:
+def strip_svg_background(input_svg: Path, dest_svg: Path, poppler: bool, from_pptx: bool, wd: Path) -> None:
     tree = ET.parse(input_svg)
     root = tree.getroot()
     if not poppler:
@@ -50,10 +51,18 @@ def strip_svg_background(input_svg: Path, dest_svg: Path, poppler: bool, wd: Pat
         path_ids = [group[j].attrib['id'] for j in [0,1]]
         things_to_delete = ','.join(path_ids)
     else:
-        # If poppler was used to generate the SVG, then it will have a group for each glyph, in this case
-        # identify the group with the smallest id - it will contain the 2 paths that trace the background
-        groups = sorted([int(x.attrib['id'][1:]) for x in root.findall('{http://www.w3.org/2000/svg}g')])
-        things_to_delete = f"g{groups[0]}"
+        if from_pptx:
+            # If poppler was used to generate the SVG, then it will have a group for each glyph, in this case
+            # identify the group with the smallest id - it will contain the 2 paths that trace the background
+            groups = sorted([int(x.attrib['id'][1:]) for x in root.findall('{http://www.w3.org/2000/svg}g')])
+            things_to_delete = f"g{groups[0]}"
+        else:
+            # Poppler was used to import the PDF, but the PDF came directly from Google Slides (not from processing the pptx)
+            # In this case, the background is a single rect - delete just that one
+            rect = root.findall('{http://www.w3.org/2000/svg}rect')
+            assert len(rect) == 1
+            assert rect[0].attrib['fill'] == "rgb(100%, 100%, 100%)"
+            things_to_delete = rect[0].attrib['id']
 
     run_cmd(f'inkscape --actions "select-by-id:{things_to_delete}; delete-selection; select-all; fit-canvas-to-selection; \
             export-filename: {dest_svg.absolute()}; export-plain-svg; export-do;" {input_svg.absolute()}', wd)
