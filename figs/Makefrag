@@ -6,30 +6,42 @@ figs_static := $(shell find $(current_dir) -type f -not -path '*/dynamic/*')
 
 # Dynamic figures from Google Slides / Drawings
 
-asplos23_figs_root  := $(current_dir)dynamic/asplos23
-asplos23_figs_pdf   := $(asplos23_figs_root)/asplos23.pdf
-asplos23_figs       := $(asplos23_figs_root)/chisel_to_verilog.svg \
-                       $(asplos23_figs_root)/sic_flow.svg \
-                       $(asplos23_figs_root)/firrtl_lowering_with_coverage.svg \
-                       $(asplos23_figs_root)/before_and_after.svg \
+dynamic_pdfs =
+dynamic_figs =
 
-$(asplos23_figs_pdf):
-	rclone copyto --drive-export-formats "pdf" "gdrive:ASPLOS23 Poster Figures.pdf" $@
+define dynamic_pdf
+$(eval $(1)_figs_root := $$(current_dir)dynamic/$(1))
+$(eval $(1)_figs_pdf := $$($(1)_figs_root)/$(1).pdf)
+$(eval $(1)_figs := $(addsuffix .svg,$(addprefix $$($1_figs_root)/,$(3))))
 
-$(asplos23_figs) &: $(asplos23_figs_pdf)
+$($(1)_figs_pdf):
+	rclone copyto --drive-export-formats "pdf" $(2) $$@
+
+$($(1)_figs) &: $($(1)_figs_pdf)
 	$(current_dir)/../scripts/extract_svgs_from_pdf_slides \
-        --pdf $^ \
-        --out-dir $(asplos23_figs_root) \
-        --working-dir $(asplos23_figs_root)/work \
-        --keep-work \
-        $(basename $(notdir $(asplos23_figs)))
+         --pdf $$^ \
+         --out-dir $($(1)_figs_root) \
+         --working-dir $($(1)_figs_root)/work \
+         --keep-work \
+         $(basename $(notdir $($(1)_figs)))
+
+dynamic_pdfs += $($(1)_figs_pdf)
+dynamic_figs += $($(1)_figs)
+endef
+
+# Add dynamic PDFs here:
+# $(call dynamic_pdf,<name>,<rclone path>,<svg names>)
+$(eval $(call dynamic_pdf,asplos23,"gdrive:ASPLOS23 Poster Figures.pdf",\
+    chisel_to_verilog sic_flow firrtl_lowering_with_coverage before_and_after))
 
 # Targets to generate figures and use them downstream
-
-dynamic_pdfs := $(asplos23_figs_pdf)
-figs := $(figs_static) $(asplos23_figs)
+figs := $(figs_static) $(dynamic_figs)
 
 pdfs: $(dynamic_pdfs)
 figs: $(figs)
+
+clean:
+	rm -f $(dynamic_figs)
+	rm -f $(dynamic_pdfs)
 
 .PHONY: pdfs figs
