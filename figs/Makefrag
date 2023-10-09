@@ -4,4 +4,32 @@ current_dir := $(dir $(mkfile_path))
 
 figs_static := $(shell find $(current_dir) -type f -not -path '*/dynamic/*')
 
-figs := $(figs_static)
+# Dynamic figures from Google Slides / Drawings
+
+asplos23_figs_root  := $(current_dir)dynamic/asplos23
+asplos23_figs_pdf   := $(asplos23_figs_root)/asplos23.pdf
+asplos23_figs       := $(asplos23_figs_root)/chisel_to_verilog.svg \
+                       $(asplos23_figs_root)/sic_flow.svg \
+                       $(asplos23_figs_root)/firrtl_lowering_with_coverage.svg \
+                       $(asplos23_figs_root)/before_and_after.svg \
+
+$(asplos23_figs_pdf):
+	rclone copyto --drive-export-formats "pdf" "gdrive:ASPLOS23 Poster Figures.pdf" $@
+
+$(asplos23_figs) &: $(asplos23_figs_pdf)
+	$(current_dir)/../scripts/extract_svgs_from_pdf_slides \
+        --pdf $^ \
+        --out-dir $(asplos23_figs_root) \
+        --working-dir $(asplos23_figs_root)/work \
+        --keep-work \
+        $(basename $(notdir $(asplos23_figs)))
+
+# Targets to generate figures and use them downstream
+
+dynamic_pdfs := $(asplos23_figs_pdf)
+figs := $(figs_static) $(asplos23_figs)
+
+pdfs: $(dynamic_pdfs)
+figs: $(figs)
+
+.PHONY: pdfs figs
