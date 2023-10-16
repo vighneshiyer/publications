@@ -1,0 +1,94 @@
+@use 'sass:color';
+// Default mixins and settings -----------------
+@import "node_modules/reveal.js/css/theme/template/mixins";
+@import "node_modules/reveal.js/css/theme/template/settings";
+// ---------------------------------------------
+
+// Include theme-specific fonts
+@import url(/node_modules/@fontsource/fira-sans/latin.css);
+@import url(/node_modules/@fontsource/fira-sans/latin-italic.css);
+
+// Override theme settings (see ../template/settings.scss)
+$backgroundColor: #fff;
+
+$mainColor: #222;
+$headingColor: #222;
+
+$mainFontSize: 1.75rem;
+$mainFont: 'Fira Sans', Helvetica, sans-serif;
+$headingFont: 'Fira Sans', Helvetica, sans-serif;
+$headingTextShadow: none;
+$headingLetterSpacing: normal;
+$headingTextTransform: none;
+$headingFontWeight: 600;
+$linkColor: #2a76dd;
+$linkColorHover: lighten( $linkColor, 15% );
+$selectionBackgroundColor: rgba( $linkColor, 0.75 );
+
+$heading1Size: 3rem;
+$heading2Size: 2.5rem;
+$heading3Size: 2rem;
+$heading4Size: 1.75rem;
+
+// Change text colors against light slide backgrounds
+@include dark-bg-text-color(#fff);
+
+// Theme template ------------------------------
+@import "node_modules/reveal.js/css/theme/template/theme";
+// ---------------------------------------------
+
+/*.reveal pre {
+  width: 100%;
+  code {
+    padding: 20px !important;
+  }
+}*/
+
+// Override reveal CSS defaults
+.reveal .slides .center {
+    text-align: center;
+}
+
+.reveal .slides {
+    text-align: left;
+}
+
+.reveal .slides section,
+.reveal .slides section>section {
+    line-height: 1.5;
+
+    // Add spacing between top-level bullets
+    > li:not(:first-child) {
+        margin-top: 1rem;
+    }
+
+    // Decrease the font-size of the sub-bullets
+    ul > li > ul > li {
+        font-size:80%;
+    }
+}
+
+.container{
+  display: grid;
+  grid-auto-flow: column;
+  column-gap: 1em;
+}
+
+// https://color.adobe.com/last%20summer%20day-color-theme-1001686
+$blue: #A7C5C5;
+$lightgreen: #DEE0D5;
+$yellow: #E2AC48;
+$orange: #B96028;
+$red: #983C2D;
+
+.bg-green {
+    background: color.adjust($lightgreen, $green: 20);
+}
+
+.bg-orange {
+    background: color.adjust($orange, $lightness: 25%);
+}
+
+.bg-red {
+    background: color.adjust($red, $lightness: 20%);
+}

@@ -31,6 +31,7 @@
     import Highlight from 'reveal.js/plugin/highlight/highlight.esm.js';
     import Zoom from 'reveal.js/plugin/zoom/zoom.esm.js';
     import Reveal from 'reveal.js';
+    {% block reveal_init %}
     Reveal.initialize({
        controls: true,
        progress: true,
@@ -38,6 +39,7 @@
        hash: true,
        plugins: [ Markdown, Notes, Highlight, Zoom ]
     });
+    {% endblock %}
     </script>
   </body>
 </html>

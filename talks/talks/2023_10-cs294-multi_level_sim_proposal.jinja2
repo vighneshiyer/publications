@@ -1,0 +1,256 @@
+{% extends "base/base.jinja2" %}
+
+{# HTML title #}
+{% set webpage_title = "CS294 - Multi-Level Simulation for Rapid Microarchitectural Iteration and Evaluation" %}
+{# Short description #}
+{% set description = "Using ISA + uArch + RTL simulation for high throughput, low latency, high fidelity simulations." %}
+{# List of authors #}
+{% set author = "Vighnesh Iyer, Raghav Gupta" %}
+{# Change ‘venue’ to a conference or workshop name if any #}
+{% set venue = "Berkeley CS 294" %}
+{# Publication info (hidden by default) #}
+{% set pub_datetime_iso = "2023-10-08" %}
+{% set pub_date = "October 8, 2023" %}
+
+{# Custom styles and JS for a particular talk #}
+{% block custom_head %}
+<style>
+</style>
+{% endblock %}
+
+{% block theme %}
+import '/themes/remark-ish.scss'
+import 'reveal.js/plugin/highlight/monokai.css'
+{% endblock %}
+
+{% block reveal_init %}
+Reveal.initialize({
+   controls: true,
+   progress: true,
+   center: false,
+   hash: true,
+   plugins: [ Markdown, Notes, Highlight, Zoom ]
+});
+{% endblock %}
+
+{% block slides %}
+<section class="center">
+  <h1>Multi-Level Simulation for Rapid Microarchitectural Iteration and Evaluation</h1>
+  <h2>Vighnesh Iyer, Raghav Gupta</h2>
+  <h3>CS 294 Project Proposal</h3>
+</section>
+
+<section>
+  <h2>Motivation</h2>
+  <ul>
+    <li class="fragment">I want to evaluate the impact of a microarchitectural feature / optimization / parameter (RTL-level)
+      <ul class="fragment">
+        <li><em>Simple parameter:</em> Modifying number ROB/LSU entries</li>
+        <li><em>Complex parameter:</em> Changing the cache hierarchy and sizing</li>
+        <li><em>Block-level uArch:</em> Pipelining the FPU more aggressively</li>
+        <li><em>Cross-cutting uArch:</em> Changing the NoC topology or parameterization</li>
+      </ul>
+    </li>
+    <li class="fragment">On a long-running workload
+      <ul class="fragment">
+        <li>Cloud applications</li>
+        <li>100s of millions - billions of cycles</li>
+        <li>Each application places pressures on different uArch elements</li>
+      </ul>
+    </li>
+  </ul>
+</section>
+
+<section>
+  <h2>Microarchitecture Evaluation Strategies</h2>
+
+  <table style="width: 100%; font-size:90%;">
+    <thead><tr>
+      <th></th>
+      <th>Throughput</th>
+      <th>Latency</th>
+      <th>Fidelity</th>
+    </tr></thead>
+    <tbody><tr class="fragment">
+      <td>ISA Simulation</td>
+      <td class="bg-green">10-100+ MIPS</td>
+      <td class="bg-green">&lt;1 second</td>
+      <td class="bg-red">None</td>
+    </tr>
+    <tr class="fragment">
+      <td>uArch Perf Sim</td>
+      <td class="bg-orange">100 KIPS (gem5)</td>
+      <td class="bg-green">5-10 seconds</td>
+      <td class="bg-orange">5-10% avg IPC error</td>
+    </tr>
+    <tr class="fragment">
+      <td>RTL Simulation</td>
+      <td class="bg-red">1-10 KIPS</td>
+      <td class="bg-orange">5-10 minutes</td>
+      <td class="bg-green">cycle-exact</td>
+    </tr>
+    <tr class="fragment">
+      <td>FireSim (FPGA)</td>
+      <td class="bg-green">1-50 MIPS</td>
+      <td class="bg-red">2-6 hours</td>
+      <td class="bg-green">cycle-exact</td>
+    </tr>
+    <tr class="fragment">
+      <td><strong>Magic Box</strong></td>
+      <td>10 MIPS</td>
+      <td>&lt;1 minute</td>
+      <td style="font-size: 90%">&lt;5% error, 10k intervals</td>
+    </tr>
+    </tbody>
+  </table>
+
+  <ul style="margin-top: 1rem;" class="fragment">
+    <li>How do we build the magic box?</li>
+    <li>Leverage the strengths of ISA, uArch, and RTL simulators
+      <ul><li>Multi-level simulation</li></ul>
+    </li>
+  </ul>
+</section>
+
+<section>
+  <h2>Phase Behavior of Programs</h2>
+
+  <div class="container">
+  <div>
+  <ul style="font-size:95%">
+    <li class="fragment">Program execution traces aren’t random
+      <ul class="fragment">
+        <li>They execute the same code again-and-again</li>
+        <li>Application execution traces can be split into <strong style="text-decoration:underline;">phases</strong> that exhibit similar uArch behavior</li>
+      </ul>
+    </li>
+    <li class="fragment">Prior work: SimPoint
+      <ul class="fragment">
+        <li>Identify basic blocks executed in a given interval (e.g. 1M instruction intervals)</li>
+        <li>Embed each interval using their ‘basic block vector’</li>
+        <li>Cluster intervals using k-means</li>
+      </ul>
+    </li>
+    <li class="fragment">Similar intervals → similar uArch behaviors
+      <ul class="fragment"><li>Only execute unique intervals in low-level RTL simulation!</li></ul>
+    </li>
+  </ul>
+  </div>
+  <div>
+    <img src="./figs/multi-level-sim/simpoint-gzip_phases.gif" />
+    <img src="./figs/multi-level-sim/simpoint-gcc_phases.gif" />
+  </div>
+  </div>
+</section>
+
+<section>
+  <h2>Multi-Level Simulation Flow</h2>
+  <div class="container" style="column-gap:0; grid-template-columns:1.75fr 1fr">
+  <div style="display:grid; align-items: center;">
+    <img src="./figs/multi-level-sim/multi_level_sim_overview.svg" />
+  </div>
+  <div style="font-size:80%;">
+  <ul>
+    <li class="fragment">Execute the application in ISA-level simulation
+      <ul class="fragment">
+        <li>Use SimPoint style interval clustering</li>
+        <li>Capture arch checkpoints for each unique interval</li>
+        <li>Capture memory / branch / PC traces for each interval</li>
+      </ul>
+    </li>
+    <li class="fragment">Inject traces into uArch component simulator
+      <ul class="fragment">
+        <li>Separate model per component (cache, BP)</li>
+        <li>Functional warmup</li>
+      </ul>
+    </li>
+    <li class="fragment">Inject uArch state into RTL sim
+      <ul class="fragment">
+        <li>Detailed warmup</li>
+        <li>Performance numbers</li>
+      </ul>
+    </li>
+    <li class="fragment">Extrapolate up the stack</li>
+  </ul>
+  </div>
+  </div>
+</section>
+
+<section data-markdown>
+  <textarea data-template>
+## Infrastructure
+- spike <!-- .element: class="fragment" -->
+  - Execution fragment extraction + clustering (Simpoint-style based on PC trace / BBV)
+  - Checkpointing support and arch+uArch state dumping
+- Trace-based cache/BP model (built-in spike cache model + rivet BP model) <!-- .element: class="fragment" -->
+  - Functional warmup
+  - Ideally: memory timestamp record → cache uArch state reconstruction
+- Chipyard SoC VCS/Verilator sim <!-- .element: class="fragment" -->
+  - Need arch+uArch state injection and side-channel for perf metric extraction
+  - Detailed warmup + perf metrics measurement
+  - Intervals are still too long to run in RTL sim → need sampling of each interval
+  </textarea>
+</section>
+
+<section data-markdown>
+  <textarea data-template>
+## Benchmarks + Case Study
+- SoC: Base Chipyard SoC with Rocket
+  - BOOM is stretch goal
+- For pipecleaning
+  - Embench, Coremark (baremetal)
+  - Linux boot
+- For evaluation
+  - HyperProtoBench
+  - Graph benchmark suite (GAP)
+- Case study
+  - Evaluate cache sizing between L1d/L1i
+  - Investigate balancing of 2-level cache hierarchies
+  - Investigate unified vs separate I/D L2 caches
+  </textarea>
+</section>
+
+<section data-markdown>
+  <textarea data-template>
+## Things That Can Go Wrong
+- uArch state injection is much more complicated than expected
+  - spike cache model takes too much effort to inject into RTL sim
+  - spike BP model doesn’t match RTL
+  - latent state in fesvr can’t be ported to RTL sim
+- Basic block clustering produces too many or too long execution fragments
+  - Need to perform additional sampling which can introduce too much error
+- Chipyard parameter space can’t be mapped onto spike parameter space
+- The multi-level simulator has too narrow a scope
+  - We only focus on cache warmup
+  - Need a story for other long-lived uArch blocks
+  </textarea>
+</section>
+
+<section data-markdown>
+  <textarea data-template>
+## Checkpoints
+- By mid-October
+  - Spike cache model state dumping
+  - Inject arch state in RTL sim
+- By end-October
+  - Clustering binary with spike-as-library
+  - Inject uArch state in RTL sim
+- By mid-November
+  - Improve clustering binary, parallel simulations
+  - Get perf metrics from RTL sim side-channel
+- By end-November
+  - Performance opt + compare errors vs pure RTL sim
+  </textarea>
+</section>
+
+<section data-markdown>
+  <textarea data-template>
+## Expected Results
+- Run embench binaries and get numbers on new RTL within minutes
+  - Performance estimates should be close to pure RTL sim (at least &lt;10% IPC error, but we can probably do much better)
+- Prior work
+  - Sampled simulation: SimPoint / SMARTs
+  - 2-Level simulation: LiveSim (HPCA 16, Renau)
+  </textarea>
+</section>
+{% endblock %}
