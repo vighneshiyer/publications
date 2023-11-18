@@ -23,16 +23,6 @@ import '/themes/remark-ish.scss'
 import 'reveal.js/plugin/highlight/monokai.css'
 {% endblock %}
 
-{% block reveal_init %}
-Reveal.initialize({
-   controls: true,
-   progress: true,
-   center: false,
-   hash: true,
-   plugins: [ Markdown, Notes, Highlight, Zoom ]
-});
-{% endblock %}
-
 {% block slides %}
 <section class="center">
   <h1>Multi-Level Simulation for Rapid Microarchitectural Iteration and Evaluation</h1>
