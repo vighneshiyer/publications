@@ -40,7 +40,7 @@ figs := $(figs_static) $(dynamic_figs)
 pdfs: $(dynamic_pdfs)
 figs: $(figs)
 
-clean:
+clean-figs:
 	rm -f $(dynamic_figs)
 	rm -f $(dynamic_pdfs)
 
