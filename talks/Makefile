@@ -26,6 +26,7 @@ $(eval $(call talk,demo))
 $(eval $(call talk,2023-plarch_edsl))
 $(eval $(call talk,2023-plarch_mixed_hdl_and_hdl_design))
 $(eval $(call talk,2023_10-cs294-multi_level_sim_proposal))
+$(eval $(call talk,2023_12-athlete_review-tidalsim_and_verif_apps))
 
 talks_output = $(addsuffix .html,$(talks))
 
