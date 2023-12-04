@@ -142,7 +142,7 @@ import 'reveal.js/plugin/highlight/monokai.css'
       </li>
     </ul>
     </div>
-    <div class="fragment" data-fragment-index="3">
+    <div class="fragment" data-fragment-index="3" style="display:grid; align-content: center; justify-items:center;">
       <img src="./figs/multi-level-sim/simpoint-gzip_phases.gif" />
       <img src="./figs/multi-level-sim/simpoint-gcc_phases.gif" />
     </div>
@@ -416,7 +416,7 @@ cycles,instret
   </section>
 
   <section>
-    <h2>Performance and Power</h2>
+    <h2>Performance and Power Evaluation</h2>
     <ul>
       <li class="fragment">Fast, low-latency evaluation of HW parameters on long running workloads
       <ul>
@@ -469,13 +469,33 @@ cycles,instret
 
   <section>
     <h2>Bootstrapping Fuzzing</h2>
+    <ul>
+      <li class="fragment">Most HW fuzzers start from reset and run a binary on the SoC to hit some objective</li>
+      <li class="fragment">Interesting objectives are harder to hit from reset vs from the middle of a workload
+      <ul><li>e.g. post-OS boot, in the middle of an application</li></ul>
+      </li>
+      <li class="fragment">Arch and μArch checkpoints from TidalSim guarantee reachability and provides starting points for HW fuzzers</li>
+    </ul>
   </section>
 </section>
 
 <section>
   <h2>Conclusion</h2>
 
+  <div class="container" style="grid-template-columns: 1fr 1.4fr;">
+  <div>
+  <ul>
+    <li class="fragment">We want rapid iteration wrt PPA evaluation and verification objectives</li>
+    <li class="fragment">We need fast RTL-level simulation with trace extraction</li>
+    <li class="fragment">We propose <strong>TidalSim</strong>, a multi-level simulation methodology to enable rapid HW iteration</li>
+  </ul>
+  </div>
+  <div style="display:grid; align-content: center;">
+    <img src="./figs/dynamic/tidalsim/overview.svg" />
+  </div>
+  </div>
 
+  <p class="center fragment"><a href="https://github.com/euphoric-hardware/tidalsim">TidalSim (github.com/euphoric-hardware/tidalsim)</a></p>
 </section>
 
 {% endblock %}
