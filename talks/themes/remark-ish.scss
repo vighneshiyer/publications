@@ -37,12 +37,12 @@ $heading4Size: 1.75rem;
 @import "node_modules/reveal.js/css/theme/template/theme";
 // ---------------------------------------------
 
-/*.reveal pre {
+.reveal pre {
   width: 100%;
   code {
     padding: 20px !important;
   }
-}*/
+}
 
 // Override reveal CSS defaults
 .reveal .slides .center {
@@ -91,4 +91,16 @@ $red: #983C2D;
 
 .bg-red {
     background: color.adjust($red, $lightness: 20%);
+}
+
+.small {
+    font-size: 1.3rem;
+}
+
+.verysmall {
+    font-size: 1rem;
+}
+
+.footnote {
+    color: #666;
 }

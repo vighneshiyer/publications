@@ -178,20 +178,13 @@ import 'reveal.js/plugin/highlight/monokai.css'
     </ul>
   </section>
 
-  <section>
+  <section style="text-align: center;">
     <h2>Overview of Multi-Level Simulation Flow</h2>
-
-    <ul>
-
-    </ul>
+    <img src="./figs/dynamic/tidalsim/overview.svg" />
   </section>
 </section>
 
-
-
 <!--
-Break this slide into multiple parts
-- Multi-Level Microarchitectural Simulation
   - Program intervals
   - Basic block embedding (show example)
   - Clustering (show example of clusters we extracted, 2D SVD projection and cluster coloring)
@@ -201,133 +194,244 @@ Break this slide into multiple parts
   - Extrapolation
 -->
 <section>
-  <h2>Multi-Level Simulation Flow</h2>
-  <div class="container" style="column-gap:0; grid-template-columns:1.75fr 1fr">
-  <div style="display:grid; align-items: center;">
-    <img src="./figs/multi-level-sim/multi_level_sim_overview.svg" />
-  </div>
-  <div style="font-size:80%;">
-  <ul>
-    <li class="fragment">Execute the application in ISA-level simulation
-      <ul class="fragment">
-        <li>Use SimPoint style interval clustering</li>
-        <li>Capture arch checkpoints for each unique interval</li>
-        <li>Capture memory / branch / PC traces for each interval</li>
-      </ul>
-    </li>
-    <li class="fragment">Inject traces into uArch component simulator
-      <ul class="fragment">
-        <li>Separate model per component (cache, BP)</li>
-        <li>Functional warmup</li>
-      </ul>
-    </li>
-    <li class="fragment">Inject uArch state into RTL sim
-      <ul class="fragment">
-        <li>Detailed warmup</li>
-        <li>Performance numbers</li>
-      </ul>
-    </li>
-    <li class="fragment">Extrapolate up the stack</li>
-  </ul>
-  </div>
-  </div>
+  <section class="center">
+    <h2>Details of TidalSim Flow</h2>
+  </section>
+
+  <section>
+    <h2>Basic Block Identification</h2>
+
+    <p class="center fragment">Basic blocks are extracted from the dynamic commit log emitted by spike</p>
+
+    <pre class="fragment"><code data-trim data-noescape>
+core   0: >>>>  memchr
+core   0: 0x00000000800012f6 (0x0ff5f593) andi    a1, a1, 255
+core   0: 0x00000000800012fa (0x0000962a) c.add   a2, a0
+core   0: 0x00000000800012fc (0x00c51463) bne     a0, a2, pc + 8
+core   0: 0x0000000080001304 (0x00054783) lbu     a5, 0(a0)
+core   0: 0x0000000080001308 (0xfeb78de3) beq     a5, a1, pc - 6
+    </code></pre>
+
+    <ul>
+      <li class="fragment">Control flow instructions mark the end of a basic block</li>
+      <li class="fragment">Previously identified basic blocks can be split if a new entry point is found</li>
+      <li class="fragment"><code>0: 0x8000_12f6 ⮕ 0x8000_12fc</code></li>
+      <li class="fragment"><code>1: 0x8000_1304 ⮕ 0x8000_1308</code></li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Program Intervals</h2>
+
+    <p class="center fragment">A execution trace is captured from ISA-level simulation</p>
+    <pre class="fragment"><code data-trim data-noescape>
+core   0: >>>>  memchr
+core   0: 0x00000000800012f6 (0x0ff5f593) andi    a1, a1, 255
+core   0: 0x00000000800012fa (0x0000962a) c.add   a2, a0
+core   0: 0x00000000800012fc (0x00c51463) bne     a0, a2, pc + 8
+core   0: 0x0000000080001304 (0x00054783) lbu     a5, 0(a0)
+core   0: 0x0000000080001308 (0xfeb78de3) beq     a5, a1, pc - 6
+core   0: 0x000000008000130c (0x00000505) c.addi  a0, 1
+core   0: 0x000000008000130e (0x0000b7fd) c.j     pc - 18
+core   0: 0x00000000800012fc (0x00c51463) bne     a0, a2, pc + 8
+    </code></pre>
+    <p class="center fragment">The trace is grouped into intervals of N instructions</p>
+    <p class="center fragment">Typical N for SimPoint samples is 1M</p>
+    <p class="center fragment">Typical N for SMARTs samples is 10-100k</p>
+  </section>
+
+  <section>
+    <h2>Interval Embedding and Clustering</h2>
+
+    <p class="center fragment">Embed each interval with the frequency it traversed every identified basic block</p>
+
+    <table style="width: 100%; font-size:90%;" class="fragment">
+      <thead><tr>
+        <th>Interval index</th>
+        <th>Interval length</th>
+        <th>Embedding</th>
+      </tr></thead>
+      <tbody><tr>
+        <td>n</td>
+        <td>100</td>
+        <td><code>[40, 50, 0, 10]</code></td>
+      </tr>
+      <tr>
+        <td>n+1</td>
+        <td>100</td>
+        <td><code>[0, 50, 10, 40]</code></td>
+      </tr>
+      <tr>
+        <td>n+2</td>
+        <td>100</td>
+        <td><code>[0, 20, 20, 80]</code></td>
+      </tr>
+      </tbody>
+    </table>
+
+    <p class="center fragment">Intervals are clustered using k-means clustering on their embeddings</p>
+  </section>
+
+  <section>
+    <h2>Arch Snapshotting</h2>
+
+    <p class="center fragment">For each cluster, take the sample that is closest to its centroid</p>
+    <p class="center fragment">Capture arch checkpoints at the start each chosen sample</p>
+
+    <pre class="fragment"><code data-trim data-noescape>
+pc = 0x0000000080000332
+priv = M
+fcsr = 0x0000000000000000
+mtvec = 0x8000000a00006000
+...
+x1 = 0x000000008000024a
+x2 = 0x0000000080028fa0
+...
+    </code></pre>
+
+    <p class="center fragment">An arch checkpoints = arch state + raw memory contents</p>
+  </section>
+
+  <section>
+    <h2>RTL Simulation and Arch-State Injection</h2>
+
+    <ul>
+      <li class="fragment">Arch checkpoints are run in parallel in RTL simulation for N instructions</li>
+      <li class="fragment">RTL state injection caveats
+        <ul>
+          <li class="fragment">Not all arch state maps 1:1 with an RTL-level register</li>
+          <li class="fragment">e.g. <code>fflags</code> in <code>fcsr</code> are FP exception bits from FPU uArch state</li>
+          <li class="fragment">e.g. <code>FPRs</code> in Rocket are stored in recoded 65-bit format (not IEEE floats)</li>
+        </ul>
+      </li>
+      <li class="fragment">Performance metrics extracted from RTL simulation</li>
+    </ul>
+
+    <pre class="fragment"><code data-trim data-noescape>
+cycles,instret
+1219,100
+125,100
+126,100
+123,100
+114,100
+250,100
+113,100
+    </code></pre>
+  </section>
+
+  <section>
+    <h2>Extrapolation</h2>
+    <p class="center fragment">Performance metrics for one sample in a cluster are representative of all samples in that cluster</p>
+    <p class="center fragment">Extrapolate on the entire execution trace to get a full IPC trace</p>
+  </section>
 </section>
 
-<section data-markdown>
-  <textarea data-template>
-## Infrastructure
-- spike <!-- .element: class="fragment" -->
-  - Execution fragment extraction + clustering (Simpoint-style based on PC trace / BBV)
-  - Checkpointing support and arch+uArch state dumping
-- Trace-based cache/BP model (built-in spike cache model + rivet BP model) <!-- .element: class="fragment" -->
-  - Functional warmup
-  - Ideally: memory timestamp record → cache uArch state reconstruction
-- Chipyard SoC VCS/Verilator sim <!-- .element: class="fragment" -->
-  - Need arch+uArch state injection and side-channel for perf metric extraction
-  - Detailed warmup + perf metrics measurement
-  - Intervals are still too long to run in RTL sim → need sampling of each interval
-  </textarea>
+<section>
+  <section class="center">
+    <h2>Early Results</h2>
+  </section>
+
+  <section>
+    <h2>Clustering on Embench Benchmarks</h2>
+  - Show clustering results, 2D SVG projection and cluster coloring
+  TODO TODO TODO
+  </section>
+
+  <section>
+    <h2>IPC Trace Prediction</h2>
+    <ul>
+      <li class="fragment">Montgomery multiplication benchmark from Embench</li>
+      <li class="fragment"><code>N=1000</code>, <code>C=12</code></li>
+      <li class="fragment">Full RTL sim takes 10 minutes, TidalSim runs in 10 seconds</li>
+      <li class="fragment">IPC is correlated (mean error &lt;5%) and mild correlation between distance and error</li>
+    </ul>
+    <img class="fragment" src="./figs/multi-level-sim/aha-mont64_results.svg" />
+  </section>
 </section>
 
-<!--
-- Early results
-  - Show some results for aha-mont64 / embench benchmarks, discuss simulation performance
-  - Show IPC error and correlation and error vs cluster distance
--->
+<section>
+  <section class="center">
+    <h2>Work in Progress</h2>
+  </section>
 
-<!--
-- Functional warmup
-  - Show Livesim graphs - detailed warmup isn't sufficient! esp when caches are huge and warmup delays are in 1M insts
-  - 
--->
+  <section>
+    <h2>Functional Cache Warmup</h2>
+    <div class="container">
+    <div>
+      <ul>
+        <li class="fragment" data-fragment-index="1">Each checkpoint is run in RTL simulation with a cold cache → inaccurate IPC due to incomplete cache warming during detailed warmup</li>
+        <li class="fragment" data-fragment-index="3"><em>WIP</em>: "Memory Timestamp Record"<sup>[2]</sup> based cache model and RTL cache state injection</li>
+      </ul>
+    </div>
+    <div>
+      <img width="100%" class="fragment" data-fragment-index="2" src="./figs/multi-level-sim/livesim_amat_vs_warmup.png" />
+      <figcaption class="small center">AMAT Error vs # of Functional Warmup Instructions (from LiveSim<sup>[1]</sup>)</figcaption>
+    </div>
+    </div>
 
-<!-- 
-- Applications
+    <hr>
+    <div class="verysmall">
+    <p class="footnote">
+    [1]: Hassani, Sina, et al. "LiveSim: Going live with microarchitecture simulation." HPCA 2016.<br/>
+    [2]: Barr, Kenneth C., et al. "Accelerating multiprocessor simulation with a memory timestamp record." ISPASS 2005.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Performance Optimizations</h2>
+    <ul>
+      <li class="fragment">Currently two runs of the binary through spike are needed
+      <ul>
+        <li>One to get a commit log for basic block extraction, embedding, and clustering</li>
+        <li>One more to dump arch checkpoints for chosen samples</li>
+      </ul>
+      </li>
+      <li class="fragment">We can take regular checkpoints during the first execution to make arch checkpoint collection fast</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Validation of State Injection</h2>
+    <ul>
+      <li class="fragment">There is no arch state comparison at the end of a checkpoint run in RTL simulation</li>
+      <li class="fragment">We will standardize a arch state schema and dump a reference state from spike to check against</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Handling Large Interval Lengths</h2>
+    <ul>
+      <li class="fragment">Real programs will use large intervals (1-10M instructions)</li>
+      <li class="fragment">Selected intervals can't be run in their entirety in RTL simulation</li>
+      <li class="fragment">Sub-sampling intervals with random sampling is required</li>
+    </ul>
+  </section>
+</section>
+
+<section>
+  <section>
+    <h2>Applications</h2>
+  </section>
+
+  <section>
+    <h2>Performance and Power</h2>
   - Performance evaluation and DSE
-  - Fuzzing bootstrap
-  - Coverpoint synthesis
   - Power modeling
--->
+  </section>
 
-<section data-markdown>
-  <textarea data-template>
-## Benchmarks + Case Study
-- SoC: Base Chipyard SoC with Rocket
-  - BOOM is stretch goal
-- For pipecleaning
-  - Embench, Coremark (baremetal)
-  - Linux boot
-- For evaluation
-  - HyperProtoBench
-  - Graph benchmark suite (GAP)
-- Case study
-  - Evaluate cache sizing between L1d/L1i
-  - Investigate balancing of 2-level cache hierarchies
-  - Investigate unified vs separate I/D L2 caches
-  </textarea>
+  <section>
+    <h2>Coverpoint Synthesis</h2>
+  </section>
+
+  <section>
+    <h2>Bootstrapping Fuzzing</h2>
+  </section>
 </section>
 
-<section data-markdown>
-  <textarea data-template>
-## Things That Can Go Wrong
-- uArch state injection is much more complicated than expected
-  - spike cache model takes too much effort to inject into RTL sim
-  - spike BP model doesn’t match RTL
-  - latent state in fesvr can’t be ported to RTL sim
-- Basic block clustering produces too many or too long execution fragments
-  - Need to perform additional sampling which can introduce too much error
-- Chipyard parameter space can’t be mapped onto spike parameter space
-- The multi-level simulator has too narrow a scope
-  - We only focus on cache warmup
-  - Need a story for other long-lived uArch blocks
-  </textarea>
+<section>
+  <h2>Conclusion</h2>
+
+
 </section>
 
-<section data-markdown>
-  <textarea data-template>
-## Checkpoints
-- By mid-October
-  - Spike cache model state dumping
-  - Inject arch state in RTL sim
-- By end-October
-  - Clustering binary with spike-as-library
-  - Inject uArch state in RTL sim
-- By mid-November
-  - Improve clustering binary, parallel simulations
-  - Get perf metrics from RTL sim side-channel
-- By end-November
-  - Performance opt + compare errors vs pure RTL sim
-  </textarea>
-</section>
-
-<section data-markdown>
-  <textarea data-template>
-## Expected Results
-- Run embench binaries and get numbers on new RTL within minutes
-  - Performance estimates should be close to pure RTL sim (at least &lt;10% IPC error, but we can probably do much better)
-- Prior work
-  - Sampled simulation: SimPoint / SMARTs
-  - 2-Level simulation: LiveSim (HPCA 16, Renau)
-  </textarea>
-</section>
 {% endblock %}
