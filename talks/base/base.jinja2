@@ -33,14 +33,63 @@
     import Reveal from 'reveal.js';
     {% block reveal_init %}
     Reveal.initialize({
-       controls: true,
-       progress: true,
-       center: true,
-       hash: true,
-       plugins: [ Markdown, Notes, Highlight, Zoom ]
+      controls: true,
+      progress: true,
+      center: true,
+      hash: true,
+      plugins: [ Markdown, Notes, Highlight, Zoom ]
     });
     Reveal.configure({ pdfSeparateFragments: false });
     {% endblock %}
+    (function (doc, win) {
+      "use strict"
+
+      const pointer_width = 25
+      const pointer_width_2 = pointer_width / 2
+      const initial_css = {
+        position: 'absolute',
+        float: 'left',
+        borderRadius: '50%',
+        width: pointer_width + 'px',
+        height: pointer_width + 'px',
+        backgroundColor: 'rgba(255, 0, 0, 0.5)',
+        zIndex: 20,
+        display: 'none'
+      }
+      let laserActive = false
+      const body = doc.getElementsByTagName('body')[0]
+      let tail = doc.createElement('div')
+
+      function toggleLaser () {
+        if (!laserActive) {
+          document.removeEventListener('mousemove', update_laser_position)
+          tail.style.display = 'none'
+          body.style.cursor = 'auto'
+        } else {
+          tail.style.width = pointer_width + 'px'
+          tail.style.height = pointer_width + 'px'
+          body.style.cursor = 'none'
+          document.addEventListener('mousemove', update_laser_position)
+        }
+      }
+
+      function initModule () {
+        Object.assign(tail.style, initial_css)
+        body.appendChild(tail)
+        Reveal.addKeyBinding( { keyCode: 84, key: 'T', description: 'toggle laser' }, () => {
+          laserActive = !laserActive
+          toggleLaser()
+        } )
+      }
+
+      function update_laser_position(e) {
+        tail.style.display = 'block'
+        tail.style.left = e.pageX - pointer_width_2 + 'px'
+        tail.style.top = e.pageY - pointer_width_2 + 'px'
+      }
+
+      initModule()
+    })(document, window)
     </script>
   </body>
 </html>

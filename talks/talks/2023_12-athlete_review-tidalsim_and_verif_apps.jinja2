@@ -333,14 +333,17 @@ cycles,instret
 
   <section>
     <h2>Clustering on Embench Benchmarks</h2>
-  - Show clustering results, 2D SVG projection and cluster coloring
-  TODO TODO TODO
+    <img class="fragment" src="./figs/multi-level-sim/aha-mont64_clustering.svg" />
+    <ul>
+      <li class="fragment">Cluster centroids indicate which basic blocks are traversed most frequently in each cluster</li>
+      <li class="fragment">We observe that most clusters capture unique traversal patterns</li>
+    </ul>
   </section>
 
   <section>
     <h2>IPC Trace Prediction</h2>
     <ul>
-      <li class="fragment">Montgomery multiplication benchmark from Embench</li>
+      <li class="fragment">Montgomery multiplication from Embench (aha-mont64)</li>
       <li class="fragment"><code>N=1000</code>, <code>C=12</code></li>
       <li class="fragment">Full RTL sim takes 10 minutes, TidalSim runs in 10 seconds</li>
       <li class="fragment">IPC is correlated (mean error &lt;5%) and mild correlation between distance and error</li>
