@@ -172,7 +172,7 @@ import 'reveal.js/plugin/highlight/monokai.css'
     <h2>What's New</h2>
 
     <ul>
-      <li class="fragment">No prior work on ISA ↔ uArch models ↔ RTL multi-level simulation with functional warmup</li>
+      <li class="fragment">No prior work on ISA ↔ μArch models ↔ RTL multi-level simulation with functional warmup</li>
       <li class="fragment">No substantial work on binary-agnostic interval embeddings</li>
       <li class="fragment">No one has leveraged the special collateral (waveforms + high-fidelity performance metrics) you can only get from RTL simulation</li>
     </ul>
@@ -300,7 +300,7 @@ x2 = 0x0000000080028fa0
       <li class="fragment">RTL state injection caveats
         <ul>
           <li class="fragment">Not all arch state maps 1:1 with an RTL-level register</li>
-          <li class="fragment">e.g. <code>fflags</code> in <code>fcsr</code> are FP exception bits from FPU uArch state</li>
+          <li class="fragment">e.g. <code>fflags</code> in <code>fcsr</code> are FP exception bits from FPU μArch state</li>
           <li class="fragment">e.g. <code>FPRs</code> in Rocket are stored in recoded 65-bit format (not IEEE floats)</li>
         </ul>
       </li>
@@ -363,17 +363,19 @@ cycles,instret
         <li class="fragment" data-fragment-index="3"><em>WIP</em>: "Memory Timestamp Record"<sup>[2]</sup> based cache model and RTL cache state injection</li>
       </ul>
     </div>
-    <div>
-      <img width="100%" class="fragment" data-fragment-index="2" src="./figs/multi-level-sim/livesim_amat_vs_warmup.png" />
+    <div class="fragment" data-fragment-index="2">
+      <img width="100%" src="./figs/multi-level-sim/livesim_amat_vs_warmup.png" />
       <figcaption class="small center">AMAT Error vs # of Functional Warmup Instructions (from LiveSim<sup>[1]</sup>)</figcaption>
     </div>
     </div>
 
+    <div class="fragment" data-fragment-index="4">
     <hr>
     <div class="verysmall">
     <p class="footnote">
     [1]: Hassani, Sina, et al. "LiveSim: Going live with microarchitecture simulation." HPCA 2016.<br/>
     [2]: Barr, Kenneth C., et al. "Accelerating multiprocessor simulation with a memory timestamp record." ISPASS 2005.</p>
+    </div>
     </div>
   </section>
 
@@ -409,18 +411,60 @@ cycles,instret
 </section>
 
 <section>
-  <section>
+  <section class="center">
     <h2>Applications</h2>
   </section>
 
   <section>
     <h2>Performance and Power</h2>
-  - Performance evaluation and DSE
-  - Power modeling
+    <ul>
+      <li class="fragment">Fast, low-latency evaluation of HW parameters on long running workloads
+      <ul>
+        <li>Cache sizing between L1d vs L1i</li>
+        <li>Balancing of 2-level cache hierarchies</li>
+        <li>Unified vs separate i/d L2 caches</li>
+      </ul>
+      </li>
+      <li class="fragment">Trace extraction for power model construction
+      <ul>
+        <li>Currently power macromodels are built + trained only on workloads that can run in RTL simulation</li>
+        <li>TidalSim enables extraction of unique, short traces from full workloads</li>
+        <li>Potential to improve signal selection and uncover holes in training datasets</li>
+      </ul>
+      </li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Issues with HW Fuzzer Evaluations</h2>
+    <ul>
+      <li class="fragment"><em>Last time</em>: discussed deficiencies in existing HW fuzzing evaluations due to bad success/feedback metrics
+      <ul>
+        <li class="fragment">Structural coverage is too easy to hit</li>
+        <li class="fragment">Time to rediscover old bugs is too biased and forces us to use old RTL</li>
+      </ul>
+      </li>
+      <li class="fragment">Bad metrics ⮕ dubious conclusions
+      <ul>
+        <li>We should save &gt;50% of mutated stimuli (vs &lt;1% for SW fuzzers)</li>
+        <li>RTL-level feedback is useless for hitting bugs or improving coverage (vs SW fuzzers making no progress without feedback)</li>
+      </ul>
+      </li>
+    </ul>
+    <p class="center fragment">Can we synthesize metrics that lead to reasonable HW fuzzer evaluations?</p>
   </section>
 
   <section>
     <h2>Coverpoint Synthesis</h2>
+    <ul>
+      <li class="fragment"><em>Specification mining</em> takes waveforms of an RTL design and synthesizes properties involving 2+ signals that are unfalsified on all traces</li>
+      <li class="fragment">Coverpoint synthesis is an alternative take on spec mining where we synthesize μArch properties that we want to see more of</li>
+      <li class="fragment">This technique is far more effective if we have <em>many unique, realistic traces</em>
+        <ul>
+          <li class="fragment">Leverage interval clustering and sampled RTL simulation</li>
+        </ul>
+      </li>
+    </ul>
   </section>
 
   <section>
