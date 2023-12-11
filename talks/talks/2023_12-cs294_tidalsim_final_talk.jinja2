@@ -1,0 +1,454 @@
+{% extends "base/base.jinja2" %}
+
+{# HTML title #}
+{% set webpage_title = "CS294 Project Talk - TidalSim: Multi-Level Microarchitectural Simulation" %}
+{# Short description #}
+{% set description = "Using ISA + uArch + RTL simulation for high throughput, low latency, high fidelity simulations." %}
+{# List of authors #}
+{% set author = "Vighnesh Iyer, Raghav Gupta" %}
+{# Change ‘venue’ to a conference or workshop name if any #}
+{% set venue = "CS294 (Hyperscale Class)" %}
+{# Publication info (hidden by default) #}
+{% set pub_datetime_iso = "2023-12-10" %}
+{% set pub_date = "December 10, 2023" %}
+
+{# Custom styles and JS for a particular talk #}
+{% block custom_head %}
+<style>
+</style>
+{% endblock %}
+
+{% block theme %}
+import '/themes/remark-ish.scss'
+import 'reveal.js/plugin/highlight/monokai.css'
+{% endblock %}
+
+{% block slides %}
+<section class="center">
+  <h1>TidalSim: Multi-Level Microarchitecture Simulation</h1>
+  <h2>Vighnesh Iyer, Raghav Gupta, Dhruv Vaish, Bora Nikolic, Sophia Shao</h2>
+  <h3>CS294 Project Presentation</h3>
+  <h4>Tuesday, December 12th, 2023</h4>
+</section>
+
+<section>
+  <section>
+    <h2 class="center">Motivation and Background</h2>
+  </section>
+
+  <section>
+    <h2>Motivation</h2>
+
+    <ul>
+      <li class="fragment">We want fast design iteration and evaluation of PPA + verification given real workloads
+      <!--Fast design iteration and evaluation of PPA + verification requires stimulus that's representative and comprehensive wrt real workloads (execution fragments)-->
+        <ul>
+          <li class="fragment"><em>Performance estimation:</em> Impact of μArch optimizations / HW parameters on real workloads</li>
+          <li class="fragment"><em>Power macromodeling:</em> Identification of important netlist nodes in power model + traces for training</li>
+          <li class="fragment"><em>Verification:</em> Bootstrapping fuzzing loops + coverpoint synthesis</li>
+        </ul>
+      </li>
+      <li class="fragment">The enablers are: <em>fast and accurate μArch simulation</em> and a way to identify <em>unique execution fragments</em>
+        <ul>
+          <li class="fragment"><em>Performance estimation:</em> Performance metric extraction from fast RTL simulation</li>
+          <li class="fragment"><em>Power macromodeling:</em> Extraction of interesting program traces for clustering/training</li>
+          <li class="fragment"><em>Verification:</em> Extraction of traces for coverpoint/specification synthesis + state seeding for fuzzing</li>
+        </ul>
+      </li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Problem Overview</h2>
+
+    <p class="center fragment">Fast RTL-level μArch simulation and performance metric / interesting trace extraction</p>
+    <p class="center fragment"><em><strong>enables</strong></em></p>
+    <p class="center fragment">Rapid RTL iteration with performance, power modeling, and verification evaluation on real workloads</p>
+    <hr class="fragment">
+    <p class="center fragment">How can we achieve high throughput, high fidelity, low latency μArch simulation with RTL-level interesting trace extraction?</p>
+  </section>
+
+  <section>
+    <h2>Existing μArch Evaluation Strategies</h2>
+
+    <table style="width: 100%; font-size:90%;">
+      <thead><tr>
+        <th></th>
+        <th>Throughput</th>
+        <th>Latency</th>
+        <th>Fidelity</th>
+      </tr></thead>
+      <tbody><tr class="fragment">
+        <td>ISA Simulation</td>
+        <td class="bg-green">10-100+ MIPS</td>
+        <td class="bg-green">&lt;1 second</td>
+        <td class="bg-red">None</td>
+      </tr>
+      <tr class="fragment">
+        <td>μArch Perf Sim</td>
+        <td class="bg-orange">100 KIPS (gem5)</td>
+        <td class="bg-green">5-10 seconds</td>
+        <td class="bg-orange">5-10% avg IPC error</td>
+      </tr>
+      <tr class="fragment">
+        <td>RTL Simulation</td>
+        <td class="bg-red">1-10 KIPS</td>
+        <td class="bg-orange">5-10 minutes</td>
+        <td class="bg-green">cycle-exact</td>
+      </tr>
+      <tr class="fragment">
+        <td>FireSim (FPGA)</td>
+        <td class="bg-green">1-50 MIPS</td>
+        <td class="bg-red">2-6 hours</td>
+        <td class="bg-green">cycle-exact</td>
+      </tr>
+      <tr class="fragment">
+        <td><strong>TidalSim</strong></td>
+        <td>10 MIPS</td>
+        <td>&lt;1 minute</td>
+        <td style="font-size: 90%">&lt;5% error, 10k intervals</td>
+      </tr>
+      </tbody>
+    </table>
+
+    <ul style="margin-top: 1rem;" class="fragment">
+      <li>Combine the strengths of ISA, μArch, and RTL simulators
+        <ul><li>Multi-level simulation</li></ul>
+      </li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Phase Behavior of Programs</h2>
+
+    <div class="container">
+    <div>
+    <ul style="font-size:95%">
+      <li class="fragment" data-fragment-index="1">Program execution traces aren’t random
+        <ul class="fragment" data-fragment-index="2">
+          <li>They execute the same code again-and-again</li>
+          <li>Application execution traces can be split into <strong style="text-decoration:underline;">phases</strong> that exhibit similar μArch behavior</li>
+        </ul>
+      </li>
+      <li class="fragment" data-fragment-index="4">Prior work: SimPoint
+        <ul class="fragment" data-fragment-index="5">
+          <li>Identify basic blocks executed in a given interval (e.g. 1M instruction intervals)</li>
+          <li>Embed each interval using their ‘basic block vector’</li>
+          <li>Cluster intervals using k-means</li>
+        </ul>
+      </li>
+      <li class="fragment" data-fragment-index="6">Similar intervals → similar μArch behaviors
+        <ul class="fragment" data-fragment-index="7"><li>Only execute unique intervals in low-level RTL simulation!</li></ul>
+      </li>
+    </ul>
+    </div>
+    <div class="fragment" data-fragment-index="3" style="display:grid; align-content: center; justify-items:center;">
+      <img src="./figs/multi-level-sim/simpoint-gzip_phases.gif" />
+      <img src="./figs/multi-level-sim/simpoint-gcc_phases.gif" />
+    </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Prior Work</h2>
+
+    <ul>
+      <li class="fragment"><em>Sampled</em> simulation techniques have been used in μArch simulators for decades
+        <ul>
+          <li class="fragment">SimPoint-style sampling (interval clustering, large intervals)</li>
+          <li class="fragment">SMARTs-style sampling (reservoir sampling, small intervals)</li>
+          <li class="fragment">Implemented in gem5, Sniper, ZSim, SST</li>
+        </ul>
+      </li>
+      <li class="fragment">LiveSim proposed 2-level simulation (ISA → μArch sim) for rapid iteration of μArch parameters
+        <ul>
+          <li>Functional warmup was used for the cache and branch predictor models</li>
+        </ul>
+      </li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>What's New</h2>
+
+    <ul>
+      <li class="fragment">No prior work on ISA ↔ μArch models ↔ RTL multi-level simulation with functional warmup</li>
+      <li class="fragment">No one has leveraged the special collateral (waveforms + high-fidelity performance metrics) you can only get from RTL simulation</li>
+      <!--<li class="fragment">No substantial work on binary-agnostic interval embeddings</li>-->
+    </ul>
+  </section>
+</section>
+
+<!--
+  - Program intervals
+  - Basic block embedding (show example)
+  - Clustering (show example of clusters we extracted, 2D SVD projection and cluster coloring)
+  - Checkpointing and snapshot taking
+  - Injection into RTL-level simulation
+  - Performance metric extraction
+  - Extrapolation
+-->
+<section>
+  <section class="center">
+    <h2>The TidalSim Flow</h2>
+  </section>
+
+  <section style="text-align: center;">
+    <h2>Overview</h2>
+    <img src="./figs/dynamic/tidalsim/overview.svg" />
+  </section>
+
+  <section style="text-align: center;">
+    <h2>Components of the Flow</h2>
+    <div class="container" style="grid-template-columns: 1.4fr 1fr;">
+    <div>
+    <ul>
+      <li>Basic block identification
+        <ul><li>BB identification from spike commit log or from static ELF analysis</li></ul>
+      </li>
+      <li>Basic block embedding of program intervals</li>
+      <li>Clustering and checkpointing
+        <ul><li>k-means, PCA-based n-clusters, spike-based checkpoints</li></ul>
+      </li>
+      <li>RTL simulation and performance metric extraction
+        <ul><li>Custom force-based RTL state injection, out-of-band IPC measurement</li></ul>
+      </li>
+      <li>Extrapolation</li>
+    </ul>
+    </div>
+    <div style="display:grid; align-content: center;">
+      <img src="./figs/dynamic/tidalsim/overview.svg" />
+    </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Arch Snapshotting Details</h2>
+
+    <p class="center fragment">For each cluster, take the sample that is closest to its centroid</p>
+    <p class="center fragment">Capture arch checkpoints at the start each chosen sample</p>
+
+    <pre class="fragment"><code data-trim data-noescape>
+pc = 0x0000000080000332
+priv = M
+fcsr = 0x0000000000000000
+mtvec = 0x8000000a00006000
+...
+x1 = 0x000000008000024a
+x2 = 0x0000000080028fa0
+...
+    </code></pre>
+
+    <p class="center fragment">An arch checkpoints = arch state + raw memory contents</p>
+  </section>
+
+  <section>
+    <h2>RTL Simulation and Arch-State Injection</h2>
+
+    <ul>
+      <li class="fragment">Arch checkpoints are run in parallel in RTL simulation for N instructions</li>
+      <li class="fragment">RTL state injection caveats
+        <ul>
+          <li class="fragment">Not all arch state maps 1:1 with an RTL-level register</li>
+          <li class="fragment">e.g. <code>fflags</code> in <code>fcsr</code> are FP exception bits from FPU μArch state</li>
+          <li class="fragment">e.g. <code>FPRs</code> in Rocket are stored in recoded 65-bit format (not IEEE floats)</li>
+        </ul>
+      </li>
+      <li class="fragment">Performance metrics extracted from RTL simulation</li>
+    </ul>
+
+    <pre class="fragment"><code data-trim data-noescape>
+cycles,instret
+1219,100
+125,100
+126,100
+123,100
+114,100
+250,100
+113,100
+    </code></pre>
+  </section>
+
+  <section>
+    <h2>Extrapolation</h2>
+    <p class="center fragment">Performance metrics for one sample in a cluster are representative of all samples in that cluster</p>
+    <p class="center fragment">Extrapolate on the entire execution trace to get a full IPC trace</p>
+  </section>
+</section>
+
+<section>
+  <section class="center">
+    <h2>Early Results</h2>
+  </section>
+
+  <section>
+    <h2>Clustering on Embench Benchmarks</h2>
+    <img class="fragment" src="./figs/multi-level-sim/aha-mont64_clustering.svg" />
+    <ul>
+      <li class="fragment">Cluster centroids indicate which basic blocks are traversed most frequently in each cluster</li>
+      <li class="fragment">We observe that most clusters capture unique traversal patterns</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>IPC Trace Prediction</h2>
+    <ul>
+      <li class="fragment">Montgomery multiplication from Embench (aha-mont64)</li>
+      <li class="fragment"><code>N=1000</code>, <code>C=12</code></li>
+      <li class="fragment">Full RTL sim takes 10 minutes, TidalSim runs in 10 seconds</li>
+      <li class="fragment">IPC is correlated (mean error &lt;5%) and mild correlation between distance and error</li>
+    </ul>
+    <img class="fragment" src="./figs/multi-level-sim/aha-mont64_results.svg" />
+  </section>
+</section>
+
+<section>
+  <section class="center">
+    <h2>Work in Progress</h2>
+  </section>
+
+  <section>
+    <h2>Functional Cache Warmup</h2>
+    <div class="container">
+    <div>
+      <ul>
+        <li class="fragment" data-fragment-index="1">Each checkpoint is run in RTL simulation with a cold cache → inaccurate IPC due to incomplete cache warming during detailed warmup</li>
+        <li class="fragment" data-fragment-index="3"><em>WIP</em>: "Memory Timestamp Record"<sup>[2]</sup> based cache model and RTL cache state injection</li>
+      </ul>
+    </div>
+    <div class="fragment" data-fragment-index="2">
+      <img width="100%" src="./figs/multi-level-sim/livesim_amat_vs_warmup.png" />
+      <figcaption class="small center">AMAT Error vs # of Functional Warmup Instructions (from LiveSim<sup>[1]</sup>)</figcaption>
+    </div>
+    </div>
+
+    <div class="fragment" data-fragment-index="4">
+    <hr>
+    <div class="verysmall">
+    <p class="footnote">
+    [1]: Hassani, Sina, et al. "LiveSim: Going live with microarchitecture simulation." HPCA 2016.<br/>
+    [2]: Barr, Kenneth C., et al. "Accelerating multiprocessor simulation with a memory timestamp record." ISPASS 2005.</p>
+    </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Performance Optimizations</h2>
+    <ul>
+      <li class="fragment">Currently two runs of the binary through spike are needed
+      <ul>
+        <li>One to get a commit log for basic block extraction, embedding, and clustering</li>
+        <li>One more to dump arch checkpoints for chosen samples</li>
+      </ul>
+      </li>
+      <li class="fragment">We can take regular checkpoints during the first execution to make arch checkpoint collection fast</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Validation of State Injection</h2>
+    <ul>
+      <li class="fragment">There is no arch state comparison at the end of a checkpoint run in RTL simulation</li>
+      <li class="fragment">We will standardize a arch state schema and dump a reference state from spike to check against</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Handling Large Interval Lengths</h2>
+    <ul>
+      <li class="fragment">Real programs will use large intervals (1-10M instructions)</li>
+      <li class="fragment">Selected intervals can't be run in their entirety in RTL simulation</li>
+      <li class="fragment">Sub-sampling intervals with random sampling is required</li>
+    </ul>
+  </section>
+</section>
+
+<section>
+  <section class="center">
+    <h2>Applications</h2>
+  </section>
+
+  <section>
+    <h2>Performance and Power Evaluation</h2>
+    <ul>
+      <li class="fragment">Fast, low-latency evaluation of HW parameters on long running workloads
+      <ul>
+        <li>Cache sizing between L1d vs L1i</li>
+        <li>Balancing of 2-level cache hierarchies</li>
+        <li>Unified vs separate i/d L2 caches</li>
+      </ul>
+      </li>
+      <li class="fragment">Trace extraction for power model construction
+      <ul>
+        <li>Currently power macromodels are built + trained only on workloads that can run in RTL simulation</li>
+        <li>TidalSim enables extraction of unique, short traces from full workloads</li>
+        <li>Potential to improve signal selection and uncover holes in training datasets</li>
+      </ul>
+      </li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Issues with HW Fuzzer Evaluations</h2>
+    <ul>
+      <li class="fragment"><em>Last time</em>: discussed deficiencies in existing HW fuzzing evaluations due to bad success/feedback metrics
+      <ul>
+        <li class="fragment">Structural coverage is too easy to hit</li>
+        <li class="fragment">Time to rediscover old bugs is too biased and forces us to use old RTL</li>
+      </ul>
+      </li>
+      <li class="fragment">Bad metrics ⮕ dubious conclusions
+      <ul>
+        <li>We should save &gt;50% of mutated stimuli (vs &lt;1% for SW fuzzers)</li>
+        <li>RTL-level feedback is useless for hitting bugs or improving coverage (vs SW fuzzers making no progress without feedback)</li>
+      </ul>
+      </li>
+    </ul>
+    <p class="center fragment">Can we synthesize metrics that lead to reasonable HW fuzzer evaluations?</p>
+  </section>
+
+  <section>
+    <h2>Coverpoint Synthesis</h2>
+    <ul>
+      <li class="fragment"><em>Specification mining</em> takes waveforms of an RTL design and synthesizes properties involving 2+ signals that are unfalsified on all traces</li>
+      <li class="fragment">Coverpoint synthesis is an alternative take on spec mining where we synthesize μArch properties that we want to see more of</li>
+      <li class="fragment">This technique is far more effective if we have <em>many unique, realistic traces</em>
+        <ul>
+          <li class="fragment">Leverage interval clustering and sampled RTL simulation</li>
+        </ul>
+      </li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Bootstrapping Fuzzing</h2>
+    <ul>
+      <li class="fragment">Most HW fuzzers start from reset and run a binary on the SoC to hit some objective</li>
+      <li class="fragment">Interesting objectives are harder to hit from reset vs from the middle of a workload
+      <ul><li>e.g. post-OS boot, in the middle of an application</li></ul>
+      </li>
+      <li class="fragment">Arch and μArch checkpoints from TidalSim guarantee reachability and provides starting points for HW fuzzers</li>
+    </ul>
+  </section>
+</section>
+
+<section>
+  <h2>Conclusion</h2>
+
+  <div class="container" style="grid-template-columns: 1fr 1.4fr;">
+  <div>
+  <ul>
+    <li class="fragment">We want rapid iteration wrt PPA evaluation and verification objectives</li>
+    <li class="fragment">We need fast RTL-level simulation with trace extraction</li>
+    <li class="fragment">We propose <strong>TidalSim</strong>, a multi-level simulation methodology to enable rapid HW iteration</li>
+  </ul>
+  </div>
+  <div style="display:grid; align-content: center;">
+    <img src="./figs/dynamic/tidalsim/overview.svg" />
+  </div>
+  </div>
+
+  <p class="center fragment"><a href="https://github.com/euphoric-hardware/tidalsim">TidalSim (github.com/euphoric-hardware/tidalsim)</a></p>
+</section>
+
+{% endblock %}

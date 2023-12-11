@@ -1,4 +1,4 @@
-\documentclass[sigplan,review,nonacm,9pt]{acmart}
+\documentclass[sigplan,review,nonacm,10pt]{acmart}
 
 \usepackage{minted}
 \usepackage{makecell}
@@ -92,8 +92,8 @@ $^{(\ast)}$
 %%
 %% The "title" command has an optional parameter,
 %% allowing the author to define a "short title" to be used in page headers.
-% \title{Separating Description from Interpretation}
-\title{TidalSim: Mixing Functional Simulation, $\mu$Arch Models, and RTL Simulation for Rapid Microarchitectural Iteration and Evaluation}
+% \title{TidalSim: Mixing Functional Simulation, $\mu$Arch Models, and RTL Simulation for Rapid Microarchitectural Iteration and Evaluation}
+\title{TidalSim: Multi-Level Simulation for Rapid Microarchitectural Iteration and Evaluation}
 
 %%
 %% The "author" command and its associated commands are used to define
@@ -103,7 +103,7 @@ $^{(\ast)}$
 %% used to denote shared contribution to the research.
 
 %Young-Jin Park, Rohit Agarwal, Oliver Yu, Lixiang (Andy) Yin, and Bryan Ngo have worked on the eDSLs presented in this paper.
-\author{\href{https://orcid.org/0000-0001-6934-6577}{Vighnesh Iyer}, Raghav Gupta, \href{https://orcid.org/0000-0003-2324-1715}{Borivoje Nikolić}}
+\author{\href{https://orcid.org/0000-0001-6934-6577}{Vighnesh Iyer}, Raghav Gupta, Dhruv Vaish, \href{https://orcid.org/0000-0003-2324-1715}{Borivoje Nikolić}}
 \email{{vighnesh.iyer,rgupta,bora}@berkeley.edu}
 \affiliation{%
   \institution{UC Berkeley}
@@ -127,7 +127,10 @@ $^{(\ast)}$
 
 \begin{abstract}
 
-Some abstract goes here
+Existing approaches to microarchitecture simulation cannot simultaneouly deliver the three goals of high throughput, low latency, and high fidelity.
+Rapid RTL-level microarchitectural iteration and evaluation on realistic workloads is enabled by a simulator that can meet these three objectives.
+Our multi-level simulator combines functional ISA-level simulation, microarchitectural warmup models, and RTL simulation to deliver accurate IPC traces on long-running workloads to guide microarchitectural decision making.
+The new paradigm of multi-level simulation that can reach down to the RTL-level opens the door to 
 
 \end{abstract}
 
@@ -136,6 +139,19 @@ Some abstract goes here
 % \received[accepted]{5 June 2009}
 
 \maketitle
+
+\section{Introduction}
+
+What is the typical microarchitectural design and iteration process?
+What kinds of decisions do we want to make during the process?
+What workloads do we use to evaluate our decisions?
+Consider both parameter tuning as well as original microarchtectiual structures or optimizations within a given structure.
+
+The spectrum of simulators that already exist and their limitations.
+
+Why multi-level simulation?
+Why not just go into perf simulators? - the correlation problem gets compounded 2x - sampling error + perf sim - RTL sim correlation errors
+Aren't "trends" enough? Not when we care about small IPC changes! The absolute number matters! Also what are the special things we can get from RTL simulation that perf sim can't get us?
 
 % \vspace{-0.5cm}
 % \begin{figure}[h]
