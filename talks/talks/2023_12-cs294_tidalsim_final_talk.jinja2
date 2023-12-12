@@ -329,9 +329,20 @@ cycles,instret
       <li class="fragment">Montgomery multiplication from Embench (aha-mont64)</li>
       <li class="fragment"><code>N=1000</code>, <code>C=12</code></li>
       <li class="fragment">Full RTL sim takes 10 minutes, TidalSim runs in 10 seconds</li>
-      <li class="fragment">IPC is correlated (mean error &lt;5%) and mild correlation between distance and error</li>
+      <li class="fragment">IPC is correlated (mean error &lt;5%); very weak correlation between distance and error</li>
     </ul>
     <img class="fragment" src="./figs/multi-level-sim/aha-mont64_results.svg" />
+  </section>
+
+  <section>
+    <h2>IPC Trace Prediction</h2>
+    <ul>
+      <li class="fragment">Huffman compression from Embench (huffbench)</li>
+      <li class="fragment"><code>N=10000</code>, <code>C=18</code></li>
+      <li class="fragment">Full RTL sim takes 15 minutes, TidalSim runs in 10 seconds</li>
+      <li class="fragment">Larger IPC variance</li>
+    </ul>
+    <img class="fragment" src="./figs/multi-level-sim/huffbench_results.svg" />
   </section>
 </section>
 
@@ -369,18 +380,20 @@ cycles,instret
     <h2>Dealing with Long-Lived μArch State</h2>
 
     <div class="container" style="grid-template-columns: 1fr 1fr;">
-    <div>
+    <div style="display:grid; align-content: center;">
     <img src="./figs/dynamic/tidalsim/uarch_models.svg" />
     </div>
-    <div style="display:grid; align-content: center;">
+    <div>
       <ul>
-        <li class="fragment">/r</li>
+        <li class="fragment">Caches aren't the only long-lived CPU structures</li>
+        <li class="fragment">A general warmup methodology ingests a subset of a functional simulation log</li>
+        <li class="fragment">Each unit needs a custom model, injection logic, and perf metric extraction</li>
       </ul>
     </div>
     </div>
   </section>
 
-
+  <!--
   <section>
     <h2>Validation of State Injection</h2>
     <ul>
@@ -388,7 +401,9 @@ cycles,instret
       <li class="fragment">We will standardize a arch state schema and dump a reference state from spike to check against</li>
     </ul>
   </section>
+  -->
 
+  <!--
   <section>
     <h2>Handling Large Interval Lengths</h2>
     <ul>
@@ -397,8 +412,10 @@ cycles,instret
       <li class="fragment">Sub-sampling intervals with random sampling is required</li>
     </ul>
   </section>
+  -->
 </section>
 
+<!--
 <section>
   <section class="center">
     <h2>Applications</h2>
@@ -423,8 +440,8 @@ cycles,instret
       </li>
     </ul>
   </section>
-
 </section>
+-->
 
 <section>
   <h2>Conclusion</h2>
@@ -432,8 +449,8 @@ cycles,instret
   <div class="container" style="grid-template-columns: 1fr 1.4fr;">
   <div>
   <ul>
-    <li class="fragment">We want rapid iteration wrt PPA evaluation and verification objectives</li>
-    <li class="fragment">We need fast RTL-level simulation with trace extraction</li>
+    <li class="fragment">We want rapid RTL iteration with PPA evaluation</li>
+    <li class="fragment">We need fast RTL-level simulation</li>
     <li class="fragment">We propose <strong>TidalSim</strong>, a multi-level simulation methodology to enable rapid HW iteration</li>
   </ul>
   </div>
@@ -442,7 +459,7 @@ cycles,instret
   </div>
   </div>
 
-  <p class="center fragment"><a href="https://github.com/euphoric-hardware/tidalsim">TidalSim (github.com/euphoric-hardware/tidalsim)</a></p>
+  <p class="center fragment"><a href="https://github.com/euphoric-hardware/tidalsim">TidalSim (github.com/euphoric-hardware/tidalsim)</a> <small>Forks of spike, chipyard, testchipip + top-level runner</small></p>
 </section>
 
 {% endblock %}
