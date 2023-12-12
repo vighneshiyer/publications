@@ -3,6 +3,7 @@
 \usepackage{minted}
 \usepackage{makecell}
 \usepackage{booktabs}
+\usepackage{microtype}
 \graphicspath{ {./figs/} }
 \newcommand\aste{%
 $^{(\ast)}$
@@ -128,9 +129,9 @@ $^{(\ast)}$
 \begin{abstract}
 
 Existing approaches to microarchitecture simulation cannot simultaneouly deliver the three goals of high throughput, low latency, and high fidelity.
-Rapid RTL-level microarchitectural iteration and evaluation on realistic workloads is enabled by a simulator that can meet these three objectives.
-Our multi-level simulator combines functional ISA-level simulation, microarchitectural warmup models, and RTL simulation to deliver accurate IPC traces on long-running workloads to guide microarchitectural decision making.
-The new paradigm of multi-level simulation that can reach down to the RTL-level opens the door to 
+Rapid RTL-level microarchitectural iteration and evaluation on real applications is enabled by a simulator that can meet these three objectives.
+Our multi-level simulator combines functional ISA-level simulation, microarchitectural warmup models, and RTL simulation to produce accurate IPC traces.
+This new paradigm of multi-level simulation opens the door to an efficient and accurate DSE methodology, rapid evaluation of RTL-level optimizations, and automatic extraction of RTL-level traces of interesting and unique segments of long workloads.
 
 \end{abstract}
 
@@ -142,16 +143,31 @@ The new paradigm of multi-level simulation that can reach down to the RTL-level 
 
 \section{Introduction}
 
-What is the typical microarchitectural design and iteration process?
-What kinds of decisions do we want to make during the process?
+% Fill only the first page
+% 1. Describe the problem
+%   use an example to introduce the problem, consider this scenario..., how would you evaluate it?
+% 2. State your contributions
+%   write as a bulleted list, make the contributions refutable, make them specific
+%   each claim that we make should contain a forward reference to a section that provides evidence for that claim
+
+\subsection{The Problem}
+
+% What is the typical microarchitectural design and iteration process?
+Designing a microprocessor involves evaluating a microarchitecture on representative workloads, and optimizing the microarchitecture to meet the power, performance, and area targets for a set of applications based on your target market.
+Evaluation of a microarchitecture is typically a lengthy process and these long evaluation cycles bottleneck the iteration loop of making a microarchitectural change and seeing its impact.
+The agile design of microprocessors demands an evaluation methodology with low latency that enables rapid microarchitectural development, optimization, and tuning.
+
+% Don't want to design perf model and then design RTL to match that - what a waste!
+% Want to consider 1) evaluation of a new microarchitectural structure, 2) optimizing the uArch of a given structure, 3) tuning hardware parameters.
+% What kinds of decisions do we want to make during the process?
+Consider this scenario: you are designing the next-generation microprocessor for a mobile SoC optimized for web browsing as a microarchitect, and you want to make changes to improve the PPA of your design.
+Microarchitects rarely start completely from scratch; instead, you have the RTL from the previous generation's microprocessor, a functional ISA-level model, and perhaps a performance model.
+
+
+\subsection{Our Contributions}
+
 What workloads do we use to evaluate our decisions?
 Consider both parameter tuning as well as original microarchtectiual structures or optimizations within a given structure.
-
-The spectrum of simulators that already exist and their limitations.
-
-Why multi-level simulation?
-Why not just go into perf simulators? - the correlation problem gets compounded 2x - sampling error + perf sim - RTL sim correlation errors
-Aren't "trends" enough? Not when we care about small IPC changes! The absolute number matters! Also what are the special things we can get from RTL simulation that perf sim can't get us?
 
 % \vspace{-0.5cm}
 % \begin{figure}[h]
@@ -161,12 +177,33 @@ Aren't "trends" enough? Not when we care about small IPC changes! The absolute n
 % \end{figure}
 % \vspace{-0.5cm}
 
+
+\section{Background}
+
+% Talk about simulation methodologies
+The spectrum of simulators that already exist and their limitations.
+
+% Insert table of existing methodologies
+% Cite existing perf simulators: gem5, Sniper, ZSim, SST
+
+Why multi-level simulation?
+Why not just go into perf simulators? - the correlation problem gets compounded 2x - sampling error + perf sim - RTL sim correlation errors
+Aren't "trends" enough? Not when we care about small IPC changes! The absolute number matters! Also what are the special things we can get from RTL simulation that perf sim can't get us?
+
+\section{Introduction to Multi-Level Simulation}
+
+% Introduce the problem and your idea using *examples* and only then present the general case
+
+\section{Implementation}
+
+\section{Results}
+
+\section{Related Work}
+
 \section{Conclusion}
 
-Some text goes here to conclude
-
 \begin{acks}
-Acks go here
+Acks go here (Seah, Joonho, Sophia, Chris)
 \end{acks}
 
 \bibliographystyle{ACM-Reference-Format}
