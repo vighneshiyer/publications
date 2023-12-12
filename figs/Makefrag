@@ -34,7 +34,7 @@ endef
 $(eval $(call dynamic_pdf,asplos23,"gdrive:ASPLOS23 Poster Figures.pdf",\
     chisel_to_verilog sic_flow firrtl_lowering_with_coverage before_and_after))
 $(eval $(call dynamic_pdf,tidalsim,"gdrive:Tidalsim_Figs.pdf",\
-    overview))
+    overview uarch_models))
 
 # Targets to generate figures and use them downstream
 figs := $(figs_static) $(dynamic_figs)
