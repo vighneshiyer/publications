@@ -13,6 +13,7 @@ define dynamic_pdf
 $(eval $(1)_figs_root := $$(current_dir)dynamic/$(1))
 $(eval $(1)_figs_pdf := $$($(1)_figs_root)/$(1).pdf)
 $(eval $(1)_figs := $(addsuffix .svg,$(addprefix $$($1_figs_root)/,$(3))))
+$(eval $(1)_figs_converted_pdf := $(addsuffix .pdf,$(addprefix $$($1_figs_root)/,$(3))))
 
 $($(1)_figs_pdf):
 	rclone copyto --drive-export-formats "pdf" $(2) $$@
@@ -26,15 +27,23 @@ $($(1)_figs) &: $($(1)_figs_pdf)
          $(basename $(notdir $($(1)_figs)))
 
 dynamic_pdfs += $($(1)_figs_pdf)
-dynamic_figs += $($(1)_figs)
+dynamic_figs += $($(1)_figs) $($(1)_figs_converted_pdf)
+
+$(1): $($(1)_figs) $($(1)_figs_converted_pdf)
+$(1)-pdf: $($(1)_figs_pdf)
+
+.PHONY: $(1) $(1)-pdf
 endef
+
+%.pdf: %.svg
+	rsvg-convert $^ -f pdf -o $@
 
 # Add dynamic PDFs here:
 # $(call dynamic_pdf,<name>,<rclone path>,<svg names>)
 $(eval $(call dynamic_pdf,asplos23,"gdrive:ASPLOS23 Poster Figures.pdf",\
     chisel_to_verilog sic_flow firrtl_lowering_with_coverage before_and_after))
 $(eval $(call dynamic_pdf,tidalsim,"gdrive:Tidalsim_Figs.pdf",\
-    overview uarch_models))
+    overview uarch_models uarch_iteration_flow))
 
 # Targets to generate figures and use them downstream
 figs := $(figs_static) $(dynamic_figs)
