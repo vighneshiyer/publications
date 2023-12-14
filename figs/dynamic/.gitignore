@@ -1,2 +1,4 @@
 **/work
 *.pdf
+!tidalsim/tidalsim.pdf
+!asplos23/asplos23.pdf
