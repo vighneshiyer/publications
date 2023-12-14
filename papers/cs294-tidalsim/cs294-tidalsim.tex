@@ -1,4 +1,5 @@
-\documentclass[sigplan,review,nonacm,10pt]{acmart}
+%\documentclass[sigplan,review,nonacm,10pt]{acmart}
+\documentclass[sigplan,nonacm,10pt]{acmart}
 
 \usepackage{minted}
 \usepackage{makecell}
@@ -103,8 +104,7 @@ $^{(\ast)}$
 %% "authornote" and "authornotemark" commands
 %% used to denote shared contribution to the research.
 
-%Young-Jin Park, Rohit Agarwal, Oliver Yu, Lixiang (Andy) Yin, and Bryan Ngo have worked on the eDSLs presented in this paper.
-\author{\href{https://orcid.org/0000-0001-6934-6577}{Vighnesh Iyer}, Raghav Gupta, Dhruv Vaish, \href{https://orcid.org/0000-0003-2324-1715}{Borivoje Nikolić}}
+\author{\href{https://orcid.org/0000-0001-6934-6577}{Vighnesh Iyer}, Raghav Gupta, Dhruv Vaish, Young-Jin Park, Charles Hong, Sophia Shao, \href{https://orcid.org/0000-0003-2324-1715}{Borivoje Nikolić}}
 \email{{vighnesh.iyer,rgupta,dvaish,bora}@berkeley.edu}
 \affiliation{%
   \institution{UC Berkeley}
@@ -157,41 +157,74 @@ Designing a microprocessor involves evaluating a proposed microarchitecture on r
 Evaluation of a microarchitecture is typically a lengthy process and these long evaluation cycles bottleneck the iteration loop of making a microarchitectural change and seeing its impact.
 The agile design of microprocessors demands an evaluation methodology with low latency that enables rapid microarchitectural development, optimization, and tuning.
 
-% What kinds of decisions do we want to make during the process?
 % What workloads do we use to evaluate our decisions?
 Consider this scenario: you are designing the next-generation microprocessor for a mobile SoC optimized for web browsing as a microarchitect, and you want to make changes to improve the PPA of your design.
 Microarchitects rarely start completely from scratch; instead, you have the RTL from the previous generation's microprocessor, a functional ISA-level model, and perhaps a performance model.
-Let's say you also have web and mobile applications and perhaps some smaller benchmark suites from the software engineering side.
-The goal of the microarchitecture iteration loop is to make changes to the RTL, evaluate them for correctness and performance on the real-world applications they will see, and finally 
+Let's say you also have representative web and mobile applications and perhaps some smaller benchmark suites from the software engineering side.
+The microarchitecture iteration loop involves making changes to the RTL, evaluating them for correctness and performance on the real-world applications the SoC will see, and using the evaluation results (performance metrics) to guide further microarchitectural exploration (see Figure \ref{fig:uarch_iteration_loop}).
 
-\begin{figure}[h]
+\begin{figure}
   \includegraphics[width=\linewidth]{dynamic/tidalsim/uarch_iteration_flow.pdf}
-  \caption{The elements of a generic eDSL.}
-  \label{fig:functional_apis}
+  \caption{Typical microarchitecture iteration loop}
+  \label{fig:uarch_iteration_loop}
 \end{figure}
 
 % Want to consider 1) evaluation of a new microarchitectural structure, 2) optimizing the uArch of a given structure, 3) tuning hardware parameters.
+% What kinds of decisions do we want to make during the process?
+There are broadly three categories of RTL changes you might make:
+\begin{enumerate}
+  % Evaluate the usefulness of the structure, what new state is needed
+  \item Creating a completely new structure (e.g. a vector unit, a prefetcher, a new type of branch predictor)
+  % Optimization of the uArch e.g. reordering support, multiple dispatch and parallelism
+  \item Optimizing the microarchitecture of an existing structure or pipeline (e.g. reducing the dispatch latency from the ROB, adding a new forwarding path)
+  % Parameter tuning and its impact on performance
+  \item Parameterizing an RTL unit or tuning hardware parameters that already exist (e.g. tuning cache hierarchy and sizing, queue sizing in the LSU)
+\end{enumerate}
 
+For the latter two types of RTL changes, the bottleneck in their evaluation is often not the architectural modeling, RTL development, or verification, but rather measuring the impact of the changes on real workloads.
+If you only had access to traditional simulation techniques, you would be stuck with these options:
+\begin{itemize}
+  \item `Fast' but low startup latency simulators (functional and architectural models) which would lead to decisions being made based on likely inaccurate data
+  \item `Fast' but high startup latency simulators (FPGA-based simulators) which would bottleneck the speed of microarchitectural iteration
+  \item `Slow` simulators (RTL simulators) that would not be able to run a full workload to begin with in a reasonable time
+\end{itemize}
 
-% Don't want to design perf model and then design RTL to match that - what a waste, not agile!
-% Also how much fidelity is typical from perf sims? (cite paper on arch simulators considered harmful). miscorrelation vs RTL *compounds* over simulation time!
+You would like the best of all worlds: a simulator that is fast (high throughput to run real workloads), has low startup latency (to get performance results from a proposed change quickly), and is accurate (so you can make microarchitectural decisions confidently).
 
 \subsection{Our Contributions}
 
+In this paper, we propose a simulation methodology that dramatically reduces the evaluation time overhead of microarchitectural iteration.
+We demonstrate:
+
+\begin{itemize}
+  \item A technique to combine functional ISA-level simulation, microarchitectural warmup models, and RTL-level simulation to produce a `multi-level' simulator capable of running at 10 MIPS with low startup latency and high accuracy (under 5\% error with respect to full RTL simulation)
+  \item The ability to produce detailed IPC traces (with time-granularity of 10k instruction windows) for long running workloads (millions of dynamic instructions) in a matter of seconds
+\end{itemize}
+
 \section{Background}
 
+
+
+\subsection{The Spectrum of Simulation Techniques}
 % Talk about simulation methodologies
 The spectrum of simulators that already exist and their limitations.
 
 % Insert table of existing methodologies
 % Cite existing perf simulators: gem5, Sniper, ZSim, SST
 
-Why multi-level simulation?
+% Don't want to design perf model and then design RTL to match that - what a waste, not agile!
+% Also how much fidelity is typical from perf sims? (cite paper on arch simulators considered harmful). miscorrelation vs RTL *compounds* over simulation time!
+
+\subsection{Sampled Simulation}
+
 Why not just go into perf simulators? - the correlation problem gets compounded 2x - sampling error + perf sim - RTL sim correlation errors
 Aren't "trends" enough? Not when we care about small IPC changes! The absolute number matters! Also what are the special things we can get from RTL simulation that perf sim can't get us?
 
-\section{Introduction to Multi-Level Simulation}
+Talk about sampled simulation and some prior work on that
 
+\section{The Concept of Multi-Level Simulation}
+
+Why multi-level simulation?
 % Introduce the problem and your idea using *examples* and only then present the general case
 
 \section{Implementation}

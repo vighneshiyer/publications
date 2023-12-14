@@ -1,7 +1,7 @@
 main = $(notdir $(shell pwd))
+quick: $(main)_quick.pdf
 include ../../figs/Makefrag
 
-quick: $(main)_quick.pdf
 pdf: $(main).pdf
 references = $(shell find ../references/*.bib -type f -not -path '*/references.bib')
 references_all = ../references/references.bib
