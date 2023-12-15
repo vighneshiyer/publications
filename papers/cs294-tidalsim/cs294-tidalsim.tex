@@ -199,15 +199,17 @@ You would like the best of all worlds: a simulator that is fast (high throughput
 \begin{figure*}[!hbt]
   \small
   % Alladin (analytical models, often specialized for kernel accelerators), functional ISA simulation, gem5-style perf sim (this is the most diverse category), RTL sim, FPGA prototype (high fidelity if IO modeling isn't an issue), FPGA emulator (Firesim), Emulation (Palladium)
-  \begin{tabular}{>{\raggedright\arraybackslash}p{2cm}>{\raggedright\arraybackslash}p{3cm}>{\raggedright\arraybackslash}p{2cm}>{\raggedright\arraybackslash}p{3cm}>{\raggedright\arraybackslash}p{3cm}>{\raggedright\arraybackslash}p{2cm}}\toprule
-  \textbf{Abstraction} & \textbf{Primitives} & \textbf{Simulation} & \textbf{Examples} & \textbf{Utility} & \textbf{Domain} \\\midrule
-  %Transistor-level & PDK transistor models, wires, passives, physical geometry & Solving systems of differential equations & SPICE, Spectre & Analog circuit design, standard cell characterization & Continuous time and voltage\\\midrule
-  Gate-level & PDK standard cells, arbitrary time advancement & Event-driven simulation & Structural Verilog with SDF annotation & Post-syn verification, timing validation & Discrete time, 4-valued state\\\midrule
-  Register-transfer level & Flops, SRAMs, logic/arithmetic operators, wires & Transition system simulation & Lava\cite{lava}, Chisel\cite{chisel}, Amaranth\cite{amaranth}, PyMTL3\cite{pymtl3} & Synchronous digital circuit design and verification & Regular clock ticks, 2/4 valued signals\\\midrule
-  Digital discrete-event modeling & State, event-triggered blocks, delays & Event-driven simulation & Verilog, VHDL & Behavioral modeling of digital/analog IPs & Discrete time, 4-valued signals\\\midrule
-  Pipelines & Token streams, ordered operations, dataflow history & Ordered token processing & DFiant\cite{dfiant}, TL-Verilog\cite{tlverilog}, PipelineC\cite{pipelinec} & Dataflow circuits, auto-pipelining & Tokens in, tokens out\\\midrule
-  Imperative control & State, update blocks, control blocks & Interpretation & Calyx\cite{calyx}, XLS\cite{xls} & High-level synthesis & Steps in the control block\\\midrule
-  Transaction-level models & Ports, channels, threads, imperative code & TLM kernel & SystemC-TLM, PyMTL3 & System-level modeling, high-level synthesis & Transaction traces\\\bottomrule
+  \begin{tabular}{>{\raggedright\arraybackslash}p{2cm}>{\raggedright\arraybackslash}p{2cm}>{\raggedright\arraybackslash}p{2cm}>{\raggedright\arraybackslash}p{2cm}>{\raggedright\arraybackslash}p{2cm}>{\raggedright\arraybackslash}p{2cm}>{\raggedright\arraybackslash}p{2cm}}\toprule
+  \textbf{Simulator} & \textbf{Examples} & \textbf{Throughput} & \textbf{Latency} & \textbf{Accuracy} & \textbf{Metrics} & \textbf{Cost} \\\midrule
+  Analytical Models & Alladdin, Accelergy & ??? & seconds & ??? & Execution time & Minimal \\
+  \midrule
+  Analytical Models & Alladdin, Accelergy & ??? & seconds & ??? & Execution time & Minimal \\
+  \bottomrule
+  %Register-transfer level & Flops, SRAMs, logic/arithmetic operators, wires & Transition system simulation & Lava\cite{lava}, Chisel\cite{chisel}, Amaranth\cite{amaranth}, PyMTL3\cite{pymtl3} & Synchronous digital circuit design and verification & Regular clock ticks, 2/4 valued signals\\\midrule
+  %Digital discrete-event modeling & State, event-triggered blocks, delays & Event-driven simulation & Verilog, VHDL & Behavioral modeling of digital/analog IPs & Discrete time, 4-valued signals\\\midrule
+  %Pipelines & Token streams, ordered operations, dataflow history & Ordered token processing & DFiant\cite{dfiant}, TL-Verilog\cite{tlverilog}, PipelineC\cite{pipelinec} & Dataflow circuits, auto-pipelining & Tokens in, tokens out\\\midrule
+  %Imperative control & State, update blocks, control blocks & Interpretation & Calyx\cite{calyx}, XLS\cite{xls} & High-level synthesis & Steps in the control block\\\midrule
+  %Transaction-level models & Ports, channels, threads, imperative code & TLM kernel & SystemC-TLM, PyMTL3 & System-level modeling, high-level synthesis & Transaction traces\\\bottomrule
   \end{tabular}
   \caption{The spectrum of simulation techniques and how they compare on various axes.}
   \label{fig:spectrum_of_simulators}
@@ -237,18 +239,21 @@ There are many analytical, architectural, and microarchitectural simulation tech
 
 \begin{itemize}
   \item \textbf{Throughput}: how many instructions can be simulated per real second? Often given in MIPS (Millions of Instructions Per Second).
-  \item \textbf{Accuracy / fidelity}: how accurate are the output metrics of the simulator with respect to the final SoC in its real environment?
+  \item \textbf{Accuracy}: how accurate are the output metrics of the simulator with respect to the final SoC in its real environment?
   \begin{itemize}
     % with Early stage vs late stage / exploratory vs tuning: some simulators are designed for exploring the impact of very high-level parameters while others are
     \item This axis is correlated to whether a simulator is designed for early-stage exploration of high-level parameters or for late-stage tuning of a refined microarchitecture.
   \end{itemize}
-  \item \textbf{Startup latency}: how long does it take from the moment the simulator's parameters are modified to when the simulator begins executing the first simulated instruction?
-  \item \textbf{Metric diversity}:  types of metrics that can be extracted
-  \item - cost / compute (palladium cost is not merely indicental, but fundamental to the technique)
+  \item \textbf{Startup latency}: how long does it take from the moment the simulator's parameters or inputs are modified to when the simulator begins executing the first simulated instruction?
+  \item \textbf{Metric diversity}: the types of metrics that the simulator can output. This is closely related with the simulator's use-case (for early vs late stage design).
+  \item \textbf{Cost / compute}: what hardware platform does the simulator run on and how much does it cost to run a simulation? In this paper, we don't precisely compute this metric. % TODO: we can actually compute a $ per million insts metric
 \end{itemize}
 
 % Talk about simulation methodologies
+The range of existing simulation techniques are summarized in Table \ref{fig:spectrum_of_simulators}.
+
 % Insert table of existing methodologies
+% palladium cost is not merely indicental, but fundamental to the technique
 
 The spectrum of simulators that already exist and their limitations.
 
