@@ -128,6 +128,9 @@ $^{(\ast)}$
 
 \begin{abstract}
 
+% Due to the end of Moore's law and Dennard scaling...
+% lol no
+
 Existing approaches to microarchitecture simulation cannot simultaneouly deliver the three goals of high throughput, low latency, and high fidelity.
 Rapid RTL-level microarchitectural iteration and evaluation on real applications is enabled by a simulator that can meet these three objectives.
 Our multi-level simulator combines functional ISA-level simulation, microarchitectural warmup models, and RTL simulation to produce accurate IPC traces.
@@ -150,18 +153,19 @@ This new paradigm of multi-level simulation opens the door to an efficient and a
 %   write as a bulleted list, make the contributions refutable, make them specific
 %   each claim that we make should contain a forward reference to a section that provides evidence for that claim
 
-\subsection{The Problem}
-
 % What is the typical microarchitectural design and iteration process?
 Designing a microprocessor involves evaluating a proposed microarchitecture on representative workloads, and optimizing the microarchitecture to meet the power, performance, and area targets for a set of applications based on your target market.
 Evaluation of a microarchitecture is typically a lengthy process and these long evaluation cycles bottleneck the iteration loop of making a microarchitectural change and seeing its impact.
 The agile design of microprocessors demands an evaluation methodology with low latency that enables rapid microarchitectural development, optimization, and tuning.
 
+\subsection{The Problem}
+
 % What workloads do we use to evaluate our decisions?
-Consider this scenario: you are designing the next-generation microprocessor for a mobile SoC optimized for web browsing as a microarchitect, and you want to make changes to improve the PPA of your design.
+Consider this scenario: you (a microarchitect) are designing a next-generation microprocessor for a mobile SoC optimized for web browsing, and you want to make changes to improve the PPA of your design.
 Microarchitects rarely start completely from scratch; instead, you have the RTL from the previous generation's microprocessor, a functional ISA-level model, and perhaps a performance model.
 Let's say you also have representative web and mobile applications and perhaps some smaller benchmark suites from the software engineering side.
-The microarchitecture iteration loop involves making changes to the RTL, evaluating them for correctness and performance on the real-world applications the SoC will see, and using the evaluation results (performance metrics) to guide further microarchitectural exploration (see Figure \ref{fig:uarch_iteration_loop}).
+
+The microarchitecture iteration loop involves making changes to the RTL, evaluating them for correctness and performance on the real-world applications the SoC will see, and using the evaluation results (e.g. performance metrics, identified bottlenecks, profiling traces, RTL-level waveforms) to guide further microarchitectural exploration (see Figure \ref{fig:uarch_iteration_loop}).
 
 \begin{figure}
   \includegraphics[width=\linewidth]{dynamic/tidalsim/uarch_iteration_flow.pdf}
@@ -191,6 +195,24 @@ If you only had access to traditional simulation techniques, you would be stuck 
 
 You would like the best of all worlds: a simulator that is fast (high throughput to run real workloads), has low startup latency (to get performance results from a proposed change quickly), and is accurate (so you can make microarchitectural decisions confidently).
 
+% I want this table to show up on the second page!
+\begin{figure*}[!hbt]
+  \small
+  % Alladin (analytical models, often specialized for kernel accelerators), functional ISA simulation, gem5-style perf sim (this is the most diverse category), RTL sim, FPGA prototype (high fidelity if IO modeling isn't an issue), FPGA emulator (Firesim), Emulation (Palladium)
+  \begin{tabular}{>{\raggedright\arraybackslash}p{2cm}>{\raggedright\arraybackslash}p{3cm}>{\raggedright\arraybackslash}p{2cm}>{\raggedright\arraybackslash}p{3cm}>{\raggedright\arraybackslash}p{3cm}>{\raggedright\arraybackslash}p{2cm}}\toprule
+  \textbf{Abstraction} & \textbf{Primitives} & \textbf{Simulation} & \textbf{Examples} & \textbf{Utility} & \textbf{Domain} \\\midrule
+  %Transistor-level & PDK transistor models, wires, passives, physical geometry & Solving systems of differential equations & SPICE, Spectre & Analog circuit design, standard cell characterization & Continuous time and voltage\\\midrule
+  Gate-level & PDK standard cells, arbitrary time advancement & Event-driven simulation & Structural Verilog with SDF annotation & Post-syn verification, timing validation & Discrete time, 4-valued state\\\midrule
+  Register-transfer level & Flops, SRAMs, logic/arithmetic operators, wires & Transition system simulation & Lava\cite{lava}, Chisel\cite{chisel}, Amaranth\cite{amaranth}, PyMTL3\cite{pymtl3} & Synchronous digital circuit design and verification & Regular clock ticks, 2/4 valued signals\\\midrule
+  Digital discrete-event modeling & State, event-triggered blocks, delays & Event-driven simulation & Verilog, VHDL & Behavioral modeling of digital/analog IPs & Discrete time, 4-valued signals\\\midrule
+  Pipelines & Token streams, ordered operations, dataflow history & Ordered token processing & DFiant\cite{dfiant}, TL-Verilog\cite{tlverilog}, PipelineC\cite{pipelinec} & Dataflow circuits, auto-pipelining & Tokens in, tokens out\\\midrule
+  Imperative control & State, update blocks, control blocks & Interpretation & Calyx\cite{calyx}, XLS\cite{xls} & High-level synthesis & Steps in the control block\\\midrule
+  Transaction-level models & Ports, channels, threads, imperative code & TLM kernel & SystemC-TLM, PyMTL3 & System-level modeling, high-level synthesis & Transaction traces\\\bottomrule
+  \end{tabular}
+  \caption{The spectrum of simulation techniques and how they compare on various axes.}
+  \label{fig:spectrum_of_simulators}
+\end{figure*}
+
 \subsection{Our Contributions}
 
 In this paper, we propose a simulation methodology that dramatically reduces the evaluation time overhead of microarchitectural iteration.
@@ -203,19 +225,41 @@ We demonstrate:
 
 \section{Background}
 
-
+% Later: I should say that all these tasks involve benchmark extraction and rapid evaluation and I can help in all of these tasks with tidalsim
+% However, for this paper, I will focus on just the simulation and performance estimation aspect
+There are many tasks involved in the design of a microprocessor such as architectural and performance modeling, the RTL design itself, verification, power and area estimation, and of course performance evaluation.
+In this paper, we only focus on improving the latency and accuracy of performance evaluation.
+The primary means of performance evaluation is simulation, so we will first survey existing simulation techniques.
 
 \subsection{The Spectrum of Simulation Techniques}
+
+There are many analytical, architectural, and microarchitectural simulation techniques that have been developed over the past few decades spanning the gamut on various axes:
+
+\begin{itemize}
+  \item \textbf{Throughput}: how many instructions can be simulated per real second? Often given in MIPS (Millions of Instructions Per Second).
+  \item \textbf{Accuracy / fidelity}: how accurate are the output metrics of the simulator with respect to the final SoC in its real environment?
+  \begin{itemize}
+    % with Early stage vs late stage / exploratory vs tuning: some simulators are designed for exploring the impact of very high-level parameters while others are
+    \item This axis is correlated to whether a simulator is designed for early-stage exploration of high-level parameters or for late-stage tuning of a refined microarchitecture.
+  \end{itemize}
+  \item \textbf{Startup latency}: how long does it take from the moment the simulator's parameters are modified to when the simulator begins executing the first simulated instruction?
+  \item \textbf{Metric diversity}:  types of metrics that can be extracted
+  \item - cost / compute (palladium cost is not merely indicental, but fundamental to the technique)
+\end{itemize}
+
 % Talk about simulation methodologies
+% Insert table of existing methodologies
+
 The spectrum of simulators that already exist and their limitations.
 
-% Insert table of existing methodologies
 % Cite existing perf simulators: gem5, Sniper, ZSim, SST
 
 % Don't want to design perf model and then design RTL to match that - what a waste, not agile!
 % Also how much fidelity is typical from perf sims? (cite paper on arch simulators considered harmful). miscorrelation vs RTL *compounds* over simulation time!
 
-\subsection{Sampled Simulation}
+asdf\cite{arch_sim_considered_harmful}
+
+\subsection{Sampled Microarchitectural Simulation}
 
 Why not just go into perf simulators? - the correlation problem gets compounded 2x - sampling error + perf sim - RTL sim correlation errors
 Aren't "trends" enough? Not when we care about small IPC changes! The absolute number matters! Also what are the special things we can get from RTL simulation that perf sim can't get us?
@@ -226,6 +270,14 @@ Talk about sampled simulation and some prior work on that
 
 Why multi-level simulation?
 % Introduce the problem and your idea using *examples* and only then present the general case
+
+For embeddings:
+Binary agnostic
+Microarchitecture agnostic
+- BBVs - binary aware, uarch unaware
+- NPS - binary unaware, uarch unaware
+- BBVs + uarch features - binary aware, uarch aware
+- Ideal - binary unaware, uarch aware
 
 \section{Implementation}
 
