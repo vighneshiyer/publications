@@ -1,0 +1,89 @@
+% Meta-articles about architectural simulators
+
+% https://ieeexplore.ieee.org/abstract/document/7155440
+% An excellent article talking about all the limitations of arch sims and why and how they are often abused
+@ARTICLE{arch_sim_considered_harmful,
+  author={Nowatzki, Tony and Menon, Jaikrishnan and Ho, Chen-Han and Sankaralingam, Karthikeyan},
+  journal={IEEE Micro},
+  title={Architectural Simulators Considered Harmful},
+  year={2015},
+  volume={35},
+  number={6},
+  pages={4-12},
+  doi={10.1109/MM.2015.74}
+}
+
+% A high level article, not specific to simulation, about the importance of accurate evaluation methodologies
+@article{the_whole_truth,
+  author = {Blackburn, Stephen M. and Diwan, Amer and Hauswirth, Matthias and Sweeney, Peter F. and Amaral, Jos\'{e} Nelson and Brecht, Tim and Bulej, Lubom\'{\i}r and Click, Cliff and Eeckhout, Lieven and Fischmeister, Sebastian and Frampton, Daniel and Hendren, Laurie J. and Hind, Michael and Hosking, Antony L. and Jones, Richard E. and Kalibera, Tomas and Keynes, Nathan and Nystrom, Nathaniel and Zeller, Andreas},
+  title = {The Truth, The Whole Truth, and Nothing But the Truth: A Pragmatic Guide to Assessing Empirical Evaluations},
+  year = {2016},
+  issue_date = {October 2016},
+  publisher = {Association for Computing Machinery},
+  address = {New York, NY, USA},
+  volume = {38},
+  number = {4},
+  issn = {0164-0925},
+  url = {https://doi.org/10.1145/2983574},
+  doi = {10.1145/2983574},
+  abstract = {An unsound claim can misdirect a field, encouraging the pursuit of unworthy ideas and the abandonment of promising ideas. An inadequate description of a claim can make it difficult to reason about the claim, for example, to determine whether the claim is sound. Many practitioners will acknowledge the threat of unsound claims or inadequate descriptions of claims to their field. We believe that this situation is exacerbated, and even encouraged, by the lack of a systematic approach to exploring, exposing, and addressing the source of unsound claims and poor exposition.This article proposes a framework that identifies three sins of reasoning that lead to unsound claims and two sins of exposition that lead to poorly described claims and evaluations. Sins of exposition obfuscate the objective of determining whether or not a claim is sound, while sins of reasoning lead directly to unsound claims.Our framework provides practitioners with a principled way of critiquing the integrity of their own work and the work of others. We hope that this will help individuals conduct better science and encourage a cultural shift in our research community to identify and promulgate sound claims.},
+  journal = {ACM Trans. Program. Lang. Syst.},
+  month = {oct},
+  articleno = {15},
+  numpages = {20},
+  keywords = {experimentation, observation study, Experimental evaluation}
+}
+
+% https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=8718630
+% This is the most comprehensive survey article out there about architectural simulators (the entire design space of them + sampled simulation)
+% Main takeaways: IPC variation between simulators is insane (often 20+%), errors are unbounded, simulators often disagree with each other about the impact of changes, they are only correlated with hardware for a given point at best
+% Common sources of inaccuracies: branch predictor correlation, cache misses, microops decoding, various HW optimization structures
+% The more accurate simulators (Sniper, ZSim) (correlated with hardware) are not as flexible as less accurate ones (gem5)
+@ARTICLE{arch_sim_survey,
+  author={Akram, Ayaz and Sawalha, Lina},
+  journal={IEEE Access},
+  title={A Survey of Computer Architecture Simulation Techniques and Tools},
+  year={2019},
+  volume={7},
+  number={},
+  pages={78120-78145},
+  doi={10.1109/ACCESS.2019.2917698}
+}
+
+% https://ieeexplore.ieee.org/document/7753351
+% Main takeaway: gem5 is wildly inaccurate (44% IPC error), Sniper is the best (9.5%), but it has been correlated to this specific processor to be fair
+% Most simulators do a poor job of microop decoding, L1 dcache is also wildly off (too many misses), overestimated branch mispredictions
+% "Relative" measurements are complete garbage - when reducing pipeline width, gem5 gives numbers opposite to PTLSim for example - also this means you can't take them seriously since they are never compared to real hardware either (since that would require custom silicon!)
+% While Sniper is the best (in terms of accuracy and speed) it is also the least flexible, so least amenable to microarchitectural exploration!
+% "Calibration" of perf models to hardware is a red herring. If that is needed, then the hardware itself should be used! So the tool becomes useless.
+@INPROCEEDINGS{x86_arch_sim_study,
+  author={Akram, Ayaz and Sawalha, Lina},
+  booktitle={2016 IEEE 34th International Conference on Computer Design (ICCD)},
+  title={×86 computer architecture simulators: A comparative study},
+  year={2016},
+  volume={},
+  number={},
+  pages={638-645},
+  doi={10.1109/ICCD.2016.7753351}
+}
+
+% https://dl.acm.org/doi/abs/10.1145/3177959
+@article{diagsim,
+  author = {Jo, Jae-Eon and Lee, Gyu-Hyeon and Jang, Hanhwi and Lee, Jaewon and Ajdari, Mohammadamin and Kim, Jangwoo},
+  title = {DiagSim: Systematically Diagnosing Simulators for Healthy Simulations},
+  year = {2018},
+  issue_date = {March 2018},
+  publisher = {Association for Computing Machinery},
+  address = {New York, NY, USA},
+  volume = {15},
+  number = {1},
+  issn = {1544-3566},
+  url = {https://doi.org/10.1145/3177959},
+  doi = {10.1145/3177959},
+  abstract = {Simulators are the most popular and useful tool to study computer architecture and examine new ideas. However, modern simulators have become prohibitively complex (e.g., 200K+ lines of code) to fully understand and utilize. Users therefore end up analyzing and modifying only the modules of interest (e.g., branch predictor, register file) when performing simulations. Unfortunately, hidden details and inter-module interactions of simulators create discrepancies between the expected and actual module behaviors. Consequently, the effect of modifying the target module may be amplified or masked and the users get inaccurate insights from expensive simulations.In this article, we propose DiagSim, an efficient and systematic method to diagnose simulators. It ensures the target modules behave as expected to perform simulation in a healthy (i.e., accurate and correct) way. DiagSim is efficient in that it quickly pinpoints the modules showing discrepancies and guides the users to inspect the behavior without investigating the whole simulator. DiagSim is systematic in that it hierarchically tests the modules to guarantee the integrity of individual diagnosis and always provide reliable results. We construct DiagSim based on generic category-based diagnosis ideas to encourage easy expansion of the diagnosis.We diagnose three popular open source simulators and discover hidden details including implicitly reserved resources, un-documented latency factors, and hard-coded module parameter values. We observe that these factors have large performance impacts (up to 156\%) and illustrate that our diagnosis can correctly detect and eliminate them.},
+  journal = {ACM Trans. Archit. Code Optim.},
+  month = {mar},
+  articleno = {4},
+  numpages = {27},
+  keywords = {timing simulator verification, microbenchmarks, Simulator diagnosis}
+}

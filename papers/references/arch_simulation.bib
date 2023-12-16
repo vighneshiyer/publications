@@ -1,10 +1,33 @@
-@ARTICLE{arch_sim_considered_harmful,
-  author={Nowatzki, Tony and Menon, Jaikrishnan and Ho, Chen-Han and Sankaralingam, Karthikeyan},
-  journal={IEEE Micro},
-  title={Architectural Simulators Considered Harmful},
-  year={2015},
-  volume={35},
-  number={6},
-  pages={4-12},
-  doi={10.1109/MM.2015.74}
+% Architectural simulators
+
+@inproceedings{aladdin,
+  author = {Shao, Yakun Sophia and Reagen, Brandon and Wei, Gu-Yeon and Brooks, David},
+  title = {Aladdin: A Pre-RTL, Power-Performance Accelerator Simulator Enabling Large Design Space Exploration of Customized Architectures},
+  year = {2014},
+  isbn = {9781479943944},
+  publisher = {IEEE Press},
+  abstract = {Hardware specialization, in the form of accelerators that provide custom datapath and control for specific algorithms and applications, promises impressive performance and energy advantages compared to traditional architectures. Current research in accelerator analysis relies on RTL-based synthesis flows to produce accurate timing, power, and area estimates. Such techniques not only require significant effort and expertise but are also slow and tedious to use, making large design space exploration infeasible. To overcome this problem, we present Aladdin, a pre-RTL, power-performance accelerator modeling framework and demonstrate its application to system-on-chip (SoC) simulation. Aladdin estimates performance, power, and area of accelerators within 0.9\%, 4.9\%, and 6.6\% with respect to RTL implementations. Integrated with architecture-level core and memory hierarchy simulators, Aladdin provides researchers an approach to model the power and performance of accelerators in an SoC environment},
+  booktitle = {Proceeding of the 41st Annual International Symposium on Computer Architecuture},
+  pages = {97–108},
+  numpages = {12},
+  location = {Minneapolis, Minnesota, USA},
+  series = {ISCA '14}
+}
+
+@inproceedings{sniper,
+  author = {Carlson, Trevor E. and Heirman, Wim and Eeckhout, Lieven},
+  title = {Sniper: Exploring the Level of Abstraction for Scalable and Accurate Parallel Multi-Core Simulation},
+  year = {2011},
+  isbn = {9781450307710},
+  publisher = {Association for Computing Machinery},
+  address = {New York, NY, USA},
+  url = {https://doi.org/10.1145/2063384.2063454},
+  doi = {10.1145/2063384.2063454},
+  abstract = {Two major trends in high-performance computing, namely, larger numbers of cores and the growing size of on-chip cache memory, are creating significant challenges for evaluating the design space of future processor architectures. Fast and scalable simulations are therefore needed to allow for sufficient exploration of large multi-core systems within a limited simulation time budget. By bringing together accurate high-abstraction analytical models with fast parallel simulation, architects can trade off accuracy with simulation speed to allow for longer application runs, covering a larger portion of the hardware design space. Interval simulation provides this balance between detailed cycle-accurate simulation and one-IPC simulation, allowing long-running simulations to be modeled much faster than with detailed cycle-accurate simulation, while still providing the detail necessary to observe core-uncore interactions across the entire system. Validations against real hardware show average absolute errors within 25\% for a variety of multi-threaded workloads; more than twice as accurate on average as one-IPC simulation. Further, we demonstrate scalable simulation speed of up to 2.0 MIPS when simulating a 16-core system on an 8-core SMP machine.},
+  booktitle = {Proceedings of 2011 International Conference for High Performance Computing, Networking, Storage and Analysis},
+  articleno = {52},
+  numpages = {12},
+  keywords = {performance modeling, interval simulation, interval model, multi-core processor},
+  location = {Seattle, Washington},
+  series = {SC '11}
 }

@@ -188,7 +188,7 @@ There are broadly three categories of RTL changes you might make:
 For the latter two types of RTL changes, the bottleneck in their evaluation is often not the architectural modeling, RTL development, or verification, but rather measuring the impact of the changes on real workloads.
 If you only had access to traditional simulation techniques, you would be stuck with these options:
 \begin{itemize}
-  \item `Fast' but low startup latency simulators (functional and architectural models) which would lead to decisions being made based on likely inaccurate data
+  \item `Fast' but low startup latency simulators (functional and architectural models) which would lead to decisions being made on likely inaccurate data
   \item `Fast' but high startup latency simulators (FPGA-based simulators) which would bottleneck the speed of microarchitectural iteration
   \item `Slow` simulators (RTL simulators) that would not be able to run a full workload to begin with in a reasonable time
 \end{itemize}
@@ -199,19 +199,24 @@ You would like the best of all worlds: a simulator that is fast (high throughput
 \begin{figure*}[!hbt]
   \small
   % Alladin (analytical models, often specialized for kernel accelerators), functional ISA simulation, gem5-style perf sim (this is the most diverse category), RTL sim, FPGA prototype (high fidelity if IO modeling isn't an issue), FPGA emulator (Firesim), Emulation (Palladium)
-  \begin{tabular}{>{\raggedright\arraybackslash}p{2cm}>{\raggedright\arraybackslash}p{2cm}>{\raggedright\arraybackslash}p{2cm}>{\raggedright\arraybackslash}p{2cm}>{\raggedright\arraybackslash}p{2cm}>{\raggedright\arraybackslash}p{2cm}>{\raggedright\arraybackslash}p{2cm}}\toprule
-  \textbf{Simulator} & \textbf{Examples} & \textbf{Throughput} & \textbf{Latency} & \textbf{Accuracy} & \textbf{Metrics} & \textbf{Cost} \\\midrule
-  Analytical Models & Alladdin, Accelergy & ??? & seconds & ??? & Execution time & Minimal \\
+  \begin{tabular}{>{\raggedright\arraybackslash}p{2.5cm}>{\raggedright\arraybackslash}p{2cm}>{\raggedright\arraybackslash}p{2cm}>{\raggedright\arraybackslash}p{2cm}>{\raggedright\arraybackslash}p{2.5cm}>{\raggedright\arraybackslash}p{3cm}>{\raggedright\arraybackslash}p{2cm}}\toprule
+  \textbf{Simulator Type} & \textbf{Examples} & \textbf{Throughput} & \textbf{Latency} & \textbf{Accuracy} & \textbf{Metrics} & \textbf{Cost} \\\midrule
+  Analytical Models & Alladdin, Accelergy & ??? & seconds & ??? & Execution time + PPA estimates & Minimal \\
   \midrule
-  Analytical Models & Alladdin, Accelergy & ??? & seconds & ??? & Execution time & Minimal \\
+  Functional ISA-Level Simulators & spike, dromajo, qemu & 100-1000 MIPS & $<1$ second & Zero & Dynamic instruction count + mix & Minimal \\
+  \midrule
+  Trace-Based and Cycle-Level Simulators & gem5, Sniper, ZSim, SST, MARSSx86 & 100 KIPS - 10 MIPS & $<1$ minute & $\approx10\%$ IPC error & uArch metric (IPC, MPKI) traces & Minimal \\
+  \midrule
+  RTL Simulators & Verilator, VCS, Xcelium & 10 KIPS & 2-10 minutes & Cycle-exact & RTL-level traces and uArch metrics & Minimal \\
+  \midrule
+  FPGA Prototypes & HAPS, Protium & $\approx$50 MIPS & 2-6 hours & Cycle-exact, but IOs not timing accurate & Visibility of subset of RTL signals & \$10k+ \\
+  \midrule
+  FPGA-Based Emulators & Firesim & $\approx$10 MIPS & 2-6 hours & Cycle-exact & RTL-level traces and uArch metrics & \$10k+ \\
+  \midrule
+  ASIC-Based Emulators & ZeBu, Palladium & $\approx$10 MIPS & < 1 hour & Cycle-exact & RTL-level traces and uArch metrics & \$10M+ \\
   \bottomrule
-  %Register-transfer level & Flops, SRAMs, logic/arithmetic operators, wires & Transition system simulation & Lava\cite{lava}, Chisel\cite{chisel}, Amaranth\cite{amaranth}, PyMTL3\cite{pymtl3} & Synchronous digital circuit design and verification & Regular clock ticks, 2/4 valued signals\\\midrule
-  %Digital discrete-event modeling & State, event-triggered blocks, delays & Event-driven simulation & Verilog, VHDL & Behavioral modeling of digital/analog IPs & Discrete time, 4-valued signals\\\midrule
-  %Pipelines & Token streams, ordered operations, dataflow history & Ordered token processing & DFiant\cite{dfiant}, TL-Verilog\cite{tlverilog}, PipelineC\cite{pipelinec} & Dataflow circuits, auto-pipelining & Tokens in, tokens out\\\midrule
-  %Imperative control & State, update blocks, control blocks & Interpretation & Calyx\cite{calyx}, XLS\cite{xls} & High-level synthesis & Steps in the control block\\\midrule
-  %Transaction-level models & Ports, channels, threads, imperative code & TLM kernel & SystemC-TLM, PyMTL3 & System-level modeling, high-level synthesis & Transaction traces\\\bottomrule
   \end{tabular}
-  \caption{The spectrum of simulation techniques and how they compare on various axes.}
+  \caption{The spectrum of analytical, architectural, and microarchitectural simulation techniques and how they compare on various axes. Numbers assume simulation of a low core count SoC.}
   \label{fig:spectrum_of_simulators}
 \end{figure*}
 
@@ -221,7 +226,7 @@ In this paper, we propose a simulation methodology that dramatically reduces the
 We demonstrate:
 
 \begin{itemize}
-  \item A technique to combine functional ISA-level simulation, microarchitectural warmup models, and RTL-level simulation to produce a `multi-level' simulator capable of running at 10 MIPS with low startup latency and high accuracy (under 5\% error with respect to full RTL simulation)
+  \item A technique to combine functional ISA-level simulation, microarchitectural warmup models, and RTL-level simulation to produce a `multi-level' simulator capable of running at 10 MIPS with low startup latency and high accuracy (under 5\% IPC error with respect to full RTL simulation)
   \item The ability to produce detailed IPC traces (with time-granularity of 10k instruction windows) for long running workloads (millions of dynamic instructions) in a matter of seconds
 \end{itemize}
 
@@ -239,25 +244,28 @@ There are many analytical, architectural, and microarchitectural simulation tech
 
 \begin{itemize}
   \item \textbf{Throughput}: how many instructions can be simulated per real second? Often given in MIPS (Millions of Instructions Per Second).
-  \item \textbf{Accuracy}: how accurate are the output metrics of the simulator with respect to the final SoC in its real environment?
+  \item \textbf{Accuracy}: how accurate are the output metrics of the simulator with respect to the modeled SoC in its real environment?
   \begin{itemize}
-    % with Early stage vs late stage / exploratory vs tuning: some simulators are designed for exploring the impact of very high-level parameters while others are
+    % Early stage vs late stage / exploratory vs tuning: some simulators are designed for exploring the impact of very high-level parameters while others are for refinement
     \item This axis is correlated to whether a simulator is designed for early-stage exploration of high-level parameters or for late-stage tuning of a refined microarchitecture.
   \end{itemize}
   \item \textbf{Startup latency}: how long does it take from the moment the simulator's parameters or inputs are modified to when the simulator begins executing the first simulated instruction?
   \item \textbf{Metric diversity}: the types of metrics that the simulator can output. This is closely related with the simulator's use-case (for early vs late stage design).
-  \item \textbf{Cost / compute}: what hardware platform does the simulator run on and how much does it cost to run a simulation? In this paper, we don't precisely compute this metric. % TODO: we can actually compute a $ per million insts metric
+  % TODO: we can actually compute a $ per million insts metric (considering both initial capital cost + per instruction cost AND the cost if cloud by-the-hour services are available)
+  \item \textbf{Cost}: what hardware platform does the simulator run on and how much does it cost to run a simulation? In this paper, we don't precisely compute this metric.
 \end{itemize}
 
-% Talk about simulation methodologies
+% Talk about simulation methodologies + their limitations
 The range of existing simulation techniques are summarized in Table \ref{fig:spectrum_of_simulators}.
+Notably, there aren't any options for RTL-level microarchitecture iteration where we need high throughput, low startup latency, high accuracy, and low cost.
+While it may seem like ASIC-based emulators are a good option if only their cost was brought down, the reality is that the cost of these systems is not merely incidental due to lack of engineering effort, but fundamental to the technology they use.
 
-% Insert table of existing methodologies
-% palladium cost is not merely indicental, but fundamental to the technique
-
-The spectrum of simulators that already exist and their limitations.
-
-% Cite existing perf simulators: gem5, Sniper, ZSim, SST
+Cycle-level or trace-based simulators might be another option, however they suffer from an unfavorable tradeoff between accuracy and throughput.
+`Accurate' cycle-level simulators, such as gem5, 
+"Calibration"
+unbounded error
+Accurate architectural sim
+\cite{arch_sim_survey}
 
 % Don't want to design perf model and then design RTL to match that - what a waste, not agile!
 % Also how much fidelity is typical from perf sims? (cite paper on arch simulators considered harmful). miscorrelation vs RTL *compounds* over simulation time!
@@ -265,6 +273,9 @@ The spectrum of simulators that already exist and their limitations.
 asdf\cite{arch_sim_considered_harmful}
 
 \subsection{Sampled Microarchitectural Simulation}
+
+In an attempt to improve the throughput of slow but relatively more accurate cycle-level simulators, sampling methodologies were introduced.
+Talk about Simpoint + SMARTs style sampling
 
 Why not just go into perf simulators? - the correlation problem gets compounded 2x - sampling error + perf sim - RTL sim correlation errors
 Aren't "trends" enough? Not when we care about small IPC changes! The absolute number matters! Also what are the special things we can get from RTL simulation that perf sim can't get us?
