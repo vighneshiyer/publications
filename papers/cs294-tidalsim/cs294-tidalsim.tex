@@ -205,7 +205,7 @@ You would like the best of all worlds: a simulator that is fast (high throughput
   \midrule
   Functional ISA-Level Simulators & spike, dromajo, qemu & 100-1000 MIPS & $<1$ second & Zero & Dynamic instruction count + mix & Minimal \\
   \midrule
-  Trace-Based and Cycle-Level Simulators & gem5, Sniper, ZSim, SST, MARSSx86 & 100 KIPS - 10 MIPS & $<1$ minute & $\approx10\%$ IPC error & uArch metric (IPC, MPKI) traces & Minimal \\
+  Trace-Based and Cycle-Level Simulators & gem5, Sniper, ZSim, SST, MARSSx86 & 100 KIPS - 10 MIPS & $<1$ minute & $\approx10-50\%$ IPC error & uArch metric (IPC, MPKI) traces & Minimal \\
   \midrule
   RTL Simulators & Verilator, VCS, Xcelium & 10 KIPS & 2-10 minutes & Cycle-exact & RTL-level traces and uArch metrics & Minimal \\
   \midrule
@@ -238,6 +238,20 @@ There are many tasks involved in the design of a microprocessor such as architec
 In this paper, we only focus on improving the latency and accuracy of performance evaluation.
 The primary means of performance evaluation is simulation, so we will first survey existing simulation techniques.
 
+% I want this table to show up on the 3rd page!
+\begin{figure*}[!hbt]
+  \small
+  \begin{tabular}{>{\raggedright\arraybackslash}p{2cm}>{\raggedright\arraybackslash}p{2cm}>{\raggedright\arraybackslash}p{2cm}>{\raggedright\arraybackslash}p{2cm}>{\raggedright\arraybackslash}p{2cm}>{\raggedright\arraybackslash}p{2cm}>{\raggedright\arraybackslash}p{2cm}}\toprule
+  \textbf{Sampling Technique} & \textbf{Interval Length} & \textbf{\# of Intervals} & \textbf{Interval Selection} & \textbf{Functional Warmup} & \textbf{Detailed Warmup} & \textbf{Time Granularity} \\\midrule
+  Simpoint & 1-100M & 50-100 & BBV + k-means & Optional & $\approx$0.1-1M & Interval length \\
+  \midrule
+  SMARTs & 100k-1M & $\approx$10k & Reservoir sampling & Required & $\approx$10k & Entire workload \\
+  \bottomrule
+  \end{tabular}
+  \caption{Comparison between the two classes of sampled simulation methodologies.}
+  \label{fig:sampled_simulation}
+\end{figure*}
+
 \subsection{The Spectrum of Simulation Techniques}
 
 There are many analytical, architectural, and microarchitectural simulation techniques that have been developed over the past few decades spanning the gamut on various axes:
@@ -260,32 +274,76 @@ The range of existing simulation techniques are summarized in Table \ref{fig:spe
 Notably, there aren't any options for RTL-level microarchitecture iteration where we need high throughput, low startup latency, high accuracy, and low cost.
 While it may seem like ASIC-based emulators are a good option if only their cost was brought down, the reality is that the cost of these systems is not merely incidental due to lack of engineering effort, but fundamental to the technology they use.
 
-Cycle-level or trace-based simulators might be another option, however they suffer from an unfavorable tradeoff between accuracy and throughput.
-`Accurate' cycle-level simulators, such as gem5, 
-"Calibration"
-unbounded error
-Accurate architectural sim
-\cite{arch_sim_survey}
-
-% Don't want to design perf model and then design RTL to match that - what a waste, not agile!
-% Also how much fidelity is typical from perf sims? (cite paper on arch simulators considered harmful). miscorrelation vs RTL *compounds* over simulation time!
-
-asdf\cite{arch_sim_considered_harmful}
+% Also how much fidelity is typical from perf sims? (cite paper on arch simulators considered harmful).
+Cycle-level or trace-based simulators might be another option, however they suffer from an unfavorable tradeoff between accuracy, throughput, and flexibility\cite{arch_sim_considered_harmful, the_whole_truth}.
+`Accurate' simulators, such as Sniper, are accurate since they have been `calibrated' against a real hardware datapoint: however, there is no evidence that they are accurate when their parameters are changed (as there is no silicon to compare against), and furthermore they have limited flexibility\cite{arch_sim_survey, x86_arch_sim_study}.
+More general-purpose simulators, like gem5, are not as `accurate' as Sniper on a known silicon datapoint, but are much more flexible: however they suffer from low throughput.
+Performance simulators suffer from unbounded errors, and it is often difficult or impossible to trace the source of errors between the simulator and the target they are intended to model\cite{diagsim}.
 
 \subsection{Sampled Microarchitectural Simulation}
 
-In an attempt to improve the throughput of slow but relatively more accurate cycle-level simulators, sampling methodologies were introduced.
-Talk about Simpoint + SMARTs style sampling
+% Talk about sampled simulation and some prior work on that
+Notwithstanding the accuracy and flexibility limitations of performance simulators (e.g. gem5, Sniper, ZSim), prior work has attempted to significantly improve the throughput of these simulators using \textit{sampling}.
+At a high-level, sampling involves simulating most of the workload on a fast functional simulator, and only playing parts of the simulation on a more detailed performance (cycle-level or trace-based) simulator.
+This way, the simulation can run at nearly the speed of a functional simulator (10s-100s of MIPS), while still being able to estimate performance.
 
-Why not just go into perf simulators? - the correlation problem gets compounded 2x - sampling error + perf sim - RTL sim correlation errors
-Aren't "trends" enough? Not when we care about small IPC changes! The absolute number matters! Also what are the special things we can get from RTL simulation that perf sim can't get us?
+Sampling works, by first, splitting a workload's execution trace into intervals of a particular number of dynamic instructions.
+Then, only specific intervals (samples) are actually run in performance simulation.
+Depending on the sampling technique there may be a need for functional warmup (injecting an estimated state of long-lived microarchitectural components such as caches and branch predictors).
+There is also a detailed warmup period during which short-lived microarchitectural states (e.g. ROB, LSU, pipeline) are warmed up by executing the interval, before performance metrics collection begins.
 
-Talk about sampled simulation and some prior work on that
+\begin{figure}
+  \includegraphics[width=\linewidth]{multi-level-sim/simpoint-gzip_phases.png}
+  \caption{Program phases in gzip discovered using Simpoint-style interval embedding and clustering\cite{simpoint3}.}
+  \label{fig:simpoint}
+\end{figure}
+
+Sampled simulation adds error on top of the existing modeling error in performance simulators.
+There are broadly two types of sampling proposed in the literature: Simpoint-style sampling\cite{simpoint3} and SMARTs-style sampling\cite{smarts} (summarized in Figure \ref{fig:sampled_simulation}).
+
+% TODO: add Simpoint phase clustering figs
+
+\subsubsection{Simpoint-Style Sampling}
+
+The Simpoint technique embeds each interval with its `basic block vector' (BBV), which indicates which basic blocks of the workload were traversed in that interval.
+Then, the interval embeddings are clustered using k-means clustering, and one or more representative intervals are selected per-cluster.
+
+% Talk about phase behavior of programs
+The intuition behind Simpoint's interval selection strategy is that intervals that traverse the similar basic blocks are likely to have similar microarchitectural behaviors.
+Therefore, programs can be broken up into \textit{phases} that exhibit similar basic block traversal patterns and thus have similar performance metrics (see Figure \ref{fig:simpoint}).
+
+Those intervals are run in performance simulation to extract their performance metrics and those metrics are extrapolated to produce performance metrics for the full workload trace.
+Simpoint sampling usually does not require functional warmup since the interval lengths are large enough to warm up long-lived microarchitectural state.
+Since we can estimate performance for each interval separately, the time-granularity of Simpoint IPC traces is the interval length.
+
+\subsubsection{SMARTs-Style Sampling}
+
+The SMARTs technique selects which intervals to run in performance simulation via reservoir sampling, with no knowledge of the instruction-level characteristics of the interval.
+It uses far more and much shorter intervals than the Simpoint technique.
+Since the intervals are short, functional warmup is required to initialize microarchitectural structures in performance simulation.
+
+The performance metrics gathered from each interval serve as samples of the true distribution of IPC across the workload.
+The SMARTs technique uses the central limit theorem to estimate the IPC for the entire workload and give statistical confidence bounds on the estimate.
+Since the SMARTs technique has no understanding of the relationship of one interval to any other, it can only estimate performance metrics with the time-granularity of an entire workload.
 
 \section{The Concept of Multi-Level Simulation}
 
-Why multi-level simulation?
+\subsection{Issues with Existing Simulation Techniques}
+
+What's wrong with perf sims (low accuracy).
+What's wrong with RTL/FPGA sims (bad throughput or high latency + high cost).
+What's wrong with sampled perf sims
+
+\subsection{Our Proposal}
+
+\subsection{Why RTL-level?}
+
+Why multi-level simulation? Why not arch sim 2-level sim? Why go down to RTL?
+Why not just go into perf simulators? - the correlation problem gets compounded 2x - sampling error + perf sim - RTL sim correlation errors
+Aren't "trends" enough? Not when we care about small IPC changes! The absolute number matters! Also what are the special things we can get from RTL simulation that perf sim can't get us?
+Miscorrelation vs RTL *compounds* over simulation time!
 % Introduce the problem and your idea using *examples* and only then present the general case
+% Don't want to design perf model and then design RTL to match that - what a waste, not agile!
 
 For embeddings:
 Binary agnostic

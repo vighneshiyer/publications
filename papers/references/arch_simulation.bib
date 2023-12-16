@@ -31,3 +31,32 @@
   location = {Seattle, Washington},
   series = {SC '11}
 }
+
+% Sampled simulation
+
+@article{simpoint3,
+  title={Simpoint 3.0: Faster and more flexible program phase analysis},
+  author={Hamerly, Greg and Perelman, Erez and Lau, Jeremy and Calder, Brad},
+  journal={Journal of Instruction Level Parallelism},
+  volume={7},
+  number={4},
+  pages={1--28},
+  year={2005}
+}
+
+@inproceedings{smarts,
+  author = {Wunderlich, Roland E. and Wenisch, Thomas F. and Falsafi, Babak and Hoe, James C.},
+  title = {SMARTS: Accelerating Microarchitecture Simulation via Rigorous Statistical Sampling},
+  year = {2003},
+  isbn = {0769519458},
+  publisher = {Association for Computing Machinery},
+  address = {New York, NY, USA},
+  url = {https://doi.org/10.1145/859618.859629},
+  doi = {10.1145/859618.859629},
+  abstract = {Current software-based microarchitecture simulators are many orders of magnitude slower than the hardware they simulate. Hence, most microarchitecture design studies draw their conclusions from drastically truncated benchmark simulations that are often inaccurate and misleading. This paper presents the Sampling Microarchitecture Simulation (SMARTS) framework as an approach to enable fast and accurate performance measurements of full-length benchmarks. SMARTS accelerates simulation by selectively measuring in detail only an appropriate benchmark subset. SMARTS prescribes a statistically sound procedure for configuring a systematic sampling simulation run to achieve a desired quantifiable confidence in estimates.Analysis of 41 of the 45 possible SPEC2K benchmark/input combinations show CPI and energy per instruction (EPI) can be estimated to within ±3\% with 99.7\% confidence by measuring fewer than 50 million instructions per benchmark. In practice, inaccuracy in microarchitectural state initialization introduces an additional uncertainty which we empirically bound to ∼2\% for the tested benchmarks. Our implementation of SMARTS achieves an actual average error of only 0.64\% on CPI and 0.59\% on EPI for the tested benchmarks, running with average speedups of 35 and 60 over detailed simulation of 8-way and 16-way out-of-order processors, respectively.},
+  booktitle = {Proceedings of the 30th Annual International Symposium on Computer Architecture},
+  pages = {84–97},
+  numpages = {14},
+  location = {San Diego, California},
+  series = {ISCA '03}
+}
