@@ -244,10 +244,12 @@ The primary means of performance evaluation is simulation, so we will first surv
 \begin{figure*}[!hbt]
   \small
   \begin{tabular}{>{\raggedright\arraybackslash}p{2cm}>{\raggedright\arraybackslash}p{2cm}>{\raggedright\arraybackslash}p{2cm}>{\raggedright\arraybackslash}p{2cm}>{\raggedright\arraybackslash}p{2cm}>{\raggedright\arraybackslash}p{2cm}>{\raggedright\arraybackslash}p{2cm}}\toprule
-  \textbf{Sampling Technique} & \textbf{Interval Length} & \textbf{\# of Intervals} & \textbf{Interval Selection} & \textbf{Functional Warmup} & \textbf{Detailed Warmup} & \textbf{Time Granularity} \\\midrule
+  \textbf{Sampling Technique} & \textbf{Interval Length} & \textbf{\# of Intervals Simulated} & \textbf{Interval Selection} & \textbf{Functional Warmup} & \textbf{Detailed Warmup} & \textbf{Time Granularity} \\\midrule
   Simpoint & 1-100M & 50-100 & BBV + k-means & Optional & $\approx$0.1-1M & Interval length \\
   \midrule
   SMARTs & 100k-1M & $\approx$10k & Reservoir sampling & Required & $\approx$10k & Entire workload \\
+  \midrule
+  TidalSim \textbf{(this paper)} & 10k & 10-100 & BBV + k-means & Required & $\approx$2k & Interval length \\
   \bottomrule
   \end{tabular}
   \caption{Comparison between the two classes of sampled simulation methodologies.}
@@ -383,15 +385,39 @@ In order to use RTL simulation, you need to have RTL for the design point that y
 In the past, this has been difficult since the only available open-source RTL was low quality, low performance, poorly parameterizable, and not extensible.
 Furthermore, to use RTL simulation with sampling requires a way to restore and resume simulation from architectural checkpoints: this can tightly couple the low-level state injection logic with a specific RTL design point.
 
-Recently, we have seen an explosion of design frameworks with high quality open-source RTL for every part of a complete SoC\cite{chipyard, open_esp, openpiton, xiangshan, pulpv2}.
+Recently, we have seen an explosion of design frameworks with high quality open-source RTL for every part of a complete SoC\cite{chipyard, open_esp, openpiton, xiangshan, pulpv2, blackparrot}.
 These design frameworks support extensive parameterization, easy integration of external RTL, and can leverage hardware compiler frameworks\cite{firrtl} to automate generation of state injection code.
 It has now become possible to leverage RTL for large workload simulation and microarchitectural design space exploration.
 
 \subsubsection{Why Use Simpoint-Style Sampling?}
 
-Why Simpoint? fine time-granularity, high liklihood of unique traces, eventual ability to extrapolate across workloads
+% fine time-granularity, high liklihood of unique traces, eventual ability to extrapolate across workloads via binary-agnostic embedding similarity
+
+SMARTs-style sampling only gives us a single number for a performance metric (e.g. IPC).
+While it can be more accurate and have statistical error bounds, the intervals chosen for simulation are often redundant (i.e. they have similar microarchitectural characteristics).
+When performing microarchitectural exploration, we often want a detailed view of IPC behaviors \textit{within} a workload's trace to, for example, diagnose pathological behaviors visible as unexpected IPC spikes.
+
+Simpoint-style sampling uses interval embeddings and clustering, so the intervals chosen for simulation are at least guaranteed to have unique basic block traversal patterns.
+This form of sampling gives us interval length time-granularity of the IPC trace.
+Furthermore, if we can develop binary-agnostic interval embeddings, it will allow the simulator to extrapolate performance metrics \textit{across workloads} which have intervals with similar embeddings.
 
 \subsection{TidalSim Overview}
+
+\begin{figure}
+  \includegraphics[width=\linewidth]{dynamic/tidalsim/overview.pdf}
+  \caption{An overview of the steps involved in the TidalSim flow.}
+  \label{fig:tidalsim_overview}
+\end{figure}
+
+A high-level overview of the TidalSim flow is shown in Figure \ref{fig:tidalsim_overview}.
+The steps of the flow are:
+
+\begin{enumerate}
+  \item Call a functional simulator with a workload binary to get a commit log (contains PC, decoded instruction, register operands, and memory transactions for each committed instruction)
+  \item Split the commit log into intervals with a fixed number of instructions
+  \item Something else
+\end{enumerate}
+We use a similar technique as Simpoint in performing commit log dumping from a functional simulator, 
 
 \section{Implementation}
 
