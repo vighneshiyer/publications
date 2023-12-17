@@ -451,7 +451,7 @@ We leave the consideration of alternative embeddings to future work.
 
 \subsection{Basic Block Identification and BBV Embedding}
 
-% 2 supported methods 
+% 2 supported methods
 % offline, binary wide (excluding dynamic jump targets, test on embench)
 % online execution trace based, smaller, dynamic jump targets
 % doesn't capture info on order of traversal
@@ -462,13 +462,13 @@ We leave the consideration of alternative embeddings to future work.
 
 TidalSim supports two methods for Basic Block Identification.
 \begin{itemize}
-  \item Dynamic, trace-driven identification takes a spike execution trace, and creates new basic blocks every time a control flow change instruction is executed. 
-  This approach only considers executed instructions, thus conserving space. However, as it is not input agnostic, it needs to be run online every time the workload is executed with varying inputs. 
-  \item Static, binary-based identification takes a binary, disassembles it, and identifies control flow change instructions. For each such instruction and its targets, the code is iteratively split to generate basic blocks. 
-  This approach is input and microarchitecture independent, thus, it needs to be run only once per workload and can be run offline. Since it traverses the whole binary, it consumes more space and identifies basic blocks that might not be traversed during execution. It also cannot identify dynamic targets that are unknown at compile time. 
+  \item Dynamic, trace-driven identification takes a spike execution trace, and creates new basic blocks every time a control flow change instruction is executed.
+  This approach only considers executed instructions, thus conserving space. However, as it is not input agnostic, it needs to be run online every time the workload is executed with varying inputs.
+  \item Static, binary-based identification takes a binary, disassembles it, and identifies control flow change instructions. For each such instruction and its targets, the code is iteratively split to generate basic blocks.
+  This approach is input and microarchitecture independent, thus, it needs to be run only once per workload and can be run offline. Since it traverses the whole binary, it consumes more space and identifies basic blocks that might not be traversed during execution. It also cannot identify dynamic targets that are unknown at compile time.
 \end{itemize}
 
-Once basic blocks have been idenitifed, TidalSim makes a pass over the spike execution trace to populate the basic block frequency vector for each interval, creating an embedding matrix. Next, we run Singular Value Decomposition on the embedding matrix to identify its singular values and set a threshold to get the effective rank of the matrix. This effective rank is used as the number of clusters for K-means clustering. 
+Once basic blocks have been idenitifed, TidalSim makes a pass over the spike execution trace to populate the basic block frequency vector for each interval, creating an embedding matrix. Next, we run Singular Value Decomposition on the embedding matrix to identify its singular values and set a threshold to get the effective rank of the matrix. This effective rank is used as the number of clusters for K-means clustering.
 For each cluster, the interval closest to its centroid is chosen as the representative interval for the cluster.
 
 \subsection{Architectural Checkpointing}
@@ -487,22 +487,22 @@ Each checkpoint consists of a text file containing all the architectural state o
 
 % grab figures from MTR
 
-When we run detailed RTL simulation on each interval, we only checkpoint and inject architectural state. This means long-loved microarchitectural blocks such as caches, cache-like structures (TLBs, BTBs), branch predictors, and prefetchers, all start cold. 
+When we run detailed RTL simulation on each interval, we only checkpoint and inject architectural state. This means long-loved microarchitectural blocks such as caches, cache-like structures (TLBs, BTBs), branch predictors, and prefetchers, all start cold.
 This leads to expensive misses in sampled simulators such as TidalSim that would not be observed otherwise. These cold start misses are responsible for the majority of the error between TidalSim and cycle-exact simulation.
 
 Additionally, these blocks build up state over tens to hundreds of thousands of instructions and cannot be warmed up with detailed simulation of an interval. Thus, we need functional warmup models that can efficiently recreate warm state using the information available in functional ISA-level simulation.
 Considering TidalSim's objective of enabling an efficient and accurate DSE methodology and the PPA impacts of parameterizing such microarchitectural blocks, it is critical that our functional warmup strategy is both efficient and flexible to changing parameters. This requirement leads us towards more abstract models in contrast to traditional concrete microarchitecture simulators.
 
-For caches and cache-like structures, we use Memory Timestamp Record \cite{barr2005accelerating} - a data structure populated from a trace of memory transactions used to handle cache state (and coherence state in multiprocessor simulation). MTR holds entries at cache line level as shown in figure [?]. 
+For caches and cache-like structures, we use Memory Timestamp Record \cite{barr2005accelerating} - a data structure populated from a trace of memory transactions used to handle cache state (and coherence state in multiprocessor simulation). MTR holds entries at cache line level as shown in figure [?].
 It is quite flexible as it allows for the following at reconstruction time:
 \begin{enumerate}
-  \item changing the number of cache sets and ways 
+  \item changing the number of cache sets and ways
   \item increasing the cache line size from a predetermined lower bound (the cache line size used while populating MTR) (currently unimplemented)
   \item changing the eviction policy (we only implement LRU as a default at this time)
   \item changing the write policy: write-allocate v. no-write-allocate (we only implement write-allocate at this time)
 \end{enumerate}
 
-Once representative intervals have been identified, we make a pass over the spike execution trace. For each memory transaction, we update MTR to either add an entry for a line encountered for the first time or update the respective entry to mark the current access. At the start of each interval we checkpoint MTR. 
+Once representative intervals have been identified, we make a pass over the spike execution trace. For each memory transaction, we update MTR to either add an entry for a line encountered for the first time or update the respective entry to mark the current access. At the start of each interval we checkpoint MTR.
 
 Prior to state injection, we can reconstruct caches at the start of each interval in parallel. We take as input the number of sets and ways and use the corresponding MTR. For each set, we identify lines falling into that set, and then select \textit{w} most recently accessed lines where \textit{w} is the number of ways. This is illustrated in figure [?].
 
@@ -510,11 +510,11 @@ Currently, we only implement a unicore version of MTR, but this can easily be ex
 
 \subsection{RTL Simulation}
 
-With the architectural checkpoints for each interval in hand, we inject each checkpoint in parallel in an RTL simulation of a Chipyard SoC containing one Rocket core.
+With the architectural checkpoints for each interval in hand, we inject each checkpoint in parallel in an RTL simulation of a Chipyard SoC containing one Rocket core with the base Chipyard configuration.
 
 \subsubsection{State Injection}
 
-There is an existing flow for injecting architectural state via the RISC-V debug module.
+There is an existing flow for injecting architectural state in RTL simulation via the RISC-V debug module.
 However, we opted not to use it for two reasons:
 \begin{enumerate}
   \item DMI-based state injection takes 15-30 seconds, which dwarfs the time taken to actually run the checkpoint (1-3 seconds)
@@ -542,11 +542,26 @@ To perform correct FPR injection, we must recode the architectural snapshot befo
 
 \subsubsection{Performance Metric Extraction}
 
+There are two goals for extracting performance metrics from RTL simulation:
+\begin{itemize}
+  \item Do not perturb the DUT when collecting performance data
+  \item Be able to sample performance metrics at an arbitrary rate
+\end{itemize}
 
+To meet both of these objectives, and not have to modify the RTL, we chose to use hierarchical references to the RISC-V trace port of the \texttt{RocketTile}.
+We added counters in the testharnes for measuring IPC at a user-specified sampling rate.
 
 \subsection{Extrapolation}
 
+Since we pick the interval closest to each cluster centroid for RTL simulation, we conider the IPC of the simulated interval representative of all intervals belonging to the same cluster.
+We capture a granular IPC trace for each simulated interval and strip away the first 1-2k instructions in the performance trace to account for the detailed warmup period.
+Then we extrapolate the results of each RTL simulation by assigning each interval the representative IPC of its cluster.
+
 \section{Results}
+
+We evaluate TidalSim on the Embench benchmark suite\cite{embench} cross-compiled for \texttt{rv64gc}.
+Our evaluation is focused on the accuracy of reconstructing a full IPC trace using sampled multi-level simulation.
+The hardware platform is the baseline configuration of a Chipyard SoC (\texttt{RocketConfig}) with 
 
 What benchmarks?
 What baseline SoC?
@@ -568,6 +583,8 @@ Add figure about general functional warmup strategies.
 \subsection{Embedding-Driven Extrapolation}
 
 \subsection{Better Interval Embeddings}
+
+\subsection{Handling Large Interval Lengths}
 
 \subsection{Arch Checkpoint Reloading Validation}
 
