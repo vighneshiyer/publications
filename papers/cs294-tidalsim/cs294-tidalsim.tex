@@ -328,35 +328,61 @@ Since the SMARTs technique has no understanding of the relationship of one inter
 
 \section{The Concept of Multi-Level Simulation}
 
+% Introduce the problem and your idea using *examples* and only then present the general case
+
 We can see that existing simulation techniques cannot simultaneously deliver on all the axes of high accuracy, high throughput, low startup latency, and low cost.
 This bottlenecks the microarchitectural iteration loop since evaluation is either 1) too slow to run on realistic workloads, or 2) too inaccurate to make decisions, or 3) incurs too high a cost or has too long of a startup latency to use in the iteration loop.
 
 \subsection{Issues with Existing Simulation Techniques}
 
-Cycle-level or trace-based simulators suffer from low accuracy and unbounded errors which are further exacerbated by sampled simulation which adds sampling error on top of modeling error.
+% What's wrong with perf sims (low accuracy).
+% What's wrong with RTL/FPGA sims (bad throughput or high latency + high cost).
+% What's wrong with sampled perf sims (compounded low accuracy, not a good tradeoff).
 
+Cycle-level or trace-based simulators suffer from low accuracy and unbounded errors which are further exacerbated by sampled simulation which \textit{adds sampling error on top of modeling error}.
+RTL simulation delivers high accuracy, but with very low throughput.
+FPGA or ASIC based simulators can match the accuracy of RTL simulation, but come with high startup latency and cost.
 
-What's wrong with perf sims (low accuracy).
-What's wrong with RTL/FPGA sims (bad throughput or high latency + high cost).
-What's wrong with sampled perf sims (compounded low accuracy, not a good tradeoff).
+We propose TidalSim: a multi-level simulator that can deliver the accuracy of RTL simulation, with the throughput of FPGA-based simulators, and a low startup latency, similar to RTL simulators.
 
 \subsection{Our Proposal}
 
-We need some way to combine the accuracy of RTL simulation
-Sampled multi-level simulation!
+% Sampled multi-level simulation!
+To achieve high throughput we will leverage simulation sampling techniques, but instead of using architectural simulators for performance metric estimation, we will use RTL simulators for high accuracy.
+We specifically employ a sampling methodology similar to Simpoint, but with functional warmup and shorter interval lengths.
 
-\subsection{Why RTL-level?}
+\subsubsection{Why Use RTL Simulators?}
 
-Why multi-level simulation? Why not arch sim 2-level sim? Why go down to RTL?
-Why not just go into perf simulators? - the correlation problem gets compounded 2x - sampling error + perf sim - RTL sim correlation errors
-Aren't "trends" enough? Not when we care about small IPC changes! The absolute number matters! Also what are the special things we can get from RTL simulation that perf sim can't get us?
-Miscorrelation vs RTL *compounds* over simulation time!
-% Introduce the problem and your idea using *examples* and only then present the general case
+% Why multi-level simulation? Why not arch sim 2-level sim? Why go down to RTL?
+% Why not just go into perf simulators?
 % Don't want to design perf model and then design RTL to match that - what a waste, not agile!
+% Aren't "trends" enough? Not when we care about small IPC changes! The absolute number matters!
+% the correlation problem gets compounded 2x - sampling error + perf sim - RTL sim correlation errors
+% Also what are the special things we can get from RTL simulation that perf sim can't get us?
+
+Existing sampled simulators mix functional simulators and architectural simulators (e.g. gem5, Sniper, SST).
+We continue to use functional warmup models similar to those in architectural simulators, but we use RTL simulation for extracting performance metrics.
+
+\paragraph{What is the benefit of introducing RTL simulators into the mix?}
+
+For one, it has been shown that performance simulators can be wildly inaccurate\cite{arch_sim_considered_harmful, arch_sim_survey} and often has unbounded modeling errors in addition to sampling errors, while RTL simulation is cycle-accurate.
+This also means there is no need to perform correlation between the performance simulators and RTL.
+
+\paragraph{Why was mixing RTL simulation with sampled simulation not attempted before?}
+
+Miscorrelation vs RTL *compounds* over simulation time!
 
 We can't try to 'fix' perf models. And in the new open source research era we have RTL! for every part of the system too! we can draw realistic conclusions finally! cite Chipyard, ESP, OpenPiton
 
+\subsubsection{Why Use Simpoint-Style Sampling?}
+
 Why Simpoint? fine time-granularity, high liklihood of unique traces, eventual ability to extrapolate across workloads
+
+\section{Implementation}
+
+\subsection{TidalSim Overview}
+
+\subsection{Interval Embedding Strategies}
 
 For embeddings:
 Binary agnostic
@@ -366,9 +392,58 @@ Microarchitecture agnostic
 - BBVs + uarch features - binary aware, uarch aware
 - Ideal - binary unaware, uarch aware
 
-\section{Implementation}
+\subsection{Basic Block Identification and BBV Embedding}
+
+\subsection{Architectural Checkpointing}
+
+\subsection{Functional Warmup Models}
+
+\subsection{RTL Simulation}
+
+\subsubsection{State Injection}
+
+DMI is too slow, a total bottleneck. Also doesn't work for uArch state.
+We use force/release which avoid needing a debug simulator, is very fast, and general.
+
+\subsubsection{Caveats}
+
+Not all state can be cleanly injected!
+
+\subsection{Extrapolation}
 
 \section{Results}
+
+What benchmarks?
+What baseline SoC?
+What is the baseline?
+
+\subsection{Interval Clustering}
+
+\subsection{IPC Trace Reconstruction}
+
+\section{Future Work}
+
+\subsection{Functional Warmup}
+
+Add figure about general functional warmup strategies.
+
+\subsection{Embedding-Driven Extrapolation}
+
+\subsection{Better Interval Embeddings}
+
+\subsection{Arch Checkpoint Reloading Validation}
+
+\subsection{Applications}
+
+Power, perf, 2 verif angles (coverpoint synthesis + bootstrapping fuzzing)
+
+\subsection{Actual `Tidal'Sim}
+
+Right now this is more like one-directional sim. ISA model -> warmup models -> RTL sim.
+Works fine for shrinkwrapped examples with no interrupts (external or timer), no outside interactions.
+
+But consider things like timer interrupts or syscall proxying to the host via tether! Or external interrupts!
+The ISA-level simulation needs an understanding of time to make consistent decisions or error will compound!
 
 \section{Related Work}
 
