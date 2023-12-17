@@ -453,22 +453,47 @@ We leave the consideration of alternative embeddings to future work.
 
 \subsection{Architectural Checkpointing}
 
-Once we have identified
+Once we have identified which intervals to simulate in RTL simulation, we need to capture architectural checkpoints for the start of each interval.
+Our checkpoints are captured using spike's interactive mode.
+Each checkpoint consists of a text file containing all the architectural state of the CPU (CSRs, GPRs, FPRs) and a binary file containing the raw contents of DRAM.
 
 \subsection{Functional Warmup Models}
 
 \subsection{RTL Simulation}
 
+With the architectural checkpoints for each interval in hand, we inject each checkpoint in parallel in an RTL simulation of a Chipyard SoC containing one Rocket core.
+
 \subsubsection{State Injection}
 
-DMI is too slow, a total bottleneck. Also doesn't work for uArch state.
-We use force/release which avoid needing a debug simulator, is very fast, and general.
+There is an existing flow for injecting architectural state via the RISC-V debug module.
+However, we opted not to use it for two reasons:
+\begin{enumerate}
+  \item DMI-based state injection takes 15-30 seconds, which dwarfs the time taken to actually run the checkpoint (1-3 seconds)
+  \item The debug module can only inject architectural state, but we plan to inject microarchitectural state too for functional warmup
+\end{enumerate}
+
+The state injection is performed with a custom testharness that reads the architectural checkpoint and uses SystemVerilog \texttt{force}/\texttt{release} statements to set registers in the design.
+The hierarchical paths used are specific to this particular design point, but in the future we will generate the injection code from the Chipyard generator itself.
+Using \texttt{force}/\texttt{release} for state injection only takes a few milliseconds.
 
 \subsubsection{State Injection Caveats}
 
-Not all state can be cleanly injected!
+Not all architectural state maps 1:1 with a register in the RTL design.
+For example, consider the \texttt{fflags} bits in the \texttt{fcsr} register which hold floating point exceptions.
+In the Rocket core, the \texttt{fflags} bits are not the direct outputs of flip-flops, but are rather combinationally driven from various state bits in the FPU microarchitecture combined with logical operators.
+
+So, if we want to set a particular \texttt{fflags} bit to \texttt{1}, then there are \textit{many potential} microarchitectural states that could make that bit \texttt{1}.
+In future work, we can use formal techniques to enumerate all the ways to set each combination of \texttt{fflags} and simulate multiple possibilities if required.
+Currently, we simply assert that the \texttt{fflags} bits from an architectural checkpoint must be 0.
+% In an architectural model, like spike, a bit in \texttt{fflags} might be set if a floating point exception occurs.
+
+Another source of mismatch is particular to the Rocket core.
+Rocket's FPRs are stored in a recoded 65-bit floating point format, whereas the FPR values from spike are in the typical IEEE 64-bit format.
+To perform correct FPR injection, we must recode the architectural snapshot before it is injected (which we currently do not do).
 
 \subsubsection{Performance Metric Extraction}
+
+
 
 \subsection{Extrapolation}
 
@@ -477,10 +502,13 @@ Not all state can be cleanly injected!
 What benchmarks?
 What baseline SoC?
 What is the baseline?
+What is the runtime?
 
 \subsection{Interval Clustering}
 
 \subsection{IPC Trace Reconstruction}
+
+\subsection{Embench}
 
 \section{Future Work}
 
@@ -510,15 +538,19 @@ Unifying embedding-based interval selection with random interval selection, incr
 
 \section{Related Work}
 
-\textbf{Sampled Simulation:} Work in this area involves techniques to select a small number of intervals from an execution trace to simulate in detail. 
-\textbf{Statistical Sampling} involves the use of statistical methods on an estimated performance metric such as IPC-based reservoir sampling in SMARTS \cite{wunderlich2003smarts}.
-\textbf{Profile-based Sampling} analyzes a program/execution trace to identify representative intervals. SimPoint \cite{sherwood2002automatically} clusters per-interval basic block frequency vectors to identify intervals of interest. Tidalsim applies this technique (albeit to RISC-V traces). 
+\paragraph{Sampled Simulation} Work in this area involves techniques to select a small number of intervals from an execution trace to simulate in detail.
+
+\paragraph{Statistical Sampling} involves the use of statistical methods on an estimated performance metric such as IPC-based reservoir sampling in SMARTS \cite{wunderlich2003smarts}.
+
+\paragraph{Profile-based Sampling} analyzes a program/execution trace to identify representative intervals. SimPoint \cite{sherwood2002automatically} clusters per-interval basic block frequency vectors to identify intervals of interest. Tidalsim applies this technique (albeit to RISC-V traces).
+
 TidalSim results in lower error due to the use of RTL simulation in a multi-level setup and employs more efficient functional warmup than SMARTS.
 
-\textbf{Functional Warmup:} Cold long-lived microarchitectural blocks such as caches and cache-like structures (TLBs and BTBs) lead to significant simulation error. Strategies to quickly warm them include continuous simulation of module behavior as seen in SMARTS \cite{wunderlich2003smarts}, reduced-length module simulation using estimates of memory access reuse latencies as seen in MRRL \cite{haskins2003memory} and BRRL \cite{eeckhout2005blrl}, and functional checkpoint and restore of module contents as seen in MTR \cite{barr2005accelerating}. TidalSim currently employs. MTR for its low temporal overhead, accuracy, and simplicity. 
+\paragraph{Functional Warmup} Cold long-lived microarchitectural blocks such as caches and cache-like structures (TLBs and BTBs) lead to significant simulation error. Strategies to quickly warm them include continuous simulation of module behavior as seen in SMARTS \cite{wunderlich2003smarts}, reduced-length module simulation using estimates of memory access reuse latencies as seen in MRRL \cite{haskins2003memory} and BRRL \cite{eeckhout2005blrl}, and functional checkpoint and restore of module contents as seen in MTR \cite{barr2005accelerating}. TidalSim currently employs. MTR for its low temporal overhead, accuracy, and simplicity.
+
 Similar techniques have been proposed for branch predictors in MRRL and BHM \cite{kluyskens2007branch} (reduced length simulation) and branch trace compression \cite{barr2006branch}.
 
-\textbf{Multi-level Simulation:} LiveSim \cite{hassani2016livesim} uses emulation for statistical sampling (SMARTS) and architectural state checkpointing followed by detailed simulation with microarchitecture models. However, it suffers from microarchitecture model correlation error, unlike TidalSim which uses cycle-exact RTL simulation. 
+\paragraph{Multi-level Simulation} LiveSim \cite{hassani2016livesim} uses emulation for statistical sampling (SMARTS) and architectural state checkpointing followed by detailed simulation with microarchitecture models. However, it suffers from microarchitecture model correlation error, unlike TidalSim which uses cycle-exact RTL simulation.
 
 \section{Conclusion}
 
