@@ -490,6 +490,16 @@ Unifying embedding-based interval selection with random interval selection, incr
 
 \section{Related Work}
 
+\textbf{Sampled Simulation:} Work in this area involves techniques to select a small number of intervals from an execution trace to simulate in detail. 
+\textbf{Statistical Sampling} involves the use of statistical methods on an estimated performance metric such as IPC-based reservoir sampling in SMARTS \cite{wunderlich2003smarts}.
+\textbf{Profile-based Sampling} analyzes a program/execution trace to identify representative intervals. SimPoint \cite{sherwood2002automatically} clusters per-interval basic block frequency vectors to identify intervals of interest. Tidalsim applies this technique (albeit to RISC-V traces). 
+TidalSim results in lower error due to the use of RTL simulation in a multi-level setup and employs more efficient functional warmup than SMARTS.
+
+\textbf{Functional Warmup:} Cold long-lived microarchitectural blocks such as caches and cache-like structures (TLBs and BTBs) lead to significant simulation error. Strategies to quickly warm them include continuous simulation of module behavior as seen in SMARTS \cite{wunderlich2003smarts}, reduced-length module simulation using estimates of memory access reuse latencies as seen in MRRL \cite{haskins2003memory} and BRRL \cite{eeckhout2005blrl}, and functional checkpoint and restore of module contents as seen in MTR \cite{barr2005accelerating}. TidalSim currently employs. MTR for its low temporal overhead, accuracy, and simplicity. 
+Similar techniques have been proposed for branch predictors in MRRL and BHM \cite{kluyskens2007branch} (reduced length simulation) and branch trace compression \cite{barr2006branch}.
+
+\textbf{Multi-level Simulation:} LiveSim \cite{hassani2016livesim} uses emulation for statistical sampling (SMARTS) and architectural state checkpointing followed by detailed simulation with microarchitecture models. However, it suffers from microarchitecture model correlation error, unlike TidalSim which uses cycle-exact RTL simulation. 
+
 \section{Conclusion}
 
 % Add Github links to all forks and tidalsim top
