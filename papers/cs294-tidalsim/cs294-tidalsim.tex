@@ -493,7 +493,13 @@ This leads to expensive misses in sampled simulators such as TidalSim that would
 Additionally, these blocks build up state over tens to hundreds of thousands of instructions and cannot be warmed up with detailed simulation of an interval. Thus, we need functional warmup models that can efficiently recreate warm state using the information available in functional ISA-level simulation.
 Considering TidalSim's objective of enabling an efficient and accurate DSE methodology and the PPA impacts of parameterizing such microarchitectural blocks, it is critical that our functional warmup strategy is both efficient and flexible to changing parameters. This requirement leads us towards more abstract models in contrast to traditional concrete microarchitecture simulators.
 
-For caches and cache-like structures, we use Memory Timestamp Record \cite{barr2005accelerating} - a data structure populated from a trace of memory transactions used to handle cache state (and coherence state in multiprocessor simulation). MTR holds entries at cache line level as shown in figure [?].
+\begin{figure}
+  \includegraphics[width=\linewidth]{dynamic/tidalsim/mtr_entry_update.pdf}
+  \caption{Updating entries in MTR}
+  \label{fig:mtr_entry_update}
+\end{figure}
+
+For caches and cache-like structures, we use Memory Timestamp Record \cite{barr2005accelerating} - a data structure populated from a trace of memory transactions used to handle cache state (and coherence state in multiprocessor simulation). MTR holds entries at cache line level as shown in Figure \ref{fig:mtr_entry_update}.
 It is quite flexible as it allows for the following at reconstruction time:
 \begin{enumerate}
   \item changing the number of cache sets and ways
@@ -502,9 +508,15 @@ It is quite flexible as it allows for the following at reconstruction time:
   \item changing the write policy: write-allocate v. no-write-allocate (we only implement write-allocate at this time)
 \end{enumerate}
 
-Once representative intervals have been identified, we make a pass over the spike execution trace. For each memory transaction, we update MTR to either add an entry for a line encountered for the first time or update the respective entry to mark the current access. At the start of each interval we checkpoint MTR.
+Once representative intervals have been identified, we make a pass over the spike execution trace. For each memory transaction, we update MTR to either add an entry for a line encountered for the first time or update the respective entry to mark the current access (see Figure \ref{fig:mtr_entry_update}). At the start of each interval we checkpoint MTR.
 
-Prior to state injection, we can reconstruct caches at the start of each interval in parallel. We take as input the number of sets and ways and use the corresponding MTR. For each set, we identify lines falling into that set, and then select \textit{w} most recently accessed lines where \textit{w} is the number of ways. This is illustrated in figure [?].
+Prior to state injection, we can reconstruct caches at the start of each interval in parallel. We take as input the number of sets and ways and use the corresponding MTR. For each set, we identify lines falling into that set, and then select \textit{w} most recently accessed lines where \textit{w} is the number of ways. This is illustrated in Figure \ref{fig:mtr_reconstruction}.
+
+\begin{figure}
+  \includegraphics[width=\linewidth]{dynamic/tidalsim/mtr_reconstruction.pdf}
+  \caption{Reconstructing a cache from an MTR checkpoint}
+  \label{fig:mtr_reconstruction}
+\end{figure}
 
 Currently, we only implement a unicore version of MTR, but this can easily be extended to the multi-core case by using a vector of per-core read timestamps.
 
