@@ -624,14 +624,39 @@ This is a good result since it means we have a `confidence' proxy about the reco
 
 \subsection{Embench}
 
-Execution times for RTL sim vs TidalSim
-clusters = 18
-mean IPC error for entire trace
-note special cases that weren't simulated
+\begin{figure}
+  \includegraphics[width=\linewidth]{multi-level-sim/embench_ipc_error.pdf}
+  \caption{Mean absolute IPC error for every embench benchmark. \texttt{nbody} and \texttt{st} were excluded since they were under 100k dynamic instruction. \texttt{statemate} caused an internal TidalSim error.}
+  \label{fig:embench_ipc_error}
+\end{figure}
+
+\begin{figure}
+  \includegraphics[width=\linewidth]{multi-level-sim/embench_runtimes.pdf}
+  \caption{Runtimes for full RTL simulation on every Embench benchmark.}
+  \label{fig:embench_runtimes}
+\end{figure}
+
+We ran TidalSim on the entire embench benchmark suite to measure its IPC error for the entire workload.
+We fixed the TidalSim configuration for every run to use 18 clusters and 10k instruction intervals.
+Tuning these parameters for every workload depending on its characteristics would further reduce the IPC error.
+
+TidalSim always took under 10 seconds to run on each benchmark, while RTL simulation took considerably longer as shown in Figure \ref{fig:embench_runtimes}.
+We plot the mean absolute percentage IPC error of TidalSim against full RTL simulation in Figure \ref{fig:embench_ipc_error}.
+
+These results demonstrate that TidalSim can deliver a typical IPC error under 5\% while speeding up simulation runtimes by up to 70x.
 
 \section{Future Work}
 
+While we were able to make substantial progress, we were not able to deliver all our proposed features.
+We summarize the features we are still working on below.
+
 \subsection{Functional Warmup}
+
+\begin{figure}
+  \includegraphics[width=\linewidth]{multi-level-sim/.pdf}
+  \caption{Runtimes for full RTL simulation on every Embench benchmark.}
+  \label{fig:embench_runtimes}
+\end{figure}
 
 Add figure about general functional warmup strategies.
 
