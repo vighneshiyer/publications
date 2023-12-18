@@ -201,11 +201,11 @@ You would like the best of all worlds: a simulator that is fast (high throughput
   % Alladin (analytical models, often specialized for kernel accelerators), functional ISA simulation, gem5-style perf sim (this is the most diverse category), RTL sim, FPGA prototype (high fidelity if IO modeling isn't an issue), FPGA emulator (Firesim), Emulation (Palladium)
   \begin{tabular}{>{\raggedright\arraybackslash}p{2.5cm}>{\raggedright\arraybackslash}p{2cm}>{\raggedright\arraybackslash}p{2cm}>{\raggedright\arraybackslash}p{2cm}>{\raggedright\arraybackslash}p{2.5cm}>{\raggedright\arraybackslash}p{3cm}>{\raggedright\arraybackslash}p{2cm}}\toprule
   \textbf{Simulator Type} & \textbf{Examples} & \textbf{Throughput} & \textbf{Latency} & \textbf{Accuracy} & \textbf{Metrics} & \textbf{Cost} \\\midrule
-  Analytical Models & Alladdin, Accelergy & ??? & seconds & ??? & Execution time + PPA estimates & Minimal \\
+  Analytical Models & Alladdin, Accelergy & 10-1000 MIPS & seconds & Wildly variable & Execution time + PPA estimates & Minimal \\
   \midrule
   Functional ISA-Level Simulators & spike, dromajo, qemu & 100-1000 MIPS & $<1$ second & Zero & Dynamic instruction count + mix & Minimal \\
   \midrule
-  Trace-Based and Cycle-Level Simulators & gem5, Sniper, ZSim, SST, MARSSx86 & 100 KIPS - 10 MIPS & $<1$ minute & $\approx10-50\%$ IPC error & uArch metric (IPC, MPKI) traces & Minimal \\
+  Trace-Based and Cycle-Level Simulators & gem5, Sniper, ZSim, SST, MARSSx86 & 100 KIPS - 10 MIPS & $<1$ minute & $\approx10-50\%$ IPC error\cite{x86_arch_sim_study} & uArch metric (IPC, MPKI) traces & Minimal \\
   \midrule
   RTL Simulators & Verilator, VCS, Xcelium & 10 KIPS & 2-10 minutes & Cycle-exact & RTL-level traces and uArch metrics & Minimal \\
   \midrule
@@ -653,38 +653,69 @@ We summarize the features we are still working on below.
 \subsection{Functional Warmup}
 
 \begin{figure}
-  \includegraphics[width=\linewidth]{multi-level-sim/.pdf}
-  \caption{Runtimes for full RTL simulation on every Embench benchmark.}
-  \label{fig:embench_runtimes}
+  \includegraphics[width=0.7\linewidth]{dynamic/tidalsim/uarch_models.pdf}
+  \caption{A general flow for incorporating microarchitectural models for functional warmup.}
+  \label{fig:uarch_models}
 \end{figure}
 
-Add figure about general functional warmup strategies.
+We made progress on implementing functional warmup of Rocket's L1 caches, but we ran out of time to implement the full flow.
+Figure \ref{fig:uarch_models} shows how microarchitectural warmup models would be integrated into the TidalSim flow.
+We anticipate that incorporating functional warmup will drastically reduce the IPC errors.
+We observed that increasing the number of detailed warmup instructions causes the IPC errors to improve, indicating that cold caches contribute substantially to IPC errors.
 
 \subsection{Embedding-Driven Extrapolation}
 
+Currently, we simply use each cluster's representative IPC for any interval that falls in that cluster.
+However, we observe that many intervals actually straddle between two or more clusters.
+It would be an easy task to compute the distance of a given interval's embedding to every cluster centroid and weight the IPCs of each cluster by their distances to the interval.
+This `embedding-driven extrapolation' will likely further reduce IPC errors.
+
 \subsection{Better Interval Embeddings}
+
+While we used basic block vectors to embed each interval, there are many potential superior embeddings that can be both binary-agnostic as well as microarchitecture-aware to improve interval clustering.
+For example, we could use the simple cache and branch predictor models in spike to augment each interval's embedding with microarchitectural event estimates (cache misses, branch mispredicts).
+We could also employ a binary-agnostic interval embedding by embedding the \textit{instruction mixes} and instruction-to-instruction dependencies (RAW, WAW, WAR).
 
 \subsection{Handling Large Interval Lengths}
 
+Currently, our intervals are short enough (10k instructions) to run in RTL simulation in a matter of seconds.
+However, for larger benchmarks in the billions of instructions, we will have to use larger interval lengths in the 100k-1M instruction regime.
+Executing these large intervals in RTL simulation will then become a bottleneck.
+The solution is to further subsample intervals chosen for simulation using reservoir sampling, merging the SMARTs and Simpoint sampling methodologies.
+
 \subsection{Automatic Selection of Interval Length and Warmup Period}
 
-we want interval length and warmup period to be specific to the benchmark, depending on the accuracy required
+Currently, we use a user provided interval length and detailed warmup period.
+However, these need to be tuned to the benchmark and the optimal value varies depending on the accuracy required.
+There are certain program segments with wildly varying IPC that need fine intervals and others that contain repetitive behavior and can be represented with long intervals.
+How to find variable length intervals that are automatically discovered by the sampling algorithm remains an open research question.
 
 \subsection{Arch Checkpoint Reloading Validation}
 
+Currently, we inject architectural checkpoints into RTL simulation, advance for `interval length' number of instructions, and dump performance metrics along the way.
+However, we don't check that the architectural state at the end of the interval matches functional simulation.
+There exists the possiblility of subtle bugs in architectural state injection that we need to tease out.
+
 \subsection{Applications}
 
-Power, perf, 2 verif angles (coverpoint synthesis + bootstrapping fuzzing)
+% Power, perf, 2 verif angles (coverpoint synthesis + bootstrapping fuzzing)
+TidalSim enables the collection of RTL waveforms representing unique aspects of long-running workloads.
+There are many applications of these waveforms.
+For instance, we can use them for training and evaluating power macromodels, or for reconstructing a power trace of a workload.
+We could also use the waveform data to perform specification mining (for bug localization) or coverpoint synthesis (for generating verification collateral).
 
 \subsection{Actual `Tidal'Sim}
 
-Right now this is more like one-directional sim. ISA model -> warmup models -> RTL sim.
-Works fine for shrinkwrapped examples with no interrupts (external or timer), no outside interactions.
+% Unifying embedding-based interval selection with random interval selection, increasing random sampling when errors appear to be high.
+Our current implementation of TidalSim is more like `one-directional' simulation.
+We move from a functional ISA simulator to microarchitectural warmup models to RTL simulation.
+There is no feedback from any of these simulation components back up the chain.
+This works fine for shrinkwrapped benchmarks that have no interrupts (external or timer) and no outside interactions (syscall proxying or IO).
 
-But consider things like timer interrupts or syscall proxying to the host via tether! Or external interrupts!
-The ISA-level simulation needs an understanding of time to make consistent decisions or error will compound!
-
-Unifying embedding-based interval selection with random interval selection, increasing random sampling when errors appear to be high.
+However, realistic workloads, such as cloud applications running on top of a hypervisor and OS, are not even remotely shrinkwrapped!
+This means the ISA-level simulator needs to have an understanding of time to mimic the interactions seen in full RTL simulation, otherwise errors caused by incorrect timer interrupts will compound over time.
+The solution is to use information from RTL simulation to estimate timer and interrupt events in functional simulation.
+This would entail a true `Tidal'Sim where we ping-pong between simulators based on the confidence of our estimations.
 
 \section{Related Work}
 
@@ -705,9 +736,14 @@ Similar techniques have been proposed for branch predictors in MRRL and BHM \cit
 \section{Conclusion}
 
 % Add Github links to all forks and tidalsim top
+We present TidalSim, a simulation methodology for combining functional ISA-level simulators, microarchitectural warmup models, and RTL simulators to produce a simulator that has high throughput, low latency, and high accuracy.
+We demonstrate the value of TidalSim on the Embench benchmark suite, showing how TidalSim can reconstruct IPC traces with minimal error but with orders of magnitude savings in runtime and compute.
+The future of multi-level simulation will enable microarchitects to freely explore the hardware design space, optimize their microarchitecture, and design new hardware blocks with a rapid iteration loop powered by TidalSim.
 
 \begin{acks}
-Acks go here (Seah, Joonho, Sophia, Chris)
+The authors thank Prof. Sophia Shao and Prof. Chris Batten for their invaluable feedback before and during the execution of this project.
+We thank Joonho Whangbo for his feedback on the early project proposal and suggestions for future work.
+We thank Seah Kim for her feedback on the project proposal and for naming our simulator.
 \end{acks}
 
 \bibliographystyle{ACM-Reference-Format}
