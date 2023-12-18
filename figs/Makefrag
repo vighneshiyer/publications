@@ -3,6 +3,9 @@ mkfile_path := $(abspath $(lastword $(MAKEFILE_LIST)))
 current_dir := $(dir $(mkfile_path))
 
 figs_static := $(shell find $(current_dir) -type f -not -path '*/dynamic/*')
+figs_static_svg := $(filter %.svg,$(figs_static))
+figs_static_generated_pdf := $(patsubst %.svg,%.pdf,$(figs_static_svg))
+figs_static += $(figs_static_generated_pdf)
 
 # Dynamic figures from Google Slides / Drawings
 
@@ -54,5 +57,6 @@ figs: $(figs)
 clean-figs:
 	rm -f $(dynamic_figs)
 	rm -f $(dynamic_pdfs)
+	rm -f $(figs_static_generated_pdf)
 
 .PHONY: pdfs figs clean-figs

@@ -540,6 +540,18 @@ Another source of mismatch is particular to the Rocket core.
 Rocket's FPRs are stored in a recoded 65-bit floating point format, whereas the FPR values from spike are in the typical IEEE 64-bit format.
 To perform correct FPR injection, we must recode the architectural snapshot before it is injected (which we currently do not do).
 
+\begin{figure*}
+  \includegraphics[width=\linewidth]{multi-level-sim/aha-mont64_results.pdf}
+  \caption{Reconstructed IPC trace of \texttt{aha-mont64} with 12 clusters and 1000 instruction intervals with 200 instructions of detailed warmup.}
+  \label{fig:ipc_trace_reconstruction_aha}
+\end{figure*}
+
+\begin{figure*}
+  \includegraphics[width=\linewidth]{multi-level-sim/huffbench_results.pdf}
+  \caption{Reconstructed IPC trace of \texttt{huffbench} with 18 clusters and 10000 instruction intervals with 2000 instructions of detailed warmup.}
+  \label{fig:ipc_trace_reconstruction_huffbench}
+\end{figure*}
+
 \subsubsection{Performance Metric Extraction}
 
 There are two goals for extracting performance metrics from RTL simulation:
@@ -561,18 +573,49 @@ Then we extrapolate the results of each RTL simulation by assigning each interva
 
 We evaluate TidalSim on the Embench benchmark suite\cite{embench} cross-compiled for \texttt{rv64gc}.
 Our evaluation is focused on the accuracy of reconstructing a full IPC trace using sampled multi-level simulation.
-The hardware platform is the baseline configuration of a Chipyard SoC (\texttt{RocketConfig}) with 
+The hardware platform is the baseline configuration of a Chipyard SoC (\texttt{RocketConfig}) with 16kiB 4-way L1 instruction and data caches (with 32-entry instruction and data TLBs) and a 512kiB 8-way inclusive L2 cache.
+We compare TidalSim against full RTL simulation on each workload and compare both the IPC error and runtime.
 
-What benchmarks?
-What baseline SoC?
-What is the baseline?
-What is the runtime?
+For the results below, we \textbf{are not} using functional warmup, due to inability to integrate the whole flow in time for this paper.
+Only detailed warmup is utilized.
 
 \subsection{Interval Clustering}
 
+\begin{figure}
+  \includegraphics[width=\linewidth]{multi-level-sim/aha-mont64_clustering.pdf}
+  \caption{Heatmap of the centroids of each cluster for the \texttt{aha-mont64} benchmark from Embench. Collected using 12 clusters and an interval length of 1000 instructions. Red indicates a high weight for a basic block, while blue indicates a weight of 0.}
+  \label{fig:interval_clustering}
+\end{figure}
+
+Since we use k-means clustering, each cluster centroid is a vector in the interval embedding space.
+We can analyze these vectors to determine unique basic block traversal patterns that the clustering algorithm has pulled apart.
+In Figure \ref{fig:interval_clustering} we can see that each cluster centroid has a different group of basic blocks that are emphasized.
+This result indicates that basic block vector clustering is effective at identifying program phases.
+
 \subsection{IPC Trace Reconstruction}
 
+Figures \ref{fig:ipc_trace_reconstruction_aha} and \ref{fig:ipc_trace_reconstruction_huffbench} show reconstructed IPC traces from TidalSim against reference IPC traces from full RTL simulation.
+
+\subsubsection{aha-mont64: Low Variance Trace}
+
+Figure \ref{fig:ipc_trace_reconstruction_aha} shows results for \texttt{aha-mont64}, which is a benchmark that exhibits low IPC variation across time.
+We can see that the TidalSim estimate is consistently underestimating the IPC as expected since we are not performing functional warmup of the instruction and data caches.
+However, we can see a strong correlation between the peaks, valleys, and general trends of the IPC trace between TidalSim and the reference, indicating that interval clustering with basic block vectors is effective.
+Finally, we can see a very weak correlation between the absolute IPC error and the distance of an interval's embedding from its cluster's centroid; this correlation gets stronger with a more variable benchmark and longer interval lengths as we show next.
+
+\subsubsection{huffbench: High Variance Trace}
+
+Figure \ref{fig:ipc_trace_reconstruction_huffbench} shows results for \texttt{huffbench}, which is a benchmark with high IPC variation and clear program phases.
+We note that there are phases where TidalSim greatly underestimates the IPC (due to no functional warmup) and phases where it is very accurate.
+Notably, we can see that the absolute IPC error spikes around the points where the distances to the centroids also spike.
+This is a good result since it means we have a `confidence' proxy about the reconstructed IPC trace; it also motivates future work about resimulating intervals with low confidence and developing an iterative process to refine the TidalSim results.
+
 \subsection{Embench}
+
+Execution times for RTL sim vs TidalSim
+clusters = 18
+mean IPC error for entire trace
+note special cases that weren't simulated
 
 \section{Future Work}
 
@@ -585,6 +628,10 @@ Add figure about general functional warmup strategies.
 \subsection{Better Interval Embeddings}
 
 \subsection{Handling Large Interval Lengths}
+
+\subsection{Automatic Selection of Interval Length and Warmup Period}
+
+we want interval length and warmup period to be specific to the benchmark, depending on the accuracy required
 
 \subsection{Arch Checkpoint Reloading Validation}
 
