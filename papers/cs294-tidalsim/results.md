@@ -1,0 +1,25 @@
+Everything run with n_clusters = 18, interval length = 10000, recording seconds for golden sim, all tidalsim was under 10 seconds
+
+- aha-mont64: 356 seconds
+- crc32: 762 seconds
+- cubic: 225 seconds
+- edn: 637 seconds
+- huffbench: 639 seconds
+- matmult: 679 seconds
+- minver: 119 seconds
+    - has a bunch of tohost=1 failures! - results probably garbage
+- ~~nbody~~
+    - too small to consider, only 70k instructions
+- nettle-aes: 746 seconds
+- nettle-sha256: 668 seconds
+- nsichneu: 591 seconds
+- picojpeg: 762 seconds
+- qrduino: 695 seconds
+- sglib-combined: 567 seconds
+- slre: 474 seconds
+- ~~st~~
+    - too small, only 85k instructions
+- ~~statemate~~: 242 seconds
+    - some parsing error
+- ud: 520 seconds
+- wikisort: 367 seconds

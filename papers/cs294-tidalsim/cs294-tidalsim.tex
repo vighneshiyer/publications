@@ -588,7 +588,7 @@ Our evaluation is focused on the accuracy of reconstructing a full IPC trace usi
 The hardware platform is the baseline configuration of a Chipyard SoC (\texttt{RocketConfig}) with 16kiB 4-way L1 instruction and data caches (with 32-entry instruction and data TLBs) and a 512kiB 8-way inclusive L2 cache.
 We compare TidalSim against full RTL simulation on each workload and compare both the IPC error and runtime.
 
-For the results below, we \textbf{are not} using functional warmup, due to inability to integrate the whole flow in time for this paper.
+\textbf{For the results below, we are not using functional warmup}, due to inability to integrate the whole flow in time for this paper.
 Only detailed warmup is utilized.
 
 \subsection{Interval Clustering}
@@ -719,7 +719,7 @@ This would entail a true `Tidal'Sim where we ping-pong between simulators based 
 
 \section{Related Work}
 
-\paragraph{Sampled Simulation} Work in this area involves techniques to select a small number of intervals from an execution trace to simulate in detail.
+\paragraph{Sampled Simulation} Work in this area involves techniques to select a small number of intervals from an execution trace to simulate in detail\cite{sampled_simulation_survey}.
 
 \paragraph{Statistical Sampling} involves the use of statistical methods on an estimated performance metric such as IPC-based reservoir sampling in SMARTS \cite{smarts}.
 
@@ -739,6 +739,7 @@ Similar techniques have been proposed for branch predictors in MRRL and BHM \cit
 We present TidalSim, a simulation methodology for combining functional ISA-level simulators, microarchitectural warmup models, and RTL simulators to produce a simulator that has high throughput, low latency, and high accuracy.
 We demonstrate the value of TidalSim on the Embench benchmark suite, showing how TidalSim can reconstruct IPC traces with minimal error but with orders of magnitude savings in runtime and compute.
 The future of multi-level simulation will enable microarchitects to freely explore the hardware design space, optimize their microarchitecture, and design new hardware blocks with a rapid iteration loop powered by TidalSim.
+TidalSim is available on Github (\href{https://github.com/euphoric-hardware/tidalsim}{github.com/euphoric-hardware/tidalsim}).
 
 \begin{acks}
 The authors thank Prof. Sophia Shao and Prof. Chris Batten for their invaluable feedback before and during the execution of this project.
