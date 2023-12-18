@@ -22,7 +22,7 @@ def split_pdf(pdf: Path, dest_dir: Path, prefix: str, wd: Path) -> None:
     run_cmd(f"pdfseparate {pdf_path} {dest_dir.absolute()}/{prefix}%d.pdf", wd)
 
 def num_pages_in_pdf(pdf: Path, wd: Path) -> int:
-    pages = run_cmd_capture(f"pdfinfo \"{pdf.absolute()}\" | grep Pages | cut --delimiter=':' --fields=2", wd)
+    pages = run_cmd_capture(f"pdfinfo \"{pdf.absolute()}\" | grep Pages | cut -d : -f 2", wd)
     return int(pages.strip())
 
 def single_pdf_to_svg(pdf: Path, page: int, svg: Path, poppler: bool, wd: Path) -> None:
