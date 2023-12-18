@@ -245,11 +245,11 @@ The primary means of performance evaluation is simulation, so we will first surv
   \small
   \begin{tabular}{>{\raggedright\arraybackslash}p{2cm}>{\raggedright\arraybackslash}p{2cm}>{\raggedright\arraybackslash}p{2cm}>{\raggedright\arraybackslash}p{2cm}>{\raggedright\arraybackslash}p{2cm}>{\raggedright\arraybackslash}p{2cm}>{\raggedright\arraybackslash}p{2cm}}\toprule
   \textbf{Sampling Technique} & \textbf{Interval Length} & \textbf{\# of Intervals Simulated} & \textbf{Interval Selection} & \textbf{Functional Warmup} & \textbf{Detailed Warmup} & \textbf{Time Granularity} \\\midrule
-  Simpoint & 1-100M & 50-100 & BBV + k-means & Optional & $\approx$0.1-1M & Interval length \\
+  SimPoint & 1-100M & 50-100 & BBFV + k-means & Optional & $\approx$0.1-1M & Interval length \\
   \midrule
   SMARTs & 100k-1M & $\approx$10k & Reservoir sampling & Required & $\approx$10k & Entire workload \\
   \midrule
-  TidalSim \textbf{(this paper)} & 10k & 10-100 & BBV + k-means & Required & $\approx$2k & Interval length \\
+  TidalSim \textbf{(this paper)} & 10k & 10-100 & BBFV + k-means & Required & $\approx$2k & Interval length \\
   \bottomrule
   \end{tabular}
   \caption{Comparison between the two classes of sampled simulation methodologies.}
@@ -298,30 +298,30 @@ There is also a detailed warmup period during which short-lived microarchitectur
 
 \begin{figure}
   \includegraphics[width=\linewidth]{multi-level-sim/simpoint-gzip_phases.png}
-  \caption{Program phases in gzip discovered using Simpoint-style interval embedding and clustering\cite{simpoint3}.}
+  \caption{Program phases in gzip discovered using SimPoint-style interval embedding and clustering\cite{simpoint3}.}
   \label{fig:simpoint}
 \end{figure}
 
 % Sampled simulation adds error on top of the existing modeling error in performance simulators.
-There are broadly two types of sampling proposed in the literature: Simpoint-style sampling\cite{simpoint3} and SMARTs-style sampling\cite{smarts} (summarized in Figure \ref{fig:sampled_simulation}).
+There are broadly two types of sampling proposed in the literature: SimPoint-style sampling\cite{simpoint3} (aka profile-based sampling) and SMARTs-style sampling\cite{smarts} (aka statistical sampling). These are summarized in Figure \ref{fig:sampled_simulation}.
 
-\subsubsection{Simpoint-Style Sampling}
+\subsubsection{SimPoint-Style Sampling}
 
-The Simpoint technique embeds each interval with its `basic block vector' (BBV), which indicates which basic blocks of the workload were traversed in that interval.
+The SimPoint technique embeds each interval with its `basic block frequency vector' (BBFV), which indicates which basic blocks of the workload were traversed in that interval.
 Then, the interval embeddings are clustered using k-means clustering, and one or more representative intervals are selected per-cluster.
 
 % Talk about phase behavior of programs
-The intuition behind Simpoint's interval selection strategy is that intervals that traverse the similar basic blocks are likely to have similar microarchitectural behaviors.
+The intuition behind SimPoint's interval selection strategy is that intervals that traverse the similar basic blocks are likely to have similar microarchitectural behaviors.
 Therefore, programs can be broken up into \textit{phases} that exhibit similar basic block traversal patterns and thus have similar performance metrics (see Figure \ref{fig:simpoint}).
 
 Those intervals are run in performance simulation to extract their performance metrics and those metrics are extrapolated to produce performance metrics for the full workload trace.
-Simpoint sampling usually does not require functional warmup since the interval lengths are large enough to warm up long-lived microarchitectural state.
-Since we can estimate performance for each interval separately, the time-granularity of Simpoint IPC traces is the interval length.
+SimPoint sampling usually does not require functional warmup since the interval lengths are large enough to warm up long-lived microarchitectural state.
+Since we can estimate performance for each interval separately, the time-granularity of SimPoint IPC traces is the interval length.
 
 \subsubsection{SMARTs-Style Sampling}
 
 The SMARTs technique selects which intervals to run in performance simulation via reservoir sampling, with no knowledge of the instruction-level characteristics of the interval.
-It uses far more and much shorter intervals than the Simpoint technique.
+It uses far more and much shorter intervals than the SimPoint technique.
 Since the intervals are short, functional warmup is required to initialize microarchitectural structures in performance simulation.
 
 The performance metrics gathered from each interval serve as samples of the true distribution of IPC across the workload.
@@ -351,7 +351,7 @@ We propose TidalSim: a multi-level simulator that can deliver the accuracy of RT
 
 % Sampled multi-level simulation!
 To achieve high throughput we will leverage simulation sampling techniques, but instead of using architectural simulators for performance metric estimation, we will use RTL simulators.
-We specifically employ a sampling methodology similar to Simpoint, but with functional warmup and shorter interval lengths.
+We specifically employ a sampling methodology similar to SimPoint, but with functional warmup and shorter interval lengths.
 
 \subsubsection{Why Use RTL Simulators?}
 
@@ -389,7 +389,7 @@ Recently, we have seen an explosion of design frameworks with high quality open-
 These design frameworks support extensive parameterization, easy integration of external RTL, and can leverage hardware compiler frameworks\cite{firrtl} to automate generation of state injection code.
 It has now become possible to leverage RTL for large workload simulation and microarchitectural design space exploration.
 
-\subsubsection{Why Use Simpoint-Style Sampling?}
+\subsubsection{Why Use SimPoint-Style Sampling?}
 
 % fine time-granularity, high liklihood of unique traces, eventual ability to extrapolate across workloads via binary-agnostic embedding similarity
 
@@ -397,7 +397,7 @@ SMARTs-style sampling only gives us a single number for a performance metric (e.
 While it can be more accurate and have statistical error bounds, the intervals chosen for simulation are often redundant (i.e. they have similar microarchitectural characteristics).
 When performing microarchitectural exploration, we often want a detailed view of IPC behaviors \textit{within} a workload's trace to, for example, diagnose pathological behaviors visible as unexpected IPC spikes.
 
-Simpoint-style sampling uses interval embeddings and clustering, so the intervals chosen for simulation are at least guaranteed to have unique basic block traversal patterns.
+SimPoint-style sampling uses interval embeddings and clustering, so the intervals chosen for simulation are at least guaranteed to have unique basic block traversal patterns.
 This form of sampling gives us interval length time-granularity of the IPC trace.
 Furthermore, if we can develop binary-agnostic interval embeddings, it will allow the simulator to extrapolate performance metrics \textit{across workloads} which have intervals with similar embeddings.
 
@@ -415,7 +415,7 @@ The steps of the flow are:
 \begin{enumerate}
   \item Call a functional simulator with a workload binary to get a commit log (contains PC, decoded instruction, register operands, and memory transactions for each committed instruction)
   \item Split the commit log into intervals with a fixed number of instructions
-  \item Embed each interval using its basic block vector
+  \item Embed each interval using its basic block frequency vector
   \item Cluster the interval embeddings using k-means clustering
   \item Pick intervals closest to each cluster's centroid for simulation
   \item Re-execute functional simulation to extract architectural checkpoints for each chosen interval and execute the microarchitectural warmup models to produce microarchitectural checkpoints
@@ -433,7 +433,7 @@ In general, there are many ways to embed an interval.
 An embedding should capture microarchitectural behaviors of the interval such that intervals with similar embeddings have similar performance metrics.
 However, since embeddings have to be produced from the output of functional simulation, they do not have access to microarchitectural events or metrics.
 
-The embedding used by Simpoint is the \textit{basic block vector}.
+The embedding used by SimPoint is the \textit{basic block frequency vector}.
 The number of features is the number of basic blocks in the workload (RISC-V binary).
 The value of each feature indicates how many instructions in the interval landed in its basic block.
 While this feature is easy to compute, it is not \textit{binary-agnostic}, so the embeddings only have relevance for a given workload.
@@ -449,7 +449,7 @@ We leave the consideration of alternative embeddings to future work.
 % - BBVs + uarch features - binary aware, uarch aware
 % - Ideal - binary unaware, uarch aware
 
-\subsection{Basic Block Identification and BBV Embedding}
+\subsection{Basic Block Identification and BBFV Embedding}
 
 % 2 supported methods
 % offline, binary wide (excluding dynamic jump targets, test on embench)
@@ -479,7 +479,7 @@ Each checkpoint consists of a text file containing all the architectural state o
 
 \subsection{Functional Warmup Models}
 
-% each interval sees a cold start for all the long-lived microarchitectral state blocks
+% each interval sees a cold start for all the long-lived microarchitectural state blocks
 % 1k instrs not enough to warm, some of the state accumulates over many thousands of instructions
 % clear source of IPC error that needs to be addressed
 
@@ -487,7 +487,7 @@ Each checkpoint consists of a text file containing all the architectural state o
 
 % grab figures from MTR
 
-When we run detailed RTL simulation on each interval, we only checkpoint and inject architectural state. This means long-loved microarchitectural blocks such as caches, cache-like structures (TLBs, BTBs), branch predictors, and prefetchers, all start cold.
+When we run detailed RTL simulation on each interval, we only checkpoint and inject architectural state. This means long-lived microarchitectural blocks such as caches, cache-like structures (TLBs, BTBs), branch predictors, and prefetchers, all start cold.
 This leads to expensive misses in sampled simulators such as TidalSim that would not be observed otherwise. These cold start misses are responsible for the majority of the error between TidalSim and cycle-exact simulation.
 
 Additionally, these blocks build up state over tens to hundreds of thousands of instructions and cannot be warmed up with detailed simulation of an interval. Thus, we need functional warmup models that can efficiently recreate warm state using the information available in functional ISA-level simulation.
@@ -573,11 +573,11 @@ There are two goals for extracting performance metrics from RTL simulation:
 \end{itemize}
 
 To meet both of these objectives, and not have to modify the RTL, we chose to use hierarchical references to the RISC-V trace port of the \texttt{RocketTile}.
-We added counters in the testharnes for measuring IPC at a user-specified sampling rate.
+We added counters in the testharness for measuring IPC at a user-specified sampling rate.
 
 \subsection{Extrapolation}
 
-Since we pick the interval closest to each cluster centroid for RTL simulation, we conider the IPC of the simulated interval representative of all intervals belonging to the same cluster.
+Since we pick the interval closest to each cluster centroid for RTL simulation, we consider the IPC of the simulated interval representative of all intervals belonging to the same cluster.
 We capture a granular IPC trace for each simulated interval and strip away the first 1-2k instructions in the performance trace to account for the detailed warmup period.
 Then we extrapolate the results of each RTL simulation by assigning each interval the representative IPC of its cluster.
 
@@ -602,7 +602,7 @@ Only detailed warmup is utilized.
 Since we use k-means clustering, each cluster centroid is a vector in the interval embedding space.
 We can analyze these vectors to determine unique basic block traversal patterns that the clustering algorithm has pulled apart.
 In Figure \ref{fig:interval_clustering} we can see that each cluster centroid has a different group of basic blocks that are emphasized.
-This result indicates that basic block vector clustering is effective at identifying program phases.
+This result indicates that basic block frequency vector clustering is effective at identifying program phases.
 
 \subsection{IPC Trace Reconstruction}
 
@@ -612,7 +612,7 @@ Figures \ref{fig:ipc_trace_reconstruction_aha} and \ref{fig:ipc_trace_reconstruc
 
 Figure \ref{fig:ipc_trace_reconstruction_aha} shows results for \texttt{aha-mont64}, which is a benchmark that exhibits low IPC variation across time.
 We can see that the TidalSim estimate is consistently underestimating the IPC as expected since we are not performing functional warmup of the instruction and data caches.
-However, we can see a strong correlation between the peaks, valleys, and general trends of the IPC trace between TidalSim and the reference, indicating that interval clustering with basic block vectors is effective.
+However, we can see a strong correlation between the peaks, valleys, and general trends of the IPC trace between TidalSim and the reference, indicating that interval clustering with basic block frequency vectors is effective.
 Finally, we can see a very weak correlation between the absolute IPC error and the distance of an interval's embedding from its cluster's centroid; this correlation gets stronger with a more variable benchmark and longer interval lengths as we show next.
 
 \subsubsection{huffbench: High Variance Trace}
@@ -658,10 +658,12 @@ We summarize the features we are still working on below.
   \label{fig:uarch_models}
 \end{figure}
 
-We made progress on implementing functional warmup of Rocket's L1 caches, but we ran out of time to implement the full flow.
+We made substantial progress on implementing functional warmup of Rocket's L1 caches, but ran out of time to implement the full flow.
 Figure \ref{fig:uarch_models} shows how microarchitectural warmup models would be integrated into the TidalSim flow.
 We anticipate that incorporating functional warmup will drastically reduce the IPC errors.
 We observed that increasing the number of detailed warmup instructions causes the IPC errors to improve, indicating that cold caches contribute substantially to IPC errors.
+
+MTR addresses cache-like microarchitecturual blocks. We'd like to employ a similar strategy in the future with our own model for prefetchers and building on top of Branch Trace Compression \cite{barr2006branch} for branch predictors. 
 
 \subsection{Embedding-Driven Extrapolation}
 
@@ -672,7 +674,7 @@ This `embedding-driven extrapolation' will likely further reduce IPC errors.
 
 \subsection{Better Interval Embeddings}
 
-While we used basic block vectors to embed each interval, there are many potential superior embeddings that can be both binary-agnostic as well as microarchitecture-aware to improve interval clustering.
+While we used basic block frequency vectors to embed each interval, there are many potential superior embeddings that can be both binary-agnostic as well as microarchitecture-aware to improve interval clustering.
 For example, we could use the simple cache and branch predictor models in spike to augment each interval's embedding with microarchitectural event estimates (cache misses, branch mispredicts).
 We could also employ a binary-agnostic interval embedding by embedding the \textit{instruction mixes} and instruction-to-instruction dependencies (RAW, WAW, WAR).
 
@@ -681,7 +683,7 @@ We could also employ a binary-agnostic interval embedding by embedding the \text
 Currently, our intervals are short enough (10k instructions) to run in RTL simulation in a matter of seconds.
 However, for larger benchmarks in the billions of instructions, we will have to use larger interval lengths in the 100k-1M instruction regime.
 Executing these large intervals in RTL simulation will then become a bottleneck.
-The solution is to further subsample intervals chosen for simulation using reservoir sampling, merging the SMARTs and Simpoint sampling methodologies.
+The solution is to further subsample intervals chosen for simulation using reservoir sampling, merging the SMARTs and SimPoint sampling methodologies.
 
 \subsection{Automatic Selection of Interval Length and Warmup Period}
 
@@ -729,7 +731,7 @@ TidalSim results in lower error due to the use of RTL simulation in a multi-leve
 
 \paragraph{Functional Warmup} Cold long-lived microarchitectural modules such as caches and cache-like structures (TLBs and BTBs) lead to significant simulation error. Strategies to quickly warm them include continuous simulation of module behavior as seen in SMARTS \cite{smarts}, reduced-length module simulation using estimates of memory access reuse latencies as seen in MRRL \cite{haskins2003memory} and BRRL \cite{eeckhout2005blrl}, and functional checkpoint and restore of module contents as seen in MTR \cite{barr2005accelerating}. TidalSim currently employs MTR for its low temporal overhead, flexibility, and simplicity.
 
-Similar techniques have been proposed for branch predictors in MRRL and BHM \cite{kluyskens2007branch} (reduced length simulation) and branch trace compression \cite{barr2006branch} (checkpoint and restore).
+Similar techniques have been proposed for branch predictors in MRRL and BHM \cite{kluyskens2007branch} (reduced length simulation) and Branch Trace Compression \cite{barr2006branch} (checkpoint and restore).
 
 \paragraph{Multi-level Simulation} LiveSim \cite{hassani2016livesim} uses emulation for statistical sampling (SMARTS) and architectural state checkpointing followed by detailed simulation with microarchitecture models. It also uses MTR for functional cache warmup. However, it suffers from microarchitecture model correlation error, unlike TidalSim which uses cycle-exact RTL simulation.
 
@@ -742,9 +744,16 @@ The future of multi-level simulation will enable microarchitects to freely explo
 TidalSim is available on Github (\href{https://github.com/euphoric-hardware/tidalsim}{github.com/euphoric-hardware/tidalsim}).
 
 \begin{acks}
-The authors thank Prof. Sophia Shao and Prof. Chris Batten for their invaluable feedback before and during the execution of this project.
+
+  The authors thank Prof. Sophia Shao and Prof. Chris Batten for their invaluable feedback before and during the execution of this project.
 We thank Joonho Whangbo for his feedback on the early project proposal and suggestions for future work.
 We thank Seah Kim for her feedback on the project proposal and for naming our simulator.
+  
+  We'd like to thank the following key contributors to this project: Dhruv Vaish, Charles Hong, and Young-Jin Park. 
+Dhruv led the effort on trace-based basic block identification and analysis of the embedding and clustering phases of TidalSim. 
+Young-Jin has been working on optimizing basic block identification with a custom data structure. 
+Charles has been working on automatic selection of number of clusters and is working on other improvements to the clustering phase to reduce extrapolated IPC error.
+
 \end{acks}
 
 \bibliographystyle{ACM-Reference-Format}
