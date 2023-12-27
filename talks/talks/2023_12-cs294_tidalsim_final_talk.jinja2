@@ -15,6 +15,9 @@
 {# Custom styles and JS for a particular talk #}
 {% block custom_head %}
 <style>
+.reveal h2 {
+  margin-top: 2rem !important;
+}
 </style>
 {% endblock %}
 
@@ -22,6 +25,8 @@
 import '/themes/remark-ish.scss'
 import 'reveal.js/plugin/highlight/monokai.css'
 {% endblock %}
+
+{% set center = false %}
 
 {% block slides %}
 <section class="center">
@@ -32,7 +37,7 @@ import 'reveal.js/plugin/highlight/monokai.css'
 </section>
 
 <section>
-  <section>
+  <section class="center">
     <h2 class="center">Motivation and Background</h2>
   </section>
 

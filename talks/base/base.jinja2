@@ -35,7 +35,13 @@
     Reveal.initialize({
       controls: true,
       progress: true,
+      {# By default, slides are centered #}
+      {# You can override this per-presentation by setting 'center' #}
+      {% if center is not defined %}
       center: true,
+      {% else %}
+      center: {{ center | string | lower }},
+      {% endif %}
       hash: true,
       plugins: [ Markdown, Notes, Highlight, Zoom ]
     });
