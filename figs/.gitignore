@@ -1,0 +1,11 @@
+cov-model/*.pdf
+distpcsr/*.pdf
+fuzzing/*.pdf
+!fuzzing/parametric_fuzzing_hw.pdf
+logos/*.pdf
+multi-level-sim/*.pdf
+recipes/*.pdf
+rtl2graph-examples/*.pdf
+sequences/*.pdf
+sic-asplos23/*.pdf
+simcommand/*.pdf
