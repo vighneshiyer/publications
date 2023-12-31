@@ -12,7 +12,7 @@ base_jinja = base/base.jinja2
 talks =
 
 define talk
-$1.html: talks/$1.jinja2 $(base_jinja)
+$1.html: talks/$1.jinja2 $(base_jinja) $2
 	../scripts/render --output $$@ $$<
 
 $1: ./$1.html
@@ -28,6 +28,7 @@ $(eval $(call talk,2023-plarch_mixed_hdl_and_hdl_design))
 $(eval $(call talk,2023_10-cs294-multi_level_sim_proposal))
 $(eval $(call talk,2023_12-athlete_review-tidalsim_and_verif_apps))
 $(eval $(call talk,2023_12-cs294_tidalsim_final_talk))
+$(eval $(call talk,2024_01-quals-tidalsim,$(wildcard talks/quals/*.jinja2)))
 
 talks_output = $(addsuffix .html,$(talks))
 

@@ -28,7 +28,7 @@ export default defineConfig({
       {
         name: 'Rebuild html files',
         run: ['make', 'all'],
-        pattern: ['talks/*.jinja2', 'base/base.jinja2']
+        pattern: ['talks/**/*.jinja2', 'base/base.jinja2']
       }
     ])
   ]
