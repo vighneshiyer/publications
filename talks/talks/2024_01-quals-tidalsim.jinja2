@@ -46,7 +46,7 @@ import 'reveal.js/plugin/highlight/monokai.css'
     <li class="fragment"><strong>How (pt 1)</strong>: A prototype implementation of my proposal</li>
     <li class="fragment"><strong>How (pt 2)</strong>: Addressing faults of and generalizing the prototype
       <ul style="font-size: 1.4rem;">
-        <li>Each improvement over the prototype </li>
+        <li>Each point roughly corresponds to a thesis chapter</li>
       </ul>
     </li>
     <li class="fragment"><strong>Case studies</strong> / <strong>applications</strong>: How will we use what we built to do something that was impossible before?</li>
@@ -62,6 +62,30 @@ import 'reveal.js/plugin/highlight/monokai.css'
 {% include "talks/quals/what.jinja2" %}
 </section>
 
+<section>
+{% include "talks/quals/background.jinja2" %}
+</section>
+
+<section>
+{% include "talks/quals/whats_new.jinja2" %}
+</section>
+
+<section>
+{% include "talks/quals/how_pt1-tidalsim_v1.jinja2" %}
+</section>
+
+<section>
+{% include "talks/quals/how_pt2-tidalsim_v2.jinja2" %}
+</section>
+
+<section>
+{% include "talks/quals/case_studies.jinja2" %}
+</section>
+
+<section>
+{% include "talks/quals/thesis.jinja2" %}
+</section>
+
 <!--
   - Program intervals
   - Basic block embedding (show example)
@@ -71,6 +95,104 @@ import 'reveal.js/plugin/highlight/monokai.css'
   - Performance metric extraction
   - Extrapolation
 -->
+
+<section data-visibility="hidden">
+  <h2>Motivation</h2>
+
+  <ul>
+    <li class="fragment">We want fast design iteration and evaluation of PPA + verification given real workloads
+    <!--Fast design iteration and evaluation of PPA + verification requires stimulus that's representative and comprehensive wrt real workloads (execution fragments)-->
+      <ul>
+        <li class="fragment"><em>Performance estimation:</em> Impact of μArch optimizations / HW parameters on real workloads</li>
+        <li class="fragment"><em>Power macromodeling:</em> Identification of important netlist nodes in power model + traces for training</li>
+        <li class="fragment"><em>Verification:</em> Bootstrapping fuzzing loops + coverpoint synthesis</li>
+      </ul>
+    </li>
+    <li class="fragment">The enablers are: <em>fast and accurate μArch simulation</em> and a way to identify <em>unique execution fragments</em>
+      <ul>
+        <li class="fragment"><em>Performance estimation:</em> Performance metric extraction from fast RTL simulation</li>
+        <li class="fragment"><em>Power macromodeling:</em> Extraction of interesting program traces for clustering/training</li>
+        <li class="fragment"><em>Verification:</em> Extraction of traces for coverpoint/specification synthesis + state seeding for fuzzing</li>
+      </ul>
+    </li>
+  </ul>
+</section>
+
+<section data-visibility="hidden">
+  <h2>Problem Overview</h2>
+
+  <p class="center fragment">Fast RTL-level μArch simulation and performance metric / interesting trace extraction</p>
+  <p class="center fragment"><em><strong>enables</strong></em></p>
+  <p class="center fragment">Rapid RTL iteration with performance, power modeling, and verification evaluation on real workloads</p>
+  <hr class="fragment">
+  <p class="center fragment">How can we achieve high throughput, high fidelity, low latency μArch simulation with RTL-level interesting trace extraction?</p>
+</section>
+
+<section data-visibility="hidden">
+  <h2>Phase Behavior of Programs</h2>
+
+  <div class="container">
+  <div>
+  <ul style="font-size:95%">
+    <li class="fragment" data-fragment-index="1">Program execution traces aren’t random
+      <ul class="fragment" data-fragment-index="2">
+        <li>They execute the same code again-and-again</li>
+        <li>Application execution traces can be split into <strong style="text-decoration:underline;">phases</strong> that exhibit similar μArch behavior</li>
+      </ul>
+    </li>
+    <li class="fragment" data-fragment-index="4">Prior work: SimPoint
+      <ul class="fragment" data-fragment-index="5">
+        <li>Identify basic blocks executed in a given interval (e.g. 1M instruction intervals)</li>
+        <li>Embed each interval using their ‘basic block vector’</li>
+        <li>Cluster intervals using k-means</li>
+      </ul>
+    </li>
+    <li class="fragment" data-fragment-index="6">Similar intervals → similar μArch behaviors
+      <ul class="fragment" data-fragment-index="7"><li>Only execute unique intervals in low-level RTL simulation!</li></ul>
+    </li>
+  </ul>
+  </div>
+  <div class="fragment" data-fragment-index="3" style="display:grid; align-content: center; justify-items:center;">
+    <img src="./figs/multi-level-sim/simpoint-gzip_phases.gif" />
+    <img src="./figs/multi-level-sim/simpoint-gcc_phases.gif" />
+  </div>
+  </div>
+</section>
+
+<section data-visibility="hidden">
+  <h2>Prior Work</h2>
+
+  <ul>
+    <li class="fragment"><em>Sampled</em> simulation techniques have been used in μArch simulators for decades
+      <ul>
+        <li class="fragment">SimPoint-style sampling (interval clustering, large intervals)</li>
+        <li class="fragment">SMARTs-style sampling (reservoir sampling, small intervals)</li>
+        <li class="fragment">Implemented in gem5, Sniper, ZSim, SST</li>
+      </ul>
+    </li>
+    <li class="fragment">LiveSim proposed 2-level simulation (ISA → μArch sim) for rapid iteration of μArch parameters
+      <ul>
+        <li>Functional warmup was used for the cache and branch predictor models</li>
+      </ul>
+    </li>
+  </ul>
+</section>
+
+<section data-visibility="hidden">
+  <h2>What's New</h2>
+
+  <ul>
+    <li class="fragment">No prior work on ISA ↔ μArch models ↔ RTL multi-level simulation with functional warmup</li>
+    <li class="fragment">No substantial work on binary-agnostic interval embeddings</li>
+    <li class="fragment">No one has leveraged the special collateral (waveforms + high-fidelity performance metrics) you can only get from RTL simulation</li>
+  </ul>
+</section>
+
+<section style="text-align: center;" data-visibility="hidden">
+  <h2>Overview of Multi-Level Simulation Flow</h2>
+  <img src="./figs/dynamic/tidalsim/overview.svg" />
+</section>
+
 <section>
   <section class="center">
     <h2>Details of TidalSim Flow</h2>
