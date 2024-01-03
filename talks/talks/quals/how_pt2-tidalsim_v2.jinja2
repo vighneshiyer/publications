@@ -1,0 +1,54 @@
+<section class="center">
+  <h2>5. How (pt 2): TidalSim v2</h2>
+  <ol>
+    <li>Not general or streaming
+      <ul>
+        <li>Hardcoded Simpoint-style sampled simulation</li>
+        <li>Requires multiple passes over the commit trace / multiple runs of spike</li>
+      </ul>
+    </li>
+    <li>Inaccurate at modeling asynchronous / timing-aware events (timer/external interrupts)</li>
+    <li>Hardcoded for a single RTL design point</li>
+    <li>Functional warmup models aren't validated against RTL</li>
+    <li>Not warming up all necessary uarch state + resolving ambiguity in restoring arch state</li>
+    <li>Interval embeddings are binary-aware (not portable) and not microarchitecture-aware (higher liklihood for errors)</li>
+    <li>Modeling of I/O (off-chip communication, polling, interrupts) will be inaccurate due to uniform treatment of any memory access</li>
+    <li>Interaction with core-coupled accelerators isn't properly embedded or checkpointable</li>
+  </ol>
+</section>
+
+<section>
+  <h2>1. Generalizing the Spectrum of Simulation</h2>
+</section>
+
+<section>
+  <h2>2. Modeling Timing-Aware Events (Dynamic Simulation)</h2>
+</section>
+
+<section>
+  <h2>3. Leveraging Chisel for State Injection</h2>
+</section>
+
+<section>
+  <h2>4. Validating Functional Warmup Models</h2>
+</section>
+
+<section>
+  <h2>5. Long-Lived uArch State Identification</h2>
+</section>
+
+<section>
+  <h2>5. Resolving Ambiguity in Forcing Arch State</h2>
+</section>
+
+<section>
+  <h2>6. Better Interval Embeddings</h2>
+</section>
+
+<section>
+  <h2>7. Modeling I/O</h2>
+</section>
+
+<section>
+  <h2>8. Sampled Simulation with Accelerators</h2>
+</section>

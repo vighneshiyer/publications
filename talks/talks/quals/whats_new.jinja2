@@ -1,0 +1,40 @@
+<section class="center">
+  <h2 class="center">3. What's New: Differences from Prior Work</h2>
+</section>
+
+<section>
+  <h2>Treating Simulation as a Sliding Tradeoff Between Latency, Throughput, and Accuracy</h2>
+</section>
+
+<section>
+  <h2>Heterogeneous SoCs</h2>
+  Accelerators and IO modeling, new embedding strategies, how to model memory interconnect traffic situations that can cause variance in accelerator performance
+</section>
+
+<section>
+  <h2>Why RTL-Level Simulation?</h2>
+  no need to add modeling error (unbounded) on top of sampling error (which can often be bounded or at least understood)
+  the abstraction closest to the ultimate PPA
+  for optimizations that involve uarch, we should simulate accurate uarch - this fidelity is required for proper dse that is properly physically constrained
+</section>
+
+<section>
+  <h2>Challenges with RTL-Level Sampled Simulation</h2>
+  Describe the challenges, but leave the solutions for subsequent sections
+  State injection, interval subsampling, functional warmup, performance metric extraction, supporting different microarchitectures and HW parameter spaces
+</section>
+
+<section>
+  <h2>Why RTL-Level Simulation Now?</h2>
+  new frameworks enable RTL-level design space exploration
+</section>
+
+<section>
+  <h2>What's New</h2>
+
+  <ul>
+    <li class="fragment">No prior work on ISA ↔ μArch models ↔ RTL multi-level simulation with functional warmup</li>
+    <li class="fragment">No substantial work on binary-agnostic interval embeddings</li>
+    <li class="fragment">No one has leveraged the special collateral (waveforms + high-fidelity performance metrics) you can only get from RTL simulation</li>
+  </ul>
+</section>

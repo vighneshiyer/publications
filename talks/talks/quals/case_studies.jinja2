@@ -1,0 +1,66 @@
+<section class="center">
+  <h2>6. Case Studies / Applications</h2>
+</section>
+
+<section>
+  <h2>Performance and Power Evaluation</h2>
+  <ul>
+    <li class="fragment">Fast, low-latency evaluation of HW parameters on long running workloads
+    <ul>
+      <li>Cache sizing between L1d vs L1i</li>
+      <li>Balancing of 2-level cache hierarchies</li>
+      <li>Unified vs separate i/d L2 caches</li>
+    </ul>
+    </li>
+    <li class="fragment">Trace extraction for power model construction
+    <ul>
+      <li>Currently power macromodels are built + trained only on workloads that can run in RTL simulation</li>
+      <li>TidalSim enables extraction of unique, short traces from full workloads</li>
+      <li>Potential to improve signal selection and uncover holes in training datasets</li>
+    </ul>
+    </li>
+  </ul>
+</section>
+
+<section>
+  <h2>Issues with HW Fuzzer Evaluations</h2>
+  <ul>
+    <li class="fragment"><em>Last time</em>: discussed deficiencies in existing HW fuzzing evaluations due to bad success/feedback metrics
+    <ul>
+      <li class="fragment">Structural coverage is too easy to hit</li>
+      <li class="fragment">Time to rediscover old bugs is too biased and forces us to use old RTL</li>
+    </ul>
+    </li>
+    <li class="fragment">Bad metrics ⮕ dubious conclusions
+    <ul>
+      <li>We should save &gt;50% of mutated stimuli (vs &lt;1% for SW fuzzers)</li>
+      <li>RTL-level feedback is useless for hitting bugs or improving coverage (vs SW fuzzers making no progress without feedback)</li>
+    </ul>
+    </li>
+  </ul>
+  <p class="center fragment">Can we synthesize metrics that lead to reasonable HW fuzzer evaluations?</p>
+</section>
+
+<section>
+  <h2>Coverpoint Synthesis</h2>
+  <ul>
+    <li class="fragment"><em>Specification mining</em> takes waveforms of an RTL design and synthesizes properties involving 2+ signals that are unfalsified on all traces</li>
+    <li class="fragment">Coverpoint synthesis is an alternative take on spec mining where we synthesize μArch properties that we want to see more of</li>
+    <li class="fragment">This technique is far more effective if we have <em>many unique, realistic traces</em>
+      <ul>
+        <li class="fragment">Leverage interval clustering and sampled RTL simulation</li>
+      </ul>
+    </li>
+  </ul>
+</section>
+
+<section>
+  <h2>Bootstrapping Fuzzing</h2>
+  <ul>
+    <li class="fragment">Most HW fuzzers start from reset and run a binary on the SoC to hit some objective</li>
+    <li class="fragment">Interesting objectives are harder to hit from reset vs from the middle of a workload
+    <ul><li>e.g. post-OS boot, in the middle of an application</li></ul>
+    </li>
+    <li class="fragment">Arch and μArch checkpoints from TidalSim guarantee reachability and provides starting points for HW fuzzers</li>
+  </ul>
+</section>

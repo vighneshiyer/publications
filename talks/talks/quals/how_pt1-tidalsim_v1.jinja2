@@ -1,0 +1,190 @@
+<section class="center">
+  <h2>4. How (pt 1): TidalSim v1 (A Prototype Implementation)</h2>
+</section>
+
+<!--
+  - Program intervals
+  - Basic block embedding (show example)
+  - Clustering (show example of clusters we extracted, 2D SVD projection and cluster coloring)
+  - Checkpointing and snapshot taking
+  - Injection into RTL-level simulation
+  - Performance metric extraction
+  - Extrapolation
+-->
+
+<section style="text-align: center;">
+  <h2>Overview of Multi-Level Simulation Flow</h2>
+  <img src="./figs/dynamic/tidalsim/overview.svg" />
+</section>
+
+<section>
+  <h2>Basic Block Identification</h2>
+
+  <p class="center fragment">Basic blocks are extracted from the dynamic commit log emitted by spike</p>
+
+  <pre class="fragment"><code data-trim data-noescape>
+core   0: >>>>  memchr
+core   0: 0x00000000800012f6 (0x0ff5f593) andi    a1, a1, 255
+core   0: 0x00000000800012fa (0x0000962a) c.add   a2, a0
+core   0: 0x00000000800012fc (0x00c51463) bne     a0, a2, pc + 8
+core   0: 0x0000000080001304 (0x00054783) lbu     a5, 0(a0)
+core   0: 0x0000000080001308 (0xfeb78de3) beq     a5, a1, pc - 6
+  </code></pre>
+
+  <ul>
+    <li class="fragment">Control flow instructions mark the end of a basic block</li>
+    <li class="fragment">Previously identified basic blocks can be split if a new entry point is found</li>
+    <li class="fragment"><code>0: 0x8000_12f6 ⮕ 0x8000_12fc</code></li>
+    <li class="fragment"><code>1: 0x8000_1304 ⮕ 0x8000_1308</code></li>
+  </ul>
+</section>
+
+<section>
+  <h2>Program Intervals</h2>
+
+  <p class="center fragment">A execution trace is captured from ISA-level simulation</p>
+  <pre class="fragment"><code data-trim data-noescape>
+core   0: >>>>  memchr
+core   0: 0x00000000800012f6 (0x0ff5f593) andi    a1, a1, 255
+core   0: 0x00000000800012fa (0x0000962a) c.add   a2, a0
+core   0: 0x00000000800012fc (0x00c51463) bne     a0, a2, pc + 8
+core   0: 0x0000000080001304 (0x00054783) lbu     a5, 0(a0)
+core   0: 0x0000000080001308 (0xfeb78de3) beq     a5, a1, pc - 6
+core   0: 0x000000008000130c (0x00000505) c.addi  a0, 1
+core   0: 0x000000008000130e (0x0000b7fd) c.j     pc - 18
+core   0: 0x00000000800012fc (0x00c51463) bne     a0, a2, pc + 8
+  </code></pre>
+  <p class="center fragment">The trace is grouped into intervals of N instructions</p>
+  <p class="center fragment">Typical N for SimPoint samples is 1M</p>
+  <p class="center fragment">Typical N for SMARTs samples is 10-100k</p>
+</section>
+
+<section>
+  <h2>Interval Embedding and Clustering</h2>
+
+  <p class="center fragment">Embed each interval with the frequency it traversed every identified basic block</p>
+
+  <table style="width: 100%; font-size:90%;" class="fragment">
+    <thead><tr>
+      <th>Interval index</th>
+      <th>Interval length</th>
+      <th>Embedding</th>
+    </tr></thead>
+    <tbody><tr>
+      <td>n</td>
+      <td>100</td>
+      <td><code>[40, 50, 0, 10]</code></td>
+    </tr>
+    <tr>
+      <td>n+1</td>
+      <td>100</td>
+      <td><code>[0, 50, 10, 40]</code></td>
+    </tr>
+    <tr>
+      <td>n+2</td>
+      <td>100</td>
+      <td><code>[0, 20, 20, 80]</code></td>
+    </tr>
+    </tbody>
+  </table>
+
+  <p class="center fragment">Intervals are clustered using k-means clustering on their embeddings</p>
+</section>
+
+<section>
+  <h2>Arch Snapshotting</h2>
+
+  <p class="center fragment">For each cluster, take the sample that is closest to its centroid</p>
+  <p class="center fragment">Capture arch checkpoints at the start each chosen sample</p>
+
+  <pre class="fragment"><code data-trim data-noescape>
+pc = 0x0000000080000332
+priv = M
+fcsr = 0x0000000000000000
+mtvec = 0x8000000a00006000
+...
+x1 = 0x000000008000024a
+x2 = 0x0000000080028fa0
+...
+  </code></pre>
+
+  <p class="center fragment">An arch checkpoints = arch state + raw memory contents</p>
+</section>
+
+<section>
+  <h2>RTL Simulation and Arch-State Injection</h2>
+
+  <ul>
+    <li class="fragment">Arch checkpoints are run in parallel in RTL simulation for N instructions</li>
+    <li class="fragment">RTL state injection caveats
+      <ul>
+        <li class="fragment">Not all arch state maps 1:1 with an RTL-level register</li>
+        <li class="fragment">e.g. <code>fflags</code> in <code>fcsr</code> are FP exception bits from FPU μArch state</li>
+        <li class="fragment">e.g. <code>FPRs</code> in Rocket are stored in recoded 65-bit format (not IEEE floats)</li>
+      </ul>
+    </li>
+    <li class="fragment">Performance metrics extracted from RTL simulation</li>
+  </ul>
+
+  <pre class="fragment"><code data-trim data-noescape>
+cycles,instret
+1219,100
+125,100
+126,100
+123,100
+114,100
+250,100
+113,100
+  </code></pre>
+</section>
+
+<section>
+  <h2>Extrapolation</h2>
+  <p class="center fragment">Performance metrics for one sample in a cluster are representative of all samples in that cluster</p>
+  <p class="center fragment">Extrapolate on the entire execution trace to get a full IPC trace</p>
+</section>
+
+<section>
+  <h2>Functional Cache Warmup</h2>
+  <div class="container">
+  <div>
+    <ul>
+      <li class="fragment" data-fragment-index="1">Each checkpoint is run in RTL simulation with a cold cache → inaccurate IPC due to incomplete cache warming during detailed warmup</li>
+      <li class="fragment" data-fragment-index="3"><em>WIP</em>: "Memory Timestamp Record"<sup>[2]</sup> based cache model and RTL cache state injection</li>
+    </ul>
+  </div>
+  <div class="fragment" data-fragment-index="2">
+    <img width="100%" src="./figs/multi-level-sim/livesim_amat_vs_warmup.png" />
+    <figcaption class="small center">AMAT Error vs # of Functional Warmup Instructions (from LiveSim<sup>[1]</sup>)</figcaption>
+  </div>
+  </div>
+
+  <div class="fragment" data-fragment-index="4">
+  <hr>
+  <div class="verysmall">
+  <p class="footnote">
+  [1]: Hassani, Sina, et al. "LiveSim: Going live with microarchitecture simulation." HPCA 2016.<br/>
+  [2]: Barr, Kenneth C., et al. "Accelerating multiprocessor simulation with a memory timestamp record." ISPASS 2005.</p>
+  </div>
+  </div>
+</section>
+
+<section>
+  <h2>Clustering on Embench Benchmarks</h2>
+  <img class="fragment" src="./figs/multi-level-sim/aha-mont64_clustering.svg" />
+  <ul>
+    <li class="fragment">Cluster centroids indicate which basic blocks are traversed most frequently in each cluster</li>
+    <li class="fragment">We observe that most clusters capture unique traversal patterns</li>
+  </ul>
+</section>
+
+<section>
+  <h2>IPC Trace Prediction</h2>
+  <ul>
+    <li class="fragment">Montgomery multiplication from Embench (aha-mont64)</li>
+    <li class="fragment"><code>N=1000</code>, <code>C=12</code></li>
+    <li class="fragment">Full RTL sim takes 10 minutes, TidalSim runs in 10 seconds</li>
+    <li class="fragment">IPC is correlated (mean error &lt;5%) and mild correlation between distance and error</li>
+  </ul>
+  <img class="fragment" src="./figs/multi-level-sim/aha-mont64_results.svg" />
+</section>
