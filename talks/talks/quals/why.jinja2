@@ -1,14 +1,52 @@
 <section class="center">
   <h2 class="center">1. Why: What Is the Problem?</h2>
   <ul>
-    <li class="fragment">Ubiquitous domain-specialized heterogeneous SoCs</li>
+    <li class="fragment">Emergence of domain-specialized heterogeneous SoCs</li>
     <li class="fragment">Rapid design iteration is the key to achiving optimal PPA + time to market</li>
-    <li class="fragment">Pre-silicon evaluation (power, performance, functionality) on real workloads is expensive</li>
+    <li class="fragment">Existing pre-silicon evaluation (power, performance, functionality) techniques on real workloads are unsuitable for rapid iteration</li>
   </ul>
 </section>
 
 <section>
+  <h2>The End of "Free" Technology Scaling</h2>
+
+  <p class="center fragment">Moore's Law: transistor counts double while cost/transistor halves every 2 years</p>
+
+  <!-- https://www.rvdp.org/posts/2019/the-end-of-moores-law/moore.png -->
+  <figure style="text-align: center;" class="fragment">
+    <img width="50%" src="./figs/quals/end_of_moores_law.png" />
+  </figure>
+
+  <ul>
+    <li class="fragment">Cost per transistor no longer scales down with new technologies</li>
+    <li class="fragment">Transistors are no longer free</li>
+  </ul>
+
+<em>General-purpose</em> single thread performance is stagnating, but tuned cores still can squeeze a lot more out
+</section>
+
+<section>
+  <h2>Stagnation of Single Thread Performance</h2>
+
+  <p class="center fragment">Dennard Scaling: 
+
+  <!-- https://www.karlrupp.net/2015/06/40-years-of-microprocessor-trend-data/ -->
+  <figure style="text-align: center;" class="fragment">
+    <img src="./figs/quals/end_of_dennard_scaling.png" />
+  </figure>
+
+  Power wall
+</section>
+
+<section>
   <h2>The New-Era of Domain-Specialized Heterogeneous SoCs</h2>
+
+  <p class="center fragment">Motivates two types of specialization</p>
+
+  <ul>
+    <li>Heterogeneous cores including core-coupled accelerators (ISA extensions)</li>
+    <li>Core-external accelerators</li>
+  </ul>
 
 <em>General-purpose</em> single thread performance is stagnating, but tuned cores still can squeeze a lot more out
 </section>
