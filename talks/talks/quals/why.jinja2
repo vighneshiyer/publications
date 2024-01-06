@@ -72,49 +72,88 @@
 <section>
   <h2>The Consequences of These Trends</h2>
 
-  <div class="container">
+  <div class="container" style="text-align: center; grid-template-columns: 1fr 1fr;">
     <div class="fragment">
-      <p>End of Moore's Law</p>
-      <p>{{ rightarrow }} $/transistor not falling</p>
-      <p>{{ rightarrow }} Transistors are no longer free</p>
+      <p style="margin-top: 0;"><strong>End of Moore's Law</strong></p>
+      <p style="margin-top: 0;">{{ rightarrow }} $/transistor not falling</p>
+      <p style="margin-top: 0;">{{ rightarrow }} Transistors are no longer free</p>
+      <p style="margin-top: 0; margin-bottom: 0;">{{ rightarrow }} <strong>Need aggressive PPA optimization</strong></p>
     </div>
     <div class="fragment">
-      <p>End of Dennard Scaling</p>
-      <p>{{ rightarrow }} Power density <em>increasing</em></p>
-      <p>{{ rightarrow }} <em>GPP</em> performance stagnating</p>
+      <p style="margin-top: 0;"><strong>End of Dennard Scaling</strong></p>
+      <p style="margin-top: 0;">{{ rightarrow }} Power density <em>increasing</em></p>
+      <p style="margin-top: 0;">{{ rightarrow }} <em>GPP</em> performance stagnating</p>
+      <p style="margin-top: 0; margin-bottom: 0;">{{ rightarrow }} <strong>Need domain-specialization to not stagnate</strong></p>
     </div>
   </div>
 
-  <p class="center"></p>
+  <hr class="fragment">
 
-<em>General-purpose</em> single thread performance is stagnating, but tuned cores still can squeeze a lot more out
+  <p class="center fragment" style="margin-top: 0.5rem; margin-bottom: 0.5rem;">Motivates two trends in SoC design</p>
+
+  <ol>
+    <li class="fragment">Heterogeneous cores
+      <ul>
+        <li>Cores targeting different power/performance curves</li>
+        <li>Domain-specific cores</li>
+        <li>Core-coupled accelerators (ISA extensions)</li>
+      </ul>
+    </li>
+    <li class="fragment">Domain-specific accelerators</li>
+  </ol>
+  <!--<em>General-purpose</em> single thread performance is stagnating, but tuned cores still can squeeze a lot more out-->
 </section>
- 
+
 <section>
   <h2>The New-Era of Domain-Specialized Heterogeneous SoCs</h2>
-  
-  <p class="center fragment">Motivates two types of specialization</p>
+  <!-- Raptor Lake, Apple M3, Snapdragon 8 Gen 3, Exynos 2200 -->
+  <!-- Server class, laptop class, smartphone class - similar heterogeneous convergence -->
 
-  <ul>
-    <li>Heterogeneous cores including core-coupled accelerators (ISA extensions)</li>
-    <li>Core-external accelerators</li>
+  <div class="r-stack">
+    <div class="fragment fade-in-then-out" style="display: grid; place-items: center;">
+      <img width="100%" src="./figs/quals/raptor_lake.jpg">
+      <figcaption class="small center">{% include "./figs/quals/raptor_lake.jinja2" %}
+    </div>
+    <div class="fragment fade-in-then-out" style="display: grid; place-items: center;">
+      <img width="50%" src="./figs/quals/exynos_2200.jpg">
+      <figcaption class="small center">{% include "./figs/quals/exynos_2200.jinja2" %}
+    </div>
+    <div class="fragment fade-in-then-out" style="display: grid; place-items: center;">
+      <img width="80%" src="./figs/quals/a17_pro.jpg">
+      <figcaption class="small center">{% include "./figs/quals/a17_pro.jinja2" %}
+    </div>
+    <div class="fragment fade-in-then-out" style="display: grid; place-items: center;">
+      <img width="40%" src="./figs/quals/m3_max.jpg">
+      <figcaption class="small center">{% include "./figs/quals/m3_max.jinja2" %}
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>SoC Design Challenges</h2>
+
+  <div class="fragment" style="display: grid; place-items: center;">
+    <img width="50%" src="./figs/quals/ibs_cost_per_node_trend.webp" />
+    <figcaption class="small center">{% include "./figs/quals/ibs_cost_per_node_trend.jinja2" %}
+  </div>
+
+  <!-- Time limit! Need to spin as fast as possible during design phase and then freeze. Number of spins dictates how much performance can be squeezed out per generation! -->
+  <!-- What is the challenge? pick specializations that are possible and evaluate them -->
+  <!-- Optimizing real-world software pre-silicon is very hard -->
+  <!-- Another point: Different CPUs have very different pipelines and designs based on power/perf tradeoff + workload tuning -->
+
+  <ul class="small" style="margin-top: 1rem;" >
+    <li class="fragment">We want optimal designs for heterogeneous, domain-specialized, workload-tuned SoCs</li>
+    <li class="fragment">Limited time to iterate on microarchitecture and <em>optimize PPA</em> on <em>real workloads</em></li>
+    <li class="fragment">Time per evaluation (microarchitectural iteration loop) limits number of evaluations
+      <ul><li>More evaluations = more opportunities for optimization</li></ul>
+    </li>
   </ul>
+  <p class="center fragment">Existing pre-silicon evaluation (power, performance, functionality) techniques on real workloads are unsuitable for rapid iteration</p>
 </section>
 
 <section>
-  <h2>Design Challenges</h2>
-
-Note the cost figure
-What is the challenge? pick specializations that are possible and evaluate them
-Optimizing real-world software pre-silicon is very hard
-</section>
-
-<section>
-  <h2>Pre-Silicon Evaluation</h2>
-
-  Enumerate all the techniques in abbreviated table
-
-  <h2>Existing μArch Evaluation Strategies</h2>
+  <h2>Pre-Silicon Microarchitecture Simulation</h2>
 
   <table style="width: 100%; font-size:90%;">
     <thead><tr>
@@ -149,39 +188,16 @@ Optimizing real-world software pre-silicon is very hard
     </tr>
     <tr class="fragment">
       <td><strong>TidalSim</strong></td>
-      <td>10 MIPS</td>
-      <td>&lt;1 minute</td>
-      <td style="font-size: 90%">&lt;5% error, 10k intervals</td>
+      <td class="bg-green">100+ MIPS</td>
+      <td class="bg-green">&lt;1 minute</td>
+      <td class="bg-green">&lt;1% error</td>
     </tr>
     </tbody>
   </table>
 
-  <ul style="margin-top: 1rem;" class="fragment">
-    <li>Combine the strengths of ISA, μArch, and RTL simulators
-      <ul><li>Multi-level simulation</li></ul>
-    </li>
-  </ul>
-
-</section>
-
-<section data-visibility="hidden">
-  <h2>Motivation</h2>
-
   <ul>
-    <li class="fragment">We want fast design iteration and evaluation of PPA + verification given real workloads
-    <!--Fast design iteration and evaluation of PPA + verification requires stimulus that's representative and comprehensive wrt real workloads (execution fragments)-->
-      <ul>
-        <li class="fragment"><em>Performance estimation:</em> Impact of μArch optimizations / HW parameters on real workloads</li>
-        <li class="fragment"><em>Power macromodeling:</em> Identification of important netlist nodes in power model + traces for training</li>
-        <li class="fragment"><em>Verification:</em> Bootstrapping fuzzing loops + coverpoint synthesis</li>
-      </ul>
-    </li>
-    <li class="fragment">The enablers are: <em>fast and accurate μArch simulation</em> and a way to identify <em>unique execution fragments</em>
-      <ul>
-        <li class="fragment"><em>Performance estimation:</em> Performance metric extraction from fast RTL simulation</li>
-        <li class="fragment"><em>Power macromodeling:</em> Extraction of interesting program traces for clustering/training</li>
-        <li class="fragment"><em>Verification:</em> Extraction of traces for coverpoint/specification synthesis + state seeding for fuzzing</li>
-      </ul>
-    </li>
+    <li class="fragment"><em>Performance estimation:</em> Impact of μArch optimizations / HW parameters on real workloads</li>
+    <li class="fragment"><em>Power macromodeling:</em> Identification of important netlist nodes in power model + traces for training</li>
+    <li class="fragment"><em>Verification:</em> Bootstrapping fuzzing loops + coverpoint synthesis</li>
   </ul>
 </section>

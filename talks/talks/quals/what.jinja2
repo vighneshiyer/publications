@@ -29,3 +29,20 @@
   <hr class="fragment">
   <p class="center fragment">How can we achieve high throughput, high fidelity, low latency μArch simulation with RTL-level interesting trace extraction?</p>
 </section>
+
+<section data-visibility="hidden">
+  <h2>Motivation</h2>
+
+  <ul>
+    <li class="fragment">We want fast design iteration and evaluation of PPA + verification given real workloads
+    <!--Fast design iteration and evaluation of PPA + verification requires stimulus that's representative and comprehensive wrt real workloads (execution fragments)-->
+    </li>
+    <li class="fragment">The enablers are: <em>fast and accurate μArch simulation</em> and a way to identify <em>unique execution fragments</em>
+      <ul>
+        <li class="fragment"><em>Performance estimation:</em> Performance metric extraction from fast RTL simulation</li>
+        <li class="fragment"><em>Power macromodeling:</em> Extraction of interesting program traces for clustering/training</li>
+        <li class="fragment"><em>Verification:</em> Extraction of traces for coverpoint/specification synthesis + state seeding for fuzzing</li>
+      </ul>
+    </li>
+  </ul>
+</section>
