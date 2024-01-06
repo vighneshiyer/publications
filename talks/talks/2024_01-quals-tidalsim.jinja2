@@ -16,7 +16,7 @@
 {% block custom_head %}
 <style>
 .reveal h2 {
-  margin-top: 2rem !important;
+  margin-top: 1rem !important;
 }
 </style>
 {% endblock %}
@@ -28,10 +28,12 @@ import 'reveal.js/plugin/highlight/monokai.css'
 
 {% set center = false %}
 
+{% set rightarrow = "<strong>→</strong>" %}
+
 {% block slides %}
 <section class="center">
   <h1>TidalSim: A Unified Microarchitectural Simulation Framework</h1>
-  <h2 style="font-weight:400;">To Identify and Leverage <strong>Unique Aspects of Workloads</strong> on <strong>Heterogeneous SoCs</strong> for Power and Performance Estimation and Verification</h2>
+  <h2 style="font-weight: 400;">To Identify and Leverage <strong>Unique Aspects of Workloads</strong> on <strong>Heterogeneous SoCs</strong> for Power and Performance Estimation and Verification</h2>
   <h3 style="font-weight: 500;">Vighnesh Iyer</h3>
   <h3 style="font-weight: normal;">Qualifying Exam Presentation</h3>
   <h4 style="font-weight: normal;">Wednesday, January 17th, 2024</h4>

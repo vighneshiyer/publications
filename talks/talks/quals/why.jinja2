@@ -10,45 +10,95 @@
 <section>
   <h2>The End of "Free" Technology Scaling</h2>
 
-  <p class="center fragment">Moore's Law: transistor counts double while cost/transistor halves every 2 years</p>
+  <p class="center fragment"><strong>Moore's Law</strong>: transistor counts double while cost/transistor halves every 2 years</p>
 
-  <!-- https://www.rvdp.org/posts/2019/the-end-of-moores-law/moore.png -->
-  <figure style="text-align: center;" class="fragment">
-    <img width="50%" src="./figs/quals/end_of_moores_law.png" />
-  </figure>
+  <div class="container fragment">
+    <div>
+      <img width="60%" src="./figs/quals/wafer_cost_trend.jpg" />
+    </div>
+    <div>
+      <img width="60%" src="./figs/quals/per_transistor_cost_trend.png" />
+    </div>
+  </div>
 
-  <ul>
-    <li class="fragment">Cost per transistor no longer scales down with new technologies</li>
-    <li class="fragment">Transistors are no longer free</li>
+  <ul class="small">
+    <li class="fragment">Per-wafer and per-transistor costs continue to grow with process scaling<sup>[1, 2]</sup> unless heavily amortized</li>
   </ul>
 
-<em>General-purpose</em> single thread performance is stagnating, but tuned cores still can squeeze a lot more out
+  <p class="fragment center">{{ rightarrow }} Transistors are no longer free</p>
+
+  <div class="fragment">
+  <hr>
+  <div class="verysmall">
+    <p class="footnote">
+    [1]: {% include "figs/quals/wafer_cost_trend.jinja2" %}.<br/>
+    [2]: {% include "figs/quals/per_transistor_cost_trend.jinja2" %}.
+    </p>
+  </div>
+  </div>
 </section>
 
 <section>
   <h2>Stagnation of Single Thread Performance</h2>
 
-  <p class="center fragment">Dennard Scaling: 
+  <p class="center fragment"><strong>Dennard Scaling</strong>: power density is constant with technology scaling</p>
 
-  <!-- https://www.karlrupp.net/2015/06/40-years-of-microprocessor-trend-data/ -->
-  <figure style="text-align: center;" class="fragment">
-    <img src="./figs/quals/end_of_dennard_scaling.png" />
-  </figure>
+  <div class="container fragment">
+    <div>
+      <img width="80%" src="./figs/quals/single_thread_performance_trend.png" />
+    </div>
+    <div>
+      <img width="100%" src="./figs/quals/50_years_of_microprocessor_trend_data.png" />
+    </div>
+  </div>
 
-  Power wall
+  <ul class="small">
+    <li class="fragment">General-purpose single-thread performance has stagnated<sup>[1,2]</sup></li>
+  </ul>
+
+  <p class="fragment center">{{ rightarrow }} Can't rely on technology scaling for gains in performance</p>
+
+  <div class="fragment">
+  <hr>
+  <div class="verysmall">
+    <p class="footnote">
+    [1]: {% include "figs/quals/single_thread_performance_trend.jinja2" %}.<br/>
+    [2]: {% include "figs/quals/50_years_of_microprocessor_trend_data.jinja2" %}.
+    </p>
+  </div>
+  </div>
 </section>
 
 <section>
-  <h2>The New-Era of Domain-Specialized Heterogeneous SoCs</h2>
+  <h2>The Consequences of These Trends</h2>
 
+  <div class="container">
+    <div class="fragment">
+      <p>End of Moore's Law</p>
+      <p>{{ rightarrow }} $/transistor not falling</p>
+      <p>{{ rightarrow }} Transistors are no longer free</p>
+    </div>
+    <div class="fragment">
+      <p>End of Dennard Scaling</p>
+      <p>{{ rightarrow }} Power density <em>increasing</em></p>
+      <p>{{ rightarrow }} <em>GPP</em> performance stagnating</p>
+    </div>
+  </div>
+
+  <p class="center"></p>
+
+<em>General-purpose</em> single thread performance is stagnating, but tuned cores still can squeeze a lot more out
+</section>
+ 
+<section>
+  <h2>The New-Era of Domain-Specialized Heterogeneous SoCs</h2>
+  
   <p class="center fragment">Motivates two types of specialization</p>
 
   <ul>
     <li>Heterogeneous cores including core-coupled accelerators (ISA extensions)</li>
     <li>Core-external accelerators</li>
   </ul>
-
-<em>General-purpose</em> single thread performance is stagnating, but tuned cores still can squeeze a lot more out
 </section>
 
 <section>
