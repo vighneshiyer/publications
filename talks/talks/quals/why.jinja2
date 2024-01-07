@@ -196,6 +196,24 @@
   <!-- <p class="center fragment">Existing pre-silicon evaluation (power, performance, functionality) techniques on real workloads are unsuitable for rapid iteration</p> -->
 </section>
 
+<section>
+  <h2>Limitations of Existing Evaluators</h2>
+
+  <div class="center">
+    <img width="60%" src="./figs/dynamic/tidalsim/uarch_iteration_flow_v2.svg" />
+  </div>
+
+  <ul class="smallish fragment">
+    <li><strong>ISA simulation</strong>: no accuracy</li>
+    <li><strong>Trace/Cycle uArch simulation</strong>: low accuracy, insufficient output collateral</li>
+    <li><strong>RTL simulation</strong>: low throughput</li>
+    <li><strong>FPGA prototyping</strong>: high latency</li>
+    <li><strong>HW emulators</strong>: high cost</li>
+  </ul>
+
+  <p class="center fragment"><strong>We will propose a simulator that can deliver on all axes.</strong></p>
+</section>
+
 <section data-visibility="hidden">
   <h2>Pre-Silicon Microarchitecture Simulation</h2>
 
