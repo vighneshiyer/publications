@@ -8,3 +8,4 @@
     - If you wanted to edit a dynamic figure, edit it in Google Slides, then download the PDF and place it in `dynamic/`
     - e.g. for the tidalsim figures, place the PDF in `dynamic/tidalsim/tidalsim.pdf`
 - Generate PDFs from SVGs and extract SVGs from dynamic PDFs: `make -f Makefrag figs`
+- Re-download and re-generate SVGs from a specific dynamic PDF: `make -B -f Makefrag tidalsim`
