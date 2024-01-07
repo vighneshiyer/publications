@@ -112,43 +112,83 @@
   <div class="r-stack">
     <div class="fragment fade-in-then-out" style="display: grid; place-items: center;">
       <img width="100%" src="./figs/quals/raptor_lake.jpg">
-      <figcaption class="small center">{% include "./figs/quals/raptor_lake.jinja2" %}
+      <figcaption class="small center">{% include "./figs/quals/raptor_lake.jinja2" %}</figcaption>
     </div>
     <div class="fragment fade-in-then-out" style="display: grid; place-items: center;">
       <img width="50%" src="./figs/quals/exynos_2200.jpg">
-      <figcaption class="small center">{% include "./figs/quals/exynos_2200.jinja2" %}
+      <figcaption class="small center">{% include "./figs/quals/exynos_2200.jinja2" %}</figcaption>
     </div>
     <div class="fragment fade-in-then-out" style="display: grid; place-items: center;">
       <img width="80%" src="./figs/quals/a17_pro.jpg">
-      <figcaption class="small center">{% include "./figs/quals/a17_pro.jinja2" %}
+      <figcaption class="small center">{% include "./figs/quals/a17_pro.jinja2" %}</figcaption>
     </div>
     <div class="fragment fade-in-then-out" style="display: grid; place-items: center;">
       <img width="40%" src="./figs/quals/m3_max.jpg">
-      <figcaption class="small center">{% include "./figs/quals/m3_max.jinja2" %}
+      <figcaption class="small center">{% include "./figs/quals/m3_max.jinja2" %}</figcaption>
     </div>
   </div>
 </section>
 
 <section>
-  <h2>SoC Design Challenges</h2>
+  <h2>Specialized Core Microarchitectures</h2>
+
+  <!-- Another point: Different CPUs have very different pipelines and designs based on power/perf tradeoff + workload tuning -->
+  <!-- It is not just hardware parameter sweeping!!! -->
+  <div class="container">
+    <div>
+      <img src="./figs/quals/cortex_a77_block_diagram.svg" />
+      <figcaption class="small center">{% include "./figs/quals/cortex_a77_block_diagram.jinja2" %}</figcaption>
+    </div>
+    <div>
+      <ul>
+        <li class="fragment">Different CPUs in the same SoC aren't just variants of the same underlying microarchitecture
+          <!--<ul>
+            <li class="fragment">They have completely independent designs!</li>
+            <li class="fragment">Hardware parameter space exploration is performed for a given microarchitectural blueprint</li>
+            <li>
+          </ul>-->
+        </li>
+        <li class="fragment">The broad categories of microarchitectural iteration
+          <ol style="font-size: 1.2rem;">
+            <li class="fragment">Creating a new structure (vector unit, prefetcher, new type of branch predictor)</li>
+            <li class="fragment">Optimizing an existing structure (ROB dispatch latency, new forwarding path)</li>
+            <li class="fragment">Tuning hardware parameters (cache hierarchy and sizing, LSU queue sizing)</li>
+          </ol>
+        </li>
+        <li class="fragment">Must evaluate PPA <em>tradeoffs</em> of each modification on specific workloads</li>
+        <!-- It's about tradeoffs on PPA on specific workloads! Not about optimizing some big function of HW parameters to PPA. -->
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>Microarchitecture Design Challenges</h2>
 
   <div class="fragment" style="display: grid; place-items: center;">
     <img width="50%" src="./figs/quals/ibs_cost_per_node_trend.webp" />
-    <figcaption class="small center">{% include "./figs/quals/ibs_cost_per_node_trend.jinja2" %}
+    <figcaption class="small center">{% include "./figs/quals/ibs_cost_per_node_trend.jinja2" %}</figcaption>
   </div>
 
   <!-- Time limit! Need to spin as fast as possible during design phase and then freeze. Number of spins dictates how much performance can be squeezed out per generation! -->
   <!-- What is the challenge? pick specializations that are possible and evaluate them -->
   <!-- Optimizing real-world software pre-silicon is very hard -->
-  <!-- Another point: Different CPUs have very different pipelines and designs based on power/perf tradeoff + workload tuning -->
 
-  <ul class="small" style="margin-top: 1rem;" >
+  <ul class="smallish" style="margin-top: 1rem;" >
     <li class="fragment">We want optimal designs for heterogeneous, domain-specialized, workload-tuned SoCs</li>
     <li class="fragment">Limited time to iterate on microarchitecture and <em>optimize PPA</em> on <em>real workloads</em></li>
     <li class="fragment">Time per evaluation (microarchitectural iteration loop) limits number of evaluations
-      <ul><li>More evaluations = more opportunities for optimization</li></ul>
     </li>
   </ul>
+  <p class="center fragment">More evaluations = more opportunities for optimization</p>
+</section>
+
+<section>
+  <h2>The Microarchitectural Iteration Loop</h2>
+
+  
+
+  <!-- Can't get all axes using any existing tool (low latency, high throughput, low cost, high accuracy, rich output collateral)! -->
   <p class="center fragment">Existing pre-silicon evaluation (power, performance, functionality) techniques on real workloads are unsuitable for rapid iteration</p>
 </section>
 
