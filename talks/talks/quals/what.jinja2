@@ -1,23 +1,41 @@
 <section class="center">
   <h2 class="center">2. What: Our Vision for TidalSim</h2>
-  <p class="center fragment"><strong>What if</strong> we had a tool that could:</p>
+  <p class="center fragment"><strong>What if</strong> we had a simulator that:</p>
 
-  <ul>
-    <li class="fragment">rapid and accurate perf evaluation and microarhitecture profiling enabling DSE and optimization</li>
-    <li class="fragment">automatic benchmark extraction</li>
-    <li class="fragment">RTL-level collateral to leverage for power and verification</li>
-  </ul>
+  <ol>
+    <li class="fragment">Is <strong>fast</strong> enough to run real workloads on heterogeneous SoCs</li>
+    <li class="fragment">Is <strong>accurate</strong> enough to use confidently for microarchitectural DSE</li>
+    <li class="fragment">Has <strong>low latency</strong> to not bottleneck the hardware iteration loop</li>
+    <li class="fragment">Can produce <strong>RTL-level collateral</strong> for applications from power modeling to application-level profiling to verification
+      <ul style="font-size: 1.4rem;"><li class="fragment">Can automatically <strong>isolate and extract benchmarks</strong> from long workloads by identifying unique aspects with respect to power, performance, and functionality</li></ul>
+    </li>
+  </ol>
 </section>
 
 <section>
   <h2>What: TidalSim</h2>
-  <p>How does this tool address the challenges we posed in the Why section?</p>
-  <p>TODO add main diagram</p>
+  <!-- How does this tool address the challenges we posed in the Why section? -->
+
+  <div class="center">
+    <img src="./figs/dynamic/tidalsim/uarch_iteration_flow_tidalsim.svg" />
+    <figcaption class="small center"><strong>TidalSim</strong>: a fast, accurate, low latency, low cost microarchitectural simulator that produces RTL-level collateral for performance and power estimation and verification on real workloads.</figcaption>
+  </div>
 </section>
 
 <section>
   <h2>Scope of Thesis</h2>
-  <p>Expected results</p>
+
+  <div class="center">
+    <img width="50%" src="./figs/dynamic/tidalsim/uarch_iteration_flow_tidalsim.svg" />
+  </div>
+
+  <ol>
+    <li class="fragment">Implementation of TidalSim</li>
+    <li class="fragment">Evaluation of TidalSim for performance and power estimation on large workloads
+    <ul style="font-size: 1.4rem;"><li>Embench, GAP, SPEC, HyperProtoBench, MLPerf, CloudSuite</li></ul>
+    </li>
+    <li class="fragment">Case studies for hardware DSE, power macromodel training, and coverpoint synthesis</li>
+  </ol>
 </section>
 
 <section data-visibility="hidden">
