@@ -43,6 +43,7 @@
       center: {{ center | string | lower }},
       {% endif %}
       hash: true,
+      slideNumber: true,
       plugins: [ Markdown, Notes, Highlight, Zoom ]
     });
     Reveal.configure({ pdfSeparateFragments: false });

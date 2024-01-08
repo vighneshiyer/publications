@@ -6,8 +6,9 @@
     <li class="fragment">Sampled simulation techniques
       <ul>
         <li>Phase behavior of programs</li>
-        <li>Bounding sampling error</li>
-        <li>Functional warmup</li>
+        <li>SimPoint: Interval embedding and clustering</li>
+        <li>SMARTs: Reservoir sampling and bounding sampling errors</li>
+        <li>Functional warmup techniques</li>
         <li>Detailed warmup</li>
       </ul>
     </li>
@@ -18,26 +19,71 @@
 <section>
   <h2>A Broad View of Simulation</h2>
 
-  <ul>
-    <li>Inputs: architecture specification or framework, workload
+  <div class="center">
+    <img src="./figs/dynamic/tidalsim/simulators_broadly.svg" />
+    <figcaption class="small center">A high-level, generic view of the input and outputs of a simulator.</figcaption>
+  </div>
+
+  <ul style="margin-top: 1rem;">
+    <li class="fragment">Simulation is the workhorse of architecture evaluation</li>
+    <li class="fragment">Simulation inputs can have wide variation of fidelity
+      <ul>
+        <li><strong>Hardware spec</strong>: high-level models to detailed microarchitecture</li>
+        <li><strong>Workload</strong>: high-level algorithmic description to concrete binary</li>
+      </ul>
+    </li>
+    <li class="fragment">The fidelity of simulation outputs tracks that of the inputs</li>
+    <!--<li>Inputs: architecture specification or framework, workload
       <ul>
         <li>Specification can be high-level (blocks + instruction spec + latencies) or very detailed</li>
         <li>Workload can be high-level (memory access pattern) or fully concrete</li>
       </ul>
     </li>
-    <li>Outputs: execution trace/metrics - how does the architecture execute the workload? - notion of time granularity and space granularity + PPA stuff if available </li>
+    <li>Outputs: execution trace/metrics - how does the architecture execute the workload? - notion of time granularity and space granularity + PPA stuff if available </li>-->
   </ul>
 
 </section>
 
 <section>
-  <h2>Architecture Abstractions</h2>
+  <h2>Hardware Abstractions</h2>
 
-  RTL vs detailed uArch vs arch vs high-level spec
+  <p class="center">There are roughly 3 levels of hardware abstractions used for architecture evaluation</p>
+
+  <ol>
+    <li>Architectural models with approximate state and timing information</li>
+    <li>Microarchitectural models with more refined state and timing</li>
+    <li>Register-transfer level (RTL) models with full fidelity state and timing</li>
+  </ol>
+
+</section>
+
+<section>
+  <h2>Hardware Abstractions: Arch Models</h2>
+
+  Wattch, CACTI, McPAT
+  Workload type - high-level or ISA-level
+</section>
+
+<section>
+  <h2>Hardware Abstractions: uArch Models</h2>
+  Workload type - concrete binary
+</section>
+
+<section>
+  <h2>Hardware Abstractions: RTL</h2>
+  Workload type - concrete binary
+
+  <!--RTL vs detailed uArch vs arch vs high-level spec
 
   We will restrict our scope to architectures which already have concrete implementations.
   No need to high-level analytical analysis since we're trying to speed up iteration loop, not discover new accelerator or core architectures.
-  This is a separate research direction.
+  This is a separate research direction.-->
+</section>
+
+<section>
+  <h2>Simulator Metrics</h2>
+
+  Throughput, accuracy, ... see from paper
 </section>
 
 <section>
