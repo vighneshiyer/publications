@@ -1,14 +1,43 @@
 <section class="center">
   <h2 class="center">3. Background and Prior Work</h2>
   <ul>
-    <li class="fragment">An overview of simulation techniques</li>
+    <li class="fragment">An overview of simulation broadly</li>
     <li class="fragment">Existing microarchitectural simulators</li>
-    <li class="fragment">Phase behavior of programs</li>
-    <li class="fragment">Sampled simulation techniques</li>
-    <li class="fragment">Functional warmup</li>
-    <li class="fragment">Detailed warmup</li>
+    <li class="fragment">Sampled simulation techniques
+      <ul>
+        <li>Phase behavior of programs</li>
+        <li>Bounding sampling error</li>
+        <li>Functional warmup</li>
+        <li>Detailed warmup</li>
+      </ul>
+    </li>
     <li class="fragment">Prior work on rapid microarchitectural evaluation</li>
   </ul>
+</section>
+
+<section>
+  <h2>A Broad View of Simulation</h2>
+
+  <ul>
+    <li>Inputs: architecture specification or framework, workload
+      <ul>
+        <li>Specification can be high-level (blocks + instruction spec + latencies) or very detailed</li>
+        <li>Workload can be high-level (memory access pattern) or fully concrete</li>
+      </ul>
+    </li>
+    <li>Outputs: execution trace/metrics - how does the architecture execute the workload? - notion of time granularity and space granularity + PPA stuff if available </li>
+  </ul>
+
+</section>
+
+<section>
+  <h2>Architecture Abstractions</h2>
+
+  RTL vs detailed uArch vs arch vs high-level spec
+
+  We will restrict our scope to architectures which already have concrete implementations.
+  No need to high-level analytical analysis since we're trying to speed up iteration loop, not discover new accelerator or core architectures.
+  This is a separate research direction.
 </section>
 
 <section>

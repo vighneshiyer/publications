@@ -94,6 +94,44 @@ import 'reveal.js/plugin/highlight/monokai.css'
   </section>
 </section>
 
+
+<section data-visibility="hidden">
+  <h2>Problem Overview</h2>
+
+  <p class="center fragment">Fast RTL-level μArch simulation and performance metric / interesting trace extraction</p>
+  <p class="center fragment"><em><strong>enables</strong></em></p>
+  <p class="center fragment">Rapid RTL iteration with performance, power modeling, and verification evaluation on real workloads</p>
+  <hr class="fragment">
+  <p class="center fragment">How can we achieve high throughput, high fidelity, low latency μArch simulation with RTL-level interesting trace extraction?</p>
+</section>
+
+<section data-visibility="hidden">
+  <h2>Motivation</h2>
+
+  <ul>
+    <li class="fragment">We want fast design iteration and evaluation of PPA + verification given real workloads
+    <!--Fast design iteration and evaluation of PPA + verification requires stimulus that's representative and comprehensive wrt real workloads (execution fragments)-->
+    </li>
+    <li class="fragment">The enablers are: <em>fast and accurate μArch simulation</em> and a way to identify <em>unique execution fragments</em>
+      <ul>
+        <li class="fragment"><em>Performance estimation:</em> Performance metric extraction from fast RTL simulation</li>
+        <li class="fragment"><em>Power macromodeling:</em> Extraction of interesting program traces for clustering/training</li>
+        <li class="fragment"><em>Verification:</em> Extraction of traces for coverpoint/specification synthesis + state seeding for fuzzing</li>
+      </ul>
+    </li>
+  </ul>
+</section>
+
+<section data-visibility="hidden">
+  <h2>Pre-Silicon Microarchitecture Simulation</h2>
+
+  <ul>
+    <li class="fragment"><em>Performance estimation:</em> Impact of μArch optimizations / HW parameters on real workloads</li>
+    <li class="fragment"><em>Power macromodeling:</em> Identification of important netlist nodes in power model + traces for training</li>
+    <li class="fragment"><em>Verification:</em> Bootstrapping fuzzing loops + coverpoint synthesis</li>
+  </ul>
+</section>
+
 <section data-visibility="hidden">
   <section>
     <h2>Performance Optimizations</h2>
