@@ -250,9 +250,10 @@
   This is a separate research direction.-->
   <h2>Existing Hardware Evaluation Techniques</h2>
 
-  <table style="width: 100%; font-size:60%; border-collapse: separate;">
+  <table class="comparison_table">
     <thead><tr>
       <th></th>
+      <th>Examples</th>
       <th>Throughput</th>
       <th>Latency</th>
       <th>Accuracy</th>
@@ -262,6 +263,7 @@
     <tbody>
     <tr class="fragment">
       <td>Analytical Models</td>
+      <td>Aladdin, Timeloop</td>
       <td class="bg-green">10-1000 MIPS</td>
       <td class="bg-green">seconds</td>
       <td class="bg-red">Wildly variable</td>
@@ -269,52 +271,91 @@
       <td class="bg-green">Minimal</td>
     </tr>
     <tr class="fragment">
-      <td>ISA Simulation</td>
+      <td>Architectural Simulators</td>
+      <td>spike, qemu</td>
       <td class="bg-green">10-100+ MIPS</td>
       <td class="bg-green">&lt;1 second</td>
       <td class="bg-red">None</td>
+      <td>Commit trace</td>
+      <td class="bg-green">Minimal</td>
     </tr>
     <tr class="fragment">
-      <td>μArch Perf Sim</td>
-      <td class="bg-orange">100 KIPS (gem5)</td>
-      <td class="bg-green">5-10 seconds</td>
-      <td class="bg-orange">5-10% avg IPC error</td>
+      <td>μArch Simulators</td>
+      <td>gem5, Sniper, ZSim, SST</td>
+      <td class="bg-orange">100 KIPS (gem5) - 100 MIPS (Sniper)</td>
+      <td class="bg-green">&lt;1 minute</td>
+      <td class="bg-orange">10-50% IPC error</td>
+      <td>Pipeline view / IPC trace</td>
+      <td class="bg-green">Minimal</td>
     </tr>
     <tr class="fragment">
-      <td>RTL Simulation</td>
+      <td>RTL Simulators</td>
+      <td>Verilator, VCS, Xcelium</td>
       <td class="bg-red">1-10 KIPS</td>
-      <td class="bg-orange">5-10 minutes</td>
-      <td class="bg-green">cycle-exact</td>
+      <td class="bg-orange">2-10 minutes</td>
+      <td class="bg-green">Cycle-exact</td>
+      <td>RTL-level traces</td>
+      <td class="bg-green">Minimal</td>
     </tr>
     <tr class="fragment">
-      <td>FireSim (FPGA)</td>
-      <td class="bg-green">1-50 MIPS</td>
+      <td>FPGA Prototypes</td>
+      <td>HAPS, Protium</td>
+      <td class="bg-red">≈ 50 MIPS</td>
       <td class="bg-red">2-6 hours</td>
-      <td class="bg-green">cycle-exact</td>
+      <td class="bg-green">Cycle-exact</td>
+      <td>Subset of RTL signals</td>
+      <td class="bg-orange">$10k+</td>
     </tr>
     <tr class="fragment">
+      <td>FPGA-Based Emulators</td>
+      <td>Firesim</td>
+      <td class="bg-green">≈ 10 MIPS</td>
+      <td class="bg-red">2-6 hours</td>
+      <td class="bg-green">Cycle-exact</td>
+      <td>Subset of RTL signals</td>
+      <td class="bg-orange">$10k+</td>
+    </tr>
+    <tr class="fragment">
+      <td>ASIC-Based Emulators</td>
+      <td>ZeBu, Palladium</td>
+      <td class="bg-green">≈ 1-10 MIPS</td>
+      <td class="bg-orange">&lt;1 hour</td>
+      <td class="bg-green">Cycle-exact</td>
+      <td>RTL-level traces</td>
+      <td class="bg-red">$10M+</td>
+    </tr>
+    <tr class="fragment">
+      <td>Multi-level Sampled Simulation</td>
       <td><strong>TidalSim</strong></td>
-      <td>10 MIPS</td>
-      <td>&lt;1 minute</td>
-      <td style="font-size: 90%">&lt;5% error, 10k intervals</td>
+      <td class="bg-green">10+ MIPS</td>
+      <td class="bg-green">&lt;1 minute</td>
+      <td class="bg-green">&lt;1% IPC error</td>
+      <td>Sampled RTL-level traces</td>
+      <td class="bg-green">Minimal</td>
     </tr>
     </tbody>
   </table>
-
-  <!--<ul style="margin-top: 1rem;" class="fragment">
-    <li>Combine the strengths of ISA, μArch, and RTL simulators
-      <ul><li>Multi-level simulation</li></ul>
-    </li>
-  </ul>-->
-
-  uArch Perf Sim is nearly there! Can we improve its accuracy or improve its throughput to get us to the golden promise land?
+  <!-- uArch Perf Sim is nearly there! Can we improve its accuracy or improve its throughput to get us to the golden promise land? -->
 </section>
 
 <section>
-  <h2>How Accurate are Performance Simulators?</h2>
-  - cite paper on arch sims considered harmful
+  <h2>Can we Use Microarchitectural Simulators?</h2>
+
+  <!-- - cite paper on arch sims considered harmful
   Accuracy - discuss why this can't be really improved - need to resort to RTL for fidelity that we can trust (on PPA)
-  Throughput - we can use sampling - let's discuss that
+  Throughput - we can use sampling - let's discuss that -->
+
+  <p class="fragment center">If we can make uArch simulators faster and more accurate, then the problem is solved!</p>
+
+  <div class="fragment">
+  <hr>
+  <div class="verysmall">
+    <p class="footnote" style="margin:0;">
+    [1]: Nowatzki, T., Menon, J., Ho, C.H. and Sankaralingam, K., 2015. Architectural simulators considered harmful. IEEE Micro.
+    [2]: Akram, A. and Sawalha, L., 2016, October. x86 computer architecture simulators: A comparative study. ICCD.
+    </p>
+  </div>
+  </div>
 </section>
 
 <section>
