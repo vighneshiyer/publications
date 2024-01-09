@@ -1,7 +1,9 @@
 <section class="center">
   <h2 class="center">3. Background and Prior Work</h2>
   <ul>
-    <li class="fragment">An overview of simulation broadly</li>
+    <li class="fragment">An overview of simulation broadly
+      <ul><li>Abstractions used in hardware modeling</li></ul>
+    </li>
     <li class="fragment">Existing microarchitectural simulators</li>
     <li class="fragment">Sampled simulation techniques
       <ul>
@@ -47,56 +49,226 @@
 <section>
   <h2>Hardware Abstractions</h2>
 
-  <p class="center">There are roughly 3 levels of hardware abstractions used for architecture evaluation</p>
+  <p class="center fragment">There are roughly <strong>4 levels of hardware abstractions</strong> used in architecture evaluation</p>
 
   <ol>
-    <li>Architectural models with approximate state and timing information</li>
-    <li>Microarchitectural models with more refined state and timing</li>
-    <li>Register-transfer level (RTL) models with full fidelity state and timing</li>
+    <li class="fragment">Architectural (functional) models</li>
+    <li class="fragment">Microarchitectural models (<em>"rough"</em>) with approximate state and timing</li>
+    <li class="fragment">Microarchitectural models (<em>"detailed"</em>) with more refined state and timing</li>
+    <li class="fragment">Register-transfer level (RTL) models with full fidelity state and timing</li>
   </ol>
-
 </section>
 
 <section>
-  <h2>Hardware Abstractions: Arch Models</h2>
+  <h2>Hardware Abstractions: Architectural (Functional) Models</h2>
 
-  Wattch, CACTI, McPAT
-  Workload type - high-level or ISA-level
+  <p class="fragment center">Functional simulators emulate an architecture and can execute workloads (e.g. ELF binaries).</p>
+  <p class="fragment center">They only model <em>architectural</em> state, defined in an ISA specification. No <em>microarchitectural</em> state is modeled.</p>
+
+  <ul>
+    <li class="fragment">Examples
+      <ul>
+        <li>RISC-V: <a href="https://github.com/riscv-software-src/riscv-isa-sim">spike</a>, <a href="https://github.com/chipsalliance/dromajo">dromajo</a>, <a href="https://www.imperas.com/riscvovpsim-free-imperas-risc-v-instruction-set-simulator">Imperas riscvOVPSim</a></li>
+        <li>Multi-ISA (x86, ARM, RISC-V): <a href="https://www.qemu.org/">qemu</a></li>
+      </ul>
+    </li>
+    <li class="fragment">Very fast (10-1000 MIPS), low startup latency (instant)</li>
+    <li class="fragment">Cannot estimate PPA</li>
+  </ul>
 </section>
 
 <section>
-  <h2>Hardware Abstractions: uArch Models</h2>
-  Workload type - concrete binary
+  <h2>Hardware Abstractions: "Rough" uArch Models - Micro-Kernel Accelerators</h2>
+
+  <ul class="smallish">
+    <li class="fragment">Microarchitecture is modeled with high-level blocks with a dataflow and timing relationship</li>
+    <li class="fragment">Prior Work: Aladdin<sup>[1]</sup> is a microarchitecture estimation and simulation tool for analyzing the PPA of potential accelertors for kernels written in C</li>
+  </ul>
+
+  <div class="center r-stack">
+    <div class="fragment fade-in-then-out" style="display: grid; place-items: center;">
+      <img width="50%" src="./figs/quals/aladdin_architecture.png">
+      <figcaption class="small center">System architecture assumed by Aladdin</figcaption>
+    </div>
+    <div class="fragment fade-in" style="display: grid; place-items: center;">
+      <img width="70%" src="./figs/quals/aladdin_flow.png">
+      <figcaption class="small center">Aladdin flow. Inputs: workload. Outputs: dataflow microarchitecture + PPA</figcaption>
+    </div>
+    <!--<div class="fragment fade-in" style="display: grid; place-items: center;">
+      <img width="20%" src="./figs/quals/aladdin_simulation.png">
+      <figcaption class="small center">Aladdin simulation</figcaption>
+    </div>-->
+  </div>
+
+  <div class="fragment">
+  <hr>
+  <div class="verysmall">
+    <p class="footnote">
+    [1]: Shao, Y.S., Reagen, B., Wei, G.Y. and Brooks, D., 2014. Aladdin: A pre-rtl, power-performance accelerator simulator enabling large design space exploration of customized architectures. ACM SIGARCH.
+    </p>
+  </div>
+  </div>
+</section>
+
+<section>
+  <h2>Hardware Abstractions: "Rough" uArch Models - ML Accelerators</h2>
+
+  <ul class="small">
+    <li class="fragment">Rough uArch models are used for evaluating ML accelerator architectures, dataflows, and workload mappings</li>
+    <li class="fragment">Prior Work: Timeloop<sup>[1]</sup>, Accelergy<sup>[2]</sup> provides a framework for describing accelerator microarchitecture with parameterizable blocks (PEs, scratchpads), workload mappings, and simulating workloads for PPA estimates</li>
+  </ul>
+
+  <div class="center r-stack">
+    <div class="fragment fade-in-then-out" style="display: grid; place-items: center;">
+      <img width="50%" src="./figs/quals/accelergy_example_arch.png" style="margin:0;">
+      <figcaption class="small center">An example microarchitecture modeled by Timeloop</figcaption>
+    </div>
+    <div class="fragment fade-in-then-out" style="display: grid; place-items: center;">
+      <img width="50%" src="./figs/quals/timeloop_arch_definition.png" style="margin:0;">
+      <figcaption class="small center">Microarchitecture description schema provided by Timeloop</figcaption>
+    </div>
+    <div class="fragment fade-in-then-out" style="display: grid; place-items: center;">
+      <img width="30%" src="./figs/quals/timeloop_workload_definition.png" style="margin:0;">
+      <figcaption class="small center">Timeloop's schema for defining workloads and their mapping</figcaption>
+    </div>
+    <div class="fragment fade-in" style="display: grid; place-items: center;">
+      <img width="70%" src="./figs/quals/timeloop_outputs.png" style="margin:0;">
+      <figcaption class="small center">Timeloop + Accelergy flow. Inputs: workload. Outputs: ML microarchitecture + PPA</figcaption>
+    </div>
+  </div>
+
+  <div class="fragment">
+  <div class="verysmall">
+    <p class="footnote" style="margin:0;">
+    [1]: Parashar, A., et. al., 2019. Timeloop: A systematic approach to dnn accelerator evaluation. ISPASS.<br/>
+    [2]: Wu, Y.N., Emer, J.S. and Sze, V., 2019. Accelergy: An architecture-level energy estimation methodology for accelerator designs. ICCAD.
+    </p>
+  </div>
+  </div>
+</section>
+
+<section>
+  <h2>Hardware Abstractions: "Rough" uArch Models - Cores</h2>
+  <!-- Wattch, CACTI, McPAT (CPU modeling) -->
+
+  <ul class="smallish">
+    <li class="fragment">Rough uArch models are also common for evaluating core microarchitectures</li>
+    <li class="fragment">Prior Work: McPAT<sup>[1]</sup> models CPUs with a parameterizable out-of-order pipeline and uncore components coupled to a timing simulator. CACTI<sup>[2]</sup> models the PPA of SRAM-based caches and DRAM.</li>
+  </ul>
+
+  <div class="center r-stack">
+    <div class="fragment fade-in-then-out" style="display: grid; place-items: center;">
+      <img width="50%" src="./figs/quals/mcpat_flow.png">
+      <figcaption class="small center">The simulation flow provided by McPAT.</figcaption>
+    </div>
+    <div class="fragment fade-in" style="display: grid; place-items: center;">
+      <img width="70%" src="./figs/quals/mcpat_output.png">
+      <figcaption class="small center">McPAT results. Inputs: workload and microarch description. Outputs: PPA</figcaption>
+    </div>
+  </div>
+
+  <div class="fragment">
+  <hr>
+  <div class="verysmall">
+    <p class="footnote" style="margin:0;">
+    [1]: Li, S., et. al., 2009. McPAT: An integrated power, area, and timing modeling framework for multicore and manycore architectures. MICRO.<br />
+    [2]: Muralimanohar, et al., 2009. CACTI 6.0: A tool to model large caches. HP laboratories.
+    </p>
+  </div>
+  </div>
+</section>
+
+<section>
+  <h2>Hardware Abstractions: "Detailed" uArch Models - Cores</h2>
+
+  <!-- Modeling precise microarchitectural details usually at cycle-level time-granularity -->
+  <!-- Workload type - concrete binary -->
+
+  <ul class="smallish">
+    <li class="fragment">The most popular way to evaluate core microarchitectural optimizations is with a detailed execution-driven simulator. Many microarchitectural states are modeled.</li>
+    <li class="fragment">Prior Work: gem5, ZSim, SST, MARSSx86, Sniper, ESESC. These simulators model the core pipeline and uncore components with cycle-level time-granularity.</li>
+  </ul>
+
+  <div class="center r-stack">
+    <div class="fragment fade-in-then-out" style="display: grid; place-items: center;">
+      <img width="50%" src="./figs/quals/gem5_architecture.png">
+      <figcaption class="small center">The modular architecture of gem5.</figcaption>
+    </div>
+    <div class="fragment fade-in" style="display: grid; place-items: center;">
+      <img width="80%" src="./figs/quals/gem5_kanata_pipeline_viewer.png">
+      <figcaption class="small center">Detailed per-instruction core pipeline visualization using Konata.</figcaption>
+    </div>
+  </div>
 </section>
 
 <section>
   <h2>Hardware Abstractions: RTL</h2>
-  Workload type - concrete binary
+
+  <ul>
+    <li class="fragment">Register-transfer level (RTL) (e.g. Verilog) is the lowest abstraction used in pre-silicon architecture evaluation</li>
+    <li class="fragment">Every bit of state and logic is explicitly modeled. RTL is the highest fidelity hardware model.</li>
+    <li class="fragment">Can extract very precise power, performance, and area metrics</li>
+  </ul>
+</section>
+
+<section>
+  <h2>Simulator Metrics</h2>
+
+  <p class="center fragment">Simulation techniques span the gamut on various axes</p>
+
+  <ul class="smallish">
+    <li class="fragment"><strong>Throughput</strong>
+      <ul><li>How many instructions can be simulated per real second? (MIPS = millions of instructions per second)</li></ul>
+    </li>
+    <li class="fragment"><strong>Accuracy</strong>
+      <ul><li>Do the output metrics of the simulator match those of the modeled SoC in its real environment?</li></ul>
+    </li>
+    <li class="fragment"><strong>Startup latency</strong>
+      <ul><li>How long does it take from the moment the simulator's parameters/inputs are modified to when the first instruction is executed?</li></ul>
+    </li>
+    <li class="fragment"><strong>Metric diversity</strong>
+      <ul>
+        <li>What metrics can the simulator emit?</li>
+        <li>This is tied to the hardware abstraction used</li>
+      </ul>
+    </li>
+    <li class="fragment"><strong>Cost</strong>
+      <ul>
+        <li>What hardware platform does the simulator run on?</li>
+        <li>How much does it cost to run a simulation?</li>
+      </ul>
+    </li>
+  </ul>
+</section>
+
+<section>
 
   <!--RTL vs detailed uArch vs arch vs high-level spec
 
   We will restrict our scope to architectures which already have concrete implementations.
   No need to high-level analytical analysis since we're trying to speed up iteration loop, not discover new accelerator or core architectures.
   This is a separate research direction.-->
-</section>
+  <h2>Existing Hardware Evaluation Techniques</h2>
 
-<section>
-  <h2>Simulator Metrics</h2>
-
-  Throughput, accuracy, ... see from paper
-</section>
-
-<section>
-  <h2>Existing μArch Evaluation Strategies</h2>
-
-  <table style="width: 100%; font-size:90%;">
+  <table style="width: 100%; font-size:60%; border-collapse: separate;">
     <thead><tr>
       <th></th>
       <th>Throughput</th>
       <th>Latency</th>
-      <th>Fidelity</th>
+      <th>Accuracy</th>
+      <th>Metrics</th>
+      <th>Cost</th>
     </tr></thead>
-    <tbody><tr class="fragment">
+    <tbody>
+    <tr class="fragment">
+      <td>Analytical Models</td>
+      <td class="bg-green">10-1000 MIPS</td>
+      <td class="bg-green">seconds</td>
+      <td class="bg-red">Wildly variable</td>
+      <td>PPA estimates</td>
+      <td class="bg-green">Minimal</td>
+    </tr>
+    <tr class="fragment">
       <td>ISA Simulation</td>
       <td class="bg-green">10-100+ MIPS</td>
       <td class="bg-green">&lt;1 second</td>
@@ -129,11 +301,20 @@
     </tbody>
   </table>
 
-  <ul style="margin-top: 1rem;" class="fragment">
+  <!--<ul style="margin-top: 1rem;" class="fragment">
     <li>Combine the strengths of ISA, μArch, and RTL simulators
       <ul><li>Multi-level simulation</li></ul>
     </li>
-  </ul>
+  </ul>-->
+
+  uArch Perf Sim is nearly there! Can we improve its accuracy or improve its throughput to get us to the golden promise land?
+</section>
+
+<section>
+  <h2>How Accurate are Performance Simulators?</h2>
+  - cite paper on arch sims considered harmful
+  Accuracy - discuss why this can't be really improved - need to resort to RTL for fidelity that we can trust (on PPA)
+  Throughput - we can use sampling - let's discuss that
 </section>
 
 <section>
