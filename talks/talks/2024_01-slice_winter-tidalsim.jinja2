@@ -1,0 +1,609 @@
+{% extends "base/base.jinja2" %}
+
+{# HTML title #}
+{% set webpage_title = "SLICE Winter 2024 Retreat - TidalSim: Multi-Level Microarchitectural Simulation" %}
+{# Short description #}
+{% set description = "Using ISA + uArch + RTL simulation for high throughput, low latency, high fidelity simulations." %}
+{# List of authors #}
+{% set author = "Vighnesh Iyer, Raghav Gupta" %}
+{# Change ‘venue’ to a conference or workshop name if any #}
+{% set venue = "SLICE Winter 2024 Retreat" %}
+{# Publication info (hidden by default) #}
+{% set pub_datetime_iso = "2024-01-10" %}
+{% set pub_date = "January 10, 2024" %}
+
+{# Custom styles and JS for a particular talk #}
+{% block custom_head %}
+<style>
+.reveal h2 {
+  margin-top: 1rem !important;
+}
+</style>
+{% endblock %}
+
+{% block theme %}
+import '/themes/remark-ish.scss'
+import 'reveal.js/plugin/highlight/monokai.css'
+{% endblock %}
+
+{% set center = false %}
+
+{% set rightarrow = "<strong>→</strong>" %}
+
+{% block slides %}
+<section class="center">
+  <h1>TidalSim: Multi-Level Microarchitecture Simulation</h1>
+  <h3 style="font-weight: 500;">Vighnesh Iyer, Raghav Gupta, Dhruv Vaish, Charles Hong, Young-Jin Park, Bora Nikolic, Sophia Shao</h3>
+  <h3 style="font-weight: normal;">SLICE Winter Retreat 2024</h3>
+  <h4 style="font-weight: normal;">Wednesday, January 10th, 2024</h4>
+</section>
+
+<section>
+  <section class="center">
+    <h2 class="center">Motivation</h2>
+  </section>
+
+  <section>
+    <h2>Trends in SoC Evolution</h2>
+
+    <div class="container" style="text-align: center; grid-template-columns: 1fr 1fr;">
+      <div class="fragment">
+        <p style="margin-top: 0;"><strong>End of Moore's Law</strong></p>
+        <p style="margin-top: 0;">{{ rightarrow }} $/transistor not falling</p>
+        <p style="margin-top: 0;">{{ rightarrow }} Transistors are no longer free</p>
+        <p style="margin-top: 0; margin-bottom: 0;">{{ rightarrow }} <strong>Need aggressive PPA optimization</strong></p>
+      </div>
+      <div class="fragment">
+        <p style="margin-top: 0;"><strong>End of Dennard Scaling</strong></p>
+        <p style="margin-top: 0;">{{ rightarrow }} Power density <em>increasing</em></p>
+        <p style="margin-top: 0;">{{ rightarrow }} <em>GPP</em> performance stagnating</p>
+        <p style="margin-top: 0; margin-bottom: 0;">{{ rightarrow }} <strong>Need domain-specialization to not stagnate</strong></p>
+      </div>
+    </div>
+
+    <hr class="fragment">
+
+    <p class="center fragment" style="margin-top: 0.5rem; margin-bottom: 0.5rem;">Motivates two trends in SoC design</p>
+
+    <ol>
+      <li class="fragment">Heterogeneous cores
+        <ul>
+          <li>Cores targeting different power/performance curves</li>
+          <li>Domain-specific cores</li>
+          <li>Core-coupled accelerators (ISA extensions)</li>
+        </ul>
+      </li>
+      <li class="fragment">Domain-specific accelerators</li>
+    </ol>
+    <!--<em>General-purpose</em> single thread performance is stagnating, but tuned cores still can squeeze a lot more out-->
+  </section>
+
+  <section>
+    <h2>The New-Era of Domain-Specialized Heterogeneous SoCs</h2>
+    <!-- Raptor Lake, Apple M3, Snapdragon 8 Gen 3, Exynos 2200 -->
+    <!-- Server class, laptop class, smartphone class - similar heterogeneous convergence -->
+
+    <div class="r-stack">
+      <div class="fragment fade-in-then-out" style="display: grid; place-items: center;">
+        <img width="100%" src="./figs/quals/raptor_lake.jpg">
+        <figcaption class="small center">{% include "./figs/quals/raptor_lake.jinja2" %}</figcaption>
+      </div>
+      <div class="fragment fade-in-then-out" style="display: grid; place-items: center;">
+        <img width="50%" src="./figs/quals/exynos_2200.jpg">
+        <figcaption class="small center">{% include "./figs/quals/exynos_2200.jinja2" %}</figcaption>
+      </div>
+      <div class="fragment fade-in-then-out" style="display: grid; place-items: center;">
+        <img width="80%" src="./figs/quals/a17_pro.jpg">
+        <figcaption class="small center">{% include "./figs/quals/a17_pro.jinja2" %}</figcaption>
+      </div>
+      <div class="fragment fade-in-then-out" style="display: grid; place-items: center;">
+        <img width="40%" src="./figs/quals/m3_max.jpg">
+        <figcaption class="small center">{% include "./figs/quals/m3_max.jinja2" %}</figcaption>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Microarchitecture Design Challenges</h2>
+
+    <div class="fragment" style="display: grid; place-items: center;">
+      <img width="50%" src="./figs/quals/ibs_cost_per_node_trend.webp" />
+      <figcaption class="small center">{% include "./figs/quals/ibs_cost_per_node_trend.jinja2" %}</figcaption>
+    </div>
+
+    <!-- Time limit! Need to spin as fast as possible during design phase and then freeze. Number of spins dictates how much performance can be squeezed out per generation! -->
+    <!-- What is the challenge? pick specializations that are possible and evaluate them -->
+    <!-- Optimizing real-world software pre-silicon is very hard -->
+
+    <ul class="smallish" style="margin-top: 1rem;" >
+      <li class="fragment">We want optimal designs for heterogeneous, domain-specialized, workload-tuned SoCs</li>
+      <li class="fragment">Limited time to iterate on microarchitecture and <em>optimize PPA</em> on <em>real workloads</em></li>
+      <li class="fragment">Time per evaluation (microarchitectural iteration loop) limits number of evaluations
+      </li>
+    </ul>
+    <p class="center fragment">More evaluations = more opportunities for optimization</p>
+  </section>
+
+  <section>
+    <h2>The Microarchitectural Iteration Loop</h2>
+
+    <div class="center">
+      <img src="./figs/dynamic/tidalsim/uarch_iteration_flow_v2.svg" />
+    </div>
+
+    <p class="center fragment">We want an "Evaluator" that has low latency, high throughput, high accuracy, low cost, and rich output collateral</p>
+    <p class="center fragment"><strong>Existing tools cannot deliver on all axes</strong></p>
+    <!-- Can't get all axes using any existing tool (low latency, high throughput, low cost, high accuracy, rich output collateral)! -->
+    <!-- <p class="center fragment">Existing pre-silicon evaluation (power, performance, functionality) techniques on real workloads are unsuitable for rapid iteration</p> -->
+  </section>
+
+  <section>
+    <h2>Limitations of Existing Evaluators</h2>
+
+    <div class="center">
+      <img width="50%" src="./figs/dynamic/tidalsim/uarch_iteration_flow_v2.svg" />
+    </div>
+
+    <ul class="smallish">
+      <li class="fragment"><strong>ISA simulation</strong>: no accuracy</li>
+      <li class="fragment"><strong>Trace/Cycle uArch simulation</strong>: low accuracy (10-50% IPC error is typical), medium throughput (gem5 = 100 KIPS)</li>
+      <li class="fragment"><strong>RTL simulation</strong>: low throughput (10 KIPS)</li>
+      <li class="fragment"><strong>FPGA prototype / emulator</strong>: high latency (2-6 hours)</li>
+      <li class="fragment"><strong>HW emulators</strong>: high cost ($10M+)</li>
+    </ul>
+
+    <p class="center fragment"><strong>We will propose a simulator that can deliver on all axes.</strong></p>
+  </section>
+</section>
+
+<section>
+  <section class="center">
+    <h2 class="center">Our Vision for TidalSim</h2>
+    <p class="center fragment"><strong>What if</strong> we had a simulator that:</p>
+
+    <ol>
+      <li class="fragment">Is <strong>fast</strong> enough to run real workloads on heterogeneous SoCs</li>
+      <li class="fragment">Is <strong>accurate</strong> enough to use confidently for microarchitectural DSE</li>
+      <li class="fragment">Has <strong>low latency</strong> to not bottleneck the hardware iteration loop</li>
+      <li class="fragment">Can produce <strong>RTL-level collateral</strong> for applications from power modeling to application-level profiling to verification
+        <ul style="font-size: 1.4rem;"><li class="fragment">Can automatically <strong>isolate and extract benchmarks</strong> from long workloads by identifying unique aspects with respect to power, performance, and functionality</li></ul>
+      </li>
+    </ol>
+  </section>
+
+  <section>
+    <h2>TidalSim</h2>
+    <!-- How does this tool address the challenges we posed in the Why section? -->
+
+    <div class="center">
+      <img src="./figs/dynamic/tidalsim/uarch_iteration_flow_tidalsim.svg" />
+      <figcaption class="small center"><strong>TidalSim</strong>: a fast, accurate, low latency, low cost microarchitectural simulator that produces RTL-level collateral for performance and power estimation and verification on real workloads.</figcaption>
+    </div>
+  </section>
+</section>
+
+<section>
+  <section class="center">
+    <h2>Background: Sampled Simulation</h2>
+  </section>
+
+  <section>
+    <h2>Phase Behavior of Programs</h2>
+
+    <div class="container">
+    <div>
+    <ul style="font-size:95%">
+      <li class="fragment" data-fragment-index="1">Program execution traces aren’t random
+        <ul class="fragment" data-fragment-index="2">
+          <li>They execute the same code again-and-again</li>
+          <li>Application execution traces can be split into <strong style="text-decoration:underline;">phases</strong> that exhibit similar μArch behavior</li>
+        </ul>
+      </li>
+      <li class="fragment" data-fragment-index="4">Prior work: SimPoint
+        <ul class="fragment" data-fragment-index="5">
+          <li>Identify basic blocks executed in a given interval (e.g. 1M instruction intervals)</li>
+          <li>Embed each interval using their ‘basic block vector’</li>
+          <li>Cluster intervals using k-means</li>
+        </ul>
+      </li>
+      <li class="fragment" data-fragment-index="6">Similar intervals → similar μArch behaviors
+        <ul class="fragment" data-fragment-index="7"><li>Only execute unique intervals in low-level RTL simulation!</li></ul>
+      </li>
+    </ul>
+    </div>
+    <div class="fragment" data-fragment-index="3" style="display:grid; align-content: center; justify-items:center;">
+      <img src="./figs/multi-level-sim/simpoint-gzip_phases.gif" />
+      <img src="./figs/multi-level-sim/simpoint-gcc_phases.gif" />
+    </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Sampled Simulation Techniques</h2>
+
+    <ul class="small">
+      <li class="fragment">Sampled simulation only executes specific intervals of the full workload in detailed performance simulation
+        <ul>
+          <li>Functional warmup initializes the long-lived uArch state (caches, TLB, branch predictor, prefetcher) in perf simulation</li>
+          <li>Detailed warmup initializes the short-lived uArch state (pipeline, ROB, LSU)</li>
+        </ul>
+      </li>
+      <!--<li class="fragment">The intervals are chosen based on an embedding of their execution patterns or randomly</li>-->
+      <li class="fragment">The sampled intervals are used to reconstruct the full IPC trace of the workload</li>
+    </ul>
+
+    <hr class="fragment">
+
+    <table class="fragment" style="font-size: 1.2rem;">
+      <thead><tr>
+        <th>Sampling Technique</th>
+        <th>Interval Length</th>
+        <th># of Intervals Simulated</th>
+        <th>Interval Selection</th>
+        <th>Functional Warmup</th>
+        <th>Detailed Warmup</th>
+        <th>Time Granularity</th>
+      </tr></thead>
+      <tbody>
+      <tr class="fragment">
+        <td><strong>SimPoint</strong></td>
+        <td>10-100M</td>
+        <td>50-100</td>
+        <td>BBFV + k-means</td>
+        <td>Optional</td>
+        <td>≈0.1-1M</td>
+        <td>Interval length</td>
+      </tr>
+      <tr class="fragment">
+        <td><strong>SMARTs</strong></td>
+        <td>10-100k</td>
+        <td>10k</td>
+        <td>Reservoir sampling</td>
+        <td>Required</td>
+        <td>1k</td>
+        <td>Entire workload</td>
+      </tr>
+      <tr class="fragment">
+        <td><strong>TidalSim</strong></td>
+        <td>10k</td>
+        <td>10-100</td>
+        <td>BBFV + k-means</td>
+        <td>Required</td>
+        <td>1k</td>
+        <td>Interval Length</td>
+      </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2>What's Different vs Regular Sampled Perf Sim?</h2>
+
+    <p class="fragment center" data-fragment-index="1">TidalSim leverages <strong>RTL simulation</strong> for performance estimation!</p>
+    <div class="r-stack">
+    <div data-fragment-index="5" class="fragment fade-out">
+    <ul>
+      <li data-fragment-index="2" class="fragment">No need to perform correlation between perf model and RTL
+        <ul>
+          <li>Error is introduced by sampling, but it can be understood/bounded with statistical methods</li>
+          <li>Additional error comes from modeling RTL constructs (which is often done poorly and can't be bounded)</li>
+        </ul>
+      </li>
+      <li data-fragment-index="3" class="fragment">Possible to derive accurate PPA numbers
+        <ul>
+          <li>Real frequency and area numbers from synthesis</li>
+          <li>Can extrapolate up to full power traces</li>
+        </ul>
+      </li>
+      <li data-fragment-index="4" class="fragment">Leverage special collateral (waveforms) from RTL simulation
+        <ul>
+          <li>Power macromodel construction and training</li>
+          <li>Coverpoint synthesis, bootstrapping RTL fuzzing</li>
+        </ul>
+      </li>
+    </ul>
+    </div>
+    <div data-fragment-index="6" class="fragment fade-in">
+      <p class="center" style="font-weight: 500;">Multi-level simulation with RTL-level injection hasn't been done before. So we should try!</p>
+    </div>
+    </div>
+  </section>
+</section>
+
+<!--
+  - Program intervals
+  - Basic block embedding (show example)
+  - Clustering (show example of clusters we extracted, 2D SVD projection and cluster coloring)
+  - Checkpointing and snapshot taking
+  - Injection into RTL-level simulation
+  - Performance metric extraction
+  - Extrapolation
+-->
+<section>
+  <section class="center">
+    <h2>TidalSim v0.1 Prototype</h2>
+  </section>
+
+  <section style="text-align: center;">
+    <h2>Components of TidalSim Flow</h2>
+    <div class="container" style="grid-template-columns: 1.4fr 1fr;">
+    <div>
+    <ul>
+      <li>Basic block identification
+        <ul><li>BB identification from spike commit log or from static ELF analysis</li></ul>
+      </li>
+      <li>Basic block embedding of program intervals</li>
+      <li>Clustering and checkpointing
+        <ul><li>k-means, PCA-based n-clusters, spike-based checkpoints</li></ul>
+      </li>
+      <li>RTL simulation and performance metric extraction
+        <ul><li>Custom force-based RTL state injection, out-of-band IPC measurement</li></ul>
+      </li>
+      <li>Extrapolation</li>
+    </ul>
+    </div>
+    <div style="display:grid; align-content: center;">
+      <img src="./figs/dynamic/tidalsim/overview.svg" />
+    </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Basic Block Identification</h2>
+
+    <p class="center fragment">Basic blocks are extracted from the dynamic commit log emitted by spike</p>
+
+    <pre class="fragment"><code data-trim data-noescape>
+core   0: >>>>  memchr
+core   0: 0x00000000800012f6 (0x0ff5f593) andi    a1, a1, 255
+core   0: 0x00000000800012fa (0x0000962a) c.add   a2, a0
+core   0: 0x00000000800012fc (0x00c51463) bne     a0, a2, pc + 8
+core   0: 0x0000000080001304 (0x00054783) lbu     a5, 0(a0)
+core   0: 0x0000000080001308 (0xfeb78de3) beq     a5, a1, pc - 6
+    </code></pre>
+
+    <ul>
+      <li class="fragment">Control flow instructions mark the end of a basic block</li>
+      <li class="fragment">Previously identified basic blocks can be split if a new entry point is found</li>
+      <li class="fragment"><code>0: 0x8000_12f6 ⮕ 0x8000_12fc</code></li>
+      <li class="fragment"><code>1: 0x8000_1304 ⮕ 0x8000_1308</code></li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Interval Embedding and Clustering</h2>
+
+    <p class="center fragment">Embed each interval with the frequency it traversed every identified basic block</p>
+
+    <table style="width: 100%; font-size:90%;" class="fragment">
+      <thead><tr>
+        <th>Interval index</th>
+        <th>Interval length</th>
+        <th>Embedding</th>
+      </tr></thead>
+      <tbody><tr>
+        <td>n</td>
+        <td>100</td>
+        <td><code>[40, 50, 0, 10]</code></td>
+      </tr>
+      <tr>
+        <td>n+1</td>
+        <td>100</td>
+        <td><code>[0, 50, 10, 40]</code></td>
+      </tr>
+      <tr>
+        <td>n+2</td>
+        <td>100</td>
+        <td><code>[0, 20, 20, 80]</code></td>
+      </tr>
+      </tbody>
+    </table>
+
+    <p class="center fragment">Intervals are clustered using k-means clustering on their embeddings</p>
+  </section>
+
+  <section>
+    <h2>Arch Snapshotting</h2>
+
+    <p class="center fragment">For each cluster, take the sample that is closest to its centroid</p>
+    <p class="center fragment">Capture arch checkpoints at the start each chosen sample</p>
+
+    <pre class="fragment"><code data-trim data-noescape>
+pc = 0x0000000080000332
+priv = M
+fcsr = 0x0000000000000000
+mtvec = 0x8000000a00006000
+...
+x1 = 0x000000008000024a
+x2 = 0x0000000080028fa0
+...
+    </code></pre>
+
+    <p class="center fragment">An arch checkpoints = arch state + raw memory contents</p>
+  </section>
+
+  <section>
+    <h2>RTL Simulation and Arch-State Injection</h2>
+
+    <ul>
+      <li class="fragment">Arch checkpoints are run in parallel in RTL simulation for N instructions</li>
+      <li class="fragment">RTL state injection caveats
+        <ul>
+          <li class="fragment">Not all arch state maps 1:1 with an RTL-level register</li>
+          <li class="fragment">e.g. <code>fflags</code> in <code>fcsr</code> are FP exception bits from FPU μArch state</li>
+          <li class="fragment">e.g. <code>FPRs</code> in Rocket are stored in recoded 65-bit format (not IEEE floats)</li>
+        </ul>
+      </li>
+      <li class="fragment">Performance metrics extracted from RTL simulation</li>
+    </ul>
+
+    <pre class="fragment"><code data-trim data-noescape>
+cycles,instret
+1219,100
+125,100
+126,100
+123,100
+114,100
+250,100
+113,100
+    </code></pre>
+  </section>
+
+  <section>
+    <h2>Extrapolation</h2>
+    <p class="center fragment">Performance metrics for one sample in a cluster are representative of all samples in that cluster</p>
+    <p class="center fragment">Extrapolate on the entire execution trace to get a full IPC trace</p>
+  </section>
+</section>
+
+<section>
+  <section class="center">
+    <h2>DEMO!</h2>
+    <p>Running TidalSim on the Embench Wikisort benchmark (~2M dynamic instructions) and reconstructing an IPC trace.</p>
+    <img width="70%" src="./figs/dynamic/tidalsim/overview.svg" />
+  </section>
+</section>
+
+<section>
+  <section class="center">
+    <h2>Results</h2>
+  </section>
+
+  <section>
+    <h2>Clustering on Embench Benchmarks</h2>
+    <ul>
+      <li class="fragment">Cluster centroids indicate which basic blocks are traversed most frequently in each cluster</li>
+    </ul>
+    <img class="fragment" src="./figs/multi-level-sim/aha-mont64_clustering.svg" />
+    <ul>
+      <li class="fragment">We observe that most clusters capture unique traversal patterns</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>IPC Trace Prediction</h2>
+    <ul>
+      <li class="fragment">Montgomery multiplication from Embench (aha-mont64)</li>
+      <li class="fragment"><code>N=1000</code>, <code>C=12</code></li>
+      <li class="fragment">Full RTL sim takes 10 minutes, TidalSim runs in 10 seconds</li>
+      <li class="fragment">IPC is correlated (mean error &lt;5%)<!--; very weak correlation between distance and error--></li>
+    </ul>
+    <img class="fragment" src="./figs/multi-level-sim/aha-mont64_results.svg" />
+  </section>
+
+  <section>
+    <h2>IPC Trace Prediction</h2>
+    <ul>
+      <li class="fragment">Huffman compression from Embench (huffbench)</li>
+      <li class="fragment"><code>N=10000</code>, <code>C=18</code></li>
+      <li class="fragment">Full RTL sim takes 15 minutes, TidalSim runs in 10 seconds</li>
+      <li class="fragment">Larger IPC variance</li>
+    </ul>
+    <img class="fragment" src="./figs/multi-level-sim/huffbench_results.svg" />
+  </section>
+
+  <section>
+    <h2>Aggregate IPC Prediction for Embench Suite</h2>
+    <div class="center">
+      <img src="./figs/multi-level-sim/embench_ipc_error.svg" />
+    </div>
+    <p class="center fragment">Typical IPC error (<strong>without</strong> functional warmup) <strong>is &lt; 5%</strong></p>
+  </section>
+</section>
+
+<section>
+  <section class="center">
+    <h2>Work in Progress</h2>
+  </section>
+
+  <section>
+    <h2>Functional Cache Warmup</h2>
+    <div class="container">
+    <div>
+      <ul>
+        <li class="fragment" data-fragment-index="1">Each checkpoint is run in RTL simulation with a cold cache → inaccurate IPC due to incomplete cache warming during detailed warmup</li>
+        <li class="fragment" data-fragment-index="3"><em>WIP</em>: "Memory Timestamp Record"<sup>[2]</sup> based cache model and RTL cache state injection</li>
+      </ul>
+    </div>
+    <div class="fragment" data-fragment-index="2">
+      <img width="100%" src="./figs/multi-level-sim/livesim_amat_vs_warmup.png" />
+      <figcaption class="small center">AMAT Error vs # of Functional Warmup Instructions (from LiveSim<sup>[1]</sup>)</figcaption>
+    </div>
+    </div>
+
+    <div class="fragment" data-fragment-index="4">
+    <hr>
+    <div class="verysmall">
+    <p class="footnote">
+    [1]: Hassani, Sina, et al. "LiveSim: Going live with microarchitecture simulation." HPCA 2016.<br/>
+    [2]: Barr, Kenneth C., et al. "Accelerating multiprocessor simulation with a memory timestamp record." ISPASS 2005.</p>
+    </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Dealing with Long-Lived μArch State</h2>
+
+    <div class="container" style="grid-template-columns: 1fr 1fr;">
+    <div style="display:grid; align-content: center;">
+    <img src="./figs/dynamic/tidalsim/uarch_models.svg" />
+    </div>
+    <div>
+      <ul>
+        <li class="fragment">Caches aren't the only long-lived CPU structures</li>
+        <li class="fragment">A general warmup methodology ingests a subset of a functional simulation log</li>
+        <li class="fragment">Each unit needs a custom model, injection logic, and perf metric extraction</li>
+      </ul>
+    </div>
+    </div>
+  </section>
+</section>
+
+<!--
+<section>
+  <section class="center">
+    <h2>Applications</h2>
+  </section>
+
+  <section>
+    <h2>Performance and Power Evaluation</h2>
+    <ul>
+      <li class="fragment">Fast, low-latency evaluation of HW parameters on long running workloads
+      <ul>
+        <li>Cache sizing between L1d vs L1i</li>
+        <li>Balancing of 2-level cache hierarchies</li>
+        <li>Unified vs separate i/d L2 caches</li>
+      </ul>
+      </li>
+      <li class="fragment">Trace extraction for power model construction
+      <ul>
+        <li>Currently power macromodels are built + trained only on workloads that can run in RTL simulation</li>
+        <li>TidalSim enables extraction of unique, short traces from full workloads</li>
+        <li>Potential to improve signal selection and uncover holes in training datasets</li>
+      </ul>
+      </li>
+    </ul>
+  </section>
+</section>
+-->
+
+<section>
+  <h2>Conclusion</h2>
+
+  <div class="container" style="grid-template-columns: 1fr 1.4fr;">
+  <div>
+  <ul>
+    <li class="fragment">We want rapid RTL iteration with PPA evaluation</li>
+    <li class="fragment">We need fast RTL-level simulation</li>
+    <li class="fragment">We propose <strong>TidalSim</strong>, a multi-level simulation methodology to enable rapid HW iteration</li>
+  </ul>
+  </div>
+  <div style="display:grid; align-content: center;">
+    <img src="./figs/dynamic/tidalsim/overview.svg" />
+  </div>
+  </div>
+
+  <p class="center fragment"><a href="https://github.com/euphoric-hardware/tidalsim">TidalSim (github.com/euphoric-hardware/tidalsim)</a> <small>Forks of spike, chipyard, testchipip + top-level runner</small></p>
+</section>
+
+{% endblock %}
