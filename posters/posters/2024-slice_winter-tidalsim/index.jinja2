@@ -1,0 +1,202 @@
+{% extends "templates/slice/slice.jinja2" %}
+
+{## Header ##}
+
+{% set poster_title = "TidalSim: Multi-Level Simulation
+for Rapid Microarchitectural Iteration and Evaluation" %}
+{# ‘poster_subtitle’ is optional; use "" to hide it #}
+{% set poster_subtitle = "" %}
+{# Change ‘venue’ to a conference or workshop name if any #}
+{% set venue = "SLICE Winter 2023 Retreat" %}
+{# ‘webpage_title’ is displayed in the browser’s top bar #}
+{% set webpage_title = poster_title %}
+{# ‘project_url’ is used in the footer and for the logo #}
+{% set project_url = "https://github.com/euphoric-hardware/tidalsim" %}
+
+{# Publication info is hidden by default (.publication-info in CSS) #}
+{% set pub_datetime_iso = "2020-09-08" %}
+{% set pub_date = "September 8, 2020" %}
+
+{# Custom styles and JS for a particular poster #}
+{% block custom_head %}
+{% endblock %}
+
+{% block fonts %}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&family=Fira+Sans+Condensed:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
+{% endblock %}
+
+{% block authors %}
+  {# Put authors here, with one link per author. #}
+  <a property="author">Vighnesh Iyer</a>,
+  <a property="author">Raghav Gupta</a>,
+  <a property="author">Dhruv Vaish</a>,
+  <a property="author">Charles Hong</a>,
+  <a property="author">Young-Jin Park</a>,
+  <a property="author">Borivoje Nikolic</a>,
+  <a property="author">Sophia Shao</a>
+{% endblock %}
+
+{% block affiliations %}
+  <a property="sourceOrganization">UC Berkeley</a>
+{% endblock %}
+
+{### Footer ##}
+
+{% block footer_left %}
+  <a href="{{ project_url }}">{{ project_url }}</a>
+{% endblock %}
+
+{% block footer_center %}
+    {vighnesh.iyer,raghavgupta}@berkeley.edu
+{% endblock %}
+
+{% block footer_right %}
+  <span class="credits">
+    SLICE Retreat, Winter 2024
+  </span>
+{% endblock %}
+
+{### Contents ###}
+
+{# Contents are individual boxes (typically ‘article’s or ‘figure’s).  Each
+   ‘article’ contains a header and some contents. #}
+{% block contents %}
+<article>
+  <header><h3>Motivation</h3></header>
+  
+  <p> The design cycle <i>requires</i> <strong>rapid RTL iteration</strong> with performance evaluation on <strong>representative real workloads</strong></p>
+  <p> Thus, we <i>need</i> <strong>fast RTL-level μArch simulation</strong> and performance trace estimation </p> 
+  <!--  <img class="fragment" src="./figs/multi-level-sim/existing-uarch-strategies.png"/> --->
+  <table style="width: 100%; font-size:90%;">
+    <thead><tr>
+      <th></th>
+      <th>Throughput</th>
+      <th>Latency</th>
+      <th>Fidelity</th>
+    </tr></thead>
+    <tbody><tr class="fragment">
+      <td>ISA Simulation</td>
+      <td class="bg-green">10-100+ MIPS</td>
+      <td class="bg-green">&lt;1 second</td>
+      <td class="bg-red">None</td>
+    </tr>
+    <tr class="fragment">
+      <td>μArch Perf Sim</td>
+      <td class="bg-orange">100 KIPS (gem5)</td>
+      <td class="bg-green">5-10 seconds</td>
+      <td class="bg-orange">5-10% avg IPC error</td>
+    </tr>
+    <tr class="fragment">
+      <td>RTL Simulation</td>
+      <td class="bg-red">1-10 KIPS</td>
+      <td class="bg-orange">5-10 minutes</td>
+      <td class="bg-green">cycle-exact</td>
+    </tr>
+    <tr class="fragment">
+      <td>FireSim (FPGA)</td>
+      <td class="bg-green">1-50 MIPS</td>
+      <td class="bg-red">2-6 hours</td>
+      <td class="bg-green">cycle-exact</td>
+    </tr>
+    <tr class="fragment">
+      <td><strong>TidalSim</strong></td>
+      <td>10 MIPS <small>(unoptimized)</small></td>
+      <td>&lt;1 minute</td>
+      <td style="font-size: 90%">&lt;5% error, 10k intervals</td>
+    </tr>
+    </tbody>
+  </table>
+  
+  <p>
+  How can we achieve high throughput, high fidelity, low latency μArch simulation?
+  <ul>
+    <li>Combine the strengths of ISA, μArch, and RTL simulators
+    <li>Sampled Multi-level simulation
+  </ul>
+  </p>
+  
+  <p>
+  Why sampled simulation?
+  <ul>
+    <li>Programs show phases of similar behavior repeatedly &rarr; can simulate unique phases only
+  </ul>
+  <img class="fragment" src="./figs/multi-level-sim/simpoint-gzip_phases.gif"/>
+  </p>
+  
+  <p>
+  Why RTL-level sampled simulation?
+  <ul>
+    <li>No performance model correlation error
+    <li>Can derive accurate PPA numbers
+    <li>Leverage special collateral (waveforms) from RTL simulation
+  </ul>
+  </p>
+</article>
+
+<article>
+  <header><h3>TidalSim Overview</h3></header>
+  <img class="fragment" src="./figs/dynamic/tidalsim/overview.svg"/>
+
+  <ul>
+  <!--- <li>SimPoint-style Sampling: fixed-length intervals &rarr; basic block frequency vector per interval &rarr; clustering to identify representative intervals --->
+  <li>SimPoint-style Sampling
+    <ul>
+      <li>Divide execution trace into fixed-length intervals
+      <li>Populate basic blocks frequency vector for each interval (embedding)
+      <li>k-means, PCA-based n-clusters to identify representative intervals
+    </ul>
+  </li>
+  <li>Arch checkpoint = arch state + raw memory contents from Spike 
+  <li>RTL state injection using SystemVerilog force/release construct, out-of-band IPC measurement
+  <li>Parallel RTL simulation of representative intervals
+  </ul> 
+  
+</article>
+
+<article>
+  <header><h3>Current Results</h3></header>
+  <ul>
+  <li>Evaluated on the Embench benchmark suite (v full RTL sim in VCS) for RocketConfig
+  <li>Tidalsim takes 10s for each benchmark in the suite
+  <li>TidalSim can deliver a typical IPC error under 5% while speeding up simulation runtimes by up to 70x.
+  </ul>
+
+  <figure style="font-size:60%;">
+  <img class="fragment" src="./figs/multi-level-sim/aha-mont64_clustering.svg"/>
+  <figcaption>Centroid heatmap of each cluster for aha-mont64 with 12 clusters and 1k instruction intervals</figcaption>
+  </figure>
+  
+  <figure style="font-size:60%;">
+  <img class="fragment" src="./figs/multi-level-sim/huffbench_results.svg"/>
+  <figcaption>Reconstructed IPC trace of huffbench with 18 clusters and 10k instruction intervals with 2k instructions of detailed warmup</figcaption>
+  </figure>
+
+  <figure style="font-size:60%;">
+  <img class="fragment" src="./figs/multi-level-sim/embench_ipc_error.svg"/>
+  <figcaption>Mean absolute IPC error</figcaption>
+  </figure>
+
+  <figure style="font-size:60%;">
+  <img class="fragment" src="./figs/multi-level-sim/embench_ipc_error.svg"/>
+  <figcaption>Full RTL simulation runtimes</figcaption>
+  </figure>
+</article>
+
+<article>
+  <header><h3>Functional Warmup</h3></header>
+
+</article>
+
+<article>
+  <header><h3>Next Steps/Future Work</h3></header>
+  <ul>
+  <li>Functional warmup for caches (in-progress), branch predictors (building on Branch Trace Compression), prefetchers (build our own model)
+  <li>Embedding-driven Extrapolation
+  <li>Automatic selection of interval length and warmup period
+  <li>Feedback from RTL sim to ISA sim
+  </ul>
+</article>
+
+{% endblock %}

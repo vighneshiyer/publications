@@ -1,0 +1,33 @@
+@use 'templates/slice/slice.scss' with ($style: "shaded");
+@use 'sass:color';
+
+@media print {
+    header > aside {
+        img {
+            max-width: 215px;
+        }
+    }
+}
+
+html {
+    font-size: 1.15rem
+}
+
+// https://color.adobe.com/last%20summer%20day-color-theme-1001686
+$blue: #A7C5C5;
+$lightgreen: #DEE0D5;
+$yellow: #E2AC48;
+$orange: #B96028;
+$red: #983C2D;
+
+.bg-green {
+    background: color.adjust($lightgreen, $green: 20);
+}
+
+.bg-orange {
+    background: color.adjust($orange, $lightness: 25%);
+}
+
+.bg-red {
+    background: color.adjust($red, $lightness: 20%);
+}
