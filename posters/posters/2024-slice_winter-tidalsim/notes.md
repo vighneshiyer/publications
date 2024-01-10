@@ -1,8 +1,8 @@
 [x] Motivation
 [x] What's New?
 [x] Overview
-  - [ ] Program Phases
+  - [x] Program Phases
   - [ ] Warmup
 [ ] Related Work?
-[ ] Results
+[x] Results
 [x] Next Steps

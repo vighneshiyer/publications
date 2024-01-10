@@ -186,13 +186,36 @@ for Rapid Microarchitectural Iteration and Evaluation" %}
 
 <article>
   <header><h3>Functional Warmup</h3></header>
+  <ul>
+    <li>Cold long-lived μArch blocks such as cache-like modules and branch predictors are primarily responsible for IPC error v full RTL sim
+    <li>Detailed warmup is too short to deal with long-lived μArch state
+    <li>A general warmup methodology ingests a subset of a functional simulation log
+    <li>Each unit needs a custom model, injection logic, and perf metric extraction
+    <li>Need abstract and highly parametrizable models to enable DSE
+  </ul>
+
+  <img class="fragment" src="./figs/dynamic/tidalsim/uarch_models.svg"/>
+  
+  <ul>
+    <li>For caches, we use Memory Timestamp Record - a data structure populated from a memory transaction trace used to handle cache state
+  </ul>
+  
+  <figure style="font-size:60%;">
+  <img class="fragment" src="./figs/dynamic/tidalsim/mtr_entry_update.svg"/>
+  <figcaption>Updating entries in MTR</figcaption>
+  </figure>
+
+  <figure style="font-size:60%;">
+  <img class="fragment" src="./figs/dynamic/tidalsim/mtr_reconstruction.svg"/>
+  <figcaption>Cache reconstruction from MTR checkpoint</figcaption>
+  </figure>
 
 </article>
 
 <article>
   <header><h3>Next Steps/Future Work</h3></header>
   <ul>
-  <li>Functional warmup for caches (in-progress), branch predictors (building on Branch Trace Compression), prefetchers (build our own model)
+  <li>Functional warmup for caches (integration in-progress), branch predictors (building on Branch Trace Compression), prefetchers (build our own model)
   <li>Embedding-driven Extrapolation
   <li>Automatic selection of interval length and warmup period
   <li>Feedback from RTL sim to ISA sim
