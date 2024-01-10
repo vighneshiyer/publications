@@ -219,20 +219,35 @@ import 'reveal.js/plugin/highlight/monokai.css'
   </section>
 
   <section>
-    <h2>Sampled Simulation Techniques</h2>
+    <h2>Sampled Simulation</h2>
+
+    <div class="fragment center">
+      <img width="40%" class="fragment" src="./figs/multi-level-sim/sampled_simulation0.png" />
+    </div>
 
     <ul class="small">
-      <li class="fragment">Sampled simulation only executes specific intervals of the full workload in detailed performance simulation
-        <ul>
-          <li>Functional warmup initializes the long-lived uArch state (caches, TLB, branch predictor, prefetcher) in perf simulation</li>
-          <li>Detailed warmup initializes the short-lived uArch state (pipeline, ROB, LSU)</li>
-        </ul>
-      </li>
-      <!--<li class="fragment">The intervals are chosen based on an embedding of their execution patterns or randomly</li>-->
-      <li class="fragment">The sampled intervals are used to reconstruct the full IPC trace of the workload</li>
+      <li class="fragment">Sampled simulation only executes specific intervals (sampling units) of the full workload in detailed performance simulation
+      <li class="fragment">The sampling units are chosen based on embeddings or randomly</li>
     </ul>
 
-    <hr class="fragment">
+    <div class="fragment center">
+      <img width="40%" class="fragment" src="./figs/multi-level-sim/sampled_simulation.png" />
+    </div>
+
+    <ul class="small">
+      <li class="fragment">Functional warmup initializes the long-lived uArch state (caches, TLB, branch predictor, prefetcher) in performance simulation</li>
+      <li class="fragment">Detailed warmup initializes the short-lived uArch state (pipeline, ROB, LSU)</li>
+      <!--<li class="fragment">Performance metrics are collected after detailed warmup and are assumed to be representative of the sampling unit</li>-->
+      <li class="fragment">The sampled intervals are used to reconstruct the full IPC trace of the workload</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Sampling Techniques</h2>
+
+    <div class="fragment center">
+      <img width="50%" src="./figs/multi-level-sim/sampled_simulation.png" />
+    </div>
 
     <table class="fragment" style="font-size: 1.2rem;">
       <thead><tr>
@@ -553,53 +568,41 @@ cycles,instret
         <li class="fragment">Caches aren't the only long-lived CPU structures</li>
         <li class="fragment">A general warmup methodology ingests a subset of a functional simulation log</li>
         <li class="fragment">Each unit needs a custom model, injection logic, and perf metric extraction</li>
+        <li class="fragment">Generation of state injection test harness from Chipyard SoC generator</li>
       </ul>
     </div>
     </div>
-  </section>
-</section>
-
-<!--
-<section>
-  <section class="center">
-    <h2>Applications</h2>
   </section>
 
   <section>
-    <h2>Performance and Power Evaluation</h2>
+    <h2>Application: Coverpoint Synthesis</h2>
     <ul>
-      <li class="fragment">Fast, low-latency evaluation of HW parameters on long running workloads
-      <ul>
-        <li>Cache sizing between L1d vs L1i</li>
-        <li>Balancing of 2-level cache hierarchies</li>
-        <li>Unified vs separate i/d L2 caches</li>
-      </ul>
-      </li>
-      <li class="fragment">Trace extraction for power model construction
-      <ul>
-        <li>Currently power macromodels are built + trained only on workloads that can run in RTL simulation</li>
-        <li>TidalSim enables extraction of unique, short traces from full workloads</li>
-        <li>Potential to improve signal selection and uncover holes in training datasets</li>
-      </ul>
+      <li class="fragment"><em>Specification mining</em> takes waveforms of an RTL design and synthesizes properties involving 2+ signals that are unfalsified on all traces</li>
+      <li class="fragment">Coverpoint synthesis is an alternative take on spec mining where we synthesize μArch properties that we want to see more of</li>
+      <li class="fragment">This technique is far more effective if we have <em>many unique, realistic traces</em>
+        <ul>
+          <li class="fragment">Leverage interval clustering and sampled RTL simulation</li>
+        </ul>
       </li>
     </ul>
   </section>
 </section>
--->
 
 <section>
   <h2>Conclusion</h2>
 
   <div class="container" style="grid-template-columns: 1fr 1.4fr;">
-  <div>
-  <ul>
-    <li class="fragment">We want rapid RTL iteration with PPA evaluation</li>
+  <div style="position:relative; bottom:10%;">
+  <ul class="smallish">
+    <li class="fragment">We want to enable rapid RTL iteration with performance evaluation and generation of RTL-level collateral</li>
     <li class="fragment">We need fast RTL-level simulation</li>
     <li class="fragment">We propose <strong>TidalSim</strong>, a multi-level simulation methodology to enable rapid HW iteration</li>
   </ul>
   </div>
-  <div style="display:grid; align-content: center;">
-    <img src="./figs/dynamic/tidalsim/overview.svg" />
+  <div style="display:grid; align-content: center; position: relative; top: -12%;">
+    <img width="80%" src="./figs/dynamic/tidalsim/overview.svg" />
+    <img width="80%" src="./figs/dynamic/tidalsim/uarch_iteration_flow_tidalsim.svg" />
+    <figcaption class="small center"><strong>TidalSim</strong>: a fast, accurate, low latency, low cost microarchitectural simulator that produces RTL-level collateral for performance and power estimation and verification on real workloads.</figcaption>
   </div>
   </div>
 
