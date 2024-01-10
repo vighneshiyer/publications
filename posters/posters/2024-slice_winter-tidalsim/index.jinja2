@@ -116,14 +116,16 @@ for Rapid Microarchitectural Iteration and Evaluation" %}
     <li>Sampled Multi-level simulation
   </ul>
   </p>
-  
+
+  <!-- 
   <p>
   Why sampled simulation?
   <ul>
-    <li>Programs show phases of similar behavior repeatedly &rarr; can simulate unique phases only
+    <li>Programs show repeating of similar behavior &rarr; can simulate unique phases only
   </ul>
   <img class="fragment" src="./figs/multi-level-sim/simpoint-gzip_phases.gif"/>
   </p>
+  --->
   
   <p>
   Why RTL-level sampled simulation?
@@ -140,7 +142,9 @@ for Rapid Microarchitectural Iteration and Evaluation" %}
   <img class="fragment" src="./figs/dynamic/tidalsim/overview.svg"/>
 
   <ul>
-  <!--- <li>SimPoint-style Sampling: fixed-length intervals &rarr; basic block frequency vector per interval &rarr; clustering to identify representative intervals --->
+  <li>Programs show repeating of similar behavior &rarr; can simulate unique phases only
+  <!-- <img class="fragment" src="./figs/multi-level-sim/simpoint-gzip_phases.gif"/> --->
+  <!-- <li>SimPoint-style Sampling: fixed-length intervals &rarr; basic block frequency vector per interval &rarr; clustering to identify representative intervals --->
   <li>SimPoint-style Sampling
     <ul>
       <li>Divide execution trace into fixed-length intervals
@@ -159,8 +163,8 @@ for Rapid Microarchitectural Iteration and Evaluation" %}
   <header><h3>Current Results</h3></header>
   <ul>
   <li>Evaluated on the Embench benchmark suite (v full RTL sim in VCS) for RocketConfig
-  <li>Tidalsim takes 10s for each benchmark in the suite
-  <li>TidalSim can deliver a typical IPC error under 5% while speeding up simulation runtimes by up to 70x.
+  <li>Tidalsim takes upto 10 s for each benchmark in the suite whereas VCS takes 100-700+ s
+  <li>TidalSim can deliver a typical IPC error under 5% while speeding up simulation runtimes by more than 70x.
   </ul>
 
   <figure style="font-size:60%;">
@@ -178,25 +182,20 @@ for Rapid Microarchitectural Iteration and Evaluation" %}
   <figcaption>Mean absolute IPC error</figcaption>
   </figure>
 
+  <!--
   <figure style="font-size:60%;">
-  <img class="fragment" src="./figs/multi-level-sim/embench_ipc_error.svg"/>
+  <img class="fragment" src="./figs/multi-level-sim/embench_runtimes.svg"/>
   <figcaption>Full RTL simulation runtimes</figcaption>
   </figure>
+  --->
 </article>
 
 <article>
-  <header><h3>Functional Warmup</h3></header>
+  <header><h3>Cache Warmup</h3></header>
   <ul>
     <li>Cold long-lived μArch blocks such as cache-like modules and branch predictors are primarily responsible for IPC error v full RTL sim
     <li>Detailed warmup is too short to deal with long-lived μArch state
-    <li>A general warmup methodology ingests a subset of a functional simulation log
-    <li>Each unit needs a custom model, injection logic, and perf metric extraction
     <li>Need abstract and highly parametrizable models to enable DSE
-  </ul>
-
-  <img class="fragment" src="./figs/dynamic/tidalsim/uarch_models.svg"/>
-  
-  <ul>
     <li>For caches, we use Memory Timestamp Record - a data structure populated from a memory transaction trace used to handle cache state
   </ul>
   
@@ -215,7 +214,14 @@ for Rapid Microarchitectural Iteration and Evaluation" %}
 <article>
   <header><h3>Next Steps/Future Work</h3></header>
   <ul>
-  <li>Functional warmup for caches (integration in-progress), branch predictors (building on Branch Trace Compression), prefetchers (build our own model)
+  <li>Functional warmup
+    <ul>
+      <li>A general warmup methodology ingests a subset of a functional simulation log
+      <li>Each unit needs a custom model, injection logic, and perf metric extraction
+      <img class="fragment" src="./figs/dynamic/tidalsim/uarch_models.svg"/>
+      <li>Implemnting for caches (integration in-progress), branch predictors (building on Branch Trace Compression), prefetchers (build our own model)
+    </ul>
+  </li>
   <li>Embedding-driven Extrapolation
   <li>Automatic selection of interval length and warmup period
   <li>Feedback from RTL sim to ISA sim
