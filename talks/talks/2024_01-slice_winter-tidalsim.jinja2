@@ -96,7 +96,7 @@ import 'reveal.js/plugin/highlight/monokai.css'
         <img width="80%" src="./figs/quals/a17_pro.jpg">
         <figcaption class="small center">{% include "./figs/quals/a17_pro.jinja2" %}</figcaption>
       </div>
-      <div class="fragment fade-in-then-out" style="display: grid; place-items: center;">
+      <div class="fragment fade-in" style="display: grid; place-items: center;">
         <img width="40%" src="./figs/quals/m3_max.jpg">
         <figcaption class="small center">{% include "./figs/quals/m3_max.jinja2" %}</figcaption>
       </div>
@@ -592,12 +592,13 @@ cycles,instret
   <h2>Conclusion</h2>
 
   <div class="container" style="grid-template-columns: 1fr 1.4fr;">
-  <div style="position:relative; bottom:10%;">
+  <div style="position:relative; bottom:0%;">
   <ul class="smallish">
     <li class="fragment">We want to enable rapid RTL iteration with performance evaluation and generation of RTL-level collateral</li>
     <li class="fragment">We need fast RTL-level simulation</li>
     <li class="fragment">We propose <strong>TidalSim</strong>, a multi-level simulation methodology to enable rapid HW iteration</li>
   </ul>
+  <p class="small center fragment"><a href="https://github.com/euphoric-hardware/tidalsim">TidalSim (github.com/euphoric-hardware/tidalsim)</a> <small>Forks of spike, chipyard, testchipip + top-level runner</small></p>
   </div>
   <div style="display:grid; align-content: center; position: relative; top: -12%;">
     <img width="80%" src="./figs/dynamic/tidalsim/overview.svg" />
@@ -606,7 +607,6 @@ cycles,instret
   </div>
   </div>
 
-  <p class="center fragment"><a href="https://github.com/euphoric-hardware/tidalsim">TidalSim (github.com/euphoric-hardware/tidalsim)</a> <small>Forks of spike, chipyard, testchipip + top-level runner</small></p>
 </section>
 
 {% endblock %}
