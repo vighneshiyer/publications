@@ -188,3 +188,20 @@ cycles,instret
   </ul>
   <img class="fragment" src="./figs/multi-level-sim/aha-mont64_results.svg" />
 </section>
+
+<section>
+  <h2>Limitations and Final Prototype</h2>
+
+  Things to do before calling the first prototype complete:
+  - functional L1 only cache warmup
+  - functional branch predictor warmup
+  - use robust checkpointing fork of spike
+  - characterization on other baseline baremetal workloads (dhrystone, coremark, riscv-tests bmarks, MiBench
+  - explore more sophisticated clustering and extrapolation techniques
+  - demonstrate we can hit &lt;1% IPC error
+
+  The limitations that still exist:
+  - can't work with an OS (due to virtual PCs from instruction trace conflicting with multiple processes and having incorrect basic block embeddings)
+  - can't model timing accurately including timer interrupts and mtime/mcycle values
+  - no functional warmup for advanced and virtual memory components (prefetcher, iTLB, dTLB, LLC)
+</section>
