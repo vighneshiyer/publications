@@ -195,7 +195,7 @@ cycles,instret
   Things to do before calling the first prototype complete:
   - functional L1 only cache warmup
   - functional branch predictor warmup
-  - use robust checkpointing fork of spike
+  - use robust checkpointing fork of spike + better arch state initialization technique (via program snippet + selective forces depending on bits that can't be set via ISA)
   - characterization on other baseline baremetal workloads (dhrystone, coremark, riscv-tests bmarks, MiBench
   - explore more sophisticated clustering and extrapolation techniques
   - demonstrate we can hit &lt;1% IPC error
@@ -204,4 +204,9 @@ cycles,instret
   - can't work with an OS (due to virtual PCs from instruction trace conflicting with multiple processes and having incorrect basic block embeddings)
   - can't model timing accurately including timer interrupts and mtime/mcycle values
   - no functional warmup for advanced and virtual memory components (prefetcher, iTLB, dTLB, LLC)
+
+  This semester: v0.1 to v1
+  Summer: v1 to v2 (improvements in next section)
+  Next semester: Leverage v2 for case studies
+  Spring 2025: Finish thesis writing + graduate
 </section>

@@ -388,33 +388,36 @@
 
   <div class="center r-stack">
     <div class="fragment fade-in-then-out" style="display: grid; place-items: center;">
-      <img src="./figs/quals/uarch_simulator_study-ipc.png" />
+      <img width="80%" src="./figs/quals/uarch_simulator_study-ipc.png" />
       <figcaption class="small center">
       Comparison of estimated IPC from various uArch simulators vs real IPC from Haswell.<sup>[1]</sup>
       MAPE on MiBench: 9.5% (Sniper), 44.6% (gem5), 38.2% (PTLSim) and 47.06% (Multi2Sim).
       </figcaption>
     </div>
     <div class="fragment fade-in-then-out" style="display: grid; place-items: center;">
-      <img src="./figs/quals/uarch_simulator_study-ipc2.png" />
-      <figcaption class="small center">Raw IPC errors on 64-bit workloads<sup>[2]</sup>. Simulators not only disagree with each other, but have substantial errors exceeding 20%.
+      <img width="80%" src="./figs/quals/uarch_simulator_study-ipc2.png" />
+      <figcaption class="small center">Raw IPC errors on 64-bit workloads vs real Haswell<sup>[2]</sup>. Simulators not only disagree with each other, but have substantial errors exceeding 20%.
       </figcaption>
     </div>
     <div class="fragment fade-in-then-out" style="display: grid; place-items: center;">
-      <img src="./figs/quals/uarch_simulator_study-pipeline_width.png" />
+      <img width="80%" src="./figs/quals/uarch_simulator_study-pipeline_width.png" />
       <figcaption class="small center">Impact of halving the pipeline width (widths of fetch, decode, issue/rename, dispatch, and commit are halved)<sup>[2]</sup>. Simulators disagree with each other.
       </figcaption>
     </div>
     <div class="fragment fade-in-then-out" style="display: grid; place-items: center;">
-      <img src="./figs/quals/uarch_simulator_study-reduced_cache_size.png" />
+      <img width="80%" src="./figs/quals/uarch_simulator_study-reduced_cache_size.png" />
       <figcaption class="small center">Impact of halving all the cache sizes<sup>[2]</sup>. Note how MARSSx86 shows <em>increased</em> IPC for some benchmarks! Again, disagreements are substantial.
       </figcaption>
     </div>
-    <div class="fragment fade-in-then-out" style="display: grid; place-items: center;">
-      <img src="./figs/quals/uarch_simulator_study-branch_predictor.png" />
-      <figcaption class="small center">Impact of using a bimodal branch predictor vs the Haswell BP.<sup>[2]</sup>. 
+    <div class="fragment fade-in" style="display: grid; place-items: center;">
+      <img width="80%" src="./figs/quals/uarch_simulator_study-branch_predictor.png" />
+      <figcaption class="small center">Impact of using a bimodal branch predictor vs the Haswell BP.<sup>[2]</sup>.
+      The sensitivity of each simulator is wildly different!
       </figcaption>
     </div>
   </div>
+
+  <p class="fragment center">uArch simulators are <strong>not accurate enough</strong> for microarchitectural iteration even when 'calibrated' against silicon</p>
 
   <div class="fragment">
   <hr>
@@ -425,6 +428,14 @@
     </p>
   </div>
   </div>
+</section>
+
+<section>
+  <h2>But Can't We Calibrate uArch Simulators?</h2>
+</section>
+
+<section>
+  <h2>But Can't We Calibrate uArch Simulators?</h2>
 </section>
 
 <section>
@@ -456,7 +467,7 @@ configurable and showing higher accuracy.
 </section>
 
 <section>
-  <h2>Selection of Simulators</h2>
+  <h2>Our Decision Tree Thus Far</h2>
   We want to use RTL simulation as the lowest level performance simulator. But we also want to have enough throughput! How???
 
   Let's learn from sampled simulation approaches previously explored by 
