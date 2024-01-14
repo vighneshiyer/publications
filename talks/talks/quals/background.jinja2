@@ -417,7 +417,10 @@
     </div>
   </div>
 
-  <p class="fragment center">uArch simulators are <strong>not accurate enough</strong> for microarchitectural iteration even when 'calibrated' against silicon</p>
+  <!-- Trends aren't enough - see the sensitivity differences of these simulators! Gradients are critical! -->
+
+  <p class="smallish fragment center">uArch simulators are <strong>not accurate enough</strong> for microarchitectural iteration.</p>
+  <p class="smallish fragment center">Trends aren't enough. Note the sensitivity differences - gradients are critical!</p>
 
   <div class="fragment">
   <hr>
@@ -431,36 +434,141 @@
 </section>
 
 <section>
-  <h2>But Can't We Calibrate uArch Simulators?</h2>
-</section>
-
-<section>
-  <h2>But Can't We Calibrate uArch Simulators?</h2>
-</section>
-
-<section>
   <h2>Flexibility vs Accuracy Tradeoff of uArch Simulators</h2>
 
-  Trends aren't enough - see the sensitivity differences of these simulators! Gradients are critical!
+  <blockquote class="small">
+  Sniper though shows greater accuracy, is not very flexible to allow one to model new micro-architectural features compared to gem5.
+  <!--Sniper does not support full-system simulation and the effect of OS for applications.
+  It is best use is for x86 many-core user-mode workloads.-->
+  On the other hand, gem5 and PTLsim are more flexible and can be used for studies of particular microarchitectural blocks, and full-system workloads, with gem5 being more configurable and showing higher accuracy. [1]
+  </blockquote>
 
-  <blockquote>
-Sniper though shows greater accuracy, is not very flexible
+  <p class="center fragment">There is an unfavorable tradeoff of simulator flexibility (due to precise silicon calibration) and accuracy.</p>
 
-to allow one to model new micro-architectural features
-compared to gem5. Sniper does not support full-system
-simulation and the effect of OS for applications. It is
-best use is for x86 many-core user-mode workloads. On
-the other hand, gem5 and PTLsim are more flexible and
-can be used for studies of particular microarchitectural
-blocks, and full-system workloads, with gem5 being more
-configurable and showing higher accuracy.
-</blockquote>
+  <div class="fragment">
+  <hr>
+  <div class="verysmall">
+    <p class="footnote" style="margin:0;">
+    [1]: Akram, A. and Sawalha, L., 2019. A survey of computer architecture simulation techniques and tools. IEEE Access<br/>
+    </p>
+  </div>
+  </div>
+</section>
+
+<section>
+  <h2>The Trends Myth</h2>
+  <blockquote class="small">
+It is casually stated as, “Although specific details of the simulation are wrong, the overall trends will be correct.” <br />
+
+Relative performance comparisons may be correct, even if there is absolute error caused by a poor assumption or bug.<sup>[1]</sup>
+  </blockquote>
+
+  <blockquote class="small">
+However, for this to be true, the new technique being evaluated through simulation must be insulated from or statistically uncorrelated with the source of simulation errors.
+
+Because simulators can have significant errors, which are completely unknown, only in rare cases can we be sure this argument holds.<sup>[1]</sup>
+  </blockquote>
+
+  <p class="center fragment">
+    Even accurate relative trends are not enough for microarchitectural iteration - the gradients must also be precise!
+  </p>
+
   <div class="fragment">
   <hr>
   <div class="verysmall">
     <p class="footnote" style="margin:0;">
     [1]: Nowatzki, T., Menon, J., Ho, C.H. and Sankaralingam, K., 2015. Architectural simulators considered harmful. IEEE Micro.
-    [2]: Akram, A. and Sawalha, L., 2016, October. x86 computer architecture simulators: A comparative study. ICCD.
+    </p>
+  </div>
+  </div>
+</section>
+
+<section>
+  <h2>Accuracy of gem5 for RISC-V Cores</h2>
+  <div class="center r-stack">
+    <div class="fragment fade-in-then-out" style="display: grid; place-items: center;">
+      <img width="40%" src="./figs/quals/gem5_riscv_rsd_ipc.png" />
+      <figcaption class="small center">
+      Cycles ratio of custom + 3 MiBench (qsort, stringsearch) baremetal binaries on RSD (OoO RV32IMF RISC-V core) vs a gem5 model matching the core microarchitecture parameters<sup>[1]</sup>.
+      Up to 40% IPC error.
+      </figcaption>
+    </div>
+    <div class="fragment fade-in-then-out" style="display: grid; place-items: center;">
+      <img width="40%" src="./figs/quals/gem5_riscv_rsd_mpki.png" />
+      <figcaption class="small center">
+      Significant mismatches in L1 MPKI/MAKI are main contributor to error.<sup>[1]</sup>
+      </figcaption>
+    </div>
+    <div class="fragment fade-in" style="display: grid; place-items: center;">
+      <img width="50%" src="./figs/quals/gem5_calibration_slide.png" />
+      <figcaption class="small center">
+      The complexity and effort to 'calibrate' a uArch simulator to RTL simulation is significant.<sup>[2]</sup>
+      </figcaption>
+    </div>
+  </div>
+
+  <p class="fragment center">There is <strong>no evidence</strong> that uArch simulators can achieve sub 5% accuracy for microarchitectural iteration</p>
+
+  <div class="fragment">
+  <hr>
+  <div class="verysmall">
+    <p class="footnote" style="margin:0;">
+    [1]: Chatzopoulos, O., et. al., 2021. Towards Accurate Performance Modeling of RISC-V Designs. arXiv preprint<br />
+    [2]: Ta, T., Cheng, L. and Batten, C., 2018. Simulating multi-core RISC-V systems in gem5. CARRV
+    </p>
+  </div>
+  </div>
+</section>
+
+<section>
+  <h2>But Can't We Calibrate uArch Simulators?</h2>
+
+  <!--<p class="fragment center">There is a body of work on 'calibrating' uArch simulators against silicon, but very scant work on calibrating against RTL generators</p>-->
+
+  <ul class="smallish">
+    <li class="fragment">[1] calibrates Sniper to Cortex A54 and A72 cores with average IPC errors of 7% and 15% <small>(up to 50%)</small> on SPEC CPU2017 respectively using ML to fine-tune model parameters against silicon measurements given microbenchmarks.</li>
+    <li class="fragment">[2] calibrates MARSSx86 to i7-920 with post-calibration IPC error of 7% on SPEC</li>
+  </ul>
+
+  <hr class="fragment">
+
+  <ul class="smallish">
+    <li class="fragment">Absolute errors are still too high when architects must make decisions based on tiny IPC changes</li>
+    <li class="fragment">Calibration only applies to a specific design point!</li>
+    <li class="fragment">Gradients and errors are not understood nor bounded when microarchitecture parameters are altered to perform HW parameter DSE</li>
+  </ul>
+
+  <p class="center fragment">uArch simulators are not suitable for pre-silicon microarchitectural iteration</p>
+
+  <div class="fragment">
+  <hr>
+  <div class="verysmall">
+    <p class="footnote" style="margin:0;">
+    [1]: Adileh, A., et al., 2019. Racing to hardware-validated simulation. ISPASS.<br />
+    [2]: Asri, M., et al., 2016. Simulator calibration for accelerator-rich architecture studies. SAMOS
+    </p>
+  </div>
+  </div>
+</section>
+
+<section>
+  <h2>False Confidence from Validation</h2>
+
+  <blockquote class="small">
+  A common misconception is that if the parameters are changed and configured for some other design point, the accuracy will be similar.<sup>[1]</sup>
+  </blockquote>
+
+  <blockquote class="small fragment">
+  tool validation is often carried out by fitting parameters to the “specific” validation targets, not about ensuring theunderlying modeling is accurate for individual phenomena or their interactions.<sup>[1]</sup>
+  </blockquote>
+
+  <p class="fragment center">Calibration / validation of a uArch simulator against silicon doesn't make it suitable for microarchitectural iteration</p>
+
+  <div class="fragment">
+  <hr>
+  <div class="verysmall">
+    <p class="footnote" style="margin:0;">
+    [1]: Nowatzki, T., Menon, J., Ho, C.H. and Sankaralingam, K., 2015. Architectural simulators considered harmful. IEEE Micro.
     </p>
   </div>
   </div>
@@ -468,10 +576,136 @@ configurable and showing higher accuracy.
 
 <section>
   <h2>Our Decision Tree Thus Far</h2>
-  We want to use RTL simulation as the lowest level performance simulator. But we also want to have enough throughput! How???
 
-  Let's learn from sampled simulation approaches previously explored by 
+  <!-- uArch sims are not accurate (both absolutely, wrt relative trends and gradients, and wrt parameterization). they have unbounded modeling errors that reduce our confidence substantially. -->
+
+  <!-- We want to use RTL simulation as the lowest level performance simulator. But we also want to have enough throughput! How???-->
+
+  <!-- While I have been hating on uArch simulators a lot, they do offer one important lesson.
+  Let's learn from sampled simulation approaches previously explored by uarch simulators. -->
+
+  <ol>
+    <li class="fragment">Need high fidelity hardware abstractions {{ rightarrow }} must use detailed uArch / RTL abstractions</li>
+    <li class="fragment">Need high accuracy simulators but uArch simulators are not accurate
+    <ul style="font-size: 1.4rem;">
+      <li class="fragment">1) absolutely, 2) with regards to relative trends and gradients, and 3) with regards to parameterizations</li>
+    </ul></li>
+    <li class="fragment">Therefore, we must use <strong>RTL simulation</strong> as the lowest level performance simulator</li>
+  </ol>
+
+  <hr class="fragment">
+
+  <p class="center fragment">But RTL simulation has <strong>low throughput</strong>!</p>
+  <p class="center fragment">Let's take a technique from uArch simulators that improves their throughput</p>
 </section>
+
+<section>
+  <h2>Sampled Simulation</h2>
+
+  <p class="center fragment">Instead of running the entire program in uArch simulation, run the entire program in <em>functional simulation</em> and only run <em>samples</em> in uArch simulation</p>
+
+  <div class="fragment center">
+    <img width="60%" src="./figs/multi-level-sim/sampled_simulation0.png" />
+  </div>
+
+  <ul class="small">
+    <li class="fragment">Sampled simulation only executes specific intervals (sampling units) of the full workload in detailed performance simulation
+    <li class="fragment">The sampling units are chosen based on embeddings or randomly</li>
+  </ul>
+
+  <div class="fragment center">
+    <img width="40%" src="./figs/multi-level-sim/sampled_simulation.png" />
+  </div>
+
+  <ul class="small">
+    <li class="fragment">Functional warmup initializes the long-lived uArch state (caches, TLB, branch predictor, prefetcher) in performance simulation</li>
+    <li class="fragment">Detailed warmup initializes the short-lived uArch state (pipeline, ROB, LSU)</li>
+    <!--<li class="fragment">Performance metrics are collected after detailed warmup and are assumed to be representative of the sampling unit</li>-->
+    <li class="fragment">The sampled intervals are used to reconstruct the full IPC trace of the workload</li>
+  </ul>
+</section>
+
+
+  <section>
+    <h2>Phase Behavior of Programs</h2>
+
+    <div class="container">
+    <div>
+    <ul style="font-size:95%">
+      <li class="fragment" data-fragment-index="1">Program execution traces aren’t random
+        <ul class="fragment" data-fragment-index="2">
+          <li>They execute the same code again-and-again</li>
+          <li>Application execution traces can be split into <strong style="text-decoration:underline;">phases</strong> that exhibit similar μArch behavior</li>
+        </ul>
+      </li>
+      <li class="fragment" data-fragment-index="4">Prior work: SimPoint
+        <ul class="fragment" data-fragment-index="5">
+          <li>Identify basic blocks executed in a given interval (e.g. 1M instruction intervals)</li>
+          <li>Embed each interval using their ‘basic block vector’</li>
+          <li>Cluster intervals using k-means</li>
+        </ul>
+      </li>
+      <li class="fragment" data-fragment-index="6">Similar intervals → similar μArch behaviors
+        <ul class="fragment" data-fragment-index="7"><li>Only execute unique intervals in low-level RTL simulation!</li></ul>
+      </li>
+    </ul>
+    </div>
+    <div class="fragment" data-fragment-index="3" style="display:grid; align-content: center; justify-items:center;">
+      <img src="./figs/multi-level-sim/simpoint-gzip_phases.gif" />
+      <img src="./figs/multi-level-sim/simpoint-gcc_phases.gif" />
+    </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Sampling Techniques</h2>
+
+    <div class="fragment center">
+      <img width="50%" src="./figs/multi-level-sim/sampled_simulation.png" />
+    </div>
+
+    <table class="fragment" style="font-size: 1.2rem;">
+      <thead><tr>
+        <th>Sampling Technique</th>
+        <th>Interval Length</th>
+        <th># of Intervals Simulated</th>
+        <th>Interval Selection</th>
+        <th>Functional Warmup</th>
+        <th>Detailed Warmup</th>
+        <th>Time Granularity</th>
+      </tr></thead>
+      <tbody>
+      <tr class="fragment">
+        <td><strong>SimPoint</strong></td>
+        <td>10-100M</td>
+        <td>50-100</td>
+        <td>BBFV + k-means</td>
+        <td>Optional</td>
+        <td>≈0.1-1M</td>
+        <td>Interval length</td>
+      </tr>
+      <tr class="fragment">
+        <td><strong>SMARTs</strong></td>
+        <td>10-100k</td>
+        <td>10k</td>
+        <td>Reservoir sampling</td>
+        <td>Required</td>
+        <td>1k</td>
+        <td>Entire workload</td>
+      </tr>
+      <tr class="fragment">
+        <td><strong>TidalSim</strong></td>
+        <td>10k</td>
+        <td>10-100</td>
+        <td>BBFV + k-means</td>
+        <td>Required</td>
+        <td>1k</td>
+        <td>Interval Length</td>
+      </tr>
+      </tbody>
+    </table>
+  </section>
+
 
 <section>
   <h2>Phase Behavior of Programs</h2>
