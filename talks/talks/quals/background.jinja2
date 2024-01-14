@@ -8,8 +8,8 @@
     <li class="fragment">Sampled simulation techniques
       <ul>
         <li>Phase behavior of programs</li>
-        <li>SimPoint: Interval embedding and clustering</li>
-        <li>SMARTs: Reservoir sampling and bounding sampling errors</li>
+        <li>SimPoint: Representative sampling</li> <!-- interval embedding + clustering -->
+        <li>SMARTs: Reservoir sampling</li> <!-- error bounding via CLT -->
         <li>Functional warmup techniques</li>
         <li>Detailed warmup</li>
       </ul>
@@ -608,7 +608,52 @@ Because simulators can have significant errors, which are completely unknown, on
     <img width="60%" src="./figs/multi-level-sim/sampled_simulation0.png" />
   </div>
 
-  <ul class="small">
+  <p class="fragment center">The full workload is represented by a selection of <em>sampling units</em>.</p>
+
+  <ol class="smallish">
+    <li class="fragment">How should sampling units be selected?</li> <!-- sampling methodology -->
+    <li class="fragment">How can we accurately estimate the performance of a sampling unit?</li> <!-- functional and detailed warmup -->
+    <li class="fragment">How can we estimate errors when extrapolating from sampling units?</li> <!-- error bounding via CLT or other heuristics -->
+  </ol>
+</section>
+
+<section>
+  <h2 style="font-size:1.8rem;">Representative Sampling using Phase Behavior of Programs</h2>
+
+  <div class="container">
+  <div>
+  <ul style="font-size:95%">
+    <li class="fragment" data-fragment-index="1">Program execution traces aren’t random
+      <ul class="fragment" data-fragment-index="2">
+        <li>They execute the same code again-and-again</li>
+        <li>Workload execution traces can be split into <strong style="text-decoration:underline;">phases</strong> that exhibit similar μArch behavior</li>
+      </ul>
+    </li>
+    <li class="fragment" data-fragment-index="4"><strong>Prior work</strong>: SimPoint
+      <ul class="fragment" data-fragment-index="5">
+        <li>Compute an embedding for each program interval (e.g. blocks of 100M instructions)</li>
+        <li>Cluster interval embeddings using k-means</li>
+        <li>Choose representative intervals from each cluster as <em>sampling units</em></li>
+        <!--<li>Identify basic blocks executed in a given interval (e.g. 1M instruction intervals)</li>
+        <li>Embed each interval using their ‘basic block vector’</li>
+        <li>Cluster intervals using k-means</li>-->
+      </ul>
+    </li>
+    <li class="fragment" data-fragment-index="6"><strong>Hypothesis</strong>: intervals with similar embeddings → similar μArch behaviors
+      <ul class="fragment" data-fragment-index="7">
+        <!--<li>Only execute unique intervals in low-level RTL simulation!</li>-->
+        <li>We can extrapolate a full workload trace from running only the sampling units in uArch simulation</li>
+      </ul>
+    </li>
+  </ul>
+  </div>
+  <div class="fragment" data-fragment-index="3" style="display:grid; align-content: center; justify-items:center;">
+    <img src="./figs/multi-level-sim/simpoint-gzip_phases.gif" />
+    <img src="./figs/multi-level-sim/simpoint-gcc_phases.gif" />
+  </div>
+  </div>
+
+  <!--<ul class="small">
     <li class="fragment">Sampled simulation only executes specific intervals (sampling units) of the full workload in detailed performance simulation
     <li class="fragment">The sampling units are chosen based on embeddings or randomly</li>
   </ul>
@@ -620,143 +665,137 @@ Because simulators can have significant errors, which are completely unknown, on
   <ul class="small">
     <li class="fragment">Functional warmup initializes the long-lived uArch state (caches, TLB, branch predictor, prefetcher) in performance simulation</li>
     <li class="fragment">Detailed warmup initializes the short-lived uArch state (pipeline, ROB, LSU)</li>
-    <!--<li class="fragment">Performance metrics are collected after detailed warmup and are assumed to be representative of the sampling unit</li>-->
+    <li class="fragment">Performance metrics are collected after detailed warmup and are assumed to be representative of the sampling unit</li>
     <li class="fragment">The sampled intervals are used to reconstruct the full IPC trace of the workload</li>
-  </ul>
-</section>
-
-
-  <section>
-    <h2>Phase Behavior of Programs</h2>
-
-    <div class="container">
-    <div>
-    <ul style="font-size:95%">
-      <li class="fragment" data-fragment-index="1">Program execution traces aren’t random
-        <ul class="fragment" data-fragment-index="2">
-          <li>They execute the same code again-and-again</li>
-          <li>Application execution traces can be split into <strong style="text-decoration:underline;">phases</strong> that exhibit similar μArch behavior</li>
-        </ul>
-      </li>
-      <li class="fragment" data-fragment-index="4">Prior work: SimPoint
-        <ul class="fragment" data-fragment-index="5">
-          <li>Identify basic blocks executed in a given interval (e.g. 1M instruction intervals)</li>
-          <li>Embed each interval using their ‘basic block vector’</li>
-          <li>Cluster intervals using k-means</li>
-        </ul>
-      </li>
-      <li class="fragment" data-fragment-index="6">Similar intervals → similar μArch behaviors
-        <ul class="fragment" data-fragment-index="7"><li>Only execute unique intervals in low-level RTL simulation!</li></ul>
-      </li>
-    </ul>
-    </div>
-    <div class="fragment" data-fragment-index="3" style="display:grid; align-content: center; justify-items:center;">
-      <img src="./figs/multi-level-sim/simpoint-gzip_phases.gif" />
-      <img src="./figs/multi-level-sim/simpoint-gcc_phases.gif" />
-    </div>
-    </div>
-  </section>
-
-  <section>
-    <h2>Sampling Techniques</h2>
-
-    <div class="fragment center">
-      <img width="50%" src="./figs/multi-level-sim/sampled_simulation.png" />
-    </div>
-
-    <table class="fragment" style="font-size: 1.2rem;">
-      <thead><tr>
-        <th>Sampling Technique</th>
-        <th>Interval Length</th>
-        <th># of Intervals Simulated</th>
-        <th>Interval Selection</th>
-        <th>Functional Warmup</th>
-        <th>Detailed Warmup</th>
-        <th>Time Granularity</th>
-      </tr></thead>
-      <tbody>
-      <tr class="fragment">
-        <td><strong>SimPoint</strong></td>
-        <td>10-100M</td>
-        <td>50-100</td>
-        <td>BBFV + k-means</td>
-        <td>Optional</td>
-        <td>≈0.1-1M</td>
-        <td>Interval length</td>
-      </tr>
-      <tr class="fragment">
-        <td><strong>SMARTs</strong></td>
-        <td>10-100k</td>
-        <td>10k</td>
-        <td>Reservoir sampling</td>
-        <td>Required</td>
-        <td>1k</td>
-        <td>Entire workload</td>
-      </tr>
-      <tr class="fragment">
-        <td><strong>TidalSim</strong></td>
-        <td>10k</td>
-        <td>10-100</td>
-        <td>BBFV + k-means</td>
-        <td>Required</td>
-        <td>1k</td>
-        <td>Interval Length</td>
-      </tr>
-      </tbody>
-    </table>
-  </section>
-
-
-<section>
-  <h2>Phase Behavior of Programs</h2>
-
-  <div class="container">
-  <div>
-  <ul style="font-size:95%">
-    <li class="fragment" data-fragment-index="1">Program execution traces aren’t random
-      <ul class="fragment" data-fragment-index="2">
-        <li>They execute the same code again-and-again</li>
-        <li>Application execution traces can be split into <strong style="text-decoration:underline;">phases</strong> that exhibit similar μArch behavior</li>
-      </ul>
-    </li>
-    <li class="fragment" data-fragment-index="4">Prior work: SimPoint
-      <ul class="fragment" data-fragment-index="5">
-        <li>Identify basic blocks executed in a given interval (e.g. 1M instruction intervals)</li>
-        <li>Embed each interval using their ‘basic block vector’</li>
-        <li>Cluster intervals using k-means</li>
-      </ul>
-    </li>
-    <li class="fragment" data-fragment-index="6">Similar intervals → similar μArch behaviors
-      <ul class="fragment" data-fragment-index="7"><li>Only execute unique intervals in low-level RTL simulation!</li></ul>
-    </li>
-  </ul>
-  </div>
-  <div class="fragment" data-fragment-index="3" style="display:grid; align-content: center; justify-items:center;">
-    <img src="./figs/multi-level-sim/simpoint-gzip_phases.gif" />
-    <img src="./figs/multi-level-sim/simpoint-gcc_phases.gif" />
-  </div>
-  </div>
+  </ul>-->
 </section>
 
 <section>
-  <h2>Prior Work</h2>
+  <h2>Random Sampling</h2>
+  <ul>
+    <li class="fragment"><strong>Prior work</strong>: "SMARTS: Accelerating Microarchitecture Simulation via Rigorous Statistical Sampling"</li>
+    <li class="fragment">Before the workload is launched, the number of sampling units is determined
+      <ul>
+        <li>If the sample variance is too high to achieve the target confidence bound, then more sampling units must be collected</li>
+      </ul>
+    </li>
+    <li class="fragment">Sampling units are selected either using random, reservoir, or systematic sampling</li>
+    <li class="fragment">Central limit theorem is used to derive a confidence bound around the performance metrics reported by uArch simulation of the sampling units</li>
+  </ul>
+</section>
+
+<section>
+  <h2>Functional Warmup</h2>
+
+  <p class="fragment center">The state from a sampling unit checkpoint is only <em>architectural</em> state. The <em>microarchitectural</em> state of the uArch simulator starts at the reset state!</p>
+
+  <div class="fragment center">
+    <img width="50%" src="./figs/multi-level-sim/sampled_simulation.png" />
+  </div>
 
   <ul>
-    <li class="fragment"><em>Sampled</em> simulation techniques have been used in μArch simulators for decades
-      <ul>
-        <li class="fragment">SimPoint-style sampling (interval clustering, large intervals)</li>
-        <li class="fragment">SMARTs-style sampling (reservoir sampling, small intervals)</li>
-        <li class="fragment">Implemented in gem5, Sniper, ZSim, SST</li>
-      </ul>
-    </li>
-    <li class="fragment">LiveSim proposed 2-level simulation (ISA → μArch sim) for rapid iteration of μArch parameters
-      <ul>
-        <li>Functional warmup was used for the cache and branch predictor models</li>
-      </ul>
-    </li>
+    <li class="fragment">We need to seed long-lived uArch state at the beginning of each sampling unit</li>
+    <li class="fragment">This process is called <em>functional warmup</em></li>
   </ul>
 </section>
 
+<section>
+  <h2>Importance of Functional Warmup</h2>
+
+  <p class="center fragment">Long-lived microarchitectural state (caches, branch predictors, prefetchers, TLBs) has a substantial impact on the performance of a sampling unit</p>
+
+  <div class="container" style="display: grid; grid-template-columns:1fr 1.4fr;">
+    <figure class="fragment center" style="display: grid; align-content: center;">
+      <img width="100%" src="./figs/multi-level-sim/livesim_amat_vs_warmup.png" />
+      <figcaption class="small center">AMAT Error vs # of detailed warmup instructions <sup>[1]</sup></figcaption>
+    </figure>
+
+    <figure class="fragment center" style="display: grid; align-content: center;">
+      <img width="100%" src="./figs/quals/warmup_mpki_plots.png" />
+      <figcaption class="small center">MPKI vs warmup vs sampling unit length for different branch predictors<sup>[2]</sup></figcaption>
+    </figure>
+  </div>
+
+  <div class="fragment">
+  <hr>
+  <div class="verysmall">
+  <p class="footnote">
+  [1]: Hassani, Sina, et al. "LiveSim: Going live with microarchitecture simulation." HPCA 2016.<br/>
+  [2]: Eeckhout, L., 2008. Sampled processor simulation: A survey. Advances in Computers. Elsevier.
+  <!--[2]: Barr, Kenneth C., et al. "Accelerating multiprocessor simulation with a memory timestamp record." ISPASS 2005.</p>-->
+  </div>
+  </div>
+</section>
+
+<section>
+  <h2>Overview of Sampling Methodologies</h2>
+
+  <div class="fragment center">
+    <img width="50%" src="./figs/multi-level-sim/sampled_simulation.png" />
+  </div>
+
+  <table class="fragment" style="font-size: 1.2rem;">
+    <thead><tr>
+      <th>Sampling Technique</th>
+      <th>Interval Length</th>
+      <th># of Intervals Simulated</th>
+      <th>Interval Selection</th>
+      <th>Functional Warmup</th>
+      <th>Detailed Warmup</th>
+      <th>Time Granularity</th>
+    </tr></thead>
+    <tbody>
+    <tr class="fragment">
+      <td><strong>SimPoint</strong></td>
+      <td>10-100M</td>
+      <td>50-100</td>
+      <td>BBFV + k-means</td>
+      <td>Optional</td>
+      <td>≈0.1-1M</td>
+      <td>Interval length</td>
+    </tr>
+    <tr class="fragment">
+      <td><strong>SMARTS</strong></td>
+      <td>1-10k</td>
+      <td>10k</td>
+      <td>Systematic sampling</td>
+      <td>Required</td>
+      <td>1k</td>
+      <td>Entire workload</td>
+    </tr>
+    <tr class="fragment">
+      <td><strong>TidalSim</strong></td>
+      <td>10k</td>
+      <td>10-100</td>
+      <td>BBFV + k-means</td>
+      <td>Required</td>
+      <td>1k</td>
+      <td>Interval Length</td>
+    </tr>
+    </tbody>
+  </table>
+</section>
+
+<section>
+  <h2>Final Takeaways</h2>
+
+  <ul>
+    <li class="fragment">Microarchitectural iteration requires high accuracy
+      <ul><li>{{ rightarrow }} we must use <strong>RTL simulation</strong> as our performance simulator</li></ul>
+    </li>
+    <li class="fragment">RTL simulation has low throughput
+      <ul><li>{{ rightarrow }} we must employ <strong>simulation sampling techniques</strong> to combine architectural and RTL simulation to improve throughput</li></ul>
+    </li>
+    <li class="fragment">We can't execute long sampling units in RTL simulation
+      <ul><li>{{ rightarrow }} we must use <strong>uArch functional warmup models</strong> to minimize errors due to stale uArch state</li></ul>
+    </li>
+    <li class="fragment">We want <em>time-domain</em> power, performance, and RTL collateral. We want the ability to extract tiny and unique benchmarks from large workloads
+      <ul><li>{{ rightarrow }} we must combine </li></ul>
+    </li>
+  </ul>
+
+  <p class="center fragment">`</p>
+</section>
 <!--
   - need high accuracy: we must use uArch/RTL as abstraction
   - uarch/RTL necessitates: we must use then uarch or rtl sim
