@@ -1,35 +1,74 @@
 <section class="center">
   <h2 class="center">3. What's New: Differences from Prior Work</h2>
+
+  <ul>
+    <li class="fragment">We leverage <strong>RTL simulation</strong> for performance/power estimation + RTL-level collateral generation</li>
+    <li class="fragment">We will explore sampled simulation with <em>accelerators</em></li>
+    <li class="fragment">We will perform validation of functional warmup models against their equivalent RTL structures</li>
+  </ul>
 </section>
 
-<section>
+<!--<section>
   <h2>Treating Simulation as a Sliding Tradeoff Between Latency, Throughput, and Accuracy</h2>
+</section>-->
+
+<section>
+  <h2>Why RTL-Level Sampled Simulation?</h2>
+  <ul>
+    <li class="fragment">No need to perform correlation between perf model and RTL
+      <ul>
+        <li>Error is introduced by sampling, but it can be understood/bounded with statistical methods</li>
+        <li>Additional error comes from modeling RTL constructs (which is often done poorly and can't be bounded)</li>
+      </ul>
+    </li>
+    <li class="fragment">Possible to derive accurate PPA numbers
+      <ul>
+        <li>Real frequency and area numbers from synthesis for proper physically constrained DSE</li>
+        <li>Can extrapolate up to full power traces</li>
+      </ul>
+    </li>
+    <li class="fragment">Leverage special collateral (waveforms) from RTL simulation
+      <ul>
+        <li>Power macromodel construction and training</li>
+        <li>Coverpoint synthesis</li>
+      </ul>
+    </li>
+  </ul>
+  <!--no need to add modeling error (unbounded) on top of sampling error (which can often be bounded or at least understood)
+  the abstraction closest to the ultimate PPA
+  for optimizations that involve uarch, we should simulate accurate uarch - this fidelity is required for proper dse that is properly physically constrained-->
 </section>
 
 <section>
+  <h2>Why RTL-Level Sampled Simulation Now?</h2>
+
+  <div class="r-stack">
+    <div class="fragment fade-in-then-out" style="display: grid; place-items: center;">
+      <img width="50%" src="./figs/quals/esp_overview.png">
+      <figcaption class="small center">OpenESP RTL generator overview.</figcaption>
+    </div>
+    <div class="fragment fade-in-then-out" style="display: grid; place-items: center;">
+      <img width="50%" src="./figs/quals/esp_tiles.png">
+      <figcaption class="small center">The organization of tiles in OpenESP.</figcaption>
+    </div>
+    <div class="fragment fade-in" style="display: grid; place-items: center;">
+      <img width="20%" src="./figs/quals/rocketchip.png">
+      <figcaption class="small center">The RISC-V Rocket Core.</figcaption>
+    </div>
+  </div>
+
+  <ul>
+    <li class="fragment">New SoC-level RTL generator frameworks (e.g. Chipyard, OpenESP, OpenPiton) enable RTL-level design space exploration</li>
+    <li class="fragment">RTL generators are highly parameterized and new design languages (e.g. Chisel) make it easier to build new microarchitectural features directly in RTL</li>
+  </ul>
+</section>
+
+<!--<section>
   <h2>Heterogeneous SoCs</h2>
   Accelerators and IO modeling, new embedding strategies, how to model memory interconnect traffic situations that can cause variance in accelerator performance
-</section>
+</section>-->
 
-<section>
-  <h2>Why RTL-Level Simulation?</h2>
-  no need to add modeling error (unbounded) on top of sampling error (which can often be bounded or at least understood)
-  the abstraction closest to the ultimate PPA
-  for optimizations that involve uarch, we should simulate accurate uarch - this fidelity is required for proper dse that is properly physically constrained
-</section>
-
-<section>
-  <h2>Challenges with RTL-Level Sampled Simulation</h2>
-  Describe the challenges, but leave the solutions for subsequent sections
-  State injection, interval subsampling, functional warmup, performance metric extraction, supporting different microarchitectures and HW parameter spaces
-</section>
-
-<section>
-  <h2>Why RTL-Level Simulation Now?</h2>
-  new frameworks enable RTL-level design space exploration
-</section>
-
-<section>
+<!--<section>
   <h2>What's New</h2>
 
   <ul>
@@ -37,4 +76,4 @@
     <li class="fragment">No substantial work on binary-agnostic interval embeddings</li>
     <li class="fragment">No one has leveraged the special collateral (waveforms + high-fidelity performance metrics) you can only get from RTL simulation</li>
   </ul>
-</section>
+</section>-->

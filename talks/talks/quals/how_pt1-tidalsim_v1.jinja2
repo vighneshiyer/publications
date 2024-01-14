@@ -1,5 +1,12 @@
 <section class="center">
-  <h2>4. How (pt 1): TidalSim v1 (A Prototype Implementation)</h2>
+  <h2>4. How (pt 1): TidalSim v0.1 (A Prototype Implementation)</h2>
+
+  <ul>
+    <li>Implementation details of the TidalSim v0.1 prototype</li>
+    <li>Cache functional warmup model</li>
+    <li>Results for IPC trace reconstruction</li>
+    <li>Features to get us to TidalSim v1 from v0.1</li>
+  </ul>
 </section>
 
 <!--
@@ -13,7 +20,7 @@
 -->
 
 <section style="text-align: center;">
-  <h2>Overview of Multi-Level Simulation Flow</h2>
+  <h2>Overview of TidalSim Flow</h2>
   <img src="./figs/dynamic/tidalsim/overview.svg" />
 </section>
 
@@ -136,6 +143,12 @@ cycles,instret
 250,100
 113,100
   </code></pre>
+</section>
+
+<section>
+  <h2>Challenges with RTL-Level Sampled Simulation</h2>
+  Describe the challenges, but leave the solutions for subsequent sections
+  State injection, interval subsampling, functional warmup, performance metric extraction, supporting different microarchitectures and HW parameter spaces
 </section>
 
 <section>

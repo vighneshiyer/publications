@@ -789,12 +789,10 @@ Because simulators can have significant errors, which are completely unknown, on
     <li class="fragment">We can't execute long sampling units in RTL simulation
       <ul><li>{{ rightarrow }} we must use <strong>uArch functional warmup models</strong> to minimize errors due to stale uArch state</li></ul>
     </li>
-    <li class="fragment">We want <em>time-domain</em> power, performance, and RTL collateral. We want the ability to extract tiny and unique benchmarks from large workloads
-      <ul><li>{{ rightarrow }} we must combine </li></ul>
+    <li class="fragment">We want <em>time-domain</em> power, performance, and RTL collateral. We want the ability to extract tiny and unique benchmarks from large workloads.
+      <ul><li>{{ rightarrow }} we must <strong>combine the SimPoint and SMARTS</strong> sampling methodologies</li></ul>
     </li>
   </ul>
-
-  <p class="center fragment">`</p>
 </section>
 <!--
   - need high accuracy: we must use uArch/RTL as abstraction
