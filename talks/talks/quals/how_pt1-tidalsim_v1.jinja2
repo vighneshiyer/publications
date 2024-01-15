@@ -5,7 +5,7 @@
     <li>Implementation details of the TidalSim v0.1 prototype</li>
     <li>Cache functional warmup model</li>
     <li>Results for IPC trace reconstruction</li>
-    <li>Features to get us to TidalSim v1 from v0.1</li>
+    <li>Going from TidalSim v0.1 to v1</li>
   </ul>
 </section>
 
@@ -27,7 +27,7 @@
 <section>
   <h2>Basic Block Identification</h2>
 
-  <p class="center fragment">Basic blocks are extracted from the dynamic commit log emitted by spike</p>
+  <p class="center fragment">Basic blocks are extracted from the dynamic commit trace emitted by spike</p>
 
   <pre class="fragment"><code data-trim data-noescape>
 core   0: >>>>  memchr
@@ -49,60 +49,67 @@ core   0: 0x0000000080001308 (0xfeb78de3) beq     a5, a1, pc - 6
 <section>
   <h2>Program Intervals</h2>
 
-  <p class="center fragment">A execution trace is captured from ISA-level simulation</p>
-  <pre class="fragment"><code data-trim data-noescape>
+  <p class="center fragment">A commit trace is captured from ISA-level simulation</p>
+  <pre class="fragment text"><code data-trim data-noescape>
 core   0: >>>>  memchr
+---
 core   0: 0x00000000800012f6 (0x0ff5f593) andi    a1, a1, 255
 core   0: 0x00000000800012fa (0x0000962a) c.add   a2, a0
 core   0: 0x00000000800012fc (0x00c51463) bne     a0, a2, pc + 8
+---
 core   0: 0x0000000080001304 (0x00054783) lbu     a5, 0(a0)
 core   0: 0x0000000080001308 (0xfeb78de3) beq     a5, a1, pc - 6
 core   0: 0x000000008000130c (0x00000505) c.addi  a0, 1
-core   0: 0x000000008000130e (0x0000b7fd) c.j     pc - 18
-core   0: 0x00000000800012fc (0x00c51463) bne     a0, a2, pc + 8
+---
   </code></pre>
-  <p class="center fragment">The trace is grouped into intervals of N instructions</p>
-  <p class="center fragment">Typical N for SimPoint samples is 1M</p>
-  <p class="center fragment">Typical N for SMARTs samples is 10-100k</p>
+  <p class="center fragment">The trace is grouped into intervals of $ N $ instructions of which we will choose $ C $ intervals as simulation units</p>
+  <p class="center fragment">Typical $C = 10000$</p>
 </section>
 
 <section>
   <h2>Interval Embedding and Clustering</h2>
 
-  <p class="center fragment">Embed each interval with the frequency it traversed every identified basic block</p>
+  <p class="center fragment">Each interval is embedded with a vector indicating how often each basic block was ran</p>
 
-  <table style="width: 100%; font-size:90%;" class="fragment">
+  <table style="width: 100%;" class="fragment small">
     <thead><tr>
       <th>Interval index</th>
       <th>Interval length</th>
       <th>Embedding</th>
     </tr></thead>
     <tbody><tr>
-      <td>n</td>
-      <td>100</td>
-      <td><code>[40, 50, 0, 10]</code></td>
+      <td>$ n $</td>
+      <td>$ 100 $</td>
+      <td>$ \begin{bmatrix}40 & 50 & 0 & 10\end{bmatrix} $</td>
     </tr>
     <tr>
-      <td>n+1</td>
-      <td>100</td>
-      <td><code>[0, 50, 10, 40]</code></td>
+      <td>$ n+1 $</td>
+      <td>$ 100 $</td>
+      <td>$ \begin{bmatrix}0 & 50 & 10 & 40\end{bmatrix}$</td>
     </tr>
     <tr>
-      <td>n+2</td>
-      <td>100</td>
-      <td><code>[0, 20, 20, 80]</code></td>
+      <td>$ n+2 $</td>
+      <td>$ 100 $</td>
+      <td>$ \begin{bmatrix}0 & 20 & 20 & 80\end{bmatrix}$</td>
     </tr>
     </tbody>
   </table>
 
-  <p class="center fragment">Intervals are clustered using k-means clustering on their embeddings</p>
+  <ul class="small">
+    <li class="fragment">Intervals are clustered using k-means clustering (typical $K = 10-30$)</li>
+  </ul>
+  <img class="fragment" style="margin-bottom:0;" src="./figs/multi-level-sim/aha-mont64_clustering.svg" />
+  <ul class="small">
+    <li class="fragment">Centroids indicate which basic blocks are traversed most frequently in each cluster</li>
+    <li class="fragment">We observe that most clusters capture unique traversal patterns</li>
+  </ul>
 </section>
 
 <section>
   <h2>Arch Snapshotting</h2>
 
   <p class="center fragment">For each cluster, take the sample that is closest to its centroid</p>
-  <p class="center fragment">Capture arch checkpoints at the start each chosen sample</p>
+  <p class="center fragment">Capture arch checkpoints at the start of each chosen sample</p>
 
   <pre class="fragment"><code data-trim data-noescape>
 pc = 0x0000000080000332
@@ -115,14 +122,14 @@ x2 = 0x0000000080028fa0
 ...
   </code></pre>
 
-  <p class="center fragment">An arch checkpoints = arch state + raw memory contents</p>
+  <p class="center fragment">Arch checkpoint = arch state + raw memory contents</p>
 </section>
 
 <section>
   <h2>RTL Simulation and Arch-State Injection</h2>
 
   <ul>
-    <li class="fragment">Arch checkpoints are run in parallel in RTL simulation for N instructions</li>
+    <li class="fragment">Arch checkpoints are run in parallel in RTL simulation for $ N $ instructions</li>
     <li class="fragment">RTL state injection caveats
       <ul>
         <li class="fragment">Not all arch state maps 1:1 with an RTL-level register</li>
@@ -147,8 +154,52 @@ cycles,instret
 
 <section>
   <h2>Challenges with RTL-Level Sampled Simulation</h2>
-  Describe the challenges, but leave the solutions for subsequent sections
-  State injection, interval subsampling, functional warmup, performance metric extraction, supporting different microarchitectures and HW parameter spaces
+  <!-- Describe the challenges, but leave the solutions for subsequent sections -->
+  <!-- State injection, interval subsampling, functional warmup, performance metric extraction, supporting different microarchitectures and HW parameter spaces -->
+
+  <ul>
+    <li class="fragment">As workload traces grow to billions of dynamic instructions, $N$ will have to go up too, to avoid too many clusters
+      <ul>
+        <li class="fragment">{{ rightarrow }} we need to perform sampling unit subsampling using SMARTS-like methodology to tolerate the low throughput of RTL simulation</li>
+      </ul>
+    </li>
+    <li class="fragment">Functional warmup can provide us with microarchitectural state at the start of each sampling unit, but injecting that state in RTL simulation is error-prone
+      <ul>
+        <li class="fragment">Correlating microarchitectural cache state via RTL hierarchical paths is tricky and requires manual effort</li>
+      </ul>
+    </li>
+    <li class="fragment">If the hardware parameterization changes (cache hierarchy/sizing, choice of branch predictor)
+      <ul>
+        <li class="fragment">{{ rightarrow }} the functional warmup models and state injection logic must also change</li>
+      </ul>
+    </li>
+  </ul>
+</section>
+
+<section>
+  <h2 style="font-size: 1.8rem;">Functional Cache Warmup with Memory Timestamp Record</h2>
+
+  <p class="smallish center fragment">Memory Timestamp Record (MTR)<sup>[1]</sup> is a cache warmup model that can be constructed once and reused for many different cache parameterizations</p>
+
+  <div class="r-stack center smallish">
+    <div class="fragment fade-in-then-out" style="display: grid; place-items: center;">
+      <img width="80%" src="./figs/dynamic/tidalsim/mtr_entry_update.svg"/>
+      <figcaption>Updating entries in the (MTR) data structure from an memory access trace</figcaption>
+    </div>
+
+    <div class="fragment fade-in" style="display: grid; place-items: center;">
+      <img width="60%" src="./figs/dynamic/tidalsim/mtr_reconstruction.svg"/>
+      <figcaption>Reconstructing a cache state from a MTR checkpoint for a specific cache parameterization</figcaption>
+    </div>
+  </div>
+
+  <div class="fragment">
+    <hr>
+    <div class="verysmall">
+    <p class="footnote">
+    [1]: Barr, Kenneth C., et al. "Accelerating multiprocessor simulation with a memory timestamp record." ISPASS 2005.</p>
+    </div>
+  </div>
 </section>
 
 <section>
@@ -183,23 +234,33 @@ cycles,instret
 </section>
 
 <section>
-  <h2>Clustering on Embench Benchmarks</h2>
-  <img class="fragment" src="./figs/multi-level-sim/aha-mont64_clustering.svg" />
-  <ul>
-    <li class="fragment">Cluster centroids indicate which basic blocks are traversed most frequently in each cluster</li>
-    <li class="fragment">We observe that most clusters capture unique traversal patterns</li>
-  </ul>
-</section>
-
-<section>
   <h2>IPC Trace Prediction</h2>
   <ul>
     <li class="fragment">Montgomery multiplication from Embench (aha-mont64)</li>
     <li class="fragment"><code>N=1000</code>, <code>C=12</code></li>
     <li class="fragment">Full RTL sim takes 10 minutes, TidalSim runs in 10 seconds</li>
-    <li class="fragment">IPC is correlated (mean error &lt;5%) and mild correlation between distance and error</li>
+    <li class="fragment">IPC is correlated (mean error &lt;5%)<!--; very weak correlation between distance and error--></li>
   </ul>
   <img class="fragment" src="./figs/multi-level-sim/aha-mont64_results.svg" />
+</section>
+
+<section>
+  <h2>IPC Trace Prediction</h2>
+  <ul>
+    <li class="fragment">Huffman compression from Embench (huffbench)</li>
+    <li class="fragment"><code>N=10000</code>, <code>C=18</code></li>
+    <li class="fragment">Full RTL sim takes 15 minutes, TidalSim runs in 10 seconds</li>
+    <li class="fragment">Larger IPC variance</li>
+  </ul>
+  <img class="fragment" src="./figs/multi-level-sim/huffbench_results.svg" />
+</section>
+
+<section>
+  <h2>Aggregate IPC Prediction for Embench Suite</h2>
+  <div class="center">
+    <img src="./figs/multi-level-sim/embench_ipc_error.svg" />
+  </div>
+  <p class="center fragment">Typical IPC error (<strong>without</strong> functional warmup) <strong>is &lt; 5%</strong></p>
 </section>
 
 <!-- Add box and whiskers IPC error plot -->
