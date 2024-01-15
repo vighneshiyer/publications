@@ -7,19 +7,39 @@
 </section>
 
 <section>
-  <h2></h2>
+  <h2>6.a: TidalSim for HW Parameter DSE</h2>
+
+  <div class="center">
+    <img width="60%" src="./figs/dynamic/tidalsim/uarch_iteration_flow_tidalsim.svg" />
+  </div>
+
+  <ul>
+    <li class="fragment">Evaluate the impact of cache sizing and configuration
+      <ul>
+        <li>Cache sizing between L1d and L1i</li>
+        <li>Balancing capacity between 2-level cache hierarchies</li>
+        <li>Unified vs separate I/D L2 caches</li>
+      </ul>
+    <li class="fragment">Compare TidalSim for evaluating these tradeoffs on real workloads vs RTL simulation and FireSim</li>
+  </ul>
 </section>
 
 <section>
+  <h2>6.b: TidalSim for Verification</h2>
+
+  <ul>
+    <li class="fragment">Many verification techniques require numerous dynamic waveforms for analysis
+      <ul>
+        <li>Specification mining for invariant synthesis or RTL bug localization</li>
+        <li>Coverpoint synthesis for 
+      </ul>
+    </li>
+  </ul>
+</section>
+
+<!-- <section>
   <h2>Performance and Power Evaluation</h2>
   <ul>
-    <li class="fragment">Fast, low-latency evaluation of HW parameters on long running workloads
-    <ul>
-      <li>Cache sizing between L1d vs L1i</li>
-      <li>Balancing of 2-level cache hierarchies</li>
-      <li>Unified vs separate i/d L2 caches</li>
-    </ul>
-    </li>
     <li class="fragment">Trace extraction for power model construction
     <ul>
       <li>Currently power macromodels are built + trained only on workloads that can run in RTL simulation</li>
@@ -29,6 +49,7 @@
     </li>
   </ul>
 </section>
+-->
 
 <section>
   <h2>Issues with HW Fuzzer Evaluations</h2>
@@ -62,6 +83,7 @@
   </ul>
 </section>
 
+<!--
 <section>
   <h2>Bootstrapping Fuzzing</h2>
   <ul>
@@ -72,3 +94,4 @@
     <li class="fragment">Arch and μArch checkpoints from TidalSim guarantee reachability and provides starting points for HW fuzzers</li>
   </ul>
 </section>
+-->
