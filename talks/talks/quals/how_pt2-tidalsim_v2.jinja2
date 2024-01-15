@@ -330,18 +330,47 @@ val memTxGen: Gen[MemTx] = Gen[MemTx].uniform
   </section>
 
   <section>
-    <h2>What Makes Accelerators Suitable?</h2>
+    <h2>What Makes Accelerators Suitable for Sampled Simulation?</h2>
 
-    Talk about how accelerator arch state is explicit and accelerators often don't have long-lived uarch state (that requires functional warmup)
-    Extend arch snapshotting to accelerator state too + add restoration capabilities for accelerator state to 
+    <ul>
+      <li class="fragment">Accelerator architectural state is large and explicit
+        <ul>
+          <li class="fragment">{{ rightarrow }} snapshotting is easy</li>
+          <li class="fragment">{{ rightarrow }} functional warmup is unnecessary</li>
+        </ul>
+      </li>
+      <li class="fragment">Accelerator usage is often repeated in workloads
+        <ul>
+          <li class="fragment">{{ rightarrow }} clustering accelerator usage embeddings is reasonable</li>
+          <li class="fragment">{{ rightarrow }} potential for massive simulation throughput improvement</li>
+        </ul>
+      </li>
+      <li class="fragment">Accelerator behavior is consistent
+        <ul>
+          <li class="fragment">{{ rightarrow }} accelerator performance is consistent from one dataset to another</li>
+          <li class="fragment">{{ rightarrow }} embeddings don't need to be aware of the accelerator microarchitecture / latent state</li>
+        </ul>
+      </li>
+    </ul>
+    <!-- Talk about how accelerator arch state is explicit and accelerators often don't have long-lived uarch state (that requires functional warmup) -->
+    <!-- Extend arch snapshotting to accelerator state too + add restoration capabilities for accelerator state -->
   </section>
 
   <section>
     <h2>Extending Interval Embeddings to Accelerators</h2>
 
-    Need to incorporate accelerator state and the semantics of accelerator ISA instructions to the embedding.
+    <div class="center">
+      <img src="./figs/dynamic/tidalsim/accelerators.svg" />
+    </div>
+
+    <ul class="smallish">
+      <li class="fragment">Incorporate accelerator state and the semantics of the accelerator ISA to the embedding</li>
+      <li class="fragment">Can capture and embed accelerator interactions with system memory and with internal compute units</li>
+      <li class="fragment">In the case of Gemmini, we must also consider instruction dependencies and out-of-order execution + memory contention from multiple accelerators</li>
+    </ul>
+    <!-- Need to incorporate accelerator state and the semantics of accelerator ISA instructions to the embedding.
     Consider case of Gemmini - intervals are similar if they execute similar gemmini instructions under same gemmini configuration. can use number of bytes mvin-ed / mvout-ed from sp/acc as a feature.
-    Feature tuning needs to be precise here.
+    Feature tuning needs to be precise here.-->
   </section>
 </section>
 
