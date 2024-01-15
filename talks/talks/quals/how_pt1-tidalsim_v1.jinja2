@@ -204,37 +204,19 @@ cycles,instret
 
 <section>
   <h2>Extrapolation</h2>
-  <p class="center fragment">Performance metrics for one sample in a cluster are representative of all samples in that cluster</p>
-  <p class="center fragment">Extrapolate on the entire execution trace to get a full IPC trace</p>
+  <ul>
+    <li class="fragment">We gather performance metrics for one sampling unit in each cluster that is taken to be representative of that cluster ($\vec{p}$)</li>
+    <li class="fragment">To compute the estimated performance of a given interval
+      <ul>
+        <li class="fragment">Compute the distances $\vec{d}$ of that interval's embedding to each cluster centroid</li>
+        <li class="fragment">Compute a weighted mean using $\vec{d}$ and $\vec{p}$</li>
+      </ul>
+    <li class="fragment">Compute the estimated performance of all intervals to extrapolate to a full performance trace</li>
+  </ul>
 </section>
 
 <section>
-  <h2>Functional Cache Warmup</h2>
-  <div class="container">
-  <div>
-    <ul>
-      <li class="fragment" data-fragment-index="1">Each checkpoint is run in RTL simulation with a cold cache → inaccurate IPC due to incomplete cache warming during detailed warmup</li>
-      <li class="fragment" data-fragment-index="3"><em>WIP</em>: "Memory Timestamp Record"<sup>[2]</sup> based cache model and RTL cache state injection</li>
-    </ul>
-  </div>
-  <div class="fragment" data-fragment-index="2">
-    <img width="100%" src="./figs/multi-level-sim/livesim_amat_vs_warmup.png" />
-    <figcaption class="small center">AMAT Error vs # of Functional Warmup Instructions (from LiveSim<sup>[1]</sup>)</figcaption>
-  </div>
-  </div>
-
-  <div class="fragment" data-fragment-index="4">
-  <hr>
-  <div class="verysmall">
-  <p class="footnote">
-  [1]: Hassani, Sina, et al. "LiveSim: Going live with microarchitecture simulation." HPCA 2016.<br/>
-  [2]: Barr, Kenneth C., et al. "Accelerating multiprocessor simulation with a memory timestamp record." ISPASS 2005.</p>
-  </div>
-  </div>
-</section>
-
-<section>
-  <h2>IPC Trace Prediction</h2>
+  <h2>IPC Trace Prediction: aha-mont64</h2>
   <ul>
     <li class="fragment">Montgomery multiplication from Embench (aha-mont64)</li>
     <li class="fragment"><code>N=1000</code>, <code>C=12</code></li>
@@ -245,7 +227,7 @@ cycles,instret
 </section>
 
 <section>
-  <h2>IPC Trace Prediction</h2>
+  <h2>IPC Trace Prediction: huffbench</h2>
   <ul>
     <li class="fragment">Huffman compression from Embench (huffbench)</li>
     <li class="fragment"><code>N=10000</code>, <code>C=18</code></li>
@@ -256,33 +238,47 @@ cycles,instret
 </section>
 
 <section>
+  <h2>IPC Trace Prediction: wikisort</h2>
+  <ul>
+    <li class="fragment">Merge sort benchmark from Embench (wikisort)</li>
+    <li class="fragment"><code>N=10000</code>, <code>C=18</code></li>
+    <li class="fragment">Full RTL sim takes 15 minutes, TidalSim runs in 10 seconds</li>
+    <li class="fragment">Can capture general trends and time-domain IPC variation</li>
+  </ul>
+  <img class="fragment" src="./figs/multi-level-sim/wikisort_results.svg" />
+</section>
+
+<section>
   <h2>Aggregate IPC Prediction for Embench Suite</h2>
   <div class="center">
-    <img src="./figs/multi-level-sim/embench_ipc_error.svg" />
+    <img src="./figs/multi-level-sim/embench_ipc_error.svg" style="margin-bottom:0;" />
   </div>
-  <p class="center fragment">Typical IPC error (<strong>without</strong> functional warmup) <strong>is &lt; 5%</strong></p>
+  <p class="center fragment">Typical IPC error (<strong>without</strong> functional warmup and with fine time-domain precision of 10k instructions) <strong>is &lt; 5%</strong></p>
 </section>
 
 <!-- Add box and whiskers IPC error plot -->
 
 <section>
-  <h2>Limitations and Final Prototype</h2>
+  <h2>From Tidalsim v0.1 to v1</h2>
 
-  Things to do before calling the first prototype complete:
-  - functional L1 only cache warmup
-  - functional branch predictor warmup
-  - use robust checkpointing fork of spike + better arch state initialization technique (via program snippet + selective forces depending on bits that can't be set via ISA)
-  - characterization on other baseline baremetal workloads (dhrystone, coremark, riscv-tests bmarks, MiBench
-  - explore more sophisticated clustering and extrapolation techniques
-  - demonstrate we can hit &lt;1% IPC error
+  <!-- Things to do before calling the first prototype complete: -->
 
-  The limitations that still exist:
-  - can't work with an OS (due to virtual PCs from instruction trace conflicting with multiple processes and having incorrect basic block embeddings)
-  - can't model timing accurately including timer interrupts and mtime/mcycle values
-  - no functional warmup for advanced and virtual memory components (prefetcher, iTLB, dTLB, LLC)
+  <ul>
+    <li class="fragment">Functional L1-only cache warmup</li>
+    <li class="fragment">Functional branch predictor warmup</li>
+    <li class="fragment">Use robust checkpointing fork of spike
+      <ul>
+        <li>Better arch state initialization technique <span class="small">(via program snippet + selective forces depending on bits that can't be set via ISA)</span></li>
+      </ul>
+    </li>
+    <li class="fragment">Characterization on other baremetal workloads
+      <ul>
+        <li>dhrystone, coremark, riscv-tests benchmarks, MiBench</li>
+      </ul>
+    </li>
+    <li class="fragment">Explore more sophisticated clustering and extrapolation techniques</li>
+    <li class="fragment"><strong>Demonstrate we can hit &lt;1% IPC error</strong></li>
+  </ul>
 
-  This semester: v0.1 to v1
-  Summer: v1 to v2 (improvements in next section)
-  Next semester: Leverage v2 for case studies
-  Spring 2025: Finish thesis writing + graduate
+  <p class="fragment center">These milestones will set the stage for the qual proposal</p>
 </section>
