@@ -101,11 +101,127 @@
 
   <section>
     <h2>PC/Binary-Agnostic Embeddings</h2>
-          <!-- <li>{{ rightarrow }} generalizing representative sampling for PC/binary-agnostic interval embeddings to enable running multi-process workloads in an OS</li>-->
+    <!-- <li>{{ rightarrow }} generalizing representative sampling for PC/binary-agnostic interval embeddings to enable running multi-process workloads in an OS</li>-->
 
     <ul>
-      <li></li>
+      <li class="fragment">Basic block embedding assumes
+        <ul>
+          <li>There is a static PC {{ rightarrow }} basic block mapping</li>
+          <li>Intervals with similar basic block traversals have similar uArch behavior</li>
+        </ul>
+      </li>
+      <li class="fragment">Our embeddings should be PC/binary-agnostic to support portability and multi-process workloads in an OS
+        <ul>
+          <li>Most prior work only runs single-process workloads using syscall proxies</li>
+          <li>Real workloads are heavily affected by interactions between the OS and userspace processes</li>
+        </ul>
+      </li>
+      <li class="fragment">We will explore embeddings with features such as
+        <ul>
+          <li>Instruction mix, function call frequency, instruction dependencies</li>
+          <li>Microarchitectural behaviors: I/D cache misses, BP model mispredicts, TLB behavior</li>
+        </ul>
+      </li>
     </ul>
+  </section>
+</section>
+
+<section>
+  <section class="center">
+    <h2>5.b: Validating Functional Warmup Models</h2>
+  </section>
+
+  <section>
+    <h2>Validation Flow</h2>
+    <p class="center fragment">Functional warmup models need to be validated against the behavior of their modeled RTL</p>
+
+    <div class="center fragment">
+      <img src="./figs/dynamic/tidalsim/validation_flow.svg" />
+      <figcaption class="small">The flow for validating RTL against its functional warmup model (specifically an L1 cache) using SimCommand, parametric generators, and fuzzing.</figcaption>
+    </div>
+  </section>
+
+  <section>
+    <h2>SimCommand: A Fast RTL Simulation API</h2>
+    <ul>
+      <li class="fragment">Testbench API embedded in Scala<sup>[1]</sup></li>
+      <li class="fragment">Uses chiseltest as the simulator interface</li>
+      <li class="fragment">Functional: testbench description and interpretation are split</li>
+    </ul>
+
+    <pre class="fragment"><code class="language-scala" data-trim data-noescape>
+def enqueue(data: T): Command[Unit] = for {
+    _ &lt;- poke(io.bits, data)
+    _ &lt;- poke(io.valid, true.B)
+    _ &lt;- waitUntil(io.ready, true.B)
+    _ &lt;- step(1)
+    _ &lt;- poke(io.valid, false.B)
+} yield ()
+    </pre></code>
+
+    <ul class="smallish">
+      <li class="fragment">20x faster than cocotb and chiseltest, parity with SystemVerilog + VCS</li>
+      <li class="fragment">Enables writing performant testbenches with fork/join constructs in Scala</li>
+    </ul>
+
+    <div class="fragment">
+    <hr>
+    <div class="verysmall">
+      <p class="footnote">
+      [1]: Iyer, Vighnesh, et. al., SimCommand: A High Performance Multi-Threaded RTL Testbench API, OSCAR Workshop 2022
+      </p>
+    </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Parametric Random Stimulus Generators</h2>
+  </section>
+
+  <section>
+    <h2>Coverage Feedback</h2>
+  </section>
+
+  <section>
+    <h2>Parametric Fuzzing</h2>
+  </section>
+</section>
+
+<section>
+  <section>
+    <h2>5.c: Putting the 'Tidal' in TidalSim</h2>
+  </section>
+
+  <section>
+    <h2>Issues with Time Modeling in Sampled Simulation</h2>
+
+    Insert image of timer interrupts being desynced from RTL
+  </section>
+
+  <section>
+    <h2>TidalSim to Model Time Accurately</h2>
+
+    Insert image of bouncing between simulators and using interval embeddings to estimate actual time advancement
+  </section>
+</section>
+
+<section>
+  <section>
+    <h2>5.d: Sampled Simulation with Accelerators</h2>
+  </section>
+
+  <section>
+    <h2>What Makes Accelerators Suitable?</h2>
+
+    Talk about how accelerator arch state is explicit and accelerators often don't have long-lived uarch state (that requires functional warmup)
+  </section>
+
+  <section>
+    <h2>Extending Interval Embeddings to Accelerators</h2>
+
+    Need to incorporate accelerator state and the semantics of accelerator ISA instructions to the embedding.
+    Consider case of Gemmini - intervals are similar if they execute similar gemmini instructions under same gemmini configuration. can use number of bytes mvin-ed / mvout-ed from sp/acc as a feature.
+    Feature tuning needs to be precise here.
   </section>
 </section>
 
