@@ -25,13 +25,156 @@
 </section>
 
 <section>
-  <h2>6.b: TidalSim for Verification</h2>
+  <h2>6.a: Leveraging Chisel for RTL State Injection</h2>
 
   <ul>
-    <li class="fragment">Many verification techniques require numerous dynamic waveforms for analysis
+    <li class="fragment">Current test harness is hardcoded for one Chipyard SoC design point</li>
+    <li class="fragment">Use a Chisel API to semantically mark arch and uArch state and use a FIRRTL pass to generate a state-injecting test harness</li>
+  </ul>
+
+  <pre class="fragment"><code class="language-scala" data-trim data-noescape data-line-numbers="|3">
+class RegFile(n: Int, w: Int, zero: Boolean = false) {
+  val rf = Mem(n, UInt(w.W))
+  (0 until n).map { archStateAnnotation(rf(n), Riscv.I.GPR(n)) }
+  // ...
+}
+  </code></pre>
+
+  <pre class="fragment"><code class="language-scala" data-trim data-noescape data-line-numbers="|4-6|5">
+class L1MetadataArray[T &lt;: L1Metadata] extends L1HellaCacheModule()(p) {
+  // ...
+  val tag_array = SyncReadMem(nSets, Vec(nWays, UInt(metabits.W)))
+  (0 until nSets).zip((0 until nWays)).map { case (set, way) =&gt;
+    uArchStateAnnotation(tag_array.read(set)(way), Uarch.L1.tag(set, way, cacheType=I)
+  }
+}
+  </code></pre>
+</section>
+
+<section>
+  <h2>6.b: TidalSim for Verification</h2>
+
+  <div class="center">
+    <img width="60%" src="./figs/dynamic/tidalsim/uarch_iteration_flow_tidalsim.svg" />
+  </div>
+
+  <ul>
+    <li class="fragment">Some verification techniques require numerous dynamic waveforms for analysis
       <ul>
-        <li>Specification mining for invariant synthesis or RTL bug localization</li>
-        <li>Coverpoint synthesis for 
+        <li><strong>Specification mining</strong> for invariant synthesis or RTL bug localization</li>
+        <li><strong>Coverpoint synthesis</strong> for tuning stimulus generators towards bugs</li>
+      </ul>
+    </li>
+    <li class="fragment">TidalSim provides a way to extract small, unique RTL waveforms from large workloads with low latency</li>
+  </ul>
+</section>
+
+<section>
+  <h2>6.b: Past Work on Specification Mining</h2>
+
+  <ul>
+    <li>Take waveforms from RTL simulation and attempt to mine unfalsified specifications involving 2+ RTL signals<sup>[1]</sup></li>
+  </ul>
+
+  <div class="center fragment">
+    <img width="50%" src="./figs/quals/spec_mining_flow.svg" />
+  </div>
+
+  <ul>
+    <li>Specifications are constructed from LTL templates
+      <ul>
+        <li><strong>Until</strong>: $ \mathbf{G}\, (a \rightarrow \mathbf{X}\, (a\, \mathbf{U}\, b)) $</li>
+        <li><strong>Next</strong>: $ \mathbf{G}\, (a \rightarrow \mathbf{X}\, b) $</li>
+        <li><strong>Eventual</strong>: $ \mathbf{G}\, (a \rightarrow \mathbf{X F}\, b) $</li>
+        <li>$a$ and $b$ are atomic propositions constructed from signals in the RTL design</li>
+      </ul>
+    </li>
+  </ul>
+
+  <div class="fragment">
+  <hr>
+  <div class="verysmall">
+    <p class="footnote">
+    [1]: Iyer, Vighnesh, et. al., 2019. RTL bug localization through LTL specification mining. MEMOCODE.
+    </p>
+  </div>
+  </div>
+</section>
+
+<section>
+  <h2 style="font-size:1.8rem;">6.b: Specification Mining Used for RTL Bug Localization</h2>
+
+    <p class="fragment center small">Introduce a bug in the riscv-mini cache</p>
+
+  <pre class="fragment"><code class="language-diff" data-trim data-noescape>
+-  hit := v(idx_reg) && rmeta.tag === tag_reg
++  hit := v(idx_reg) && rmeta.tag =/= tag_reg
+  </code></pre>
+
+  <ul class="small">
+    <li class="fragment">This bug does not affect most ISA tests but a multiply benchmark failed by hanging.</li>
+    <li class="fragment">After checking the VCD against the mined properties, we found these violations ranked by time of violation</li>
+  </ul>
+
+  <table class="fragment" style="font-size: 1.2rem;">
+    <thead><tr>
+      <th>Template</th>
+      <th>$\textbf{a}$</th>
+      <th>$\textbf{b}$</th>
+      <th>Violated at Time</th>
+    </tr></thead>
+    <tbody>
+    <tr>
+      <td>Until</td>
+      <td><code>Tile.arb_io_dcache_r_ready</code></td>
+      <td><code>Tile.dcache.hit</code></td>
+      <td>418</td>
+    </tr>
+    <tr>
+      <td>Until</td>
+      <td><code>Tile.dcache_io_nasti_r_valid</code></td>
+      <td><code>Tile.dcache.hit</code></td>
+      <td>418<td>
+    </tr>
+    <tr>
+      <td>Until</td>
+      <td><code>Tile.dcache.is_alloc</code></td>
+      <td><code>Tile.dcache.hit</code></td>
+      <td>418</td>
+    </tr>
+    <tr>
+      <td>Until</td>
+      <td><code>Tile.arb.io_dcache_ar_ready</code></td>
+      <td><code>Tile.arb_io_nasti_r_ready</code></td>
+      <td>640</td>
+    </tr>
+    </tbody>
+  </table>
+
+  <p class="center fragment small">The violated properties point to an anomaly with the <code>hit</code> signal and localize the bug</p>
+</section>
+
+<section>
+  <h2 style="font-size:1.8rem;">6.b: Coverpoint Synthesis as Complement of Spec Mining</h2>
+
+  <ul>
+    <li class="fragment"><em>Specification mining</em> takes waveforms of an RTL design and synthesizes properties that are unfalsified on all traces</li>
+    <li class="fragment">Coverpoint synthesis is an alternative take on spec mining where we synthesize μArch properties that we want to see more of
+      <ul>
+        <li>Instead of monitoring properties for falsification, we monitor them for <em>completion</em></li>
+        <li>Properties that are <em>completed</em>, but not too often, are good candidates for coverpoints</li>
+      </ul>
+    </li>
+    <!--<li class="fragment">This technique is far more effective if we have <em>many unique, realistic traces</em>
+      <ul>
+        <li class="fragment">Leverage interval clustering and sampled RTL simulation</li>
+      </ul>
+    </li>
+    -->
+    <li class="fragment">Evaluation:
+      <ul>
+        <li>Synthesize coverpoints on Rocket using waveforms from TidalSim and regular RTL sim with the same compute budget</li>
+        <li>Demonstrate we can synthesize more, and more interesting coverpoints using TidalSim data</li>
       </ul>
     </li>
   </ul>
@@ -51,6 +194,7 @@
 </section>
 -->
 
+<!--
 <section>
   <h2>Issues with HW Fuzzer Evaluations</h2>
   <ul>
@@ -69,7 +213,9 @@
   </ul>
   <p class="center fragment">Can we synthesize metrics that lead to reasonable HW fuzzer evaluations?</p>
 </section>
+-->
 
+<!--
 <section>
   <h2>Coverpoint Synthesis</h2>
   <ul>
@@ -82,6 +228,7 @@
     </li>
   </ul>
 </section>
+-->
 
 <!--
 <section>
