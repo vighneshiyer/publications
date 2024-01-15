@@ -31,7 +31,7 @@ def single_pdf_to_svg(pdf: Path, page: int, svg: Path, poppler: bool, wd: Path) 
 
 def pdf_to_svg(pdf: Path, n_pages: int, prefix: str, poppler: bool, wd: Path) -> None:
     for page in range(n_pages):
-        svg = wd / f"{prefix}{page}.svg"
+        svg = wd / f"{prefix}{page:02d}.svg"
         single_pdf_to_svg(pdf, page+1, svg, poppler, wd)
 
 def strip_svg_background(input_svg: Path, dest_svg: Path, poppler: bool, from_pptx: bool, wd: Path) -> None:

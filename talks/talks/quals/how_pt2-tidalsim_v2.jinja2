@@ -176,37 +176,156 @@ def enqueue(data: T): Command[Unit] = for {
 
   <section>
     <h2>Parametric Random Stimulus Generators</h2>
+
+    <ul class="small">
+      <li class="fragment">We designed a Scala eDSL for parametric random stimulus generation<sup>[1]</sup></li>
+      <li class="fragment">Supports constrained and imperative randomization of Scala and Chisel datatypes</li>
+    </ul>
+
+    <pre class="fragment"><code class="language-scala" data-trim data-noescape>
+val intGen: Gen[Int] = Gen[Int].range(0, 100)
+</pre></code>
+
+    <pre class="fragment"><code class="language-scala" data-trim data-noescape>
+val seqGen: Gen[Seq[Int]] = for {
+  lit &lt;- Gen.range(1, 100)
+  tailGen &lt;- Gen.oneOf(Gen(Seq()) -&gt; 0.1, seqGen -&gt; 0.9),
+  seqn &lt;- tailGen.map(t =&gt; lit +: t)
+} yield seqn
+</pre></code>
+
+    <pre class="fragment"><code class="language-scala" data-trim data-noescape>
+object MemOp extends ChiselEnum
+case class MemTx extends Bundle {
+  val addr = UInt(32.W)
+  val data = UInt(64.W)
+  val op = MemOp
+}
+val memTxGen: Gen[MemTx] = Gen[MemTx].uniform
+</pre></code>
+
+    <div class="fragment">
+    <hr>
+    <div class="verysmall">
+      <p class="footnote">
+      [1]: Iyer, Vighnesh, et. al., New Embedded DSLs for HW Design and Verification, PLARCH Workshop 2023
+      </p>
+    </div>
+    </div>
   </section>
 
   <section>
-    <h2>Coverage Feedback</h2>
+    <h2>RTL Coverage for Simulation Feedback</h2>
+
+    <div class="container" style="grid-template-columns:1fr 1fr">
+      <div>
+        <img width="100%" src="./figs/sic-asplos23/1_coverage_figure_m_n.svg" />
+      </div>
+      <div>
+        <ul class="smallish">
+          <li class="fragment">Coverage implemented as a hardware IR compiler pass rather than baked into the RTL simulator</li>
+          <li class="fragment">Easy to add new coverage metrics via static analysis of the RTL netlist</li>
+          <li class="fragment">Leverage simulator independent coverage methodology for coverage instrumentation of long-lived uArch RTL</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="fragment">
+    <hr>
+    <div class="verysmall">
+      <p class="footnote">
+      [1]: Laeufer, Kevin; Iyer, Vighnesh, et. al., Simulator Independent Coverage for RTL Hardware Languages, ASPLOS 2023
+      </p>
+    </div>
+    </div>
   </section>
 
   <section>
     <h2>Parametric Fuzzing</h2>
+
+    <ul class="smallish">
+      <li class="fragment">Leverage fast RTL simulation APIs, parametric stimulus generators, and coverage instrumentation for <em>parametric fuzzing</em><sup>[1]</sup></li>
+    </ul>
+
+    <img class="fragment" src="./figs/fuzzing/parametric_fuzzing_loop.svg" />
+
+    <ul class="smallish">
+      <li class="fragment">Parametric fuzzing mutates the bytestream <em>going into</em> a parametric generator rather than the <sup>[2]</sup></li>
+      <li class="fragment">We augment typical parametric fuzzing with <em>mark-driven mutation</em></li>
+    </ul>
+
+    <div class="fragment">
+    <hr>
+    <div class="verysmall">
+      <p class="footnote">
+      [1]: Iyer, Vighnesh, et. al., New Embedded DSLs for HW Design and Verification, PLARCH Workshop 2023<br />
+      [2]: Padhye, R., Lemieux, C., Sen, K., Papadakis, M. and Le Traon, Y., 2019. Semantic fuzzing with zest. ACM SIGSOFT.
+      </p>
+    </div>
+    </div>
+
+    <img class="fragment" src="./figs/fuzzing/spike_fuzzing.svg" />
+    <img class="fragment" src="./figs/fuzzing/spike_fuzzing_result.png" />
+  </section>
+
+  <section>
+    <h2>Parametric Fuzzing - Demo Using Spike</h2>
+
+    <div class="center">
+      <img width="80%" class="fragment" src="./figs/fuzzing/spike_fuzzing.svg" />
+    </div>
+
+    <div class="container" style="grid-template-columns: 1.4fr 1fr;">
+      <div>
+        <ul class="smallish">
+          <li class="fragment">Use spike's L1 dcache model's miss rate as feedback to produce RISC-V programs that maximize it</li>
+          <li class="fragment">Using parametric fuzzing, we can automatically construct RISC-V programs to maximize any uArch metric given a small set of RISC-V sequence primitives</li>
+        </ul>
+      </div>
+      <div>
+        <img width="100%" class="fragment" src="./figs/fuzzing/spike_fuzzing_result.png" />
+      </div>
+    </div>
   </section>
 </section>
 
 <section>
-  <section>
+  <section class="center">
     <h2>5.c: Putting the 'Tidal' in TidalSim</h2>
   </section>
 
   <section>
-    <h2>Issues with Time Modeling in Sampled Simulation</h2>
+    <h2 style="font-size:1.9rem;">Issues with Time Modeling in Sampled Simulation</h2>
 
-    Insert image of timer interrupts being desynced from RTL
+    <ul class="smallish">
+      <li class="fragment">Prior work runs uArch simulators in "syscall emulation" mode when evaluating workloads (e.g. SPEC), not modeling any OS-application interactions</li>
+      <li class="fragment">Real workloads contain many interactions between processes and the OS which are sensitive to the modeling of time</li>
+    </ul>
+
+    <div class="center fragment">
+      <img width="60%" src="./figs/dynamic/tidalsim/timer_interrupts.svg" />
+    </div>
+
+    <p class="center fragment">Consider timer interrupts: naive functional simulators will just advance one timestep per commited instruction, not matching RTL!</p>
   </section>
 
   <section>
     <h2>TidalSim to Model Time Accurately</h2>
 
-    Insert image of bouncing between simulators and using interval embeddings to estimate actual time advancement
+    <div class="center fragment">
+      <img width="80%" src="./figs/dynamic/tidalsim/timer_interrupts.svg" />
+    </div>
+
+    <ul class="smallish">
+      <li class="fragment">We propose bouncing between functional and RTL simulation, where performance metrics from RTL sim impacts time advancement in functional sim</p>
+      <li class="fragment">To avoid simulating every interval in RTL sim, we leverage interval embeddings to estimate IPC on the fly</li>
+    </ul>
+    <!-- Insert image of bouncing between simulators and using interval embeddings to estimate actual time advancement-->
   </section>
 </section>
 
 <section>
-  <section>
+  <section class="center">
     <h2>5.d: Sampled Simulation with Accelerators</h2>
   </section>
 
@@ -214,6 +333,7 @@ def enqueue(data: T): Command[Unit] = for {
     <h2>What Makes Accelerators Suitable?</h2>
 
     Talk about how accelerator arch state is explicit and accelerators often don't have long-lived uarch state (that requires functional warmup)
+    Extend arch snapshotting to accelerator state too + add restoration capabilities for accelerator state to 
   </section>
 
   <section>
