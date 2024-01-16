@@ -1,10 +1,130 @@
 <section class="center">
   <h2 class="center">1. Why: What Is the Problem?</h2>
   <ul>
-    <li class="fragment">Emergence of domain-specialized heterogeneous SoCs</li>
+    <li class="fragment">Emergence of domain-specialized heterogeneous SoCs with specialized cores and accelerators</li>
     <li class="fragment">Rapid design iteration is the key to achiving optimal PPA + time to market</li>
-    <li class="fragment">Existing pre-silicon evaluation (power, performance, functionality) techniques on real workloads are unsuitable for rapid iteration</li>
+    <li class="fragment">Existing pre-silicon performance evaluation techniques on real workloads either bottleneck the iteration latency of the design cycle or are inaccurate</li>
+    <!--<li class="fragment">Existing pre-silicon evaluation (power, performance, functionality) techniques on real workloads are unsuitable for rapid iteration</li>-->
   </ul>
+</section>
+
+
+<section>
+  <h2 style="font-size:1.8rem;">The New-Era of Domain-Specialized Heterogeneous SoCs</h2>
+  <!-- Raptor Lake, Apple M3, Snapdragon 8 Gen 3, Exynos 2200 -->
+  <!-- Server class, laptop class, smartphone class - similar heterogeneous convergence -->
+
+  <div class="r-stack">
+    <div class="fragment fade-in-then-out" style="display: grid; place-items: center;">
+      <img width="100%" src="./figs/quals/raptor_lake.jpg">
+      <figcaption class="small center">{% include "./figs/quals/raptor_lake.jinja2" %}</figcaption>
+    </div>
+    <div class="fragment fade-in-then-out" style="display: grid; place-items: center;">
+      <img width="50%" src="./figs/quals/exynos_2200.jpg">
+      <figcaption class="small center">{% include "./figs/quals/exynos_2200.jinja2" %}</figcaption>
+    </div>
+    <div class="fragment fade-in-then-out" style="display: grid; place-items: center;">
+      <img width="80%" src="./figs/quals/a17_pro.jpg">
+      <figcaption class="small center">{% include "./figs/quals/a17_pro.jinja2" %}</figcaption>
+    </div>
+    <div class="fragment fade-in-then-out" style="display: grid; place-items: center;">
+      <img width="40%" src="./figs/quals/m3_max.jpg">
+      <figcaption class="small center">{% include "./figs/quals/m3_max.jinja2" %}</figcaption>
+    </div>
+    <div class="fragment fade-in">
+      <ul>
+        <li class="fragment">Two trends in SoC design:
+          <ul>
+            <li>Heterogeneous cores targeting different power/perf curves + workloads</li>
+            <li>Domain-specific accelerators</li>
+          </ul>
+        </li>
+        <li class="fragment">Need a pre-silicon evaluation strategy for rapid, PPA optimal design of these units
+          <ul>
+            <li>Limited time per design cycle {{ rightarrow }} time per evaluation limits optimization potential</li>
+            <li>More evaluations = more opportunities for optimization</li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2 style="font-size: 1.8rem;">The Microarchitectural Iteration Loop (Industry)</h2>
+
+  <div class="container" style="grid-template-columns: 1fr 1fr;">
+    <div class="fragment">
+      <img src="./figs/dynamic/tidalsim/uarch_iteration_flow_v2.svg" />
+      <figcaption class="small center">An idealized iteration loop for microarchitectural design. The 'Evaluator' starts off as a performance simulator and transitions to RTL as the design is iterated.</figcaption>
+    </div>
+    <div>
+      <img class="fragment" src="./figs/dynamic/tidalsim/industry_flow.svg" />
+      <figcaption class="small fragment center">During RTL implementation we need performance validation against the model.</figcaption>
+      <img width="70%" class="fragment" src="./figs/dynamic/tidalsim/industry_flow2.svg" />
+      <figcaption class="small fragment center">Existing techniques for RTL performance validation</figcaption>
+    </div>
+  </div>
+
+  <p class="center fragment">Industry needs a methodology for rapid RTL performance validation that can be used in the RTL design cycle.</p>
+
+  <!-- <p class="center fragment">We want an "Evaluator" that has low latency, high throughput, high accuracy, low cost, and rich output collateral</p>
+  <p class="center fragment"><strong>Existing tools cannot deliver on all axes</strong></p>-->
+
+  <!-- Can't get all axes using any existing tool (low latency, high throughput, low cost, high accuracy, rich output collateral)! -->
+  <!-- <p class="center fragment">Existing pre-silicon evaluation (power, performance, functionality) techniques on real workloads are unsuitable for rapid iteration</p> -->
+</section>
+
+<section>
+  <h2>The Microarchitectural Iteration Loop (Academia)</h2>
+  <!-- Using RTL in evaluation has been too difficult -->
+
+  <div class="center">
+      <img class="fragment" src="./figs/dynamic/tidalsim/academic_flow.svg" />
+      <figcaption class="small center fragment">The typical manner in which microarchitectural ideas are evaluated in academia. Academics rarely write RTL due to the difficulty of evaluation, instead opting for uArch simulators.</figcaption>
+  </div>
+
+  <p class="center fragment">Academia needs a methodology for rapid RTL evaluation as a part of an RTL-first evaluation strategy</p>
+</section>
+
+<section>
+  <h2>The Microarchitectural Iteration Loop (Startup)</h2>
+  <!-- Must advance a RTL-first design methodology -->
+
+  <div class="container" style="grid-template-columns: 1fr 1.5fr;">
+    <div>
+      <img width="70%" class="fragment" src="./figs/dynamic/tidalsim/startup_flow1.svg" />
+      <figcaption class="small fragment center">Startups have limited human resources to allocate to performance modeling, instead choosing to focus on architecture and RTL design.</figcaption>
+    </div>
+    <div>
+      <img width="100%" class="fragment" src="./figs/dynamic/tidalsim/startup_flow2.svg" />
+      <figcaption class="small fragment center">Cost-constrained, lean, teams can't depend on expensive emulation/prototyping platforms.</figcaption>
+    </div>
+  </div>
+
+  <p class="center fragment">Chip startups need a methodology for low-cost and rapid RTL evaluation to enable high productivity and confidence</p>
+</section>
+
+<section>
+  <h2>Limitations of Existing Evaluators</h2>
+
+  <div class="center">
+    <img width="50%" src="./figs/dynamic/tidalsim/uarch_iteration_flow_v2.svg" />
+  </div>
+
+  <ul class="smallish fragment">
+    <li><strong>ISA simulation</strong>: no accuracy</li>
+    <li><strong>Trace/Cycle uArch simulation</strong>: low accuracy, insufficient output collateral</li>
+    <li><strong>RTL simulation</strong>: low throughput</li>
+    <li><strong>FPGA prototyping</strong>: high startup latency</li>
+    <li><strong>HW emulators</strong>: high cost</li>
+  </ul>
+
+  <p class="center fragment">We will propose a <em>simulation methodology</em> that can deliver on all axes (accuracy, throughput, startup latency, cost).</p>
+</section>
+
+<section class="center">
+  <h2>Backup Slides</h2>
 </section>
 
 <section>
@@ -70,7 +190,7 @@
 </section>
 
 <section>
-  <h2>The Consequences of These Trends</h2>
+  <h2>Trends in SoCs</h2>
 
   <div class="container" style="text-align: center; grid-template-columns: 1fr 1fr;">
     <div class="fragment">
@@ -102,31 +222,6 @@
     <li class="fragment">Domain-specific accelerators</li>
   </ol>
   <!--<em>General-purpose</em> single thread performance is stagnating, but tuned cores still can squeeze a lot more out-->
-</section>
-
-<section>
-  <h2>The New-Era of Domain-Specialized Heterogeneous SoCs</h2>
-  <!-- Raptor Lake, Apple M3, Snapdragon 8 Gen 3, Exynos 2200 -->
-  <!-- Server class, laptop class, smartphone class - similar heterogeneous convergence -->
-
-  <div class="r-stack">
-    <div class="fragment fade-in-then-out" style="display: grid; place-items: center;">
-      <img width="100%" src="./figs/quals/raptor_lake.jpg">
-      <figcaption class="small center">{% include "./figs/quals/raptor_lake.jinja2" %}</figcaption>
-    </div>
-    <div class="fragment fade-in-then-out" style="display: grid; place-items: center;">
-      <img width="50%" src="./figs/quals/exynos_2200.jpg">
-      <figcaption class="small center">{% include "./figs/quals/exynos_2200.jinja2" %}</figcaption>
-    </div>
-    <div class="fragment fade-in-then-out" style="display: grid; place-items: center;">
-      <img width="80%" src="./figs/quals/a17_pro.jpg">
-      <figcaption class="small center">{% include "./figs/quals/a17_pro.jinja2" %}</figcaption>
-    </div>
-    <div class="fragment fade-in-then-out" style="display: grid; place-items: center;">
-      <img width="40%" src="./figs/quals/m3_max.jpg">
-      <figcaption class="small center">{% include "./figs/quals/m3_max.jinja2" %}</figcaption>
-    </div>
-  </div>
 </section>
 
 <section>
@@ -181,35 +276,4 @@
     </li>
   </ul>
   <p class="center fragment">More evaluations = more opportunities for optimization</p>
-</section>
-
-<section>
-  <h2>The Microarchitectural Iteration Loop</h2>
-
-  <div class="center">
-    <img src="./figs/dynamic/tidalsim/uarch_iteration_flow_v2.svg" />
-  </div>
-
-  <p class="center fragment">We want an "Evaluator" that has low latency, high throughput, high accuracy, low cost, and rich output collateral</p>
-  <p class="center fragment"><strong>Existing tools cannot deliver on all axes</strong></p>
-  <!-- Can't get all axes using any existing tool (low latency, high throughput, low cost, high accuracy, rich output collateral)! -->
-  <!-- <p class="center fragment">Existing pre-silicon evaluation (power, performance, functionality) techniques on real workloads are unsuitable for rapid iteration</p> -->
-</section>
-
-<section>
-  <h2>Limitations of Existing Evaluators</h2>
-
-  <div class="center">
-    <img width="60%" src="./figs/dynamic/tidalsim/uarch_iteration_flow_v2.svg" />
-  </div>
-
-  <ul class="smallish fragment">
-    <li><strong>ISA simulation</strong>: no accuracy</li>
-    <li><strong>Trace/Cycle uArch simulation</strong>: low accuracy, insufficient output collateral</li>
-    <li><strong>RTL simulation</strong>: low throughput</li>
-    <li><strong>FPGA prototyping</strong>: high latency</li>
-    <li><strong>HW emulators</strong>: high cost</li>
-  </ul>
-
-  <p class="center fragment"><strong>We will propose a simulator that can deliver on all axes.</strong></p>
 </section>

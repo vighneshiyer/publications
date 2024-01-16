@@ -14,7 +14,7 @@
         <li>Detailed warmup</li>
       </ul>
     </li>
-    <li class="fragment">Prior work on rapid microarchitectural evaluation</li>
+    <!--<li class="fragment">Prior work on rapid microarchitectural evaluation</li>-->
   </ul>
 </section>
 
@@ -52,8 +52,8 @@
 
   <ol>
     <li class="fragment">Architectural (functional) models</li>
-    <li class="fragment">Microarchitectural models (<em>"rough"</em>) with approximate state and timing</li>
-    <li class="fragment">Microarchitectural models (<em>"detailed"</em>) with more refined state and timing</li>
+    <li class="fragment"><em>"Rough"</em> microarchitectural models with approximate state and timing</li>
+    <li class="fragment"><em>"Detailed"</em> microarchitectural models with more refined state and timing</li>
     <li class="fragment">Register-transfer level (RTL) models with full fidelity state and timing</li>
   </ol>
 </section>
@@ -316,7 +316,7 @@
     <tr class="fragment">
       <td>FPGA Prototypes</td>
       <td>HAPS, Protium</td>
-      <td class="bg-red">≈ 50 MIPS</td>
+      <td class="bg-green">≈ 50 MIPS</td>
       <td class="bg-red">2-6 hours</td>
       <td class="bg-green">Cycle-exact</td>
       <td>Subset of RTL signals</td>
@@ -436,7 +436,7 @@
 <section>
   <h2>Flexibility vs Accuracy Tradeoff of uArch Simulators</h2>
 
-  <blockquote class="small">
+  <blockquote class="fragment small">
   Sniper though shows greater accuracy, is not very flexible to allow one to model new micro-architectural features compared to gem5.
   <!--Sniper does not support full-system simulation and the effect of OS for applications.
   It is best use is for x86 many-core user-mode workloads.-->
@@ -457,13 +457,13 @@
 
 <section>
   <h2>The Trends Myth</h2>
-  <blockquote class="small">
+  <blockquote class="fragment small">
 It is casually stated as, “Although specific details of the simulation are wrong, the overall trends will be correct.” <br />
 
 Relative performance comparisons may be correct, even if there is absolute error caused by a poor assumption or bug.<sup>[1]</sup>
   </blockquote>
 
-  <blockquote class="small">
+  <blockquote class="fragment small">
 However, for this to be true, the new technique being evaluated through simulation must be insulated from or statistically uncorrelated with the source of simulation errors.
 
 Because simulators can have significant errors, which are completely unknown, only in rare cases can we be sure this argument holds.<sup>[1]</sup>
@@ -554,12 +554,12 @@ Because simulators can have significant errors, which are completely unknown, on
 <section>
   <h2>False Confidence from Validation</h2>
 
-  <blockquote class="small">
+  <blockquote class="fragment small">
   A common misconception is that if the parameters are changed and configured for some other design point, the accuracy will be similar.<sup>[1]</sup>
   </blockquote>
 
   <blockquote class="small fragment">
-  tool validation is often carried out by fitting parameters to the “specific” validation targets, not about ensuring theunderlying modeling is accurate for individual phenomena or their interactions.<sup>[1]</sup>
+  tool validation is often carried out by fitting parameters to the “specific” validation targets, not about ensuring the underlying modeling is accurate for individual phenomena or their interactions.<sup>[1]</sup>
   </blockquote>
 
   <p class="fragment center">Calibration / validation of a uArch simulator against silicon doesn't make it suitable for microarchitectural iteration</p>

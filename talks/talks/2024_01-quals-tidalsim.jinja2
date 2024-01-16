@@ -44,7 +44,7 @@ import 'reveal.js/plugin/highlight/monokai.css'
 {% block slides %}
 <section class="center">
   <h1>TidalSim: A Unified Microarchitectural Simulation Framework</h1>
-  <h2 style="font-weight: 400;">To Identify and Leverage <strong>Unique Aspects of Workloads</strong> on <strong>Heterogeneous SoCs</strong> for Power and Performance Estimation and Verification</h2>
+  <h2 style="font-weight: 400;">To Identify and Leverage <strong>Unique Aspects of Workloads</strong> on <strong>Heterogeneous SoCs</strong> for Performance Estimation and Verification</h2>
   <h3 style="font-weight: 500;">Vighnesh Iyer</h3>
   <h3 style="font-weight: normal;">Qualifying Exam Presentation</h3>
   <h4 style="font-weight: normal;">Wednesday, January 17th, 2024</h4>
@@ -105,14 +105,76 @@ import 'reveal.js/plugin/highlight/monokai.css'
   <section>
     <h2>Outline</h2>
     <ol class="small">
-      <li class="fragment">Motivation and Background</li>
-      <li class="fragment">Implementation and Evaluation of TidalSim v0.1</li>
-      <li class="fragment">Implementation and Evaluation of TidalSim v1
+      <li class="fragment">Motivation and background</li>
+      <li class="fragment">Implementation and evaluation of TidalSim v0.1
         <ul>
-          <li>
+          <li>Mixed functional/RTL simulation, IPC/MPKI/cache behavior estimation</li>
+          <li>Clean estimation on all baremetal workloads (MiBench, Embench)</li>
+        </ul>
+      </li>
+      <li class="fragment">Implementation and evaluation of TidalSim v1
+        <ul>
+          <li>Functional warmup of all long-lived units</li>
+          <li>Demonstrate &lt;1% IPC error</li>
+        </ul>
+      </li>
+      <li class="fragment">Generalizing the spectrum of streaming sampled simulation
+        <ul>
+          <li>Formalization of sampled simulation</li>
+          <li>Investigating binary-agnostic embeddings</li>
+          <li>Running full-stack applications on top of an OS</li>
+        </ul>
+      </li>
+      <li class="fragment">Validating functional warmup models
+        <ul>
+          <li>SimCommand, parametric stimulus generation APIs, parametric fuzzing</li>
+          <li>Heuristics for comparing functional models and RTL uArch structures</li>
         </ul>
       </li>
     </ol>
+  </section>
+
+  <section>
+    <h2>Outline (continued)</h2>
+
+    <ol class="small" start=6>
+      <li class="fragment">Dynamically switching between RTL and functional simulation for modeling time accurately
+        <ul>
+          <li>Time estimation fidelity, comparison to FireSim in modeling timer interrupts</li>
+        </ul>
+      </li>
+      <li class="fragment">Sampled simulation for accelerators
+        <ul>
+          <li>New embeddings for code that uses accelerators</li>
+        </ul>
+      </li>
+      <li class="fragment">Using TidalSim for hardware DSE
+        <ul>
+          <li>Language-level support for arch/uArch state marking and testharness synthesis</li>
+          <li>Cache sizing/hierarchy case study to show superior DSE latency and accuracy vs other approaches</li>
+        </ul>
+      </li>
+      <li class="fragment">Using TidalSim for coverpoint synthesis</li>
+    </ol>
+  </section>
+
+  <section>
+    <h2>Outline (condensed)</h2>
+    <ol class="small">
+      <li>Motivation and background</li>
+      <li>Implementation and evaluation of TidalSim v0.1</li>
+      <li>Implementation and evaluation of TidalSim v1</li>
+      <li>Generalizing the spectrum of streaming sampled simulation</li>
+      <li>Validating functional warmup models</li>
+      <li>Dynamically switching between RTL and functional simulation for modeling time accurately</li>
+      <li>Sampled simulation for accelerators</li>
+      <li>Using TidalSim for hardware DSE</li>
+      <li>Using TidalSim for coverpoint synthesis</li>
+    </ol>
+
+    <div class="center">
+      <img width="50%" src="./figs/dynamic/tidalsim/uarch_iteration_flow_tidalsim.svg" />
+    </div>
   </section>
 </section>
 
