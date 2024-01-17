@@ -1,5 +1,5 @@
 <section class="center">
-  <h2>4. How (pt 1): TidalSim v0.1 (A Prototype Implementation)</h2>
+  <h2>4. How (pt 1): TidalSim v0.1<br />(A Prototype Implementation)</h2>
 
   <ul>
     <li>Implementation details of the TidalSim v0.1 prototype</li>
@@ -20,8 +20,134 @@
 -->
 
 <section style="text-align: center;">
-  <h2>Overview of TidalSim Flow</h2>
+  <h2>Overview of the TidalSim v0.1 Flow</h2>
   <img src="./figs/dynamic/tidalsim/overview.svg" />
+</section>
+
+<section>
+  <h2>Implementation Details For TidalSim v0.1</h2>
+  <div class="container" style="grid-template-columns: 1.2fr 1fr;">
+  <div>
+  <ul class="smallish">
+    <li class="fragment">Basic block identification
+      <ul><li>BB identification from spike commit log or from static ELF analysis</li></ul>
+    </li>
+    <li class="fragment">Basic block embedding of intervals</li>
+    <li class="fragment">Clustering and checkpointing
+      <ul>
+        <li>k-means, PCA-based n-clusters</li>
+        <li>spike-based checkpoints</li>
+      </ul>
+    </li>
+    <li class="fragment">RTL simulation and performance metric extraction
+      <ul><li>Custom force-based RTL state injection, out-of-band IPC measurement</li></ul>
+    </li>
+    <li class="fragment">Extrapolation
+      <ul><li>Estimate IPC of each interval based on its embedding and distances to RTL-simulated intervals</li></ul>
+    </li>
+  </ul>
+  </div>
+  <div style="display:grid; align-content: center;">
+    <img src="./figs/dynamic/tidalsim/overview.svg" />
+  </div>
+  </div>
+</section>
+
+<section>
+  <h2 style="font-size: 1.8rem;">Functional Cache Warmup with Memory Timestamp Record</h2>
+
+  <p class="smallish center fragment">Memory Timestamp Record (MTR)<sup>[1]</sup> is a cache warmup model that can be constructed once and reused for many different cache parameterizations</p>
+
+  <div class="r-stack center smallish">
+    <div class="fragment fade-in-then-out" style="display: grid; place-items: center;">
+      <img width="80%" src="./figs/dynamic/tidalsim/mtr_entry_update.svg"/>
+      <figcaption>Updating entries in the (MTR) data structure from an memory access trace</figcaption>
+    </div>
+
+    <div class="fragment fade-in" style="display: grid; place-items: center;">
+      <img width="60%" src="./figs/dynamic/tidalsim/mtr_reconstruction.svg"/>
+      <figcaption>Reconstructing a cache state from a MTR checkpoint for a specific cache parameterization</figcaption>
+    </div>
+  </div>
+
+  <div>
+    <hr>
+    <div class="verysmall">
+    <p class="footnote">
+    [1]: Barr, Kenneth C., et al. "Accelerating multiprocessor simulation with a memory timestamp record." ISPASS 2005.</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>IPC Trace Prediction: aha-mont64</h2>
+  <ul>
+    <li class="fragment">Montgomery multiplication from Embench (aha-mont64)</li>
+    <li class="fragment"><code>N=1000</code>, <code>C=12</code></li>
+    <li class="fragment">Full RTL sim takes 10 minutes, TidalSim runs in 10 seconds</li>
+    <li class="fragment">IPC is correlated (mean error &lt;5%)<!--; very weak correlation between distance and error--></li>
+  </ul>
+  <img class="fragment" src="./figs/multi-level-sim/aha-mont64_results.svg" />
+</section>
+
+<section>
+  <h2>IPC Trace Prediction: huffbench</h2>
+  <ul>
+    <li class="fragment">Huffman compression from Embench (huffbench)</li>
+    <li class="fragment"><code>N=10000</code>, <code>C=18</code></li>
+    <li class="fragment">Full RTL sim takes 15 minutes, TidalSim runs in 10 seconds</li>
+    <li class="fragment">Larger IPC variance</li>
+  </ul>
+  <img class="fragment" src="./figs/multi-level-sim/huffbench_results.svg" />
+</section>
+
+<section>
+  <h2>IPC Trace Prediction: wikisort</h2>
+  <ul>
+    <li class="fragment">Merge sort benchmark from Embench (wikisort)</li>
+    <li class="fragment"><code>N=10000</code>, <code>C=18</code></li>
+    <li class="fragment">Full RTL sim takes 15 minutes, TidalSim runs in 10 seconds</li>
+    <li class="fragment">Can capture general trends and time-domain IPC variation</li>
+  </ul>
+  <img class="fragment" src="./figs/multi-level-sim/wikisort_results.svg" />
+</section>
+
+<!-- Add box and whiskers IPC error plot -->
+<section>
+  <h2>Aggregate IPC Prediction for Embench Suite</h2>
+  <div class="center">
+    <img src="./figs/multi-level-sim/embench_ipc_error.svg" style="margin-bottom:0;" />
+  </div>
+  <p class="center fragment">Typical IPC error (<strong>without</strong> functional warmup and with fine time-domain precision of 10k instructions) <strong>is &lt; 5%</strong></p>
+</section>
+
+<section>
+  <h2>From Tidalsim v0.1 to v1</h2>
+
+  <!-- Things to do before calling the first prototype complete: -->
+
+  <ul>
+    <li class="fragment">Functional L1-only cache warmup</li>
+    <li class="fragment">Functional branch predictor warmup</li>
+    <!--<li class="fragment">Use robust checkpointing fork of spike
+      <ul>
+        <li>Better arch state initialization technique <span class="small">(via program snippet + selective forces depending on bits that can't be set via ISA)</span></li>
+      </ul>
+    </li>-->
+    <li class="fragment">Characterization on other baremetal workloads
+      <ul>
+        <li>dhrystone, coremark, riscv-tests benchmarks, MiBench</li>
+      </ul>
+    </li>
+    <li class="fragment">Explore more sophisticated clustering and extrapolation techniques</li>
+    <li class="fragment">Demonstrate we can hit <strong>&lt;1% IPC error</strong></li>
+  </ul>
+
+  <p class="fragment center">These milestones will set the stage for the qual proposal</p>
+</section>
+
+<section class="center">
+  <h2>Backup Slides</h2>
 </section>
 
 <section>
@@ -177,32 +303,6 @@ cycles,instret
 </section>
 
 <section>
-  <h2 style="font-size: 1.8rem;">Functional Cache Warmup with Memory Timestamp Record</h2>
-
-  <p class="smallish center fragment">Memory Timestamp Record (MTR)<sup>[1]</sup> is a cache warmup model that can be constructed once and reused for many different cache parameterizations</p>
-
-  <div class="r-stack center smallish">
-    <div class="fragment fade-in-then-out" style="display: grid; place-items: center;">
-      <img width="80%" src="./figs/dynamic/tidalsim/mtr_entry_update.svg"/>
-      <figcaption>Updating entries in the (MTR) data structure from an memory access trace</figcaption>
-    </div>
-
-    <div class="fragment fade-in" style="display: grid; place-items: center;">
-      <img width="60%" src="./figs/dynamic/tidalsim/mtr_reconstruction.svg"/>
-      <figcaption>Reconstructing a cache state from a MTR checkpoint for a specific cache parameterization</figcaption>
-    </div>
-  </div>
-
-  <div class="fragment">
-    <hr>
-    <div class="verysmall">
-    <p class="footnote">
-    [1]: Barr, Kenneth C., et al. "Accelerating multiprocessor simulation with a memory timestamp record." ISPASS 2005.</p>
-    </div>
-  </div>
-</section>
-
-<section>
   <h2>Extrapolation</h2>
   <ul>
     <li class="fragment">We gather performance metrics for one sampling unit in each cluster that is taken to be representative of that cluster ($\vec{p}$)</li>
@@ -213,72 +313,4 @@ cycles,instret
       </ul>
     <li class="fragment">Compute the estimated performance of all intervals to extrapolate to a full performance trace</li>
   </ul>
-</section>
-
-<section>
-  <h2>IPC Trace Prediction: aha-mont64</h2>
-  <ul>
-    <li class="fragment">Montgomery multiplication from Embench (aha-mont64)</li>
-    <li class="fragment"><code>N=1000</code>, <code>C=12</code></li>
-    <li class="fragment">Full RTL sim takes 10 minutes, TidalSim runs in 10 seconds</li>
-    <li class="fragment">IPC is correlated (mean error &lt;5%)<!--; very weak correlation between distance and error--></li>
-  </ul>
-  <img class="fragment" src="./figs/multi-level-sim/aha-mont64_results.svg" />
-</section>
-
-<section>
-  <h2>IPC Trace Prediction: huffbench</h2>
-  <ul>
-    <li class="fragment">Huffman compression from Embench (huffbench)</li>
-    <li class="fragment"><code>N=10000</code>, <code>C=18</code></li>
-    <li class="fragment">Full RTL sim takes 15 minutes, TidalSim runs in 10 seconds</li>
-    <li class="fragment">Larger IPC variance</li>
-  </ul>
-  <img class="fragment" src="./figs/multi-level-sim/huffbench_results.svg" />
-</section>
-
-<section>
-  <h2>IPC Trace Prediction: wikisort</h2>
-  <ul>
-    <li class="fragment">Merge sort benchmark from Embench (wikisort)</li>
-    <li class="fragment"><code>N=10000</code>, <code>C=18</code></li>
-    <li class="fragment">Full RTL sim takes 15 minutes, TidalSim runs in 10 seconds</li>
-    <li class="fragment">Can capture general trends and time-domain IPC variation</li>
-  </ul>
-  <img class="fragment" src="./figs/multi-level-sim/wikisort_results.svg" />
-</section>
-
-<section>
-  <h2>Aggregate IPC Prediction for Embench Suite</h2>
-  <div class="center">
-    <img src="./figs/multi-level-sim/embench_ipc_error.svg" style="margin-bottom:0;" />
-  </div>
-  <p class="center fragment">Typical IPC error (<strong>without</strong> functional warmup and with fine time-domain precision of 10k instructions) <strong>is &lt; 5%</strong></p>
-</section>
-
-<!-- Add box and whiskers IPC error plot -->
-
-<section>
-  <h2>From Tidalsim v0.1 to v1</h2>
-
-  <!-- Things to do before calling the first prototype complete: -->
-
-  <ul>
-    <li class="fragment">Functional L1-only cache warmup</li>
-    <li class="fragment">Functional branch predictor warmup</li>
-    <li class="fragment">Use robust checkpointing fork of spike
-      <ul>
-        <li>Better arch state initialization technique <span class="small">(via program snippet + selective forces depending on bits that can't be set via ISA)</span></li>
-      </ul>
-    </li>
-    <li class="fragment">Characterization on other baremetal workloads
-      <ul>
-        <li>dhrystone, coremark, riscv-tests benchmarks, MiBench</li>
-      </ul>
-    </li>
-    <li class="fragment">Explore more sophisticated clustering and extrapolation techniques</li>
-    <li class="fragment"><strong>Demonstrate we can hit &lt;1% IPC error</strong></li>
-  </ul>
-
-  <p class="fragment center">These milestones will set the stage for the qual proposal</p>
 </section>
