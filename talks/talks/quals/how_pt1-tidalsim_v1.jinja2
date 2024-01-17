@@ -80,17 +80,6 @@
 </section>
 
 <section>
-  <h2>IPC Trace Prediction: aha-mont64</h2>
-  <ul>
-    <li class="fragment">Montgomery multiplication from Embench (aha-mont64)</li>
-    <li class="fragment"><code>N=1000</code>, <code>C=12</code></li>
-    <li class="fragment">Full RTL sim takes 10 minutes, TidalSim runs in 10 seconds</li>
-    <li class="fragment">IPC is correlated (mean error &lt;5%)<!--; very weak correlation between distance and error--></li>
-  </ul>
-  <img class="fragment" src="./figs/multi-level-sim/aha-mont64_results.svg" />
-</section>
-
-<section>
   <h2>IPC Trace Prediction: huffbench</h2>
   <ul>
     <li class="fragment">Huffman compression from Embench (huffbench)</li>
@@ -119,31 +108,6 @@
     <img src="./figs/multi-level-sim/embench_ipc_error.svg" style="margin-bottom:0;" />
   </div>
   <p class="center fragment">Typical IPC error (<strong>without</strong> functional warmup and with fine time-domain precision of 10k instructions) <strong>is &lt; 5%</strong></p>
-</section>
-
-<section>
-  <h2>From Tidalsim v0.1 to v1</h2>
-
-  <!-- Things to do before calling the first prototype complete: -->
-
-  <ul>
-    <li class="fragment">Functional L1-only cache warmup</li>
-    <li class="fragment">Functional branch predictor warmup</li>
-    <!--<li class="fragment">Use robust checkpointing fork of spike
-      <ul>
-        <li>Better arch state initialization technique <span class="small">(via program snippet + selective forces depending on bits that can't be set via ISA)</span></li>
-      </ul>
-    </li>-->
-    <li class="fragment">Characterization on other baremetal workloads
-      <ul>
-        <li>dhrystone, coremark, riscv-tests benchmarks, MiBench</li>
-      </ul>
-    </li>
-    <li class="fragment">Explore more sophisticated clustering and extrapolation techniques</li>
-    <li class="fragment">Demonstrate we can hit <strong>&lt;1% IPC error</strong></li>
-  </ul>
-
-  <p class="fragment center">These milestones will set the stage for the qual proposal</p>
 </section>
 
 <section class="center">
@@ -313,4 +277,40 @@ cycles,instret
       </ul>
     <li class="fragment">Compute the estimated performance of all intervals to extrapolate to a full performance trace</li>
   </ul>
+</section>
+
+<section>
+  <h2>IPC Trace Prediction: aha-mont64</h2>
+  <ul>
+    <li class="fragment">Montgomery multiplication from Embench (aha-mont64)</li>
+    <li class="fragment"><code>N=1000</code>, <code>C=12</code></li>
+    <li class="fragment">Full RTL sim takes 10 minutes, TidalSim runs in 10 seconds</li>
+    <li class="fragment">IPC is correlated (mean error &lt;5%)<!--; very weak correlation between distance and error--></li>
+  </ul>
+  <img class="fragment" src="./figs/multi-level-sim/aha-mont64_results.svg" />
+</section>
+
+<section>
+  <h2>From Tidalsim v0.1 to v1</h2>
+
+  <!-- Things to do before calling the first prototype complete: -->
+
+  <ul>
+    <li class="fragment">Functional L1-only cache warmup</li>
+    <li class="fragment">Functional branch predictor warmup</li>
+    <!--<li class="fragment">Use robust checkpointing fork of spike
+      <ul>
+        <li>Better arch state initialization technique <span class="small">(via program snippet + selective forces depending on bits that can't be set via ISA)</span></li>
+      </ul>
+    </li>-->
+    <li class="fragment">Characterization on other baremetal workloads
+      <ul>
+        <li>dhrystone, coremark, riscv-tests benchmarks, MiBench</li>
+      </ul>
+    </li>
+    <li class="fragment">Explore more sophisticated clustering and extrapolation techniques</li>
+    <li class="fragment">Demonstrate we can hit <strong>&lt;1% IPC error</strong></li>
+  </ul>
+
+  <p class="fragment center">These milestones will set the stage for the qual proposal</p>
 </section>

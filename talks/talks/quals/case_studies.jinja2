@@ -24,17 +24,18 @@
 
   <ul>
     <li class="fragment"><!--Evaluate the impact of cache sizing and configuration-->
-      Potential microarchitectural knobs to explore
+      Microarchitectural knobs to explore
       <ul>
-        <li>Cache sizing between L1d and L1i</li>
+        <!--<li>Cache sizing between L1d and L1i</li>
         <li>Balancing capacity between 2-level cache hierarchies</li>
-        <!--<li>Unified vs separate I/D L2 caches</li>-->
+        <li>Unified vs separate I/D L2 caches</li>
         <li>Tuning cache associativity or replacement policy</li>
-        <li>Branch predictor parameters (e.g. fine-tuning BTB entries)</li>
+        <li>Branch predictor parameters (e.g. fine-tuning BTB entries)</li>-->
+        <li>Prefetcher tuning<sup>[1]</sup></li>
       </ul>
     <li class="fragment">Workloads for tuning
       <ul>
-        <li>HyperProtoBench</li>
+        <li>HyperCompressBench (baremetal), HyperProtoBench (Linux)</li>
       </ul>
     </li>
     <li class="fragment">Expected results
@@ -45,13 +46,27 @@
       </ul>
     </li>
   </ul>
+
+  <blockquote class="fragment smallish">
+Many of Arm's efficiency gains come from small, microarchitectural level changes, mostly around how it implements data prefetch and branch prediction.
+  </blockquote>
+
+  <div>
+    <hr>
+    <div class="verysmall">
+    <p class="footnote">
+    [1]: <a href="https://www.anandtech.com/show/18871/arm-unveils-armv92-mobile-architecture-cortex-x4-a720-and-a520-64bit-exclusive/4">Cortex-A520: LITTLE Core with Big Improvements</a>
+    </p>
+    </div>
+  </div>
 </section>
 
 <section>
-  <h2>5.a: Leveraging Chisel for RTL State Injection</h2>
+  <h2>5.a: Leveraging HDLs for TidalSim Methodology</h2>
 
   <ul>
-    <li class="fragment">Existing harness is hardcoded for one Chipyard SoC design point</li>
+    <li class="fragment">HW DSE with TidalSim requires an RTL injection harness</li>
+    <!--Existing harness is hardcoded for one Chipyard SoC design point</li>-->
     <li class="fragment">Automatic harness generation using high-level HDLs
       <ul>
         <li class="fragment">Chisel API to <em>semantically mark</em> arch and uArch state</li>
@@ -73,7 +88,7 @@ class L1MetadataArray[T &lt;: L1Metadata] extends L1HellaCacheModule()(p) {
   // ...
   val tag_array = SyncReadMem(nSets, Vec(nWays, UInt(metabits.W)))
   (0 until nSets).zip((0 until nWays)).map { case (set, way) =&gt;
-    uArchStateAnnotation(tag_array.read(set)(way), Uarch.L1.tag(set, way, cacheType=I)
+    uArchStateAnnotation(tag_array.read(set)(way), Uarch.L1.tag(set, way, cacheType=I))
   }
 }
   </code></pre>
@@ -82,12 +97,19 @@ class L1MetadataArray[T &lt;: L1Metadata] extends L1HellaCacheModule()(p) {
 <section>
   <h2>5.b: TidalSim for Verification</h2>
 
-  <div class="center">
-    <img width="60%" src="./figs/dynamic/tidalsim/uarch_iteration_flow_tidalsim_simple.svg" />
+  <div class="container" style="grid-template-columns: 1fr 1.4fr">
+    <div class="fragment">
+      <img width="100%" src="./figs/dynamic/tidalsim/uarch_iteration_flow_tidalsim_simple.svg" />
+    </div>
+    <div class="fragment">
+      <img width="100%" src="./figs/dynamic/tidalsim/cp_synthesis1.svg" />
+    </div>
   </div>
 
+  <div class="center">
+
   <ul>
-    <li class="fragment">Verification techniques require many waveforms for analysis
+    <li class="fragment">Property synthesis techniques require waveforms for analysis
       <ul>
         <li><strong>Specification mining</strong> for invariant synthesis or RTL bug localization</li>
         <li><strong>Coverpoint synthesis</strong> for tuning stimulus generators towards bugs</li>
@@ -95,7 +117,7 @@ class L1MetadataArray[T &lt;: L1Metadata] extends L1HellaCacheModule()(p) {
     </li>
   </ul>
 
-  <p class="center fragment">TidalSim provides a way to extract small, unique RTL waveforms from large workloads with low latency</p>
+  <p class="center fragment">TidalSim provides a way to extract many small, unique, RTL waveforms from large workloads with low latency</p>
 </section>
 
 <section>
@@ -186,8 +208,12 @@ class L1MetadataArray[T &lt;: L1Metadata] extends L1HellaCacheModule()(p) {
 <section>
   <h2 style="font-size:1.8rem;">5.b: Coverpoint Synthesis as Complement of Spec Mining</h2>
 
-  <ul>
-    <li class="fragment"><em>Specification mining</em> takes waveforms of an RTL design and synthesizes properties that are unfalsified on all traces</li>
+  <div class="center fragment">
+    <img width="60%" src="./figs/dynamic/tidalsim/cp_synthesis2.svg" />
+  </div>
+
+  <ul class="small">
+    <!--<li class="fragment"><em>Specification mining</em> takes waveforms of an RTL design and synthesizes properties that are unfalsified on all traces</li>-->
     <li class="fragment">Coverpoint synthesis is an alternative take on spec mining where we synthesize μArch properties that we want to see more of
       <ul>
         <li>Instead of monitoring properties for falsification, we monitor them for <em>completion</em></li>
@@ -200,10 +226,11 @@ class L1MetadataArray[T &lt;: L1Metadata] extends L1HellaCacheModule()(p) {
       </ul>
     </li>
     -->
-    <li class="fragment">Evaluation:
+    <li class="fragment">Evaluation
       <ul>
-        <li>Synthesize coverpoints on Rocket using waveforms from TidalSim and regular RTL sim with the same compute budget</li>
-        <li>Demonstrate we can synthesize more, and more interesting coverpoints using TidalSim data</li>
+        <li class="fragment">Synthesize coverpoints on Rocket using waveforms from TidalSim and regular RTL sim with the same compute budget</li>
+        <li class="fragment">Demonstrate we can synthesize more, and more interesting coverpoints using TidalSim data</li>
+        <li class="fragment">Evaluate off-the-shelf RISC-V instgen on synthesized coverpoints vs structural coverage</li>
       </ul>
     </li>
   </ul>

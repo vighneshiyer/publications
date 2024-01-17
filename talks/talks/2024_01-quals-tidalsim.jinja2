@@ -57,13 +57,10 @@ import 'reveal.js/plugin/highlight/monokai.css'
     <li class="fragment"><strong>What</strong>: What is the thing I want to build?</li>
     <li class="fragment"><strong>Prior work</strong> + <strong>what's new</strong> about my proposal?</li>
     <li class="fragment"><strong>How (pt 1)</strong>: A prototype implementation of my proposal</li>
-    <li class="fragment"><strong>Case studies</strong> / <strong>applications</strong>: How will we use what we built to do something that was impossible before?</li>
-    <li class="fragment"><strong>How (pt 2)</strong>: Addressing faults of and generalizing the prototype
-      <ul style="font-size: 1.4rem;">
-        <li>Each point roughly corresponds to a thesis chapter</li>
-      </ul>
-    </li>
-    <li class="fragment"><strong>Thesis outline</strong> and paper plan</li>
+    <li class="fragment"><strong>Case studies</strong> / <strong>applications</strong>: Using TidalSim for performance optimization and verification</li>
+    <!--How will we use what we built to do something that was impossible before?</li>-->
+    <li class="fragment"><strong>How (pt 2)</strong>: New contributions to sampled simulation methodology</li>
+    <li class="fragment"><strong>Thesis outline</strong><!-- and paper plan --></li>
   </ol>
 </section>
 
@@ -105,77 +102,52 @@ import 'reveal.js/plugin/highlight/monokai.css'
 
   <section>
     <h2>Outline</h2>
-    <ol class="small">
+    <ol style="font-size: 1rem;">
       <li class="fragment">Motivation and background</li>
-      <li class="fragment">Implementation and evaluation of TidalSim v0.1
+      <li class="fragment">Implementation and evaluation of TidalSim v0.1 - <strong>Completed</strong>
         <ul>
           <li>Mixed functional/RTL simulation, IPC/MPKI/cache behavior estimation</li>
           <li>Clean estimation on all baremetal workloads (MiBench, Embench)</li>
         </ul>
       </li>
-      <li class="fragment">Implementation and evaluation of TidalSim v1
+      <li class="fragment">Implementation and evaluation of TidalSim v1 - <strong>March 2024</strong>
         <ul>
           <li>Functional warmup of all long-lived units</li>
           <li>Demonstrate &lt;1% IPC error</li>
         </ul>
       </li>
-      <li class="fragment">Generalizing the spectrum of streaming sampled simulation
+      <!--<li class="fragment">Generalizing the spectrum of streaming sampled simulation
         <ul>
           <li>Formalization of sampled simulation</li>
           <li>Investigating binary-agnostic embeddings</li>
           <li>Running full-stack applications on top of an OS</li>
         </ul>
-      </li>
-      <li class="fragment">Validating functional warmup models
+      </li>-->
+      <li class="fragment">Validating functional warmup models - <strong>May 2024</strong>
         <ul>
           <li>SimCommand, parametric stimulus generation APIs, parametric fuzzing</li>
           <li>Heuristics for comparing functional models and RTL uArch structures</li>
         </ul>
       </li>
-    </ol>
-  </section>
-
-  <section>
-    <h2>Outline (continued)</h2>
-
-    <ol class="small" start=6>
-      <li class="fragment">Dynamically switching between RTL and functional simulation for modeling time accurately
+      <li class="fragment">Modeling time accurately - <strong>June 2024</strong>
         <ul>
+          <li>Dynamically switching between RTL and functional simulation for modeling time accurately</li>
           <li>Time estimation fidelity, comparison to FireSim in modeling timer interrupts</li>
         </ul>
       </li>
-      <li class="fragment">Sampled simulation for accelerators
+      <li class="fragment">Sampled simulation for accelerators - <strong>August 2024</strong>
         <ul>
           <li>New embeddings for code that uses accelerators</li>
         </ul>
       </li>
-      <li class="fragment">Using TidalSim for hardware DSE
+      <li class="fragment">Using TidalSim for hardware DSE - <strong>September 2024</strong>
         <ul>
           <li>Language-level support for arch/uArch state marking and testharness synthesis</li>
-          <li>Cache sizing/hierarchy case study to show superior DSE latency and accuracy vs other approaches</li>
+          <li>Prefetcher optimization case study to show superior DSE latency and accuracy vs other approaches</li>
         </ul>
       </li>
-      <li class="fragment">Using TidalSim for coverpoint synthesis</li>
+      <li class="fragment">Using TidalSim for coverpoint synthesis - <strong>November 2024</strong></li>
     </ol>
-  </section>
-
-  <section>
-    <h2>Outline (condensed)</h2>
-    <ol class="small">
-      <li>Motivation and background</li>
-      <li>Implementation and evaluation of TidalSim v0.1</li>
-      <li>Implementation and evaluation of TidalSim v1</li>
-      <li>Generalizing the spectrum of streaming sampled simulation</li>
-      <li>Validating functional warmup models</li>
-      <li>Dynamically switching between RTL and functional simulation for modeling time accurately</li>
-      <li>Sampled simulation for accelerators</li>
-      <li>Using TidalSim for hardware DSE</li>
-      <li>Using TidalSim for coverpoint synthesis</li>
-    </ol>
-
-    <div class="center">
-      <img width="50%" src="./figs/dynamic/tidalsim/uarch_iteration_flow_tidalsim.svg" />
-    </div>
   </section>
 </section>
 

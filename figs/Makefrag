@@ -51,6 +51,7 @@ $(eval $(call dynamic_pdf,tidalsim,"gdrive:Tidalsim_Figs.pdf",\
     industry_flow industry_flow2 academic_flow startup_flow1 startup_flow2 uarch_iteration_flow_tidalsim_simple tidalsim_components tidalsim_components_simple \
     industry_flow_new academic_flow_new startup_flow_new \
     why_rtl \
+    cp_synthesis1 cp_synthesis2 \
     ))
 
 # Targets to generate figures and use them downstream
