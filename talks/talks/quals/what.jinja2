@@ -6,7 +6,7 @@
     <li class="fragment">Is <strong>fast</strong> enough to run real workloads<!-- on heterogeneous SoCs--></li>
     <li class="fragment">Is <strong>accurate</strong> enough to use confidently for microarchitectural DSE</li>
     <li class="fragment">Has <strong>low latency</strong> to not bottleneck the hardware iteration loop</li>
-    <li class="fragment">Can produce <strong>RTL-level collateral</strong> for power modeling and verification</li>
+    <li class="fragment">Can produce <strong>RTL-level collateral</strong> for performance or functional verification</li>
     <li>Can run <strong>real workloads</strong> by identifying unique aspects of the program automatically<!--with respect to power, performance, and functionality--></li>
     </li>
   </ol>
@@ -37,7 +37,7 @@
   <h2>TidalSim Execution</h2>
 
   <div class="center fragment">
-    <img width="70%" src="./figs/multi-level-sim/tidalsim_time_domain.svg" />
+    <img width="70%" src="./figs/multi-level-sim/tidalsim_time_domain.svg" style="margin-top:-1rem;"/>
     <figcaption class="fragment smallish center" style="margin-top:-1.5rem;">TidalSim moves simulation execution back and forth between architectural, uArch, and RTL simulators based on dynamic workload analysis.</figcaption>
   </div>
 </section>
