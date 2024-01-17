@@ -1,9 +1,11 @@
 <section class="center">
   <h2 class="center">1. Why: What Is the Problem?</h2>
   <ul>
-    <li class="fragment">Emergence of domain-specialized heterogeneous SoCs with specialized cores and accelerators</li>
+    <!--<li class="fragment">Emergence of domain-specialized heterogeneous SoCs with specialized cores and accelerators</li>
     <li class="fragment">Rapid design iteration is the key to achiving optimal PPA + time to market</li>
     <li class="fragment">Existing pre-silicon performance evaluation techniques on real workloads either bottleneck the iteration latency of the design cycle or are inaccurate</li>
+    -->
+
     <!--<li class="fragment">Existing pre-silicon evaluation (power, performance, functionality) techniques on real workloads are unsuitable for rapid iteration</li>-->
   </ul>
 </section>
@@ -41,7 +43,7 @@
         </li>
         <li class="fragment">Need a pre-silicon evaluation strategy for rapid, PPA optimal design of these units
           <ul>
-            <li>Limited time per design cycle {{ rightarrow }} time per evaluation limits optimization potential</li>
+            <li>Limited time per design cycle {{ rightarrow }} limited time per evaluation</li>
             <li>More evaluations = more opportunities for optimization</li>
           </ul>
         </li>
@@ -109,18 +111,18 @@
   <h2>Limitations of Existing Evaluators</h2>
 
   <div class="center">
-    <img width="50%" src="./figs/dynamic/tidalsim/uarch_iteration_flow_v2.svg" />
+    <img width="40%" src="./figs/dynamic/tidalsim/uarch_iteration_flow_v2.svg" />
   </div>
 
-  <ul class="smallish fragment">
+  <ul class="small fragment">
     <li><strong>ISA simulation</strong>: no accuracy</li>
-    <li><strong>Trace/Cycle uArch simulation</strong>: low accuracy, insufficient output collateral</li>
+    <li><strong>Trace/Cycle uArch simulation</strong>: low accuracy <!--(unknown sources of errors)--></li>
     <li><strong>RTL simulation</strong>: low throughput</li>
     <li><strong>FPGA prototyping</strong>: high startup latency</li>
     <li><strong>HW emulators</strong>: high cost</li>
   </ul>
 
-  <p class="center fragment">We will propose a <em>simulation methodology</em> that can deliver on all axes (accuracy, throughput, startup latency, cost).</p>
+  <p class="center fragment">We will propose a <em>simulation methodology</em> that can deliver on all axes (accuracy, throughput, startup latency, cost) and is useful for industry, academics, and startups.</p>
 </section>
 
 <section class="center">
