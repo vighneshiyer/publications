@@ -216,8 +216,8 @@ class L1MetadataArray[T &lt;: L1Metadata] extends L1HellaCacheModule()(p) {
     <!--<li class="fragment"><em>Specification mining</em> takes waveforms of an RTL design and synthesizes properties that are unfalsified on all traces</li>-->
     <li class="fragment">Coverpoint synthesis is an alternative take on spec mining where we synthesize μArch properties that we want to see more of
       <ul>
-        <li>Instead of monitoring properties for falsification, we monitor them for <em>completion</em></li>
-        <li>Properties that are <em>completed</em>, but not too often, are good candidates for coverpoints</li>
+        <li>Instead of monitoring properties just for falsification, we also monitor them for <em>completion</em></li>
+        <li>Properties that are <em>falsified</em> or <em>completed</em>, but not too often, are good candidates for coverpoints</li>
       </ul>
     </li>
     <!--<li class="fragment">This technique is far more effective if we have <em>many unique, realistic traces</em>
