@@ -1,5 +1,5 @@
 <section class="center">
-  <h2>6. Case Studies / Applications</h2>
+  <h2>5. Case Studies / Applications</h2>
   <ol style="list-style-type: lower-alpha;">
     <li class="fragment">Hardware parameter DSE / microarchitecture optimization</li>
     <li class="fragment">Coverpoint synthesis for verification</li>
@@ -7,29 +7,57 @@
 </section>
 
 <section>
-  <h2>6.a: TidalSim for HW Parameter DSE</h2>
+  <h2>5.a: TidalSim for HW Parameter DSE</h2>
 
   <div class="center">
-    <img width="60%" src="./figs/dynamic/tidalsim/uarch_iteration_flow_tidalsim.svg" />
+    <img width="80%" src="./figs/dynamic/tidalsim/uarch_iteration_flow_tidalsim_simple.svg" />
   </div>
 
+  <p class="center fragment">Demonstrate that use of TidalSim leads to better design decisions over RTL simulation and FireSim for a given compute budget.</p>
+
+  <p class="center fragment">Show how TidalSim enables quick fine-tuning of a core for a given workload.</p>
+  <!--<li class="fragment">Compare TidalSim for evaluating these tradeoffs on real workloads vs RTL simulation and FireSim</li>-->
+</section>
+
+<section>
+  <h2 style="font-size: 2rem;">5.a: Microarchitectural Optimizations and Workloads</h2>
+
   <ul>
-    <li class="fragment">Evaluate the impact of cache sizing and configuration
+    <li class="fragment"><!--Evaluate the impact of cache sizing and configuration-->
+      Potential microarchitectural knobs to explore
       <ul>
         <li>Cache sizing between L1d and L1i</li>
         <li>Balancing capacity between 2-level cache hierarchies</li>
-        <li>Unified vs separate I/D L2 caches</li>
+        <!--<li>Unified vs separate I/D L2 caches</li>-->
+        <li>Tuning cache associativity or replacement policy</li>
+        <li>Branch predictor parameters (e.g. fine-tuning BTB entries)</li>
       </ul>
-    <li class="fragment">Compare TidalSim for evaluating these tradeoffs on real workloads vs RTL simulation and FireSim</li>
+    <li class="fragment">Workloads for tuning
+      <ul>
+        <li>HyperProtoBench</li>
+      </ul>
+    </li>
+    <li class="fragment">Expected results
+      <ul>
+        <li>RTL simulation {{ rightarrow }} can evaluate only a few workloads, but with many design points</li>
+        <li>FireSim {{ rightarrow }} can evaluate many workloads, but only a few design points</li>
+        <li>TidalSim {{ rightarrow }} can evaluate many workloads and many design points</li>
+      </ul>
+    </li>
   </ul>
 </section>
 
 <section>
-  <h2>6.a: Leveraging Chisel for RTL State Injection</h2>
+  <h2>5.a: Leveraging Chisel for RTL State Injection</h2>
 
   <ul>
-    <li class="fragment">Current test harness is hardcoded for one Chipyard SoC design point</li>
-    <li class="fragment">Use a Chisel API to semantically mark arch and uArch state and use a FIRRTL pass to generate a state-injecting test harness</li>
+    <li class="fragment">Existing harness is hardcoded for one Chipyard SoC design point</li>
+    <li class="fragment">Automatic harness generation using high-level HDLs
+      <ul>
+        <li class="fragment">Chisel API to <em>semantically mark</em> arch and uArch state</li>
+        <li class="fragment">FIRRTL pass to generate a state-injecting test harness</li>
+      </ul>
+    </li>
   </ul>
 
   <pre class="fragment"><code class="language-scala" data-trim data-noescape data-line-numbers="|3">
@@ -52,28 +80,29 @@ class L1MetadataArray[T &lt;: L1Metadata] extends L1HellaCacheModule()(p) {
 </section>
 
 <section>
-  <h2>6.b: TidalSim for Verification</h2>
+  <h2>5.b: TidalSim for Verification</h2>
 
   <div class="center">
-    <img width="60%" src="./figs/dynamic/tidalsim/uarch_iteration_flow_tidalsim.svg" />
+    <img width="60%" src="./figs/dynamic/tidalsim/uarch_iteration_flow_tidalsim_simple.svg" />
   </div>
 
   <ul>
-    <li class="fragment">Some verification techniques require numerous dynamic waveforms for analysis
+    <li class="fragment">Verification techniques require many waveforms for analysis
       <ul>
         <li><strong>Specification mining</strong> for invariant synthesis or RTL bug localization</li>
         <li><strong>Coverpoint synthesis</strong> for tuning stimulus generators towards bugs</li>
       </ul>
     </li>
-    <li class="fragment">TidalSim provides a way to extract small, unique RTL waveforms from large workloads with low latency</li>
   </ul>
+
+  <p class="center fragment">TidalSim provides a way to extract small, unique RTL waveforms from large workloads with low latency</p>
 </section>
 
 <section>
-  <h2>6.b: Past Work on Specification Mining</h2>
+  <h2>5.b: Past Work on Specification Mining</h2>
 
   <ul>
-    <li>Take waveforms from RTL simulation and attempt to mine unfalsified specifications involving 2+ RTL signals<sup>[1]</sup></li>
+    <li class="fragment">Take waveforms from RTL simulation and attempt to mine unfalsified specifications involving 2+ RTL signals<sup>[1]</sup></li>
   </ul>
 
   <div class="center fragment">
@@ -81,17 +110,17 @@ class L1MetadataArray[T &lt;: L1Metadata] extends L1HellaCacheModule()(p) {
   </div>
 
   <ul>
-    <li>Specifications are constructed from LTL templates
+    <li class="fragment">Specifications are constructed from LTL templates
       <ul>
-        <li><strong>Until</strong>: $ \mathbf{G}\, (a \rightarrow \mathbf{X}\, (a\, \mathbf{U}\, b)) $</li>
-        <li><strong>Next</strong>: $ \mathbf{G}\, (a \rightarrow \mathbf{X}\, b) $</li>
-        <li><strong>Eventual</strong>: $ \mathbf{G}\, (a \rightarrow \mathbf{X F}\, b) $</li>
-        <li>$a$ and $b$ are atomic propositions constructed from signals in the RTL design</li>
+        <li class="fragment"><strong>Until</strong>: $ \mathbf{G}\, (a \rightarrow \mathbf{X}\, (a\, \mathbf{U}\, b)) $</li>
+        <li class="fragment"><strong>Next</strong>: $ \mathbf{G}\, (a \rightarrow \mathbf{X}\, b) $</li>
+        <li class="fragment"><strong>Eventual</strong>: $ \mathbf{G}\, (a \rightarrow \mathbf{X F}\, b) $</li>
+        <li class="fragment">$a$ and $b$ are atomic propositions constructed from signals in the RTL design</li>
       </ul>
     </li>
   </ul>
 
-  <div class="fragment">
+  <div>
   <hr>
   <div class="verysmall">
     <p class="footnote">
@@ -102,7 +131,7 @@ class L1MetadataArray[T &lt;: L1Metadata] extends L1HellaCacheModule()(p) {
 </section>
 
 <section>
-  <h2 style="font-size:1.8rem;">6.b: Specification Mining Used for RTL Bug Localization</h2>
+  <h2 style="font-size:1.8rem;">5.b: Specification Mining Used for RTL Bug Localization</h2>
 
     <p class="fragment center small">Introduce a bug in the riscv-mini cache</p>
 
@@ -112,8 +141,8 @@ class L1MetadataArray[T &lt;: L1Metadata] extends L1HellaCacheModule()(p) {
   </code></pre>
 
   <ul class="small">
-    <li class="fragment">This bug does not affect most ISA tests but a multiply benchmark failed by hanging.</li>
-    <li class="fragment">After checking the VCD against the mined properties, we found these violations ranked by time of violation</li>
+    <li class="fragment">This bug does not affect most ISA tests but a multiply benchmark failed by hanging</li>
+    <li class="fragment">Checking the VCD against the mined properties gives these violations</li>
   </ul>
 
   <table class="fragment" style="font-size: 1.2rem;">
@@ -155,7 +184,7 @@ class L1MetadataArray[T &lt;: L1Metadata] extends L1HellaCacheModule()(p) {
 </section>
 
 <section>
-  <h2 style="font-size:1.8rem;">6.b: Coverpoint Synthesis as Complement of Spec Mining</h2>
+  <h2 style="font-size:1.8rem;">5.b: Coverpoint Synthesis as Complement of Spec Mining</h2>
 
   <ul>
     <li class="fragment"><em>Specification mining</em> takes waveforms of an RTL design and synthesizes properties that are unfalsified on all traces</li>
