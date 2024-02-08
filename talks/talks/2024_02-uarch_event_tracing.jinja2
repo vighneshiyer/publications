@@ -1,0 +1,237 @@
+{% extends "base/base.jinja2" %}
+
+{# HTML title #}
+{% set webpage_title = "Sketches of an Microarchitectural Event Tracing API" %}
+{# Short description #}
+{% set description = "" %}
+{# List of authors #}
+{% set author = "Vighnesh Iyer" %}
+{# Change ‘venue’ to a conference or workshop name if any #}
+{% set venue = "" %}
+{# Publication info (hidden by default) #}
+{% set pub_datetime_iso = "2024-02-07" %}
+{% set pub_date = "Feburary 7, 2024" %}
+
+{# Custom styles and JS for a particular talk #}
+{% block custom_head %}
+<style>
+.reveal h2 {
+  margin-top: 1rem !important;
+}
+</style>
+{% endblock %}
+
+{% block theme %}
+import '/themes/remark-ish.scss'
+import 'reveal.js/plugin/highlight/monokai.css'
+{% endblock %}
+
+{% set center = false %}
+
+{% set rightarrow = "<strong>→</strong>" %}
+
+{% block slides %}
+<section class="center">
+  <h1>An API for Microarchitectural Event Tracing</h1>
+  <h3 style="font-weight: 500;">Vighnesh Iyer</h3>
+  <!--<h3 style="font-weight: normal;">ATHLETE Meeting</h3>-->
+  <h4 style="font-weight: normal;">Thursday, Feburary 8th, 2024</h4>
+</section>
+
+<section>
+  <section class="center">
+    <h2>Motivation and Background</h2>
+  </section>
+
+  <section>
+    <h2>Motivation for Event Tracing</h2>
+
+    <ul>
+      <li class="fragment"><strong>Main Questions</strong>
+        <ul>
+          <li><em>What</em> is our RTL design doing when running this workload?</li>
+          <li><em>Why</em> is it doing that?</li>
+          <li><em>How</em> is it doing that?</li>
+        </ul>
+      </li>
+      <li class="fragment">Commit logs are too coarse-grained (instruction level)
+        <ul>
+          <li class="fragment"><code>Instruction</code> retires at <code>cycle</code> and writes a <code>register</code> with some <code>value</code></li>
+          <li class="fragment">It also accesses this <code>memory address</code> and performs this <code>memory operation</code></li>
+          <li class="fragment">We can't answer <em>why</em> or <em>how</em> an instruction behaves as it did</li>
+        </ul>
+      </li>
+      <li class="fragment">Waveforms are too fine-grained
+        <ul>
+          <li class="fragment">Here is the value of every single bit in your RTL design for millions of cycles</li>
+          <li class="fragment">How are we supposed to make sense of this?</li>
+          <li class="fragment">Transaction-level waveforms <em>may</em> ease the human burden a bit</li>
+        </ul>
+      </li>
+      <li class="fragment">Dependency chains aren't captured</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>uArch Event Graphs</h2>
+
+    <ul>
+      <li class="fragment">Events are defined in RTL (and in a performance model)</li>
+      <li class="fragment">An event has
+        <ul>
+          <li><strong>Scope</strong>: which RTL instance and node it is attached to</li>
+          <li><strong>Trigger</strong>: the RTL condition that causes this event to fire</li>
+          <li><strong>Metadata</strong>: data that's attached to this event</li>
+          <li><strong>Tag</strong>: a unique identifier for this particular event</li>
+          <li><strong>Parents</strong>: predecessor events that caused this event to happen</li>
+          <li><strong>Children</strong>: successor events that are caused by this event</li>
+        </ul>
+      </li>
+      <li class="fragment">Interesting microarchitectural events are manually annotated</li>
+    </ul>
+
+    <p class="center fragment">Event graphs are a useful middle-ground between commit logs and waveforms (and can augment both of them).</p>
+  </section>
+
+  <section>
+    <h2>What Can uArch Event Graphs Enable?</h2>
+
+    <ul>
+      <li class="fragment">Performance metric extraction</li>
+      <li class="fragment">Pipeline visualization</li>
+      <li class="fragment">Subgraph clustering to identify unique event traces</li>
+      <li class="fragment">Anomaly detection / intelligent graph diff for RTL optimizations</li>
+      <li class="fragment">Post-silicon debug/validation / model correlation</li>
+    </ul>
+
+    <div class="center fragment">
+      <img style="width:80%" src="./figs/quals/gem5_kanata_pipeline_viewer.png" />
+      <figcaption class="small center">gem5 pipeline data visualized in Konata pipeline viewer</figcaption>
+    </div>
+  </section>
+
+  <section>
+    <h2>Aside: Event Tracking APIs at Apple</h2>
+
+    <ul>
+      <li class="fragment">What do the event APIs look like? (RTL and performance model)</li>
+      <li class="fragment">What metadata is associated with an event?</li>
+      <li class="fragment">How are events tracked? How are parents identified? Is event tag propagation done manually?</li>
+      <li class="fragment">What events are visible in post-silicon debug? How are events used post-silicon?</li>
+      <li class="fragment">How are event graphs used for RTL debug? How are they summarized for human consumption?
+        <ul>
+        <li class="fragment">Are there existing unsupervised learning techniques used to find anomalies or extract unique fragments?</li>
+        </ul>
+      </li>
+      <li class="fragment">How are event graphs visualized? Is there a common viewer tool for profiling and event traces?</li>
+    </ul>
+  </section>
+</section>
+
+<section>
+  <section class="center">
+    <h2>An Implementation Sketch</h2>
+  </section>
+
+  <section>
+    <h2>A Simple API for Orphan Events</h2>
+
+    <div class="center">
+      <img src="./figs/dynamic/event_api/simple_api.svg" />
+      <figcaption class="small center">The most simple event API</figcaption>
+    </div>
+
+  <pre class="fragment"><code class="language-text" data-trim data-noescape>
+time: 1, event: "e", metadata: { d: d1 }
+time: 5, event: "e", metadata: { d: d2 }
+time: 8, event: "e", metadata: { d: d3 }
+  </code></pre>
+
+    <ul class="fragment">
+      <li>This isn't a graph though, it is just a <em>log</em></li>
+      <li>We need to track parent/child relationships between <em>2 or more</em> events</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Extending the API with Event Tags</h2>
+    <div class="container" style="grid-template-columns: 3fr 1fr; margin-top:3rem;">
+      <div class="center">
+        <img src="./figs/dynamic/event_api/absolute_tags.svg" />
+      </div>
+      <div>
+        <ul class="small">
+          <li class="fragment">A <em>tag</em> uniquely identifies an <em>event instance</em></li>
+          <li class="fragment">Tags are <em>referenced</em> in other events to establish a parent/child relationship</li>
+          <li class="fragment">Absolute tags don't support multiple event instances triggred in the same cycle</li>
+          <li class="fragment">Tag bits are overprovisioned</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Improving Event Tags</h2>
+
+    <div class="center" style="margin-top:-1rem; margin-bottom:1rem;">
+      <img src="./figs/dynamic/event_api/freelist_tags.svg" />
+      <figcaption class="center small">Event instance tags are managed by a freelist in RTL and are recycled when no longer referenced</figcaption>
+    </div>
+
+    <ul class="smallish">
+      <li class="fragment">How many tags can be in flight simultaneously?</li>
+      <li class="fragment">When should a tag be recycled?</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Multiple Tags in Flight</h2>
+    <div class="container" style="grid-template-columns: 1fr 1fr; margin-top:3rem;">
+      <div class="center">
+        <img src="./figs/dynamic/event_api/multi_tags_in_flight.svg" />
+      </div>
+      <div>
+        <ul>
+          <li class="fragment">Use a CAM to store the tag associated with each ROB entry; dequeue and reference the tag when an element is pulled from the ROB</li>
+          <li class="fragment">How many tags can be in flight at the same time?</li>
+          <li class="fragment">Manual tag management is becoming tedious</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+</section>
+
+<section>
+  <section class="center">
+    <h2>Leveraging Hardware Compilers for Event Tracing</h2>
+  </section>
+
+  <section>
+    <h2>Trackers</h2>
+
+    <div class="center" style="margin-top:-1rem;">
+      <img src="./figs/dynamic/event_api/simple_tracker.svg" />
+    </div>
+
+    <ul>
+      <li class="fragment">Trace every parent to a tracker that can lead there (in general: information flow tracking)</li>
+      <li class="fragment">Identify every case where a tracker 'moves' from one location to another and synthesize a tracking tag map</li>
+      <li class="fragment">Recycle tags when no more parents exist that can consume it</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Information Flow Tracking</h2>
+
+    <div class="center" style="margin-top:-1rem;">
+      <img src="./figs/dynamic/event_api/simple_tracker.svg" />
+    </div>
+
+    <ul>
+      <li class="fragment">Although the idea might seem simple, the implementation is complex (multiple parent trackers, choosing when to recycle tags, how many inflight tags)</li>
+      <li class="fragment">Upshot: event tracing structures can be <em>synthesized</em> via a hardware compiler pass</li>
+    </ul>
+  </section>
+</section>
+
+{% endblock %}

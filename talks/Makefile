@@ -31,6 +31,7 @@ $(eval $(call talk,2023_12-cs294_tidalsim_final_talk))
 $(eval $(call talk,2024_01-quals-tidalsim,$(wildcard talks/quals/*.jinja2)))
 $(eval $(call talk,2024_01-slice_winter-tidalsim))
 $(eval $(call talk,2024_01-athlete-tidalsim))
+$(eval $(call talk,2024_02-uarch_event_tracing))
 
 talks_output = $(addsuffix .html,$(talks))
 
