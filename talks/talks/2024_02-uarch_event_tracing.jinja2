@@ -32,10 +32,10 @@ import 'reveal.js/plugin/highlight/monokai.css'
 
 {% block slides %}
 <section class="center">
-  <h1>An API for Microarchitectural Event Tracing</h1>
+  <h1>An API and Methodology for Microarchitectural Event Tracing</h1>
   <h3 style="font-weight: 500;">Vighnesh Iyer</h3>
-  <!--<h3 style="font-weight: normal;">ATHLETE Meeting</h3>-->
-  <h4 style="font-weight: normal;">Thursday, Feburary 8th, 2024</h4>
+  <h3 style="font-weight: normal;">Group Meeting</h3>
+  <h4 style="font-weight: normal;">Friday, Feburary 16th, 2024</h4>
 </section>
 
 <section>
@@ -124,6 +124,32 @@ import 'reveal.js/plugin/highlight/monokai.css'
         </ul>
       </li>
       <li class="fragment">How are event graphs visualized? Is there a common viewer tool for profiling and event traces?</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Feedback From Apple</h2>
+
+    <ul>
+      <li class="fragment">They use the event API primarily for pre-silicon debugging
+        <ul>
+          <li class="fragment">They use a pure software tag manager</li>
+          <li class="fragment">Manual tag propagation</li>
+          <li class="fragment">Post-silicon visible events use a different API</li>
+        </ul>
+      </li>
+      <li class="fragment">Performance bugs are caught at block or subsystem level (<em>NOT</em> SoC-level)
+        <ul>
+          <li>SoC-level event traces only contain <em>system-level events</em> (<em>NOT</em> pipeline events)</li>
+        </ul>
+      </li>
+      <li class="fragment">There is magic for extracting event traces from silicon
+        <ul>
+          <li class="fragment">Trace buffer is in DRAM, can sample events in time and space, avoid perturbing the uArch from trace dumping</li>
+          <li class="fragment">Hardware for on-the-fly trace encoding and compression</li>
+          <li class="fragment">Only extract events that are <em>relevant for future generations</em></li>
+        </ul>
+      </li>
     </ul>
   </section>
 </section>
@@ -230,6 +256,66 @@ time: 8, event: "e", metadata: { d: d3 }
     <ul>
       <li class="fragment">Although the idea might seem simple, the implementation is complex (multiple parent trackers, choosing when to recycle tags, how many inflight tags)</li>
       <li class="fragment">Upshot: event tracing structures can be <em>synthesized</em> via a hardware compiler pass</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Tracking Out-Of-Order Trackers</h2>
+
+    <div class="container" style="grid-template-columns: 1fr 1fr; margin-top:3rem;">
+      <div class="center">
+        <img src="./figs/dynamic/event_api/rob_tracker.svg" />
+      </div>
+      <div>
+        <ul>
+          <li class="fragment">We can build a transition system for each event instance (tag)</li>
+          <li class="fragment">Track how each tag flows through the system until it is consumed by an event as a parent</li>
+          <li class="fragment">All this logic can be <em>synthesized</em>
+            <ul>
+              <li>Implementing this structure manually would be tedious and error-prone</li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Additional Complexity</h2>
+
+    <ul>
+      <li class="fragment">When should a tag be retired? What if an event has multiple children?</li>
+      <li class="fragment">What if tags are referred to as parents of an event that produces that tag? Need to break loops
+        <ul>
+          <li>e.g. replaying instructions in the Rocket pipeline when a structural hazard is present</li>
+        </ul>
+      </li>
+      <li class="fragment">Can information flow tracking scale for an entire SoC?
+        <ul>
+          <li>Everything propagates to everything. How can we limit the propagation scope of a tracker?</li>
+        </ul>
+      </li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Conclusion</h2>
+    <div class="center" style="margin-top:-1rem;">
+      <img src="./figs/dynamic/event_api/simple_tracker.svg" />
+    </div>
+
+    <ul>
+      <li class="fragment">Microarchitectural event tracing enables many cool things
+        <ul>
+          <li class="fragment">Graph analysis to identify performance bottlenecks, anomalies, unique traces</li>
+          <li class="fragment">Post-silicon event tracing and model correlation with real workloads + event pruning / compression / encoding</li>
+          <li class="fragment">Performance model extraction from RTL via unsupervised learning
+            <ul>
+              <li class="fragment">Construct high-level event traces from functional simulation</li>
+              <li class="fragment">Train a model to synthesize event graphs given partial traces</li>
+            </ul>
+          </li>
+        </ul>
     </ul>
   </section>
 </section>

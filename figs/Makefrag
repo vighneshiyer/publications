@@ -53,7 +53,7 @@ $(eval $(call dynamic_pdf,tidalsim,"gdrive:Tidalsim_Figs.pdf",\
     why_rtl \
     cp_synthesis1 cp_synthesis2 \
     ))
-$(eval $(call dynamic_pdf,event_api,"gdrive:Event_API_Figs.pdf",simple_api absolute_tags freelist_tags multi_tags_in_flight simple_tracker))
+$(eval $(call dynamic_pdf,event_api,"gdrive:Event_API_Figs.pdf",simple_api absolute_tags freelist_tags multi_tags_in_flight simple_tracker rob_tracker))
 
 # Targets to generate figures and use them downstream
 figs := $(figs_static) $(dynamic_figs)
