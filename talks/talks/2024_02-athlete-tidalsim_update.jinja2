@@ -395,13 +395,13 @@ import 'reveal.js/plugin/highlight/monokai.css'
 <section>
   <h2>CoreMark Smoke Test</h2>
   <div class="center">
-    <img width="80%" src="./figs/multi-level-sim/coremark_smoke_test.png" />
+    <img width="100%" src="./figs/multi-level-sim/coremark_results.svg" />
   </div>
 
   <ul>
     <li><strong>NO</strong> functional warmup</li>
-    <li>1000 instruction intervals, 18 clusters</li>
-    <li>This result isn't representative of the typical sampling parameters</li>
+    <li>10k instruction intervals, 30 clusters, 2k detailed warmup</li>
+    <li>Larger working set means functional warmup is crucial</li>
   </ul>
 </section>
 </section>
@@ -474,17 +474,79 @@ import 'reveal.js/plugin/highlight/monokai.css'
 
   <section>
     <h2>Multiple Samples per Cluster</h2>
+
+    <ul>
+      <li class="fragment">Currently we take the one interval closest to each cluster centroid for RTL simulation</li>
+      <li class="fragment">Problems
+        <ul>
+          <li>We have no idea how representative the chosen interval is of the cluster</li>
+          <li>We have few data points when performing extrapolation</li>
+          <li>No simulations are performed for points that are in-between two or more clusters</li>
+        </ul>
+      </li>
+      <li class="fragment">Pick both the cluster centroid point and random points within each cluster for simulation</li>
+    </ul>
   </section>
 
   <section>
     <h2>Binary-agnostic Interval Embeddings</h2>
+
+    <ul class="smallish">
+      <li class="fragment">BBVs are tied to a binary
+        <ul>
+          <li>Can't share embeddings and perf data across simulations</li>
+          <li>Embeddings are based on PCs, which is complicated with virtual memory</li>
+          <li>There may be different execution patterns of the same code</li>
+        </ul>
+      </li>
+      <li class="fragment">We will perform a detailed study of alternative embeddings<sup>[1]</sup>
+        <ul>
+          <li>Instruction mix: loads, stores, control, arith, integer, fp</li>
+          <li>ILP: in varying window sizes (32, 64, ...)</li>
+          <li>Register traffic: avg input operands, number of times a register is consumed, register dependency chains</li>
+          <li>Working set: number of unique 32B/4K blocks touched in an interval</li>
+          <li>Data stream strides: measure of spatial locality in temporally adjacent memory accesses</li>
+          <li>Branch predictability: use an upper-limit branch prediction algorithm (Prediction by Partial Matching)</li>
+        </ul>
+      </li>
+      <li class="fragment">Need to balance embedding complexity and accuracy
+        <ul>
+          <li>Some 'neural' approaches are quite expensive (see: NPS)</li>
+        </ul>
+      </li>
+    </ul>
+
+    <hr>
+    <div class="verysmall">
+    <p class="footnote">
+    [1]: Eeckout, Lieven, et. al. - Exploiting Program Microarchitecture Independent Characteristics and Phase Behavior for Reduced Benchmark Suite Simulation (IISWC 2005)
+    </p>
+    </div>
   </section>
 
   <section>
-    <h2>Streaming sampled simulation</h2>
+    <h2>Streaming Sampled simulation</h2>
+
+    <ul>
+      <li class="fragment">Currently, we need multiple passes of spike (2 full runs, 2 log traversals)
+        <ul>
+          <li>Collect commit log to extract basic blocks</li>
+          <li>Re-traverse commit log to build embedding matrix</li>
+          <li>After clustering, collect arch checkpoints</li>
+        </ul>
+      </li>
+      <li class="fragment">For longer programs, this is expensive and wasteful</li>
+      <li class="fragment">Integrate embedding, clustering, and checkpointing in one pass
+        <ul>
+          <li>Fixed feature vector size</li>
+          <li>Streaming clustering algorithm</li>
+          <li>Ability to take checkpoints programatically during spike execution</li>
+          <li>Multicore pipelining to mitigate throughput bottlenecks</li>
+        </ul>
+      </li>
+    </ul>
   </section>
 
-  <!-- FIRRTL pass for injection testharness generation -->
   <section>
     <h2>Leveraging HDLs for TidalSim Methodology</h2>
 
