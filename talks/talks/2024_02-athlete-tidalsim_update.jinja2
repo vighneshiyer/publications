@@ -413,14 +413,57 @@ import 'reveal.js/plugin/highlight/monokai.css'
 
   <section>
     <h2>Overall Functional Warmup Flow</h2>
+    <div class="center">
+      <img src="./figs/dynamic/tidalsim/full_flow_detail.svg" />
+    </div>
+
+    <ul class="small">
+      <li class="fragment">uarch-agnostic cache checkpoints as memory timestamp record (MTR) checkpoints</li>
+      <li class="fragment">Convert MTR checkpoints into concrete cache state with specific cache parameters DRAM contents</li>
+      <li class="fragment">RTL simulation harness injects cache state into L1d tag+data arrays via 2d reg forcing</li>
+    </ul>
   </section>
 
   <section>
     <h2>Memory Timestamp Record</h2>
+    <div class="center">
+      <img src="./figs/dynamic/tidalsim/mtr_flow.svg" />
+    </div>
+
+    <ul class="small">
+      <li class="fragment">Construct MTR table from a memory trace, save MTR tables at checkpoint times</li>
+      <li class="fragment">Given a cache with n sets, group block addresses by set index</li>
+      <li class="fragment">Given a cache with k ways, pick the k most recently accessed addresses from each set</li>
+      <li class="fragment">Knowing every resident cache line, fetch the data from the DRAM dump</li>
+    </ul>
   </section>
 
   <section>
     <h2>Results on wikisort</h2>
+
+    <div class="center r-stack">
+      <div class="fragment fade-in-then-out">
+        <img src="./figs/multi-level-sim/wikisort_results.svg" />
+        <figcaption>No functional warmup, there are significant IPC underpredictions</figcaption>
+      </div>
+      <div class="fragment fade-in">
+        <img src="./figs/multi-level-sim/wikisort_results-l1d_warmup.svg" />
+        <figcaption>L1d functional warmup, errors are substantially reduced</figcaption>
+      </div>
+    </div>
+
+    <p class="center fragment"><strong>L1d functional warmup brings IPC error from 7% to 2%</strong></p>
+  </section>
+
+  <section>
+    <h2>Caveats</h2>
+
+    <ul>
+      <li class="fragment">Currently all cache lines are marked as dirty, even if read-only</li>
+      <li class="fragment">There seems to be a lingering bug causing unaligned DRAM accesses from L1, still under investigation</li>
+      <li class="fragment">Injection harness is hardcoded for a specific Rocket L1 cache configuration</li>
+      <li class="fragment">Cannot perform L2 injection or handle multiple cores</li>
+    </ul>
   </section>
 </section>
 

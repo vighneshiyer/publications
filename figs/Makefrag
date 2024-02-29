@@ -52,6 +52,7 @@ $(eval $(call dynamic_pdf,tidalsim,"gdrive:Tidalsim_Figs.pdf",\
     industry_flow_new academic_flow_new startup_flow_new \
     why_rtl \
     cp_synthesis1 cp_synthesis2 \
+    full_flow_detail mtr_flow \
     ))
 $(eval $(call dynamic_pdf,event_api,"gdrive:Event_API_Figs.pdf",simple_api absolute_tags freelist_tags multi_tags_in_flight simple_tracker rob_tracker))
 
