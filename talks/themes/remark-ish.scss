@@ -7,6 +7,7 @@
 // Include theme-specific fonts
 @import url(/node_modules/@fontsource/fira-sans/latin.css);
 @import url(/node_modules/@fontsource/fira-sans/latin-italic.css);
+@import url(/node_modules/@fontsource/fira-code/latin.css);
 
 // Override theme settings (see ../template/settings.scss)
 $backgroundColor: #fff;
@@ -39,8 +40,10 @@ $heading4Size: 1.75rem;
 
 .reveal pre {
   width: 100%;
+  font-family: 'Fira Code', monospace;
   code {
     padding: 20px !important;
+    font-family: 'Fira Code', monospace;
   }
 }
 
