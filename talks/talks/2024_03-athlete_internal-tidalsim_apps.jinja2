@@ -53,8 +53,7 @@ import 'reveal.js/plugin/highlight/monokai.css'
   <h2>Talk Outline</h2>
   <ol>
     <li>Overview of TidalSim</li>
-    <li>Collateral produced by TidalSim</li>
-    <li>Applications (leveraging TidalSim collaterals)</li>
+    <li>Collateral produced by TidalSim and Applications</li>
   </ol>
 </section>
 
@@ -127,7 +126,7 @@ import 'reveal.js/plugin/highlight/monokai.css'
     <img src="./figs/dynamic/tidalsim/overview.svg" />
   </section>
 
-  <section>
+  <!--<section>
     <h2>IPC Trace Prediction: huffbench</h2>
     <ul>
       <li class="fragment">Huffman compression from Embench (huffbench)</li>
@@ -136,7 +135,7 @@ import 'reveal.js/plugin/highlight/monokai.css'
       <li class="fragment">Large IPC variance</li>
     </ul>
     <img class="fragment" src="./figs/multi-level-sim/huffbench_results.svg" />
-  </section>
+  </section>-->
 
   <section>
     <h2>IPC Trace Prediction: wikisort</h2>
@@ -148,36 +147,18 @@ import 'reveal.js/plugin/highlight/monokai.css'
     </ul>
     <img class="fragment" src="./figs/multi-level-sim/wikisort_results.svg" />
   </section>
-</section>
 
-<section>
+  <section>
+    <h2>CoreMark Smoke Test</h2>
+    <div class="center">
+      <img width="100%" src="./figs/multi-level-sim/coremark_results.svg" />
+    </div>
 
-<!-- Add box and whiskers IPC error plot -->
-<section>
-  <h2>Aggregate IPC Prediction for Embench Suite</h2>
-  <div class="center">
-    <img src="./figs/multi-level-sim/embench_ipc_error.svg" style="margin-bottom:0;" />
-  </div>
-  <p class="center fragment">Typical IPC error (<strong>without</strong> functional warmup and with fine time-domain precision of 10k instructions) <strong>is &lt; 5%</strong></p>
-</section>
-
-<section>
-  <h2>CoreMark Smoke Test</h2>
-  <div class="center">
-    <img width="100%" src="./figs/multi-level-sim/coremark_results.svg" />
-  </div>
-
-  <ul>
-    <li><strong>NO</strong> functional warmup</li>
-    <li>10k instruction intervals, 30 clusters, 2k detailed warmup</li>
-    <li>Larger working set means functional warmup is crucial</li>
-  </ul>
-</section>
-</section>
-
-<section>
-  <section class="center">
-    <h2>Functional Warmup of L1d Cache + Early Results</h2>
+    <ul>
+      <li><strong>NO</strong> functional warmup</li>
+      <li>10k instruction intervals, 30 clusters, 2k detailed warmup</li>
+      <li>Larger working set means functional warmup is crucial</li>
+    </ul>
   </section>
 
   <section>
@@ -208,7 +189,7 @@ import 'reveal.js/plugin/highlight/monokai.css'
   </section>
 
   <section>
-    <h2>Results on wikisort</h2>
+    <h2>wikisort with Functional Warmup</h2>
 
     <div class="center r-stack">
       <div class="fragment fade-in-then-out">
@@ -223,52 +204,20 @@ import 'reveal.js/plugin/highlight/monokai.css'
 
     <p class="center fragment"><strong>L1d functional warmup brings IPC error from 7% to 2%</strong></p>
   </section>
-
-  <section>
-    <h2>Caveats</h2>
-
-    <ul>
-      <li class="fragment">Currently all cache lines are marked as dirty, even if read-only</li>
-      <li class="fragment">There seems to be a lingering bug causing unaligned DRAM accesses from L1, still under investigation</li>
-      <li class="fragment">Injection harness is hardcoded for a specific Rocket L1 cache configuration</li>
-      <li class="fragment">Cannot perform L2 injection or handle multiple cores</li>
-    </ul>
-  </section>
 </section>
 
 <section>
   <section class="center">
-    <h2>Next Steps</h2>
+    <h2>Tidalsim Collateral and Applications</h2>
   </section>
 
   <section>
-    <h2>Multiple Samples per Cluster</h2>
+    <h2>Embedding Matrix</h2>
 
     <ul>
-      <li class="fragment">Currently we take the one interval closest to each cluster centroid for RTL simulation</li>
-      <li class="fragment">Problems
-        <ul>
-          <li>We have no idea how representative the chosen interval is of the cluster</li>
-          <li>We have few data points when performing extrapolation</li>
-          <li>No simulations are performed for points that are in-between two or more clusters</li>
-        </ul>
-      </li>
-      <li class="fragment">Pick both the cluster centroid point and random points within each cluster for simulation</li>
-    </ul>
-  </section>
-
-  <section>
-    <h2>Binary-agnostic Interval Embeddings</h2>
-
-    <ul class="smallish">
-      <li class="fragment">BBVs are tied to a binary
-        <ul>
-          <li>Can't share embeddings and perf data across simulations</li>
-          <li>Embeddings are based on PCs, which is complicated with virtual memory</li>
-          <li>There may be different execution patterns of the same code</li>
-        </ul>
-      </li>
-      <li class="fragment">We will perform a detailed study of alternative embeddings<sup>[1]</sup>
+      <li class="fragment">Each interval of a program is represented with an embedding</li>
+      <li class="fragment">Basic block vectors indicate which code paths were traversed in each interval</li>
+      <li class="fragment">uArch-aware embeddings
         <ul>
           <li>Instruction mix: loads, stores, control, arith, integer, fp</li>
           <li>ILP: in varying window sizes (32, 64, ...)</li>
@@ -278,75 +227,87 @@ import 'reveal.js/plugin/highlight/monokai.css'
           <li>Branch predictability: use an upper-limit branch prediction algorithm (Prediction by Partial Matching)</li>
         </ul>
       </li>
-      <li class="fragment">Need to balance embedding complexity and accuracy
-        <ul>
-          <li>Some 'neural' approaches are quite expensive (see: NPS)</li>
-        </ul>
-      </li>
-    </ul>
-
-    <hr>
-    <div class="verysmall">
-    <p class="footnote">
-    [1]: Eeckout, Lieven, et. al. - Exploiting Program Microarchitecture Independent Characteristics and Phase Behavior for Reduced Benchmark Suite Simulation (IISWC 2005)
-    </p>
-    </div>
-  </section>
-
-  <section>
-    <h2>Streaming Sampled simulation</h2>
-
-    <ul>
-      <li class="fragment">Currently, we need multiple passes of spike (2 full runs, 2 log traversals)
-        <ul>
-          <li>Collect commit log to extract basic blocks</li>
-          <li>Re-traverse commit log to build embedding matrix</li>
-          <li>After clustering, collect arch checkpoints</li>
-        </ul>
-      </li>
-      <li class="fragment">For longer programs, this is expensive and wasteful</li>
-      <li class="fragment">Integrate embedding, clustering, and checkpointing in one pass
-        <ul>
-          <li>Fixed feature vector size</li>
-          <li>Streaming clustering algorithm</li>
-          <li>Ability to take checkpoints programatically during spike execution</li>
-          <li>Multicore pipelining to mitigate throughput bottlenecks</li>
-        </ul>
-      </li>
+      <li class="fragment">Generally useful for analyzing time-varying program behavior</li>
     </ul>
   </section>
 
   <section>
-    <h2>Leveraging HDLs for TidalSim Methodology</h2>
+    <h2>Sampled Simulation Inputs/Outputs</h2>
 
     <ul>
-      <li class="fragment">HW DSE with TidalSim requires an RTL injection harness</li>
-      <!--Existing harness is hardcoded for one Chipyard SoC design point</li>-->
-      <li class="fragment">Automatic harness generation using high-level HDLs
+      <li class="fragment">Architectural and (partial) uArch states for every sampling interval that's simulated</li>
+      <li class="fragment">Outputs from RTL simulation of each sampling interval</li>
+    </ul>
+
+    <pre class="fragment"><code class="language-text" data-trim data-noescape>
+    checkpoints
+      0x80000000.680000
+        loadarch (all arch register state)
+        mem.bin (all DRAM state)
+        mtr (memory timestamp record - cache uArch agnostic)
+        dcache_{data,tag}_array (reconstructed concrete L1 cache state)
+        perf.csv (IPC, MPKI, cache miss performance metrics)
+        dump.fsdb (full waveform dump)
+      0x80000000.120000
+        loadarch
+        mem.bin
+        mtr
+        dcache_{data,tag}_array
+        perf.csv
+        dump.fsdb
+    </code></pre>
+
+    <ul>
+      <li class="fragment">Each of these files is quite small</li>
+      <li class="fragment">Can be used in several ways</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Applications</h2>
+
+    <ul>
+      <li class="fragment">Power modeling
         <ul>
-          <li class="fragment">Chisel API to <em>semantically mark</em> arch and uArch state</li>
-          <li class="fragment">FIRRTL pass to generate a state-injecting test harness</li>
+          <li class="fragment">Per-interval fsdb's can be used for proxy signal selection and macromodel training</li>
+          <li class="fragment">Embedding matrix with Joules power simulation can be used to reconstruct full workload power trace</li>
+          <li class="fragment">Explore power/perf pareto curves of different core microarchitectures</li>
+        </ul>
+      </li>
+      <li class="fragment">Coverpoint synthesis
+        <ul>
+          <li class="fragment">Per-interval fsdb's can be used for specification mining / coverpoint synthesis</li>
+          <li class="fragment">Synthesized coverpoints can be used for evaluation of instruction generators or as fuzzing targets for bughunting</li>
+        </ul>
+      </li>
+      <li class="fragment">Event graph based uArch analysis
+        <ul>
+          <li>Once we can emit event graphs from RTL sim, we can also analyze those for anomalies and pinpointing differences between uArches</li>
+        </ul>
+      </li>
+      <li class="fragment">Hardware parameter DSE
+        <ul>
+          <li class="fragment">Investigate the impact of changing a HW parameter on a large workload</li>
+          <li class="fragment">Requires uArch-specific functional warmup + specialized injection harness for each design point</li>
         </ul>
       </li>
     </ul>
-
-    <pre class="fragment"><code class="language-scala" data-trim data-noescape data-line-numbers="|3">
-  class RegFile(n: Int, w: Int, zero: Boolean = false) {
-    val rf = Mem(n, UInt(w.W))
-    (0 until n).map { archStateAnnotation(rf(n), Riscv.I.GPR(n)) }
-    // ...
-  }
-    </code></pre>
-
-    <pre class="fragment"><code class="language-scala" data-trim data-noescape data-line-numbers="|4-6|5">
-  class L1MetadataArray[T &lt;: L1Metadata] extends L1HellaCacheModule()(p) {
-    // ...
-    val tag_array = SyncReadMem(nSets, Vec(nWays, UInt(metabits.W)))
-    (0 until nSets).zip((0 until nWays)).map { case (set, way) =&gt;
-      uArchStateAnnotation(tag_array.read(set)(way), Uarch.L1.tag(set, way, cacheType=I))
-    }
-  }
-    </code></pre>
   </section>
+
+  <section>
+    <h2>More Applications</h2>
+
+    <ul>
+      <li>Benchmark extraction</li>
+      <li>Application-level profiling</li>
+      <li>Combining the above two intelligently
+        <ul>
+          <li>e.g. JS runtimes are an event loop that blindly might seem to benefit from high IPC. But improving that IPC has no impact on end-to-end application behavior!</li>
+        </ul>
+      </li>
+    </ul>
+  </section>
+
 </section>
+
 {% endblock %}
