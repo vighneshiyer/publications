@@ -38,6 +38,10 @@ $heading4Size: 1.75rem;
 @import "node_modules/reveal.js/css/theme/template/theme";
 // ---------------------------------------------
 
+.reveal code {
+  font-family: 'Fira Code', monospace;
+}
+
 .reveal pre {
   width: 100%;
   font-family: 'Fira Code', monospace;

@@ -33,6 +33,7 @@ $(eval $(call talk,2024_01-slice_winter-tidalsim))
 $(eval $(call talk,2024_01-athlete-tidalsim))
 $(eval $(call talk,2024_02-uarch_event_tracing))
 $(eval $(call talk,2024_02-athlete-tidalsim_update))
+$(eval $(call talk,2024_03-athlete_internal-tidalsim_apps))
 
 talks_output = $(addsuffix .html,$(talks))
 
