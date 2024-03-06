@@ -17,9 +17,9 @@
     "@fontsource/fira-sans": "^5.0.15",
     "@fontsource/source-sans-pro": "^5.0.8",
     "@fontsource/fira-code": "^5.0.17",
-    "reveal.js": "^4.5.0",
-    "sass": "^1.68.0",
-    "vite": "^4.5.1",
+    "reveal.js": "^5.0.5",
+    "sass": "^1.71.0",
+    "vite": "^5.1.5",
     "vite-plugin-run": "^0.5.1"
   }
 }
