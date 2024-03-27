@@ -1,0 +1,208 @@
+{% extends "base/base.jinja2" %}
+
+{# HTML title #}
+{% set webpage_title = "Error Analysis Ideas for Sampled RTL Simulation" %}
+{# Short description #}
+{% set description = "" %}
+{# List of authors #}
+{% set author = "Vighnesh Iyer" %}
+{# Change ‘venue’ to a conference or workshop name if any #}
+{% set venue = "ATHLETE Small Update (March 2024)" %}
+{# Publication info (hidden by default) #}
+{% set pub_datetime_iso = "2024-03-26" %}
+{% set pub_date = "March 26, 2024" %}
+
+{# Custom styles and JS for a particular talk #}
+{% block custom_head %}
+<style>
+.reveal h2 {
+  margin-top: 1rem !important;
+}
+</style>
+{% endblock %}
+
+{% block theme %}
+import '/themes/remark-ish.scss'
+import 'reveal.js/plugin/highlight/monokai.css'
+{% endblock %}
+
+{% set center = false %}
+
+{% set rightarrow = "<strong>→</strong>" %}
+
+{% block slides %}
+<section class="center">
+  <h1>Ideas For Error Analysis of TidalSim (Sampled RTL Simulation)</h1>
+  <h3 style="font-weight: 500;">Vighnesh Iyer</h3>
+  <h3 style="font-weight: normal;">ATHLETE Small Update</h3>
+  <h4 style="font-weight: normal;">Thursday, March 28th, 2024</h4>
+</section>
+
+<section>
+  <section class="center">
+    <h2>Background</h2>
+  </section>
+
+  <section>
+    <h2>Sampled Simulation</h2>
+
+    <p class="center fragment">Instead of running the entire program in uArch simulation, run the entire program in <em>functional simulation</em> and only run <em>samples</em> in uArch simulation</p>
+
+    <div class="fragment center">
+      <img width="60%" src="./figs/multi-level-sim/sampled_simulation0.png" />
+    </div>
+
+    <p class="fragment center">The full workload is represented by a selection of <em>sampling units</em>.</p>
+
+    <ol class="smallish">
+      <li class="fragment">How should sampling units be selected?</li> <!-- sampling methodology -->
+      <li class="fragment">How can we accurately estimate the performance of a sampling unit?</li> <!-- functional and detailed warmup -->
+      <li class="fragment">How can we estimate errors when extrapolating from sampling units?</li> <!-- error bounding via CLT or other heuristics -->
+    </ol>
+  </section>
+
+  <section>
+    <h2>Existing Sampling Techniques</h2>
+
+    <div class="container" style="grid-template-columns: 1fr 1fr;">
+    <div>
+    <h4 class="center fragment">SimPoint</h4>
+    <div class="fragment" style="display:grid; align-content: center; justify-items:center; grid-template-columns:1fr 1fr;">
+      <img style="display:grid;" src="./figs/multi-level-sim/simpoint-gzip_phases.gif" />
+      <img style="display:grid;" src="./figs/multi-level-sim/simpoint-gcc_phases.gif" />
+    </div>
+    <ul class="small">
+      <li class="fragment">Program execution traces aren’t random
+        <ul class="fragment">
+          <li>They execute the same code again-and-again</li>
+          <li>Workload execution traces can be split into <strong style="text-decoration:underline;">phases</strong> that exhibit similar μArch behavior</li>
+        </ul>
+      </li>
+      <li class="fragment">SimPoint-style representative sampling
+        <ul class="fragment">
+          <li>Compute an embedding for each program interval (e.g. blocks of 100M instructions)</li>
+          <li>Cluster interval embeddings using k-means</li>
+          <li>Choose representative intervals from each cluster as <em>sampling units</em></li>
+        </ul>
+      </li>
+    </ul>
+    </div>
+    <div>
+      <h4 class="center fragment">SMARTS</h4>
+      <img class="fragment" src="./figs/quals/smarts.png" />
+      <ul class="small">
+        <li class="fragment">Rigorous statistical sampling enables computation of confidence bounds
+          <ul class="fragment">
+            <li>Use random sampling on a full execution trace to derive a population sample</li>
+            <li>Central limit theorem provides confidence bounds</li>
+          </ul>
+        </li>
+        <li class="fragment">SMARTS-style random sampling
+          <ul class="fragment">
+            <li>Pick a large number of samples to take before program execution</li>
+            <li>If the sample variance is too high after simulation, then collect more sampling units</li>
+            <li>Use CLT to derive a confidence bound for the aggregate performance metric</li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Functional Warmup</h2>
+
+    <p class="fragment center">The state from a sampling unit checkpoint is only <em>architectural</em> state. The <em>microarchitectural</em> state of the uArch simulator starts at the reset state!</p>
+
+    <div class="fragment center">
+      <img width="50%" src="./figs/multi-level-sim/sampled_simulation.png" />
+    </div>
+
+    <ul>
+      <li class="fragment">We need to seed long-lived uArch state at the beginning of each sampling unit</li>
+      <li class="fragment">This process is called <em>functional warmup</em></li>
+    </ul>
+  </section>
+</section>
+
+<section>
+  <section class="center">
+    <h2>Ideas Around Error Analysis</h2>
+  </section>
+
+  <section>
+    <h2>Sampled Simulation on wikisort</h2>
+
+    <div class="center r-stack">
+      <div class="fragment fade-in-then-out">
+        <img src="./figs/multi-level-sim/wikisort_results.svg" />
+        <figcaption>No functional warmup, there are significant IPC underpredictions</figcaption>
+      </div>
+      <div class="fragment fade-in">
+        <img src="./figs/multi-level-sim/wikisort_results-l1d_warmup.svg" />
+        <figcaption>L1d functional warmup, errors are substantially reduced</figcaption>
+      </div>
+    </div>
+
+    <p class="center fragment"><strong>L1d functional warmup brings IPC error from 7% to 2%</strong></p>
+  </section>
+
+  <section>
+    <h2>Sources of IPC Error</h2>
+
+    <ul>
+      <li class="fragment">Embedding error
+        <ul>
+          <li class="fragment">Error caused by representing one interval by a mix of sampled intervals</li>
+          <li class="fragment">Without sampling, there is no embedding error</li>
+        </ul>
+      </li>
+      <li class="fragment">Functional warmup errors
+        <ul>
+          <li class="fragment">Error that wouldn't be present had the functional warmup of the chosen blocks was perfect (matched the full RTL simulation)</li>
+          <li class="fragment">Each additional block that's warmed-up has the effect of:
+            <ol>
+              <li>Reducing error attributed to detailed warmup</li>
+              <li>Adding (usually a small) error to functional warmup</li>
+            </ol>
+          </li>
+        </ul>
+      </li>
+      <li class="fragment">Detailed warmup error
+        <ul>
+          <li>Biasinterval bias</li>
+          <li></li>
+        </ul>
+      </li>
+      <li class="fragment">Time modeling error
+
+      </li>
+      <li class="fragment">External model latent state errors
+
+      </li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Error Analysis Methodology</h2>
+
+    <ul>
+      <li class="fragment">Simplifying assumptions
+        <ul>
+          <li class="fragment">Single-threaded workloads without time-related behaviors or I/O {{ rightarrow }} <strong>No time modeling error</strong></li>
+          <li class="fragment">External model latent state (DRAM MC model) contributes marginally to error {{ rightarrow }} <strong>No latent state errors</strong></li>
+          <li class="fragment">No sampling, every interval is simulated {{ rightarrow }} <strong>No embedding errors</strong></li>
+        </ul>
+      <li class="fragment">Remaining error sources
+        <ul>
+          <li class="fragment">Functional warmup mismatches from the golden RTL simulation + breakdown of per-block warmup errors</li>
+          <li class="fragment">Detailed warmup 
+          Interactions of the two errors
+        </ul>
+      </li>
+    </ul>
+  </section>
+
+</section>
+
+{% endblock %}

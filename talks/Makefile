@@ -35,6 +35,7 @@ $(eval $(call talk,2024_02-uarch_event_tracing))
 $(eval $(call talk,2024_02-athlete-tidalsim_update))
 $(eval $(call talk,2024_03-athlete_internal-tidalsim_apps))
 $(eval $(call talk,2024_03-intel-tidalsim_overview))
+$(eval $(call talk,2024_03-athlete-tidalsim_error_analysis))
 
 talks_output = $(addsuffix .html,$(talks))
 
