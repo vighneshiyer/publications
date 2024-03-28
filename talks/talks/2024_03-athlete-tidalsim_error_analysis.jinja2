@@ -148,6 +148,16 @@ import 'reveal.js/plugin/highlight/monokai.css'
   </section>
 
   <section>
+    <h2>Error Analysis</h2>
+    <ul>
+      <li class="fragment">Where does this 7% error come from? Why does it go down to 2%?</li>
+      <li class="fragment">For a given interval for which we know the IPC error, what parts contribute what amount to the error?</li>
+      <li class="fragment">How does the error breakdown change based on workload and sampling algorithm?</li>
+      <li class="fragment">How do we even break down the error? Can we leverage the access we have to full RTL simulation?</li>
+    </ul>
+  </section>
+
+  <section>
     <h2>Sources of IPC Error</h2>
 
     <ul>
@@ -159,20 +169,20 @@ import 'reveal.js/plugin/highlight/monokai.css'
       </li>
       <li class="fragment">Functional warmup errors
         <ul>
-          <li class="fragment">Error that wouldn't be present had the functional warmup of the chosen blocks was perfect (matched the full RTL simulation)</li>
-          <li class="fragment">Each additional block that's warmed-up has the effect of:
+          <li class="fragment">Error that wouldn't be present had the functional warmup of specific long-lived state was perfect (matched the full RTL simulation)</li>
+          <li class="fragment">Each additional long-lived block that's warmed-up has the effect of:
             <ol>
               <li>Reducing error attributed to detailed warmup</li>
-              <li>Adding (usually a small) error to functional warmup</li>
+              <li>Adding (usually a smaller) error attributed to functional warmup</li>
             </ol>
           </li>
         </ul>
       </li>
       <li class="fragment">Detailed warmup error
-        <ul>
-          <li>Biasinterval bias</li>
-          <li></li>
-        </ul>
+        <ol class="small">
+          <li>Bias caused by starting IPC measurement for an interval only after detailed warmup is complete</li>
+          <li>Error caused by difference of uArch state vs full RTL simulation (coupled to functional warmup)</li>
+        </ol>
       </li>
       <li class="fragment">Time modeling error
 
@@ -195,12 +205,49 @@ import 'reveal.js/plugin/highlight/monokai.css'
         </ul>
       <li class="fragment">Remaining error sources
         <ul>
-          <li class="fragment">Functional warmup mismatches from the golden RTL simulation + breakdown of per-block warmup errors</li>
-          <li class="fragment">Detailed warmup 
-          Interactions of the two errors
+          <li class="fragment">Functional warmup mismatches versus the golden RTL simulation + breakdown of per-block warmup errors</li>
+          <li class="fragment">Detailed warmup errors from interval offset measurement bias</li>
+          <li class="fragment">Error from the impact of functional warmup error on detailed warmup error</li>
+        </ul>
+      </li>
+      <li class="fragment">How can we isolate each of these error sources?</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Removing Embedding Errors</h2>
+
+    <img class="fragment" src="./figs/dynamic/tidalsim-error/pure_injection.svg" width="100%" />
+
+    <ul>
+      <li class="fragment">If we only inject every interval's architectural state into RTL simulation, then we get a worst case per-interval error</li>
+      <li class="fragment">This error doesn't contain any offset measurement bias</li>
+      <li class="fragment">On its own, this error is the <em>maximum</em> error possible per interval
+        <ul>
+          <li>Each extra thing we do (functional warmup, detailed warmup, warmup offset selection) serves to <em>reduce</em> this baseline error</li>
+          <li>The remaining error can be attributed to deficiencies in functional or detailed warmup (marginal) + embedding error</li>
         </ul>
       </li>
     </ul>
+  </section>
+
+  <section>
+    <h2>Evaluating Detailed Warmup Errors</h2>
+
+    <img class="fragment" src="./figs/dynamic/tidalsim-error/detailed_warmup.svg" width="100%" />
+
+    <ul>
+      <li class="fragment">We can first measure the impact of detailed warmup wrt the number of instructions and the offset (measurement bias)</li>
+      <li class="fragment">The <em>error differences</em> seen here are the errors mitigated by detailed warmup alone</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Evaluating Functional Warmup Errors</h2>
+  </section>
+
+  <section>
+    <h2>Estimating Error Correlation</h2>
   </section>
 
 </section>
