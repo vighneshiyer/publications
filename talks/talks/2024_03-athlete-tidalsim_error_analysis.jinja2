@@ -244,10 +244,27 @@ import 'reveal.js/plugin/highlight/monokai.css'
 
   <section>
     <h2>Evaluating Functional Warmup Errors</h2>
+
+    <img class="fragment" src="./figs/dynamic/tidalsim-error/functional_warmup.svg" width="100%" />
+
+    <ul>
+      <li class="fragment">We can use a similar technique to measure the impact of functional warmup</li>
+      <li class="fragment">The final error model would also contain a term that describes the combined error reduction of functional and detailed warmup</li>
+    </ul>
   </section>
 
   <section>
-    <h2>Estimating Error Correlation</h2>
+    <h2>Warmup Oracles</h2>
+
+    <ul>
+      <li class="fragment">We can do 'perfect' functional warmup by using RTL simulation waveforms from the full run</li>
+      <li class="fragment">We can measure the impact of the warmup model vs the warmup oracle</li>
+      <li class="fragment">Detailed warmup is more tricky
+        <ul>
+          <li>Emulating 'perfect' detailed warmup with our functional warmup model requires (potentially impossible) state injection</li>
+        </ul>
+      </li>
+    </ul>
   </section>
 
 </section>
