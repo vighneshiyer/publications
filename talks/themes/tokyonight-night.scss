@@ -1,0 +1,168 @@
+@use 'sass:color';
+// Default mixins and settings -----------------
+@import "node_modules/reveal.js/css/theme/template/mixins";
+@import "node_modules/reveal.js/css/theme/template/settings";
+// ---------------------------------------------
+
+// Include theme-specific fonts
+@import url(/node_modules/@fontsource/fira-sans/latin.css);
+@import url(/node_modules/@fontsource/fira-sans/latin-italic.css);
+@import url(/node_modules/@fontsource/fira-code/latin.css);
+
+// Tokyonight colors
+$tn_red: #f7768e;
+$tn_orange: #ff9e64;
+$tn_yellow: #e0af68;
+$tn_green: #9ece6a;
+$tn_blue_green: #73daca;
+$tn_lightblue: #b4f9f8;
+$tn_blue2: #2ac3de;
+$tn_cyan: #7dcfff;
+$tn_blue: #7aa2f7;
+$tn_magenta: #bb9af7;
+$tn_white: #c0caf5;
+$tn_fg: #a9b1d6;
+$tn_text: #9aa5ce;
+$tn_beige: #cfc9c2;
+$tn_grey: #565f89;
+$tn_black: #414868;
+$tn_bg_light: #24283b;
+$tn_bg: #1a1b26;
+
+// Override theme settings (see reveal-js/css/theme/template/settings.scss)
+// Background of the presentation
+$backgroundColor: $tn_bg_light;
+
+// Primary/body text
+$mainFont: 'Fira Sans', Helvetica, sans-serif;
+$mainFontSize: 1.75rem;
+$mainColor: $tn_white;
+
+// Vertical spacing between blocks of text
+$blockMargin: 20px;
+
+// Headings
+$headingMargin: 0 0 $blockMargin 0;
+$headingFont: 'Fira Sans', Helvetica, sans-serif;
+$headingColor: $tn_fg;
+$headingLineHeight: 1.2;
+$headingLetterSpacing: normal;
+$headingTextTransform: uppercase;
+$headingTextShadow: none;
+$headingFontWeight: 600;
+$heading1TextShadow: $headingTextShadow;
+
+$heading1Size: 3.77em;
+$heading2Size: 2.11em;
+$heading3Size: 1.55em;
+$heading4Size: 1.00em;
+
+$codeFont: monospace;
+
+// Links and actions
+$linkColor: #13DAEC;
+$linkColorHover: lighten( $linkColor, 20% );
+
+// Text selection
+$selectionBackgroundColor: #FF5E99;
+$selectionColor: #fff;
+
+// Colors used for UI elements that are overlaid on top of
+// the presentation
+$overlayElementBgColor: 240, 240, 240;
+$overlayElementFgColor: 0, 0, 0;
+
+// Generates the presentation background, can be overridden
+// to return a background image or gradient
+@mixin bodyBackground() {
+	background: $backgroundColor;
+}
+
+// Change text colors against light slide backgrounds
+@include dark-bg-text-color(#fff);
+
+// Theme template ------------------------------
+@import "node_modules/reveal.js/css/theme/template/theme";
+// ---------------------------------------------
+
+.reveal code {
+  font-family: 'Fira Code', monospace;
+}
+
+.reveal pre {
+  width: 100%;
+  font-family: 'Fira Code', monospace;
+  code {
+    padding: 20px !important;
+    font-family: 'Fira Code', monospace;
+  }
+}
+
+// Override reveal CSS defaults
+.reveal .slides .center {
+    text-align: center;
+}
+
+.reveal .slides {
+    text-align: left;
+}
+
+.reveal .slides section,
+.reveal .slides section>section {
+    line-height: 1.5;
+
+    // Add spacing between top-level bullets
+    > li:not(:first-child) {
+        margin-top: 1rem;
+    }
+
+    // Decrease the font-size of the sub-bullets
+    ul > li > ul > li {
+        font-size:80%;
+    }
+}
+
+.container{
+  display: grid;
+  grid-auto-flow: column;
+  column-gap: 1em;
+  > div {
+    display: grid;
+    place-items: center;
+  }
+}
+
+// https://color.adobe.com/last%20summer%20day-color-theme-1001686
+$blue: #A7C5C5;
+$lightgreen: #DEE0D5;
+$yellow: #E2AC48;
+$orange: #B96028;
+$red: #983C2D;
+
+.bg-green {
+    background: color.adjust($lightgreen, $green: 20);
+}
+
+.bg-orange {
+    background: color.adjust($orange, $lightness: 25%);
+}
+
+.bg-red {
+    background: color.adjust($red, $lightness: 20%);
+}
+
+.smallish {
+    font-size: 1.4rem;
+}
+
+.small {
+    font-size: 1.3rem;
+}
+
+.verysmall {
+    font-size: 1rem;
+}
+
+.footnote {
+    color: #666;
+}
