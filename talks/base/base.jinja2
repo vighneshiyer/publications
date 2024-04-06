@@ -52,7 +52,7 @@
     (function (doc, win) {
       "use strict"
 
-      const pointer_width = 25
+      const pointer_width = 30
       const pointer_width_2 = pointer_width / 2
       const initial_css = {
         position: 'absolute',
@@ -67,6 +67,7 @@
       let laserActive = false
       const body = doc.getElementsByTagName('body')[0]
       let tail = doc.createElement('div')
+      tail.classList.add("laser-pointer");
 
       function toggleLaser () {
         if (!laserActive) {
