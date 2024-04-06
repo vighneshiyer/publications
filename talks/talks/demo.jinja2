@@ -87,6 +87,7 @@ import 'highlight.js/styles/tokyo-night-dark.css'
       const [count, setCount] = useState(0);
 
       return (
+        // ligatures! -&gt; =&gt; &lt;= ===
         ...
       );
     }
@@ -144,24 +145,24 @@ import 'highlight.js/styles/tokyo-night-dark.css'
   <h2>Auto-Animate</h2>
   <p>Automatically animate matching elements across slides with <a href="https://revealjs.com/auto-animate/">Auto-Animate</a>.</p>
   <div class="r-hstack justify-center">
-    <div data-id="box1" style="background: #999; width: 50px; height: 50px; margin: 10px; border-radius: 5px;"></div>
-    <div data-id="box2" style="background: #999; width: 50px; height: 50px; margin: 10px; border-radius: 5px;"></div>
-    <div data-id="box3" style="background: #999; width: 50px; height: 50px; margin: 10px; border-radius: 5px;"></div>
+    <div data-id="box1" class="bg-grey" style="width: 50px; height: 50px; margin: 10px; border-radius: 5px;"></div>
+    <div data-id="box2" class="bg-grey" style="width: 50px; height: 50px; margin: 10px; border-radius: 5px;"></div>
+    <div data-id="box3" class="bg-grey" style="width: 50px; height: 50px; margin: 10px; border-radius: 5px;"></div>
   </div>
 </section>
 <section class="center" data-auto-animate data-auto-animate-easing="cubic-bezier(0.770, 0.000, 0.175, 1.000)">
   <div class="r-hstack justify-center">
-    <div data-id="box1" data-auto-animate-delay="0" style="background: cyan; width: 150px; height: 100px; margin: 10px;"></div>
-    <div data-id="box2" data-auto-animate-delay="0.1" style="background: magenta; width: 150px; height: 100px; margin: 10px;"></div>
-    <div data-id="box3" data-auto-animate-delay="0.2" style="background: yellow; width: 150px; height: 100px; margin: 10px;"></div>
+    <div data-id="box1" class="bg-blue" data-auto-animate-delay="0" style="width: 150px; height: 100px; margin: 10px;"></div>
+    <div data-id="box2" class="bg-red" data-auto-animate-delay="0.1" style="width: 150px; height: 100px; margin: 10px;"></div>
+    <div data-id="box3" class="bg-yellow" data-auto-animate-delay="0.2" style="width: 150px; height: 100px; margin: 10px;"></div>
   </div>
   <h2 style="margin-top: 20px;">Auto-Animate</h2>
 </section>
 <section class="center" data-auto-animate data-auto-animate-easing="cubic-bezier(0.770, 0.000, 0.175, 1.000)">
   <div class="r-stack">
-    <div data-id="box1" style="background: cyan; width: 300px; height: 300px; border-radius: 200px;"></div>
-    <div data-id="box2" style="background: magenta; width: 200px; height: 200px; border-radius: 200px;"></div>
-    <div data-id="box3" style="background: yellow; width: 100px; height: 100px; border-radius: 200px;"></div>
+    <div data-id="box1" class="bg-blue" style="width: 300px; height: 300px; border-radius: 200px;"></div>
+    <div data-id="box2" class="bg-red" style="width: 200px; height: 200px; border-radius: 200px;"></div>
+    <div data-id="box3" class="bg-yellow" style="width: 100px; height: 100px; border-radius: 200px;"></div>
   </div>
   <h2 style="margin-top: 20px;">Auto-Animate</h2>
 </section>
@@ -291,7 +292,7 @@ import 'highlight.js/styles/tokyo-night-dark.css'
   </section>
 </section>
 
-<section data-transition="slide" data-background="#4d7e65" data-background-transition="zoom">
+<section data-transition="slide" data-background="#9ece6a" data-background-transition="zoom">
   <h2>Background Transitions</h2>
   <p>
     Different background transitions are available via the backgroundTransition option. This one's called "zoom".
@@ -299,7 +300,7 @@ import 'highlight.js/styles/tokyo-night-dark.css'
   <pre><code class="hljs javascript">Reveal.configure({ backgroundTransition: 'zoom' })</code></pre>
 </section>
 
-<section data-transition="slide" data-background="#b5533c" data-background-transition="zoom">
+<section data-transition="slide" data-background="#f7768e" data-background-transition="zoom">
   <h2>Background Transitions</h2>
   <p>
     You can override background transitions per-slide.

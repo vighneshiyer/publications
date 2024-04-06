@@ -44,10 +44,10 @@ $blockMargin: 20px;
 // Headings
 $headingMargin: 0 0 $blockMargin 0;
 $headingFont: 'Fira Sans', Helvetica, sans-serif;
-$headingColor: $tn_fg;
+$headingColor: $tn_white;
 $headingLineHeight: 1.2;
 $headingLetterSpacing: normal;
-$headingTextTransform: uppercase;
+$headingTextTransform: none;
 $headingTextShadow: none;
 $headingFontWeight: 600;
 $heading1TextShadow: $headingTextShadow;
@@ -57,15 +57,15 @@ $heading2Size: 2.11em;
 $heading3Size: 1.55em;
 $heading4Size: 1.00em;
 
-$codeFont: monospace;
+$codeFont: 'Fira Code', monospace;
 
 // Links and actions
-$linkColor: #13DAEC;
+$linkColor: $tn_orange;
 $linkColorHover: lighten( $linkColor, 20% );
 
 // Text selection
-$selectionBackgroundColor: #FF5E99;
-$selectionColor: #fff;
+$selectionBackgroundColor: $tn_black;
+$selectionColor: $tn_white;
 
 // Colors used for UI elements that are overlaid on top of
 // the presentation
@@ -75,26 +75,20 @@ $overlayElementFgColor: 0, 0, 0;
 // Generates the presentation background, can be overridden
 // to return a background image or gradient
 @mixin bodyBackground() {
-	background: $backgroundColor;
+	background: $tn_bg;
 }
 
 // Change text colors against light slide backgrounds
-@include dark-bg-text-color(#fff);
+@include light-bg-text-color($tn_black);
 
 // Theme template ------------------------------
 @import "node_modules/reveal.js/css/theme/template/theme";
 // ---------------------------------------------
 
-.reveal code {
-  font-family: 'Fira Code', monospace;
-}
-
 .reveal pre {
   width: 100%;
-  font-family: 'Fira Code', monospace;
   code {
     padding: 20px !important;
-    font-family: 'Fira Code', monospace;
   }
 }
 
@@ -120,6 +114,10 @@ $overlayElementFgColor: 0, 0, 0;
     ul > li > ul > li {
         font-size:80%;
     }
+
+    blockquote {
+        padding: 1rem;
+    }
 }
 
 .container{
@@ -130,25 +128,6 @@ $overlayElementFgColor: 0, 0, 0;
     display: grid;
     place-items: center;
   }
-}
-
-// https://color.adobe.com/last%20summer%20day-color-theme-1001686
-$blue: #A7C5C5;
-$lightgreen: #DEE0D5;
-$yellow: #E2AC48;
-$orange: #B96028;
-$red: #983C2D;
-
-.bg-green {
-    background: color.adjust($lightgreen, $green: 20);
-}
-
-.bg-orange {
-    background: color.adjust($orange, $lightness: 25%);
-}
-
-.bg-red {
-    background: color.adjust($red, $lightness: 20%);
 }
 
 .smallish {
@@ -165,4 +144,20 @@ $red: #983C2D;
 
 .footnote {
     color: #666;
+}
+
+.bg-red {
+  background: $tn_red;
+}
+
+.bg-blue {
+  background: $tn_blue;
+}
+
+.bg-grey {
+  background: $tn_grey;
+}
+
+.bg-yellow {
+  background: $tn_yellow;
 }
