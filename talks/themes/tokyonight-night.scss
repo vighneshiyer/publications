@@ -162,6 +162,10 @@ $overlayElementFgColor: 0, 0, 0;
   background: $tn_yellow;
 }
 
+.bg-white {
+  background: color.adjust($tn_white, $lightness: +7%);
+}
+
 .laser-pointer {
   background: color.adjust($tn_red, $alpha: -0.3) !important;
 }
