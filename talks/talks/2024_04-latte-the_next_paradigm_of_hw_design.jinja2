@@ -67,13 +67,22 @@ import 'highlight.js/styles/tokyo-night-dark.css'
     - The other tools that can be built (early fast PPA iteration, synthesis)
 -->
 
+<!--
+- PL people are good at defining semantics and making them clear
+- HW arch people are good at knowing what matters and would help us
+- Consider how to describe nested multi abstraction circuits
+  - Consider the impact of an HLS top vs an RTL top and nested tops
+-->
+
 {% block slides %}
 <section>
   <section class="center">
-    <a href="https://revealjs.com">
+    <a href="https://github.com/ucb-bar">
       <img src="./figs/logos/BAR_vertical_logo.svg" style="height: 100px; margin: 0 auto 2rem auto; padding: 1rem; border-radius: 0.5rem;" class="bg-white">
-      <img src="./figs/logos/chipyard_logo.svg" style="height: 100px; margin: 0 auto 2rem auto; padding: 1rem; border-radius: 0.5rem;" class="bg-white">
       <!--<img src="./figs/logos/chisel_logo.svg" style="height: 50px; margin: 0 auto 2rem auto; padding: 1rem; border-radius: 0.5rem;" class="bg-white">-->
+    </a>
+    <a href="https://github.com/ucb-bar/chipyard">
+      <img src="./figs/logos/chipyard_logo.svg" style="height: 100px; margin: 0 auto 2rem auto; padding: 1rem; border-radius: 0.5rem;" class="bg-white">
     </a>
     <h2 class="fragment">The Next Paradigm of Hardware and SoC Design</h2>
     <h3>Chisel / Chipyard Overview + Demo</h3>
@@ -87,16 +96,21 @@ import 'highlight.js/styles/tokyo-night-dark.css'
   <section>
     <h2>Talk Overview</h2>
     <ol>
-      <li class="fragment">The existing paradigm of hardware design and verification we see in industry</li>
-      <li class="fragment">
-      <li class="fragment">Recent efforts 
+      <li class="fragment">The existing paradigm of hardware design and verification in industry</li>
+      <li class="fragment">What might come next? A view of the next paradigm of hardware design</li>
+      <li class="fragment">Recent efforts to build the next paradigm
+        <ul>
+          <li class="fragment">New HDLs: <span class="small">Lava, Chisel, Amaranth, Spade, HeteroCL</span></li>
+          <li class="fragment">New SoC design frameworks: <span class="small">Chipyard, ESP, OpenPiton, PULP, BlackParrot</span></li>
+        </ul>
+      </li>
     </ol>
   </section>
 </section>
 
 <section>
   <section class="center">
-    <h2>The Current Paradigm of Hardware Design</h2>
+    <h2>The Existing Paradigm of Hardware Design</h2>
   </section>
 
   <section>
