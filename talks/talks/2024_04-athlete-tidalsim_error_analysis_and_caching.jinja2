@@ -15,15 +15,36 @@
 {# Custom styles and JS for a particular talk #}
 {% block custom_head %}
 <style>
-.reveal h2 {
-  margin-top: 1rem !important;
+table.detailed_warmup_table {
+  width: 100%;
+  font-size: 60%;
+  border-collapse: separate;
+  tr > th {
+    text-align:center;
+    border: none;
+  }
+  tr > td {
+      border: 1px solid white;
+  }
+  tr:last-child > td {
+      border-bottom: 1px solid white !important;
+  }
+  tbody tr td {
+      width: 16.6666%;
+      height: 2rem;
+      text-align: center;
+      vertical-align: middle;
+  }
+  tbody tr th {
+      vertical-align: middle;
+  }
 }
 </style>
 {% endblock %}
 
 {% block theme %}
-import '/themes/remark-ish.scss'
-import 'reveal.js/plugin/highlight/monokai.css'
+import '/themes/tokyonight-night.scss'
+import 'highlight.js/styles/tokyo-night-dark.css'
 {% endblock %}
 
 {% set center = false %}
@@ -32,15 +53,17 @@ import 'reveal.js/plugin/highlight/monokai.css'
 
 {% block slides %}
 <section class="center">
-  <h1>Ideas For Error Analysis of TidalSim (Sampled RTL Simulation)</h1>
-  <h3 style="font-weight: 500;">Vighnesh Iyer</h3>
-  <h3 style="font-weight: normal;">ATHLETE Small Update</h3>
-  <h4 style="font-weight: normal;">Thursday, March 28th, 2024</h4>
+  <h1>TidalSim (Sampled RTL Simulation) Updates</h2>
+  <h2>Error Analysis <br />
+  Caching and Parallelism API</h2>
+  <h4 style="font-weight: normal;">Vighnesh Iyer<br />
+  ATHLETE Small Update<br />
+  Thursday, April 18th, 2024</h4>
 </section>
 
 <section>
   <section class="center">
-    <h2>Background</h2>
+    <h1>Background</h1>
   </section>
 
   <section>
@@ -49,7 +72,7 @@ import 'reveal.js/plugin/highlight/monokai.css'
     <p class="center fragment">Instead of running the entire program in uArch simulation, run the entire program in <em>functional simulation</em> and only run <em>samples</em> in uArch simulation</p>
 
     <div class="fragment center">
-      <img width="60%" src="./figs/multi-level-sim/sampled_simulation0.png" />
+      <img class="image no-margin" width="60%" src="./figs/multi-level-sim/sampled_simulation0.png" />
     </div>
 
     <p class="fragment center">The full workload is represented by a selection of <em>sampling units</em>.</p>
@@ -66,10 +89,10 @@ import 'reveal.js/plugin/highlight/monokai.css'
 
     <div class="container" style="grid-template-columns: 1fr 1fr;">
     <div>
-    <h4 class="center fragment">SimPoint</h4>
-    <div class="fragment" style="display:grid; align-content: center; justify-items:center; grid-template-columns:1fr 1fr;">
-      <img style="display:grid;" src="./figs/multi-level-sim/simpoint-gzip_phases.gif" />
-      <img style="display:grid;" src="./figs/multi-level-sim/simpoint-gcc_phases.gif" />
+    <h3 class="center fragment">SimPoint</h3>
+    <div class="fragment image no-padding" style="display:grid; align-content: center; justify-items:center; grid-template-columns:1fr 1fr;">
+      <img class="no-margin" style="display:grid;" src="./figs/multi-level-sim/simpoint-gzip_phases.gif" />
+      <img class="no-margin" style="display:grid;" src="./figs/multi-level-sim/simpoint-gcc_phases.gif" />
     </div>
     <ul class="small">
       <li class="fragment">Program execution traces aren’t random
@@ -88,8 +111,8 @@ import 'reveal.js/plugin/highlight/monokai.css'
     </ul>
     </div>
     <div>
-      <h4 class="center fragment">SMARTS</h4>
-      <img class="fragment" src="./figs/quals/smarts.png" />
+      <h3 class="center fragment">SMARTS</h3>
+      <img class="fragment image no-margin no-padding" src="./figs/quals/smarts.png" />
       <ul class="small">
         <li class="fragment">Rigorous statistical sampling enables computation of confidence bounds
           <ul class="fragment">
@@ -115,7 +138,7 @@ import 'reveal.js/plugin/highlight/monokai.css'
     <p class="fragment center">The state from a sampling unit checkpoint is only <em>architectural</em> state. The <em>microarchitectural</em> state of the uArch simulator starts at the reset state!</p>
 
     <div class="fragment center">
-      <img width="50%" src="./figs/multi-level-sim/sampled_simulation.png" />
+      <img width="50%" class="image" src="./figs/multi-level-sim/sampled_simulation.png" />
     </div>
 
     <ul>
@@ -127,7 +150,7 @@ import 'reveal.js/plugin/highlight/monokai.css'
 
 <section>
   <section class="center">
-    <h2>Ideas Around Error Analysis</h2>
+    <h1>Ideas Around Error Analysis</h1>
   </section>
 
   <section>
@@ -135,11 +158,11 @@ import 'reveal.js/plugin/highlight/monokai.css'
 
     <div class="center r-stack">
       <div class="fragment fade-in-then-out">
-        <img src="./figs/multi-level-sim/wikisort_results.svg" />
+        <img class="image" src="./figs/multi-level-sim/wikisort_results.svg" />
         <figcaption>No functional warmup, there are significant IPC underpredictions</figcaption>
       </div>
       <div class="fragment fade-in">
-        <img src="./figs/multi-level-sim/wikisort_results-l1d_warmup.svg" />
+        <img class="image" src="./figs/multi-level-sim/wikisort_results-l1d_warmup.svg" />
         <figcaption>L1d functional warmup, errors are substantially reduced</figcaption>
       </div>
     </div>
@@ -217,9 +240,9 @@ import 'reveal.js/plugin/highlight/monokai.css'
   <section>
     <h2>Removing Embedding Errors</h2>
 
-    <img class="fragment" src="./figs/dynamic/tidalsim-error/pure_injection.svg" width="100%" />
+    <img class="fragment image no-margin" src="./figs/dynamic/tidalsim-error/pure_injection.svg" width="100%" />
 
-    <ul>
+    <ul class="smallish">
       <li class="fragment">If we only inject every interval's architectural state into RTL simulation, then we get a worst case per-interval error</li>
       <li class="fragment">This error doesn't contain any offset measurement bias</li>
       <li class="fragment">On its own, this error is the <em>maximum</em> error possible per interval
@@ -234,7 +257,7 @@ import 'reveal.js/plugin/highlight/monokai.css'
   <section>
     <h2>Evaluating Detailed Warmup Errors</h2>
 
-    <img class="fragment" src="./figs/dynamic/tidalsim-error/detailed_warmup.svg" width="100%" />
+    <img class="fragment image no-margin" src="./figs/dynamic/tidalsim-error/detailed_warmup.svg" width="100%" />
 
     <ul>
       <li class="fragment">We can first measure the impact of detailed warmup wrt the number of instructions and the offset (measurement bias)</li>
@@ -245,7 +268,7 @@ import 'reveal.js/plugin/highlight/monokai.css'
   <section>
     <h2>Evaluating Functional Warmup Errors</h2>
 
-    <img class="fragment" src="./figs/dynamic/tidalsim-error/functional_warmup.svg" width="100%" />
+    <img class="fragment image no-margin" src="./figs/dynamic/tidalsim-error/functional_warmup.svg" width="100%" />
 
     <ul>
       <li class="fragment">We can use a similar technique to measure the impact of functional warmup</li>
@@ -256,19 +279,179 @@ import 'reveal.js/plugin/highlight/monokai.css'
   <section>
     <h2>Warmup Oracles</h2>
 
-    <img class="fragment" src="./figs/dynamic/tidalsim-error/functional_warmup.svg" width="100%" />
+    <img class="fragment image no-margin" src="./figs/dynamic/tidalsim-error/functional_warmup.svg" width="100%" />
 
-    <ul>
-      <li class="fragment">We can do 'perfect' functional warmup by using RTL simulation waveforms from the full run</li>
+    <ul class="smallish">
+      <li class="fragment">'Perfect' functional warmup with RTL simulation waveforms from the full run</li>
       <li class="fragment">We can measure the impact of the warmup model vs the warmup oracle</li>
       <li class="fragment">Detailed warmup is more tricky
         <ul>
-          <li>Emulating 'perfect' detailed warmup with our functional warmup model requires (potentially impossible) state injection</li>
+          <li>Emulating 'perfect' detailed warmup with our functional warmup model requires (likely impossible) state injection</li>
         </ul>
       </li>
     </ul>
   </section>
 
+  <section>
+    <h2>Evaluation - Detailed Warmup Alone</h2>
+
+    <p class="center small">For a given workload interval and a interval length $N$ (e.g. $N = 10000$) and <em>without</em> functional warmup, we can compute this table. <small>(each cell is IPC error wrt the full RTL simulation)</small></p>
+
+    <table class="detailed_warmup_table">
+      <thead>
+      <tr>
+        <th></th>
+        <th></th>
+        <th colspan="6">Detailed warmup instructions ($ n_{\text{warmup}} $)</th>
+      </tr>
+      <tr style="text-align: center;">
+        <th></th>
+        <th></th>
+        <th>0</th>
+        <th>100</th>
+        <th>500</th>
+        <th>1000</th>
+        <th>2000</th>
+        <th>5000</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr class="fragment">
+        <!-- style="writing-mode:sideways-lr; text-orientation: sideways;" -->
+        <th rowspan="6" style="vertical-align: middle;">Detailed warmup offset ($ n_{\text{offset}} $)</th>
+        <th>0</th>
+        <td class="bg-red">Worst case</td>
+        <td style="font-size: 80%">Offset error ↑<br />Warmup error ↓</td>
+        <td style="font-size: 80%">Offset error 2↑<br />Warmup error 2↓</td>
+        <td style="font-size: 80%">Offset error 3↑<br />Warmup error 3↓</td>
+        <td style="font-size: 80%">Offset error 4↑<br />Warmup error 4↓</td>
+        <td>Maximum offset error</td>
+      </tr>
+      <tr class="fragment">
+        <th>-100</th>
+        <td class="bg-grey">Invalid</td>
+        <td class="bg-yellow">No offset error</td>
+        <td>''</td>
+        <td>''</td>
+        <td>''</td>
+        <td>''</td>
+      </tr>
+      <tr class="fragment">
+        <th>-500</th>
+        <td class="bg-grey"></td>
+        <td class="bg-grey"></td>
+        <td class="bg-yellow">No offset error</td>
+        <td>''</td>
+        <td>''</td>
+        <td>''</td>
+      </tr>
+      <tr class="fragment">
+        <th>-1000</th>
+        <td class="bg-grey"></td>
+        <td class="bg-grey"></td>
+        <td class="bg-grey"></td>
+        <td class="bg-yellow">No offset error</td>
+        <td>''</td>
+        <td>''</td>
+      </tr>
+      <tr class="fragment">
+        <th>-2000</th>
+        <td class="bg-grey"></td>
+        <td class="bg-grey"></td>
+        <td class="bg-grey"></td>
+        <td class="bg-grey"></td>
+        <td class="bg-yellow">No offset error</td>
+        <td>''</td>
+      </tr>
+      <tr class="fragment">
+        <th>-5000</th>
+        <td class="bg-grey"></td>
+        <td class="bg-grey"></td>
+        <td class="bg-grey"></td>
+        <td class="bg-grey"></td>
+        <td class="bg-grey"></td>
+        <td class="bg-green">No offset error, best case</td>
+      </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2>Detailed Warmup Error Model</h2>
+
+    <p class="fragment">Given the data in the table for every interval and for different interval lengths $N$, fit the following model:</p>
+
+    <div class="fragment">
+    \[\begin{aligned}
+      \left(\frac{1}{\text{error}}\right) &amp;= f(N, n_{\text{warmup}}, n_{\text{offset}}) \\
+      &amp;= \frac{1}{1 + e^{-(n_{\text{warmup}}/N - \mu) / s}} + \alpha \frac{n_{\text{warmup}} - n_{\text{offset}}}{N} + \beta N
+    \end{aligned} \]
+    </div>
+
+    <ul>
+      <li class="fragment">Logistic term to model error reduction from warmup</li>
+      <li class="fragment">Linear term to model error reduction from offset elimination</li>
+      <li class="fragment">Linear term to model relationship of interval length to IPC error</li>
+      <li class="fragment">There might also be a term that mixes $n_{\text{warmup}}$ and $n_{\text{offset}}$ (TBD)</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Extending the Error Model</h2>
+
+    <ul>
+      <li class="fragment">Consider building more tables with different functional warmup types (L1i, L1d, L2, BP, combinations) and fidelity (perfect vs model)</li>
+      <li class="fragment">Still an open question: how can we mix the functional warmup type/fidelity into the error model?</li>
+      <li class="fragment">Given a particular sampled simulation configuration ($N$, $n_{\text{warmup}}$, $n_{\text{offset}}$, functional warmup type + fidelity) for a given workload
+        <ul>
+          <li>The remaining error from the table cell is <em>attributable to inaccurate warmup</em> (functional + detailed)</li>
+          <li>Any additional error seen in <em>actual</em> sampled simulation is <em>attributable to embedding</em></li>
+        </ul>
+      </li>
+    </ul>
+  </section>
+
+  <!--<section>
+    <h2>Time-Based Intervals</h2>
+  </section>-->
+</section>
+
+<section>
+  <section class="center">
+    <h1>Caching and Execution Model</h1>
+  </section>
+
+  <section>
+    <h2>Complexity of the Flow</h2>
+
+    <div class="center">
+      <img class="image no-margin" src="./figs/dynamic/tidalsim/full_flow_detail.svg" />
+    </div>
+
+    <ul>
+      <li>We have a manual caching mechanism for every box input and output</li>
+      <li>There is no exploitation of parallelism beyond RTL simulations</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>WIP: A Sampled Simulation Manager</h2>
+
+    <ul>
+      <li class="fragment">Basically a build system, dependency tracker, and parallel/distributed executor for sampled simulation</li>
+      <li class="fragment">Keys are dataclasses with
+        <ul>
+          <li>Dependencies on other keys</li>
+          <li>Outputs that can be files or in-memory Python objects</li>
+          <li>Parameters that are used to determine whether a cache entry exists</li>
+          <li>Rules (Python functions) for building the outputs from dependencies and parameters</li>
+        </ul>
+      </li>
+      <li class="fragment">Simulation artifacts are placed on disk by the execution runtime</li>
+      <li class="fragment">Top-level flow requests keys and the key's rule operates on dependent keys (monadically, lazy)</li>
+      <li class="fragment">Build graph is constructed and execution is lazy</li>
+    </ul>
+  </section>
 </section>
 
 {% endblock %}

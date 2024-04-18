@@ -29,17 +29,25 @@ $tn_black: #414868;
 $tn_bg_light: #24283b;
 $tn_bg: #1a1b26;
 
+// https://picocss.com/docs/typography
+// Font sizes and spacing are the same as picocss
+:root {
+  // Use a larger-than-usual root font size, all other font sizes are given in rem
+  // This is the font size of regular text on a slide, so it must be larger than 16px
+  font-size: 28px;
+}
+
 // Override theme settings (see reveal-js/css/theme/template/settings.scss)
 // Background of the presentation
 $backgroundColor: $tn_bg_light;
 
 // Primary/body text
 $mainFont: 'Fira Sans', Helvetica, sans-serif;
-$mainFontSize: 1.75rem;
+$mainFontSize: 1rem; // 1rem = :root font size
 $mainColor: $tn_white;
 
 // Vertical spacing between blocks of text
-$blockMargin: 20px;
+$blockMargin: 1rem;
 
 // Headings
 $headingMargin: 0 0 $blockMargin 0;
@@ -52,10 +60,11 @@ $headingTextShadow: none;
 $headingFontWeight: 600;
 $heading1TextShadow: $headingTextShadow;
 
-$heading1Size: 3.77em;
-$heading2Size: 2.11em;
-$heading3Size: 1.55em;
-$heading4Size: 1.00em;
+// These font sizes are set by eye, there is no fancy calculation under the hood
+$heading1Size: 2rem;
+$heading2Size: 1.75rem;
+$heading3Size: 1.5rem;
+$heading4Size: 1.25rem;
 
 $codeFont: 'Fira Code', monospace;
 
@@ -103,16 +112,22 @@ $overlayElementFgColor: 0, 0, 0;
 
 .reveal .slides section,
 .reveal .slides section>section {
+    // Use the picocss line height
     line-height: 1.5;
+
+    // Shift slide headings down by a bit for aesthetics
+    h2 {
+      margin-top: 0.5rem;
+    }
 
     // Add spacing between top-level bullets
     > li:not(:first-child) {
         margin-top: 1rem;
     }
 
-    // Decrease the font-size of the sub-bullets
+    // Decrease the font-size of any sub-bullets
     ul > li > ul > li {
-        font-size:80%;
+        font-size: 80%;
     }
 
     blockquote {
@@ -131,15 +146,15 @@ $overlayElementFgColor: 0, 0, 0;
 }
 
 .smallish {
-    font-size: 1.4rem;
+    font-size: 0.9rem;
 }
 
 .small {
-    font-size: 1.3rem;
+    font-size: 0.8rem;
 }
 
 .verysmall {
-    font-size: 1rem;
+    font-size: 0.75rem;
 }
 
 .footnote {
@@ -148,6 +163,7 @@ $overlayElementFgColor: 0, 0, 0;
 
 .bg-red {
   background: $tn_red;
+  color: $tn_bg;
 }
 
 .bg-blue {
@@ -160,6 +176,12 @@ $overlayElementFgColor: 0, 0, 0;
 
 .bg-yellow {
   background: $tn_yellow;
+  color: $tn_bg;
+}
+
+.bg-green {
+  background: $tn_green;
+  color: $tn_bg;
 }
 
 .bg-white {
@@ -168,4 +190,23 @@ $overlayElementFgColor: 0, 0, 0;
 
 .laser-pointer {
   background: color.adjust($tn_red, $alpha: -0.3) !important;
+}
+
+// div.image: usually wrapping multiple images with one uniform background
+img.image, div.image {
+  padding: 1rem;
+  border-radius: 0.5rem;
+  //background: color.adjust($tn_white, $lightness: +7%);
+  background: white;
+}
+
+// Add to any element to strip away the usual margins (usually added to images)
+.no-margin {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+}
+
+// Add to any element to strip away padding (also usually applied to images)
+.no-padding {
+  padding: 0 !important;
 }
