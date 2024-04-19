@@ -117,4 +117,1163 @@ import 'highlight.js/styles/tokyo-night-dark.css'
     <h2>
   </section>
 </section>
+
+<section>
+  <section class="center">
+    <h2>Introduction to Chipyard and FireSim</h2>
+  </section>
+
+  <section class="center">
+    <h2>What is Chipyard</h2>
+    <ul>
+      <li class="fragment">An organized framework for various SoC design tools</li>
+      <li class="fragment">A curated IP library of open-source RISC-V SoC components</li>
+      <li class="fragment">A methodology for agile SoC architecture design, exploration, and evaluation</li>
+      <li class="fragment">A tapeout-ready chassis for custom RISC-V SoCs</li>
+    </ul>
+  </section>
+
+  <section class="center">
+    <h2>SoC Architecture</h2>
+    <div class="container" style="grid-template-columns: 1.4fr 1.0fr;">
+      <div>
+        <img src="./figs/latte24/soc-arch.svg"/>
+      </div>
+      <div>
+        <font size="6">
+        <ul>
+          <li class="fragment">We can configure the tiles, accelerators, memory hierarchy, and the interconnect.</li>
+        </ul>
+        </font>
+      </div>
+    </div>
+  </section>
+
+  <section class="center">
+    <h2>Tiles</h2>
+    <div class="container" style="grid-template-columns: 1.4fr 1.0fr;">
+      <div>
+        <img src="./figs/latte24/soc-tiles.svg"/>
+      </div>
+      <div>
+        <font size="5">
+        <ul>
+          <li class="fragment">Each Tile contains a RISC-V core and private caches</li>
+          <li class="fragment">Several varieties of Cores supported</li>
+          <ul>
+            <li class="fragment">Rocket: 5-stage single-issue in-order</li>
+            <li class="fragment">Shuttle: 6-stage superscalar in-order</li>
+            <li class="fragment">SonicBOOM: 12-stage superscalar out-of-order</li>
+          </ul>
+          <li class="fragment">Interface supports integrating your own RISC-V core implementation</li>
+        </ul>
+        </font>
+      </div>
+    </div>
+  </section>
+
+  <section class="center">
+    <h2>RoCC Accelerators</h2>
+    <div class="container" style="grid-template-rows: 0.3fr 0.7fr;">
+      <div>
+        <font size="6">
+          <ul>
+            <li class="fragment">Tightly-coupled accelerator interface</li>
+            <li class="fragment">Attach custom accelerators to Rocket or BOOM</li>
+            <li class="fragment">Includes example implementations</li>
+          </ul>
+        </font>
+      </div>
+      <div>
+        <img src="./figs/latte24/soc-rocc-accel.svg"/>
+      </div>
+    </div>
+  </section>
+
+  <section class="center">
+    <h2>MMIO Accelerators</h2>
+    <div class="container" style="grid-template-columns: 1.0fr 1.0fr;">
+      <div>
+        <img src="./figs/latte24/soc-mmio-accel.svg"/>
+      </div>
+      <div>
+        <font size="6">
+          <ul>
+            <li class="fragment">Controlled by MMIO-mapped registers</li>
+            <li class="fragment">Supports DMA to memory system</li>
+          </ul>
+        </font>
+      </div>
+    </div>
+  </section>
+
+  <section class="center">
+    <h2>Bus Hierarchy</h2>
+    <div class="container" style="grid-template-columns: 1.0fr 1.0fr;">
+      <div>
+        <img src="./figs/latte24/soc-bus-hierarchy.svg"/>
+      </div>
+      <div>
+        <font size="5">
+          <ul>
+            <li class="fragment">Tilelink Standard:</li>
+            <ul>
+              <li class="fragment">TileLink is open-source chip-scale interconnect standard</li>
+              <li class="fragment">Comparable to AXI/ACE</li>
+              <li class="fragment">Supports multi-core, accelerators, peripherals, DMA, etc</li>
+            </ul>
+            <li class="fragment">Interconnect IP:</li>
+            <ul>
+              <li class="fragment">Library of TileLink RTL generators provided in RocketChip</li>
+              <li class="fragment">RTL generators for crossbar-based buses</li>
+              <li class="fragment">Width-adapters, clock-crossings, etc.</li>
+              <li class="fragment">Adapters to AXI4, APB</li>
+              <li class="fragment">New: Drop-in prefetchers</li>
+            </ul>
+          </ul>
+        </font>
+      </div>
+    </div>
+  </section>
+
+  <section class="center">
+    <h2>NoC Interconnect</h2>
+    <div class="container" style="grid-template-columns: 1.0fr 1.0fr;">
+      <div>
+        <img src="./figs/latte24/soc-noc.svg"/>
+      </div>
+      <div>
+        <font size="5">
+          <ul>
+            <li class="fragment">Constellation:</li>
+            <ul>
+              <li class="fragment">Drop-in replacement for TileLink crossbar buses</li>
+            </ul>
+          </ul>
+        </font>
+      </div>
+    </div>
+  </section>
+
+  <section class="center">
+    <h2>FireSim at 35,000 feet</h2>
+    <font size="6">
+    <ul>
+      <li class="fragment">Open-source, fast, automatic, deterministic FPGA-accelerated <strong>hardware simulation</strong> for pre-silicon verification and performance validation</li>
+      <li class="fragment">Ingests:</li>
+      <ul>
+        <li class="fragment">Your RTL design: FIRRTL (Chisel), blackbox Verilog</li>
+        <li class="fragment">Or Chipyard-generated designs with Rocket Chip, BOOM, NVDLA, PicoRV32, and more</li>
+        <li class="fragment">HW and/or SW IO models (e.g. UART, Ethernet, DRAM, etc.)</li>
+        <li class="fragment">Workload descriptions</li>
+      </ul>
+      <li class="fragment">Produces: Fast, cycle-exact simulation of your design + models around it</li>
+      <li class="fragment">Automatically deployed to on-prem or cloud FPGAs</li>
+      <ul>
+        <li class="fragment">E.g., Xilinx Alveo, VCU118, AWS EC2 F1, etc.</li>
+      </ul>
+    </ul>
+    </font>
+  </section>
+
+  <section class="center">
+    <h2>Running Hello World on Rocket</h2>
+    <p>Quick Demo</p>
+  </section>
+
+  <section class="center">
+    <h2>Resources</h2>
+    <div class="container" style="grid-template-columns: 1.0fr 1.0fr;">
+      <div>
+        <img src="./figs/latte24/chipyard-docs.svg"/>
+        <img src="./figs/latte24/firesim-docs.jpg"/>
+      </div>
+      <div>
+        <ul>
+          <li><a href="https://chipyard.readthedocs.io/en/stable/">Chipyard docs.</a></li>
+          <li><a href="https://docs.fires.im/en/stable/">FireSim docs.</a></li>
+          <li><a href="https://askjerry.net/">Ask me (Jerry) anything website!</a></li>
+          <li><a href="https://fires.im/asplos-2023-tutorial/">Link to previous tutorial recordings</a></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+</section>
+
+<!-- -------------------------------------------------------------------- -->
+
+<section>
+  <section class="center">
+    <h2>The RTL First Design Methodology</h2>
+    <p>"Just go write RTL"</p>
+  </section>
+
+  <section class="center">
+    <h3>We need to reduce the NRE cost</h3>
+    <img src="./figs/latte24/nre-cost.jpg"/>
+  </section>
+
+  <section class="center">
+    <h3>Typical hardware design cycle</h3>
+    <div class="container" style="grid-template-columns: 1.0fr 1.4fr;">
+      <div class="fragment">
+        <img src="./figs/latte24/design-process.svg" />
+      </div>
+      <div>
+        <font size="6">
+        <ul>
+          <li class="fragment">Iterate over a design point in various abstractions.</li>
+          <li class="fragment">You can get feedback from lower level abstractions.</li>
+          <li class="fragment">You are likely to run <strong>a lot of simulations</strong> in order to get functionality and performance correct.</li>
+        </ul>
+        </font>
+      </div>
+    </div>
+  </section>
+
+  <section class="center">
+    <h3>Time and effort is wasted</h3>
+    <div class="container" style="grid-template-columns: 1.0fr 1.4fr;">
+      <div class="fragment">
+        <img src="./figs/latte24/compiling.png" />
+      </div>
+      <div>
+        <font size="6">
+        <ul>
+          <li class="fragment">People just sit there waiting for code to compile or simulations to run.</li>
+          <li class="fragment">Large companies can afford to have separate teams for each step of the design process.</li>
+          <li class="fragment">Unsuitable for academics or startups with small teams.</li>
+        </ul>
+        </font>
+      </div>
+    </div>
+  </section>
+
+  <section class="center">
+    <h3>RTL first design methodology</h3>
+    <div class="container" style="grid-template-columns: 1.0fr 1.4fr;">
+      <div class="fragment">
+        <img src="./figs/latte24/design-process-rtl-first.svg" />
+      </div>
+      <div>
+        <font size="6">
+        <ul>
+          <li class="fragment">Modeling is required because <strong>RTL writing is hard</strong>.</li>
+          <li class="fragment">Modeling has a lot of errors and can lead designers to wrong conclusions.</li>
+          <li class="fragment">Redundant work is done by writing code twice for the same design.</li>
+          <li class="fragment">Make RTL writing so easy that we can just do modeling with RTL!</li>
+        </ul>
+        </font>
+      </div>
+    </div>
+  </section>
+
+  <section class="center">
+    <h2>Chisel</h2>
+    <ul>
+      <li class="fragment">HDL embedded in Scala.</li>
+      <li class="fragment">Metaprogramming on top of the RTL abstraction.</li>
+      <ul>
+        <li class="fragment">Scala enables high expressiveness compared to SV.</li>
+        <li class="fragment">Makes it much easier to read and write RTL.</li>
+      </ul>
+    </ul>
+  </section>
+
+  <section data-auto-animate>
+    <h3>Reduced Sum : System Verilog</h3>
+    <pre data-id="code-animation"><code class="verilog" data-trim data-line-numbers>
+    module MyModule
+      #(parameter N, M)
+      (
+        input  [N-1:0] a [0:M-1],
+        output [N-1:0] sum
+      );
+      ...
+
+    endmodule
+    </code></pre>
+  </section>
+
+  <section data-auto-animate>
+    <h3>Reduced Sum : System Verilog</h3>
+    <pre data-id="code-animation"><code class="verilog" data-trim data-line-numbers="8-18">
+    module MyModule
+      #(parameter N, M)
+      (
+        input  [N-1:0] a [0:M-1],
+        output [N-1:0] sum
+      );
+
+      reg [N-1:0] tmp [0:M];
+
+      tmp[0] = a[0];
+      sum = tmp[M];
+
+      genvar i;
+      generate
+        for (i = 1; i &lt; M; i = i + 1) begin
+          tmp[i] = tmp[i-1] + a[i];
+        end
+      endgenerate
+    endmodule
+    </code></pre>
+  </section>
+
+  <section data-auto-animate>
+    <h2>Reduced Sum : Chisel</h2>
+    <pre data-id="code-animation"><code class="scala" data-trim data-line-numbers>
+    class MyModule(N: Int, M: Int) extends Module {
+      val io = IO(new Bundle {
+        val a = Vec(M, Input(UInt(N.W)))
+        val sum  = Output(UInt(N.W))
+      })
+      ...
+    }
+    </code></pre>
+  </section>
+
+  <section data-auto-animate>
+    <h2>Reduced Sum : Chisel</h2>
+    <pre data-id="code-animation"><code class="scala" data-trim data-line-numbers="6">
+    class MyModule(N: Int, M: Int) extends Module {
+      val io = IO(new Bundle {
+        val a = Vec(M, Input(UInt(N.W)))
+        val sum  = Output(UInt(N.W))
+      })
+      io.sum := io.a.reduce(_ + _)
+    }
+    </code></pre>
+  </section>
+
+  <section class="center">
+    <h2>Chisel as a embedded DSL</h2>
+    <ul>
+      <li class="fragment">Enables us to use existing tools around the host language.</li>
+      <ul>
+        <li class="fragment">Package manager.</li>
+        <li class="fragment">Build systems.</li>
+        <li class="fragment">LSP.</li>
+      </ul>
+    </ul>
+  </section>
+
+  <section class="center">
+    <h2>FIRRTL</h2>
+    <ul>
+      <li class="fragment">Intermediate representation for Chisel.</li>
+      <li class="fragment">Designed to represent the generated circuit after Chisel's elaboration (after all meta programming has executed).</li>
+      <li class="fragment">Enables you to programmatically analyse and modify the circuit.</li>
+      <li class="fragment">SSA style in memory representation.</li>
+    </ul>
+  </section>
+
+  <section data-auto-animate>
+    <h2>Reduced Sum : FIRRTL</h2>
+    <pre data-id="code-animation"><code class="" data-trim data-line-numbers>
+    circuit MyModule :
+      module MyModule :
+        ...
+    </code></pre>
+  </section>
+
+  <section data-auto-animate>
+    <h2>Reduced Sum : FIRRTL</h2>
+    <pre data-id="code-animation"><code class="" data-trim data-line-numbers="2-5">
+    circuit MyModule :
+      module MyModule :
+        input clock : Clock
+        input reset : UInt&lbrack;1&rbrack;
+        output io : { flip a : UInt&lbrack;4&rbrack;[4], sum : UInt&lbrack;4&rbrack;}
+
+        node _io_sum_T = add(io.a[0], io.a[1]) @[MyModule.scala 14:27]
+        node _io_sum_T_1 = tail(_io_sum_T, 1) @[MyModule.scala 14:27]
+        node _io_sum_T_2 = add(_io_sum_T_1, io.a[2]) @[MyModule.scala 14:27]
+        node _io_sum_T_3 = tail(_io_sum_T_2, 1) @[MyModule.scala 14:27]
+        node _io_sum_T_4 = add(_io_sum_T_3, io.a[3]) @[MyModule.scala 14:27]
+        node _io_sum_T_5 = tail(_io_sum_T_4, 1) @[MyModule.scala 14:27]
+        io.sum &lt;= _io_sum_T_5 @[MyModule.scala 14:10]
+    </code></pre>
+    <p>FIRRTL resembles your circuit.</p>
+  </section>
+
+  <section data-auto-animate>
+    <h2>Reduced Sum : FIRRTL</h2>
+    <pre data-id="code-animation"><code class="" data-trim data-line-numbers="7-13">
+    circuit MyModule :
+      module MyModule :
+        input clock : Clock
+        input reset : UInt&lbrack;1&rbrack;
+        output io : { flip a : UInt&lbrack;4&rbrack;[4], sum : UInt&lbrack;4&rbrack;}
+
+        node _io_sum_T = add(io.a[0], io.a[1]) @[MyModule.scala 14:27]
+        node _io_sum_T_1 = tail(_io_sum_T, 1) @[MyModule.scala 14:27]
+        node _io_sum_T_2 = add(_io_sum_T_1, io.a[2]) @[MyModule.scala 14:27]
+        node _io_sum_T_3 = tail(_io_sum_T_2, 1) @[MyModule.scala 14:27]
+        node _io_sum_T_4 = add(_io_sum_T_3, io.a[3]) @[MyModule.scala 14:27]
+        node _io_sum_T_5 = tail(_io_sum_T_4, 1) @[MyModule.scala 14:27]
+        io.sum &lt;= _io_sum_T_5 @[MyModule.scala 14:10]
+    </code></pre>
+    <p>Metaprogramming has executed</p>
+  </section>
+
+  <section data-auto-animate>
+    <h3>Cool things that FIRRTL enables</h3>
+    <ul>
+      <li class="fragment">FAME transformations and FireSim.</li>
+      <figure>
+        <img class="fragment" src="./figs/latte24/li-bdn-transformed.svg" />
+        <figcaption class="fragment">Bold lines : Target design<br>Dashed lines : Timing control logic</figcaption>
+      </figure>
+    </ul>
+  </section>
+
+  <section data-auto-animate>
+    <h3>Cool things that FIRRTL enables</h3>
+    <ul>
+      <li class="fragment">Scan-chains.</li>
+      <li class="fragment">Error checking, generic compiler optimizations.</li>
+      <ul>
+        <li class="fragment">Combinational loop detection.</li>
+        <li class="fragment">DCE, CSE, Const Prop.</li>
+      </ul>
+    </ul>
+  </section>
+
+  <section class="center">
+    <h3>Overview of the Current Infrastructure</h3>
+    <div class="container" style="grid-template-columns: 1.0fr 1.0fr;">
+      <div class="fragment">
+        <img src="./figs/latte24/tool-stack.svg" />
+      </div>
+      <div>
+        <font size="6">
+        <ul>
+          <li class="fragment">Chisel & FIRRTL : Expressive frontend and flexible IR.</li>
+          <li class="fragment">Chipyard : Composable SoC generator framework w/ a handful of grad students.</li>
+          <li class="fragment">FireSim : Fast RTL simulation.</li>
+          <li class="fragment">Enabled countless research projects from both industry and academia for the last 5+ years.</li>
+        </ul>
+        </font>
+      </div>
+    </div>
+  </section>
+
+  <section class="center">
+    <h2>Retrospective</h2>
+    <ul>
+      <li class="fragment">Have we realized the RTL first methodology to its full potential?</li>
+      <ul>
+        <li class="fragment">Compile time.</li>
+        <li class="fragment">Simulation time.</li>
+        <li class="fragment">Modeling time.</li>
+      </ul>
+    </ul>
+  </section>
+
+  <section class="center">
+    <h2>Retrospective : Compile Time</h2>
+    <font size="6">
+    <ul>
+      <li class="fragment">Compile time of our designs is longer than SystemVerilog based frameworks.</li>
+      <li class="fragment">Extra steps introduced during compilation :<br>Chisel &rarr; FIRRTL & FIRRTL &rarr; Verilog</li>
+      <li class="fragment">No concept of deduplication :<br>If you have 10 of the same modules (cores) it will run the same compiler passes on all of them.</li>
+      <li class="fragment">Inefficient compiler passes due to wrong in memory representation.</li>
+      <li class="fragment">Rebuild everything whenever approach (tied to the SoC generator framework internals).</li>
+    </ul>
+    </font>
+  </section>
+
+  <section class="center">
+    <h3>Retrospective : Simulation Time</h3>
+    <ul>
+      <li class="fragment">FireSim drastically reduced the simulation "runtime".</li>
+      <li class="fragment">However, it takes hours to just compile FireSim bitstreams, making it unsuitable for meaningful DSE and debugging.</li>
+      <li class="fragment">Recent work (ESSENT & RepCut) that accelerates software RTL simulation suffers from long compilation times.</li>
+    </ul>
+  </section>
+
+  <section class="center">
+    <h3>Retrospective : Modeling Time</h3>
+    <ul>
+      <li class="fragment">We are still stuck at the RTL level abstraction.</li>
+      <li class="fragment">Need a way of raising the level of abstraction in the initial phase of your design.</li>
+      <li class="fragment">Must integrate existing tools that already do this <strong>seamlessly</strong> into our framework.</li>
+      <ul>
+        <li class="fragment">Commercial tools : Vivado HLS, SystemC, ...</li>
+        <li class="fragment">Academic tools : Calyx, Dahlia, PyMetal, HeteroCl, Filament</li>
+      </ul>
+    </ul>
+  </section>
+
+  <section class="center">
+  </section>
+
+  <section class="center">
+    <h3>Feature Requests</h3>
+    <div class="container" style="grid-template-columns: 1.0fr 1.4fr;">
+      <div>
+        <img src="./figs/latte24/feature-request.jpg" />
+      </div>
+      <div>
+        <font size="6">
+        <ul>
+          <li class="fragment">Fast compilation time as well as quick feedback from the backend tools.</li>
+          <li class="fragment">Fast simulation that doesn't require hours of compile time.</li>
+          <li class="fragment">Support for higher level abstractions to enable designers to work on various levels of abstractions.</li>
+        </ul>
+        </font>
+      </div>
+    </div>
+  </section>
+
+  <section class="center">
+    <h3>Rest of the talk</h3>
+    <img src="./figs/latte24/what-we-want.svg" />
+  </section>
+</section>
+
+<!-- -------------------------------------------------------------------- -->
+
+<section>
+  <section class="center">
+    <h2>Language Frontend</h2>
+  </section>
+
+  <section class="center">
+    <h3>1. Reducing the Compile time</h3>
+  </section>
+
+  <section class="center">
+    <h2>Chipyard Compile Steps</h2>
+    <ul>
+      <li class="fragment">Scala FIRRTL Compiler (SFC) : Compiles the scala sources and generates CHIRRTL.</li>
+      <li class="fragment">MLIR FIRRTL Compiler (MFC) : Emits Verilog from CHIRRTL.</li>
+      <li class="fragment">Verilator : Verilog to C++ binary.</li>
+    </ul>
+  </section>
+
+  <section class="center">
+    <h2>Chipyard Compile Steps</h2>
+    <div class="container" style="grid-template-rows: 0.1fr 0.7fr;">
+      <div>
+        <font size="5">
+        <ul>
+          <li class="fragment">Imagine you are working on BOOM...</li>
+          <li class="fragment">Waiting 10 minutes every time you find a bug, just to start RTL simulation...</li>
+        </ul>
+        </font>
+      </div>
+      <div>
+        <img src="./figs/latte24/compile-time.svg" />
+      </div>
+    </div>
+  </section>
+
+  <section class="center">
+    <h2>Incremental First</h2>
+    <ul>
+      <li class="fragment">Hardware designers want more iterations to perform experiments.</li>
+      <li class="fragment">Waiting 10+ minutes on every simulation run isn't acceptable.</li>
+      <li class="fragment">Most of the times, we write the entire module, and make small fixes to the control logic.</li>
+    </ul>
+  </section>
+
+  <section class=data-auto-animate>
+    <h2>Incremental First</h2>
+    <pre data-id="code-animation"><code class="scala" data-trim data-line-numbers="6">
+    class MyModule(N: Int, M: Int) extends Module {
+      val io = IO(new Bundle {
+        val a = Vec(M, Input(UInt(N.W)))
+        val sum  = Output(UInt((N + M - 1).W))
+      })
+      io.sum := io.a.reduce(_ + _)
+    }
+    </code></pre>
+  </section>
+
+  <section class=data-auto-animate>
+    <h2>Incremental First</h2>
+    <pre data-id="code-animation"><code class="scala" data-trim data-line-numbers="6">
+    class MyModule(N: Int, M: Int) extends Module {
+      val io = IO(new Bundle {
+        val a = Vec(M, Input(UInt(N.W)))
+        val sum  = Output(UInt((N + M - 1).W))
+      })
+      io.sum := io.a.reduce(_ +& _)
+    }
+    </code></pre>
+    <p class="fragment">Are you ready to wait 10 more minutes for your code to compile?</p>
+  </section>
+
+  <section class="center">
+    <h2>Incremental First</h2>
+    <ul>
+      <li class="fragment">This problem can be solved by adopting the incremental first approach to hardware design.</li>
+      <li class="fragment"><strong>Partial compilation & Cacheing.</strong></li>
+    </ul>
+  </section>
+
+  <section class="center">
+    <h2>Incremental First</h2>
+    <img src="./figs/latte24/incremental-1.svg" />
+  </section>
+
+  <section class="center">
+    <h2>Incremental First</h2>
+    <img src="./figs/latte24/incremental-2.svg" />
+    <ul>
+      <li class="fragment">classfiles are cached by the build system of the host language.</li>
+      <li class="fragment">Scala : <a href="https://mill-build.com/mill/Intro_to_Mill.html">mill</a></li>
+    </ul>
+  </section>
+
+  <section class="center">
+    <h2>Incremental First</h2>
+    <img src="./figs/latte24/incremental-3.svg" style="width:80%;height:auto;"/>
+    <ul>
+      <li class="fragment">Builder has to manage the cache for the generated output (*.sv).</li>
+    </ul>
+  </section>
+
+  <section class="center">
+    <h2>Incremental First</h2>
+    <img src="./figs/latte24/incremental-4.svg" style="width:80%;height:auto;"/>
+    <ul>
+      <li class="fragment">A1.class is invalidated by the host language build system.</li>
+    </ul>
+  </section>
+
+  <section class="center">
+    <h2>Incremental First</h2>
+    <img src="./figs/latte24/incremental-5.svg" style="width:80%;height:auto;"/>
+    <ul>
+      <li class="fragment">Builder.class investigates A1.class to see if there are any changes made.</li>
+    </ul>
+  </section>
+
+  <section class="center">
+    <h2>Incremental First</h2>
+    <ul>
+      <li class="fragment">We get halfway there by just utilizing the host buildsystem.</li>
+      <li class="fragment">The eDSL interpreter has to perform some tracking mechanism.</li>
+    </ul>
+  </section>
+
+  <section class="center">
+    <h3>2. Reducing the Modeling time</h3>
+  </section>
+
+  <section class="center">
+    <h2>Mixed Abstractions</h2>
+    <ul>
+      <li class="fragment">We want to raise the level of abstraction to make HW design easier.</li>
+      <ul>
+        <li class="fragment">Accelerators, initial prototyping stage, (possibly) the bus hierarchy.</li>
+      </ul>
+      <li class="fragment">However, we also need lower level abstractions (RTL) when designing an SoC.</li>
+      <ul>
+        <li class="fragment">High perf cores and caches.</li>
+      </ul>
+    </ul>
+  </section>
+
+<!-- Should I provide example code snippets for each of these? -->
+  <section class="center">
+    <h3>Existing Abstractions</h3>
+    <ul>
+      <li class="fragment">Gate level : lets ignore this for now...</li>
+      <li class="fragment">RTL : Explicitly defining registers and wires (e.g., Verilog, S-Verilog, Chisel).</li>
+      <li class="fragment">Calyx : Explicit HW instantiations, imperative control flow.</li>
+      <li class="fragment">HLS : High level descriptions, compiler does it all.</li>
+    </ul>
+  </section>
+
+  <section class="center">
+    <h2>Problems with Mixing</h2>
+    <div class="container" style="grid-template-columns: 1.0fr 1.4fr;">
+      <div>
+        <img src="./figs/latte24/oil-water.jpg" />
+      </div>
+      <div>
+        <font size="6">
+        <ul>
+          <li class="fragment">Clean (and good looking) APIs between the abstractions.</li>
+          <li class="fragment">Compiler backend that can stitch different abstraction together.</li>
+        </ul>
+        </font>
+      </div>
+    </div>
+  </section>
+
+  <section class="center">
+    <h2>Clean API</h2>
+  </section>
+
+  <section class="center">
+    <h2>Compiler Backend</h2>
+  </section>
+
+  <section class="center">
+    <h2>3. Other concerns about the frontend</h2>
+  </section>
+
+  <section class="center">
+    <h2>What should be the role of type-systems</h2>
+  </section>
+</section>
+
+<!-- -------------------------------------------------------------------- -->
+
+<section>
+  <section class="center">
+    <h2>Intermediate Representation (IR)</h2>
+  </section>
+
+  <section class="center">
+    <h2>Incremental First</h2>
+    <ul>
+      <li class="fragment">As mentioned in the previous section, it is crucial to support <strong>incremental compilation and caching</strong>.</li>
+      <li class="fragment">Arguably the most important feature to hardware designers.</li>
+      <li class="fragment">If we take the embedded DSL approach, we don't have to redo this ourselves!</li>
+      <li class="fragment">E.g., Rust already has 3rd party build cache tools (sccache).</li>
+    </ul>
+  </section>
+
+  <section class="center">
+    <h3>RTL Level IR : Better In Memory Representation</h3>
+    <ul>
+      <li class="fragment">Why does this even matter?</li>
+      <li class="fragment">The primitives available in your IR affects QoR.</li>
+      <li class="fragment">The in memory representation of the circuit affects compiler performance.</li>
+      <ul>
+        <li class="fragment">Graph representation can affect graph traversal speed. <a href="https://www.hillelwayne.com/post/graph-types/">The hunt for missing datatypes</a></li>
+      </ul>
+    </ul>
+  </section>
+
+  <section data-auto-animate>
+    <h3>SSA Rep. Problem</h3>
+    <p>FIRRTL's combinational loop detection pass</p>
+    <pre data-id="code-animation"><code class="scala" data-trim data-line-numbers="1-6">
+    class CheckCombLoops
+        extends Transform
+        with RegisteredTransform
+        with DependencyAPIMigration {
+
+      ...
+
+      private def getStmtDeps(
+        simplifiedModules: mutable.Map[String, AbstractConnMap],
+        deps:              MutableConnMap
+      )(s:                 Statement
+      ): Unit = s match {
+        case Connect(info, loc, expr) => ...
+        case w: DefWire => ...
+        case DefNode(info, name, value) =>
+          ...
+          getExprDeps(deps, lhs, info)(value)
+        case m: DefMemory if (m.readLatency == 0) => ...
+        case i: WDefInstance => ...
+        case _ => s.foreach(getStmtDeps(simplifiedModules, deps))
+      }
+
+      private def run(state: CircuitState) = {
+        ...
+        topoSortedModules.foreach {
+          ...
+          case m: Module =>
+            val portSet = m.ports.map(p => LogicNode(p.name)).toSet
+            val internalDeps = new MutableDiGraph[LogicNode] with MutableEdgeData[LogicNode, Info]
+            portSet.foreach(internalDeps.addVertex(_))
+            m.foreach(getStmtDeps(simplifiedModuleGraphs, internalDeps))
+
+            moduleGraphs(m.name) = internalDeps
+            simplifiedModuleGraphs(m.name) = moduleGraphs(m.name).simplify(portSet)
+            // Find combinational nodes with self-edges; this is *NOT* the same as length-1 SCCs!
+            for (unitLoopNode &lt;- internalDeps.getVertices.filter(v =&gt; internalDeps.getEdges(v).contains(v))) {
+              errors.append(new CombLoopException(m.info, m.name, Seq(unitLoopNode.name)))
+            }
+
+            for (scc &lt;- internalDeps.findSCCs.filter(_.length &gt; 1)) {
+              val sccSubgraph = internalDeps.subgraph(scc.toSet)
+              val cycle = findCycleInSCC(sccSubgraph)
+              (cycle.zip(cycle.tail)).foreach({ case (a, b) =&gt; require(internalDeps.getEdges(a).contains(b)) })
+              // Reverse to make sure LHS comes after RHS, print repeated vertex at start for legibility
+              val intuitiveCycle = cycle.reverse
+              val repeatedInitial = prettyPrintAbsoluteRef(Seq(m.name), intuitiveCycle.head)
+              val expandedCycle = expandInstancePaths(m.name, moduleGraphs, moduleDeps, Seq(m.name), intuitiveCycle)
+              errors.append(new CombLoopException(m.info, m.name, repeatedInitial +: expandedCycle))
+            }
+          case m => throwInternalError(s"Module ${m.name} has unrecognized type")
+        }
+        ...
+      }
+    }
+    </code></pre>
+  </section>
+
+  <section data-auto-animate>
+    <h3>SSA Rep. Problem</h3>
+    <p>FIRRTL's combinational loop detection pass</p>
+    <pre data-id="code-animation"><code class="scala" data-trim data-line-numbers="23,27,31">
+    class CheckCombLoops
+        extends Transform
+        with RegisteredTransform
+        with DependencyAPIMigration {
+
+      ...
+
+      private def getStmtDeps(
+        simplifiedModules: mutable.Map[String, AbstractConnMap],
+        deps:              MutableConnMap
+      )(s:                 Statement
+      ): Unit = s match {
+        case Connect(info, loc, expr) => ...
+        case w: DefWire => ...
+        case DefNode(info, name, value) =>
+          ...
+          getExprDeps(deps, lhs, info)(value)
+        case m: DefMemory if (m.readLatency == 0) => ...
+        case i: WDefInstance => ...
+        case _ => s.foreach(getStmtDeps(simplifiedModules, deps))
+      }
+
+      private def run(state: CircuitState) = {
+        ...
+        topoSortedModules.foreach {
+          ...
+          case m: Module =>
+            val portSet = m.ports.map(p => LogicNode(p.name)).toSet
+            val internalDeps = new MutableDiGraph[LogicNode] with MutableEdgeData[LogicNode, Info]
+            portSet.foreach(internalDeps.addVertex(_))
+            m.foreach(getStmtDeps(simplifiedModuleGraphs, internalDeps))
+
+            moduleGraphs(m.name) = internalDeps
+            simplifiedModuleGraphs(m.name) = moduleGraphs(m.name).simplify(portSet)
+            // Find combinational nodes with self-edges; this is *NOT* the same as length-1 SCCs!
+            for (unitLoopNode &lt;- internalDeps.getVertices.filter(v =&gt; internalDeps.getEdges(v).contains(v))) {
+              errors.append(new CombLoopException(m.info, m.name, Seq(unitLoopNode.name)))
+            }
+
+            for (scc &lt;- internalDeps.findSCCs.filter(_.length > 1)) {
+              val sccSubgraph = internalDeps.subgraph(scc.toSet)
+              val cycle = findCycleInSCC(sccSubgraph)
+              (cycle.zip(cycle.tail)).foreach({ case (a, b) =&gt; require(internalDeps.getEdges(a).contains(b)) })
+              // Reverse to make sure LHS comes after RHS, print repeated vertex at start for legibility
+              val intuitiveCycle = cycle.reverse
+              val repeatedInitial = prettyPrintAbsoluteRef(Seq(m.name), intuitiveCycle.head)
+              val expandedCycle = expandInstancePaths(m.name, moduleGraphs, moduleDeps, Seq(m.name), intuitiveCycle)
+              errors.append(new CombLoopException(m.info, m.name, repeatedInitial +: expandedCycle))
+            }
+          case m => throwInternalError(s"Module ${m.name} has unrecognized type")
+        }
+        ...
+      }
+    }
+    </code></pre>
+  </section>
+
+  <section data-auto-animate>
+    <h3>SSA Rep. Problem</h3>
+    <p>FIRRTL's combinational loop detection pass</p>
+    <pre data-id="code-animation"><code class="scala" data-trim data-line-numbers="8,13,14,15,18,19">
+    class CheckCombLoops
+        extends Transform
+        with RegisteredTransform
+        with DependencyAPIMigration {
+
+      ...
+
+      private def getStmtDeps(
+        simplifiedModules: mutable.Map[String, AbstractConnMap],
+        deps:              MutableConnMap
+      )(s:                 Statement
+      ): Unit = s match {
+        case Connect(info, loc, expr) => ...
+        case w: DefWire => ...
+        case DefNode(info, name, value) =>
+          ...
+          getExprDeps(deps, lhs, info)(value)
+        case m: DefMemory if (m.readLatency == 0) => ...
+        case i: WDefInstance => ...
+        case _ => s.foreach(getStmtDeps(simplifiedModules, deps))
+      }
+
+      private def run(state: CircuitState) = {
+        ...
+        topoSortedModules.foreach {
+          ...
+          case m: Module =>
+            val portSet = m.ports.map(p => LogicNode(p.name)).toSet
+            val internalDeps = new MutableDiGraph[LogicNode] with MutableEdgeData[LogicNode, Info]
+            portSet.foreach(internalDeps.addVertex(_))
+            m.foreach(getStmtDeps(simplifiedModuleGraphs, internalDeps))
+
+            moduleGraphs(m.name) = internalDeps
+            simplifiedModuleGraphs(m.name) = moduleGraphs(m.name).simplify(portSet)
+            // Find combinational nodes with self-edges; this is *NOT* the same as length-1 SCCs!
+            for (unitLoopNode &lt;- internalDeps.getVertices.filter(v => internalDeps.getEdges(v).contains(v))) {
+              errors.append(new CombLoopException(m.info, m.name, Seq(unitLoopNode.name)))
+            }
+
+            for (scc &lt;- internalDeps.findSCCs.filter(_.length > 1)) {
+              val sccSubgraph = internalDeps.subgraph(scc.toSet)
+              val cycle = findCycleInSCC(sccSubgraph)
+              (cycle.zip(cycle.tail)).foreach({ case (a, b) => require(internalDeps.getEdges(a).contains(b)) })
+              // Reverse to make sure LHS comes after RHS, print repeated vertex at start for legibility
+              val intuitiveCycle = cycle.reverse
+              val repeatedInitial = prettyPrintAbsoluteRef(Seq(m.name), intuitiveCycle.head)
+              val expandedCycle = expandInstancePaths(m.name, moduleGraphs, moduleDeps, Seq(m.name), intuitiveCycle)
+              errors.append(new CombLoopException(m.info, m.name, repeatedInitial +: expandedCycle))
+            }
+          case m => throwInternalError(s"Module ${m.name} has unrecognized type")
+        }
+        ...
+      }
+    }
+    </code></pre>
+    <p>We are traversing the statements to build a graph of the nodes.</p>
+  </section>
+
+  <section data-auto-animate>
+    <h3>SSA Rep. Problem</h3>
+    <p>FIRRTL's combinational loop detection pass</p>
+    <pre data-id="code-animation"><code class="scala" data-trim data-line-numbers="42">
+    class CheckCombLoops
+        extends Transform
+        with RegisteredTransform
+        with DependencyAPIMigration {
+
+      ...
+
+      private def getStmtDeps(
+        simplifiedModules: mutable.Map[String, AbstractConnMap],
+        deps:              MutableConnMap
+      )(s:                 Statement
+      ): Unit = s match {
+        case Connect(info, loc, expr) => ...
+        case w: DefWire => ...
+        case DefNode(info, name, value) =>
+          ...
+          getExprDeps(deps, lhs, info)(value)
+        case m: DefMemory if (m.readLatency == 0) => ...
+        case i: WDefInstance => ...
+        case _ => s.foreach(getStmtDeps(simplifiedModules, deps))
+      }
+
+      private def run(state: CircuitState) = {
+        ...
+        topoSortedModules.foreach {
+          ...
+          case m: Module =>
+            val portSet = m.ports.map(p => LogicNode(p.name)).toSet
+            val internalDeps = new MutableDiGraph[LogicNode] with MutableEdgeData[LogicNode, Info]
+            portSet.foreach(internalDeps.addVertex(_))
+            m.foreach(getStmtDeps(simplifiedModuleGraphs, internalDeps))
+
+            moduleGraphs(m.name) = internalDeps
+            simplifiedModuleGraphs(m.name) = moduleGraphs(m.name).simplify(portSet)
+            // Find combinational nodes with self-edges; this is *NOT* the same as length-1 SCCs!
+            for (unitLoopNode &lt;- internalDeps.getVertices.filter(v => internalDeps.getEdges(v).contains(v))) {
+              errors.append(new CombLoopException(m.info, m.name, Seq(unitLoopNode.name)))
+            }
+
+            for (scc &lt;- internalDeps.findSCCs.filter(_.length > 1)) {
+              val sccSubgraph = internalDeps.subgraph(scc.toSet)
+              val cycle = findCycleInSCC(sccSubgraph)
+              (cycle.zip(cycle.tail)).foreach({ case (a, b) => require(internalDeps.getEdges(a).contains(b)) })
+              // Reverse to make sure LHS comes after RHS, print repeated vertex at start for legibility
+              val intuitiveCycle = cycle.reverse
+              val repeatedInitial = prettyPrintAbsoluteRef(Seq(m.name), intuitiveCycle.head)
+              val expandedCycle = expandInstancePaths(m.name, moduleGraphs, moduleDeps, Seq(m.name), intuitiveCycle)
+              errors.append(new CombLoopException(m.info, m.name, repeatedInitial +: expandedCycle))
+            }
+          case m => throwInternalError(s"Module ${m.name} has unrecognized type")
+        }
+        ...
+      }
+    }
+    </code></pre>
+    <p>We are traversing the graph once again to check for comb loops.</p>
+  </section>
+
+
+  <section class="center">
+    <h3>Graph Rep.</h3>
+    <font size="6">
+    <div class="container" style="grid-template-columns: 1.0fr 1.0fr;">
+      <div>
+        <ul>
+          <li class="fragment">The above pattern of traversing the graph twice is a very common pattern in FIRRTL passes.</li>
+          <li class="fragment">If we had a graph representation of the circuit, we wouldn't have had to traverse the circuit twice.</li>
+        </ul>
+      </div>
+      <div>
+        <ul>
+          <li class="fragment">Compared to a SSA style, "human readable" IR, debugging passes might become more difficult.</li>
+        </ul>
+      </div>
+    </div>
+    </font>
+  </section>
+
+  <section class="center">
+    <h3>Graph Rep. Implementation Details</h3>
+    <div class="container" style="grid-template-columns: 1.0fr 1.4fr;">
+      <div>
+        <img src="./figs/latte24/lgraph.jpg">
+      </div>
+      <div>
+        <font size="6">
+        <ul>
+          <li class="fragment">lGraph : high perf. graph based IR.</li>
+          <ul>
+            <li class="fragment">Hypergraph where each node represents a module and the edges represents the connections.</li>
+            <ul>
+              <li class="fragment">Submodules forms a graph within a node representing the parent module.</li>
+            </ul>
+            <li class="fragment">Mmaps disk pages onto virtual memory to reduce memcpy overheads.</li>
+            <li class="fragment">Supports graph traversals such that you can access nodes located in adjacent cachelines.</li>
+          </ul>
+        </ul>
+        </font>
+      </div>
+  </section>
+
+  <section class="center">
+    <h3>Graph Rep. Exploiting Parallelism</h3>
+    <ul>
+      <li class="fragment">Again, the compiler performance is crucial for HW designers : exploit parallelism.</li>
+      <li class="fragment">The passes should be written as if it is working on a single thread.</li>
+      <ul>
+        <li class="fragment">The complexities of dealing with parallelism should be hidden from the pass-writer.</li>
+      </ul>
+      <li class="fragment">The interpreter (compiler) must be able to partition the graph and execute passes in parallel.</li>
+    </ul>
+  </section>
+
+  <section class="center">
+    <h4>FIRRTL In Memory Representation Problem 2</h4>
+    <pre data-id="code-animation"><code class="scala" data-trim data-line-numbers>
+    case class Mux(...)
+    case class UIntLiteral(...)
+    case class SIntLiteral(...)
+    case class DefWire(...)
+    case class DefRegister(...)
+    case class DefInstance(...)
+    case class DefMemory(...)
+    abstract class PrimOp extends FirrtlNode
+    </code></pre>
+    <ul>
+      <li class="fragment">Limited set of primitives &rarr; QoR may be low.</li>
+      <li class="fragment">Compiler & backend tools spends a lot of time recreating semantics.</li>
+    </ul>
+  </section>
+
+  <section class="center">
+    <h4>Possible Primitives</h4>
+    <pre data-id="code-animation"><code class="scala" data-trim data-line-numbers="9-12">
+    case class Mux(...)
+    case class UIntLiteral(...)
+    case class SIntLiteral(...)
+    case class DefWire(...)
+    case class DefRegister(...)
+    case class DefInstance(...)
+    case class DefMemory(...)
+    abstract class PrimOp extends FirrtlNode
+    case class OH(...)
+    case class PriorityMux(...)
+    case class BoolLiteral(...)
+    case class DecoupledInterface(...)
+    </code></pre>
+    <ul>
+      <li class="fragment">Add more primitives such that we can preserve more higher level circuit semantics.</li>
+      <li class="fragment">Need to find a good balance between pass writing vs QoR.</li>
+    </ul>
+  </section>
+
+  <section class="center">
+    <h3>Support for Multiple Abstractions</h3>
+    <div class="container" style="grid-template-columns: 1.5fr 1.0fr;">
+      <div class="fragment">
+        <img src="./figs/latte24/IR-overview.svg" />
+      </div>
+      <div>
+        <font size="5">
+        <ul>
+          <li class="fragment">Need a way of integrating multiple abstractions into one representation.</li>
+          <li class="fragment">When building SW RTL simulations, we don't want to lower everything to RTL.</li>
+          <ul>
+            <li class="fragment">Higher level abstractions tend to have coarse grained update rules when it comes to simulation.</li>
+          </ul>
+          <li class="fragment">Open ended question : would it be possible to lift RTL level abstractions into Calyx?</li>
+        </ul>
+        </font>
+      </div>
+    </div>
+  </section>
+
+
+
+<!-- <section class="center"> -->
+<!-- <h3>High Level IR</h3> -->
+<!-- <ul> -->
+<!-- <font size="6"> -->
+<!-- <li class="fragment">Need to provide support for multiples abstraction in the frontend.</li> -->
+<!-- <li class="fragment">Should not lower higher level abstractions into RTL level eagerly.</li> -->
+<!-- <ul> -->
+<!-- <li class="fragment">Can hurt simulation performance.</li> -->
+<!-- </ul> -->
+<!-- <li class="fragment">When lowering (especially when targetting synthesis tools), must be prudent about which circuit semantics to preserve and what not to.</li> -->
+<!-- <ul> -->
+<!-- <li class="fragment">If we try representing the circuit with only a handful of primitives, the QoR may become lower (e.g., priority mux, OH encoding).</li> -->
+<!-- <li class="fragment">If we support too many primitives, pass writing becomes difficult.</li> -->
+<!-- </ul> -->
+<!-- </font> -->
+<!-- </ul> -->
+<!-- </section> -->
+
+
+  <section class="center">
+    <h3>Miscellaneous</h3>
+    <ul>
+      <li class="fragment">Annotations XXXXXXXXXXXX</li>
+      <li class="fragment">Semantics preserving</li>
+      <li class="fragment">Testing</li>
+      <li class="fragment">Testing2</li>
+        <!-- ## Previous work : [FPGA technology mapping using sketch-guided program synthesis](https://www.google.com/url?sa=t&source=web&rct=j&opi=89978449&url=https://arxiv.org/pdf/2401.16526&ved=2ahUKEwjf_ban4buFAxVoMDQIHacGAIwQFnoECBIQAQ&usg=AOvVaw2YQo1m0HTct2CVqktRPvd-) -->
+        <!-- - Problem : existing FPGA tools are not good a mapping RTL into DSP primitives. -->
+        <!-- - Solution : by utilizing sketch-guided program synthesis, they came up with a way of automatically generating technology mappings from RTL to DSP modules. -->
+        <!-- - Method -->
+        <!-- - They have architecture independent descriptions (sketches) of DSP units. This is possible as DSP units across different FPGA vendors & models look kind of similar to each other. -->
+        <!-- - Then, by mixing this arch. independent sketches with arch. descriptions to generate a sketch of the mapping. -->
+        <!-- - With the sketch and the original RTL, we can start performing program synthesis by querying a SMT solver. The solver will identify whether if there exists a solution such that it fills in all the holes in the sketch. -->
+        <!-- - It is beneficial in cases where we do want to map a certain part of the design to a very specific circuit. It is better than pattern matching algorithms because... -->
+        <!-- - It ensures correctness as it uses SMT solvers. -->
+        <!-- - Pattern matching algorithms may fail to map the given circuit to a specific circuit. -->
+        <!-- - As this abstracts away the technology specific details of a circuit extending this for other technologies (arch.) is easier. -->
+        <!-- - However, this method does not scale to general RTL design as not all modules can be mapped to a generic sketch template. In their work, they restricted the scope to DSP units on FPGAs. -->
+    </ul>
+  </section>
+
+</section>
+
+<!-- -------------------------------------------------------------------- -->
+
+<section>
+  <section class="center">
+    <h2>Cool things that are enabled</h2>
+  </section>
+</section>
+
+<!-- -------------------------------------------------------------------- -->
+
+<section>
+  <section class="center">
+    <h2>Reference</h2>
+  </section>
+</section>
+
 {% endblock %}
