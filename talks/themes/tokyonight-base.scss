@@ -1,0 +1,255 @@
+@use 'sass:color';
+// Default mixins and settings -----------------
+@import "node_modules/reveal.js/css/theme/template/mixins";
+@import "node_modules/reveal.js/css/theme/template/settings";
+// ---------------------------------------------
+
+// Include theme-specific fonts
+@import url(/node_modules/@fontsource/fira-sans/latin.css);
+@import url(/node_modules/@fontsource/fira-sans/latin-italic.css);
+@import url(/node_modules/@fontsource/fira-code/latin.css);
+
+// Tokyonight colors
+// https://github.com/enkia/tokyo-night-vscode-theme
+$darkMode: true !default;
+ 
+// all of these are overridden by conditional below
+$tn_red: black;
+$tn_orange: black;
+$tn_yellow: black;
+$tn_green: black;
+$tn_blue_green: black;
+$tn_lightblue: black;
+$tn_blue2: black;
+$tn_cyan: black;
+$tn_blue: black;
+$tn_magenta: black;
+$tn_white: black;
+$tn_fg: black;
+$tn_text: black;
+$tn_beige: black;
+$tn_grey: black;
+$tn_black: black;
+$tn_bg_light: black;
+$tn_bg: black;
+@if $darkMode {
+  $tn_red: #f7768e;
+  $tn_orange: #ff9e64;
+  $tn_yellow: #e0af68;
+  $tn_green: #9ece6a;
+  $tn_blue_green: #73daca;
+  $tn_lightblue: #b4f9f8;
+  $tn_blue2: #2ac3de;
+  $tn_cyan: #7dcfff;
+  $tn_blue: #7aa2f7;
+  $tn_magenta: #bb9af7;
+  $tn_white: #c0caf5;
+  $tn_fg: #a9b1d6;
+  $tn_text: #9aa5ce;
+  $tn_beige: #cfc9c2;
+  $tn_grey: #565f89;
+  $tn_black: #414868;
+  $tn_bg_light: #24283b;
+  $tn_bg: #1a1b26;
+} @else {
+  $tn_red: #8c4351;
+  $tn_orange: #965027;
+  $tn_yellow: #8f5e15;
+  $tn_green: #485e30;
+  $tn_blue_green: #33635c;
+  $tn_lightblue: #166775;
+  $tn_blue2: #0f4b6e;
+  $tn_cyan: #0f4b6e; // duplicate
+  $tn_blue: #34548a;
+  $tn_magenta: #5a4a78;
+  $tn_white: #343b58;
+  $tn_fg: #d5d6db;
+  $tn_text: #565a6e;
+  $tn_beige: #565a6e; // duplicate
+  $tn_grey: #9699a3;
+  $tn_black: #0f0f14;
+  $tn_bg: #d5d6db;
+  $tn_bg_light: color.adjust($tn_bg, $lightness: +10%);
+}
+
+// https://picocss.com/docs/typography
+// Font sizes and spacing are the same as picocss
+:root {
+  // Use a larger-than-usual root font size, all other font sizes are given in rem
+  // This is the font size of regular text on a slide, so it must be larger than 16px
+  font-size: 28px;
+}
+
+// Override theme settings (see reveal-js/css/theme/template/settings.scss)
+// Background of the presentation
+$backgroundColor: $tn_bg_light;
+
+// Primary/body text
+$mainFont: 'Fira Sans', Helvetica, sans-serif;
+$mainFontSize: 1rem; // 1rem = :root font size
+$mainColor: $tn_white;
+
+// Vertical spacing between blocks of text
+$blockMargin: 1rem;
+
+// Headings
+$headingMargin: 0 0 $blockMargin 0;
+$headingFont: 'Fira Sans', Helvetica, sans-serif;
+$headingColor: $tn_white;
+$headingLineHeight: 1.2;
+$headingLetterSpacing: normal;
+$headingTextTransform: none;
+$headingTextShadow: none;
+$headingFontWeight: 600;
+$heading1TextShadow: $headingTextShadow;
+
+// These font sizes are set by eye, there is no fancy calculation under the hood
+$heading1Size: 2rem;
+$heading2Size: 1.75rem;
+$heading3Size: 1.5rem;
+$heading4Size: 1.25rem;
+
+$codeFont: 'Fira Code', monospace;
+
+// Links and actions
+$linkColor: $tn_orange;
+$linkColorHover: lighten( $linkColor, 20% );
+
+// Text selection
+$selectionBackgroundColor: $tn_black;
+$selectionColor: $tn_white;
+
+// Colors used for UI elements that are overlaid on top of
+// the presentation
+$overlayElementBgColor: 240, 240, 240;
+$overlayElementFgColor: 0, 0, 0;
+
+// Generates the presentation background, can be overridden
+// to return a background image or gradient
+@mixin bodyBackground() {
+	background: $tn_bg;
+}
+
+// Change text colors against light slide backgrounds
+@include light-bg-text-color($tn_black);
+
+// Theme template ------------------------------
+@import "node_modules/reveal.js/css/theme/template/theme";
+// ---------------------------------------------
+
+.reveal pre {
+  width: 100%;
+  code {
+    padding: 20px !important;
+  }
+}
+
+// Override reveal CSS defaults
+.reveal .slides .center {
+    text-align: center;
+}
+
+.reveal .slides {
+    text-align: left;
+}
+
+.reveal .slides section,
+.reveal .slides section>section {
+    // Use the picocss line height
+    line-height: 1.5;
+
+    // Shift slide headings down by a bit for aesthetics
+    h2 {
+      margin-top: 0.5rem;
+    }
+
+    // Add spacing between top-level bullets
+    > li:not(:first-child) {
+        margin-top: 1rem;
+    }
+
+    // Decrease the font-size of any sub-bullets
+    ul > li > ul > li {
+        font-size: 80%;
+    }
+
+    blockquote {
+        padding: 1rem;
+    }
+}
+
+.container{
+  display: grid;
+  grid-auto-flow: column;
+  column-gap: 1em;
+  > div {
+    display: grid;
+    place-items: center;
+  }
+}
+
+.smallish {
+    font-size: 0.9rem;
+}
+
+.small {
+    font-size: 0.8rem;
+}
+
+.verysmall {
+    font-size: 0.75rem;
+}
+
+.footnote {
+    color: #666;
+}
+
+.bg-red {
+  background: $tn_red;
+  color: $tn_bg;
+}
+
+.bg-blue {
+  background: $tn_blue;
+}
+
+.bg-grey {
+  background: $tn_grey;
+}
+
+.bg-yellow {
+  background: $tn_yellow;
+  color: $tn_bg;
+}
+
+.bg-green {
+  background: $tn_green;
+  color: $tn_bg;
+}
+
+.bg-white {
+  background: color.adjust($tn_white, $lightness: +7%);
+}
+
+.laser-pointer {
+  background: color.adjust($tn_red, $alpha: -0.3) !important;
+}
+
+// div.image: usually wrapping multiple images with one uniform background
+img.image, div.image {
+  padding: 1rem;
+  border-radius: 0.5rem;
+  //background: color.adjust($tn_white, $lightness: +7%);
+  background: white;
+}
+
+// Add to any element to strip away the usual margins (usually added to images)
+.no-margin {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+}
+
+// Add to any element to strip away padding (also usually applied to images)
+.no-padding {
+  padding: 0 !important;
+}
