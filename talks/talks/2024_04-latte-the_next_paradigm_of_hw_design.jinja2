@@ -75,14 +75,49 @@ import 'highlight.js/styles/tokyo-night-dark.css'
 -->
 
 {% block slides %}
+<script type="module">
+import Reveal from 'reveal.js';
+Reveal.on( 'fragmentshown', event => {
+  // event.fragment = the fragment DOM element
+  var line_numbers = event.fragment.dataset.lineNumbers;
+  var elem1 = document.getElementById("special1");
+  var elem2 = document.getElementById("special2");
+  if (line_numbers && line_numbers == "8,13,14,15,18,19") {
+    elem1.style.opacity = 1;
+    elem1.style.visibility = 'inherit';
+  }
+  if (line_numbers && line_numbers == "42") {
+    elem1.style.opacity = 0;
+    elem1.style.visibility = 'hidden';
+    elem2.style.opacity = 1;
+    elem2.style.visibility = 'inherit';
+  }
+} );
+Reveal.on( 'fragmenthidden', event => {
+  // event.fragment = the fragment DOM element
+  var line_numbers = event.fragment.dataset.lineNumbers;
+  var elem1 = document.getElementById("special1");
+  var elem2 = document.getElementById("special2");
+  if (line_numbers && line_numbers == "8,13,14,15,18,19") {
+    elem1.style.opacity = 0;
+    elem1.style.visibility = 'hidden';
+  }
+  if (line_numbers && line_numbers == "42") {
+    elem1.style.opacity = 1;
+    elem1.style.visibility = 'inherit';
+    elem2.style.opacity = 0;
+    elem2.style.visibility = 'hidden';
+  }
+} );
+</script>
+
 <section>
   <section class="center">
     <a href="https://github.com/ucb-bar">
-      <img src="./figs/logos/BAR_vertical_logo.svg" style="height: 100px; margin: 0 auto 2rem auto; padding: 1rem; border-radius: 0.5rem;" class="bg-white">
-      <!--<img src="./figs/logos/chisel_logo.svg" style="height: 50px; margin: 0 auto 2rem auto; padding: 1rem; border-radius: 0.5rem;" class="bg-white">-->
+      <img src="./figs/logos/BAR_vertical_logo.svg" class="image" style="height: 100px;">
     </a>
     <a href="https://github.com/ucb-bar/chipyard">
-      <img src="./figs/logos/chipyard_logo.svg" style="height: 100px; margin: 0 auto 2rem auto; padding: 1rem; border-radius: 0.5rem;" class="bg-white">
+      <img src="./figs/logos/chipyard_logo.svg" class="image" style="height: 100px;">
     </a>
     <h2 class="fragment">The Next Paradigm of Hardware and SoC Design</h2>
     <h3>Chisel / Chipyard Overview + Demo</h3>
@@ -856,7 +891,7 @@ import 'highlight.js/styles/tokyo-night-dark.css'
   <section data-auto-animate>
     <h3>SSA Rep. Problem</h3>
     <p>FIRRTL's combinational loop detection pass</p>
-    <pre data-id="code-animation"><code class="scala" data-trim data-line-numbers="1-6">
+    <pre data-id="code-animation"><code class="scala" data-trim data-line-numbers="1-6|23,27,31|8,13,14,15,18,19|42">
     class CheckCombLoops
         extends Transform
         with RegisteredTransform
@@ -912,193 +947,11 @@ import 'highlight.js/styles/tokyo-night-dark.css'
       }
     }
     </code></pre>
+    <div class="r-stack">
+      <p id="special1" style="transition: all .2s ease; opacity: 0; visibility: hidden; will-change: opacity;">We are traversing the statements to build a graph of the nodes.</p>
+      <p id="special2" style="transition: all .2s ease; opacity: 0; visibility: hidden; will-change: opacity;">We are traversing the graph once again to check for comb loops.</p>
+    </div>
   </section>
-
-  <section data-auto-animate>
-    <h3>SSA Rep. Problem</h3>
-    <p>FIRRTL's combinational loop detection pass</p>
-    <pre data-id="code-animation"><code class="scala" data-trim data-line-numbers="23,27,31">
-    class CheckCombLoops
-        extends Transform
-        with RegisteredTransform
-        with DependencyAPIMigration {
-
-      ...
-
-      private def getStmtDeps(
-        simplifiedModules: mutable.Map[String, AbstractConnMap],
-        deps:              MutableConnMap
-      )(s:                 Statement
-      ): Unit = s match {
-        case Connect(info, loc, expr) => ...
-        case w: DefWire => ...
-        case DefNode(info, name, value) =>
-          ...
-          getExprDeps(deps, lhs, info)(value)
-        case m: DefMemory if (m.readLatency == 0) => ...
-        case i: WDefInstance => ...
-        case _ => s.foreach(getStmtDeps(simplifiedModules, deps))
-      }
-
-      private def run(state: CircuitState) = {
-        ...
-        topoSortedModules.foreach {
-          ...
-          case m: Module =>
-            val portSet = m.ports.map(p => LogicNode(p.name)).toSet
-            val internalDeps = new MutableDiGraph[LogicNode] with MutableEdgeData[LogicNode, Info]
-            portSet.foreach(internalDeps.addVertex(_))
-            m.foreach(getStmtDeps(simplifiedModuleGraphs, internalDeps))
-
-            moduleGraphs(m.name) = internalDeps
-            simplifiedModuleGraphs(m.name) = moduleGraphs(m.name).simplify(portSet)
-            // Find combinational nodes with self-edges; this is *NOT* the same as length-1 SCCs!
-            for (unitLoopNode &lt;- internalDeps.getVertices.filter(v =&gt; internalDeps.getEdges(v).contains(v))) {
-              errors.append(new CombLoopException(m.info, m.name, Seq(unitLoopNode.name)))
-            }
-
-            for (scc &lt;- internalDeps.findSCCs.filter(_.length > 1)) {
-              val sccSubgraph = internalDeps.subgraph(scc.toSet)
-              val cycle = findCycleInSCC(sccSubgraph)
-              (cycle.zip(cycle.tail)).foreach({ case (a, b) =&gt; require(internalDeps.getEdges(a).contains(b)) })
-              // Reverse to make sure LHS comes after RHS, print repeated vertex at start for legibility
-              val intuitiveCycle = cycle.reverse
-              val repeatedInitial = prettyPrintAbsoluteRef(Seq(m.name), intuitiveCycle.head)
-              val expandedCycle = expandInstancePaths(m.name, moduleGraphs, moduleDeps, Seq(m.name), intuitiveCycle)
-              errors.append(new CombLoopException(m.info, m.name, repeatedInitial +: expandedCycle))
-            }
-          case m => throwInternalError(s"Module ${m.name} has unrecognized type")
-        }
-        ...
-      }
-    }
-    </code></pre>
-  </section>
-
-  <section data-auto-animate>
-    <h3>SSA Rep. Problem</h3>
-    <p>FIRRTL's combinational loop detection pass</p>
-    <pre data-id="code-animation"><code class="scala" data-trim data-line-numbers="8,13,14,15,18,19">
-    class CheckCombLoops
-        extends Transform
-        with RegisteredTransform
-        with DependencyAPIMigration {
-
-      ...
-
-      private def getStmtDeps(
-        simplifiedModules: mutable.Map[String, AbstractConnMap],
-        deps:              MutableConnMap
-      )(s:                 Statement
-      ): Unit = s match {
-        case Connect(info, loc, expr) => ...
-        case w: DefWire => ...
-        case DefNode(info, name, value) =>
-          ...
-          getExprDeps(deps, lhs, info)(value)
-        case m: DefMemory if (m.readLatency == 0) => ...
-        case i: WDefInstance => ...
-        case _ => s.foreach(getStmtDeps(simplifiedModules, deps))
-      }
-
-      private def run(state: CircuitState) = {
-        ...
-        topoSortedModules.foreach {
-          ...
-          case m: Module =>
-            val portSet = m.ports.map(p => LogicNode(p.name)).toSet
-            val internalDeps = new MutableDiGraph[LogicNode] with MutableEdgeData[LogicNode, Info]
-            portSet.foreach(internalDeps.addVertex(_))
-            m.foreach(getStmtDeps(simplifiedModuleGraphs, internalDeps))
-
-            moduleGraphs(m.name) = internalDeps
-            simplifiedModuleGraphs(m.name) = moduleGraphs(m.name).simplify(portSet)
-            // Find combinational nodes with self-edges; this is *NOT* the same as length-1 SCCs!
-            for (unitLoopNode &lt;- internalDeps.getVertices.filter(v => internalDeps.getEdges(v).contains(v))) {
-              errors.append(new CombLoopException(m.info, m.name, Seq(unitLoopNode.name)))
-            }
-
-            for (scc &lt;- internalDeps.findSCCs.filter(_.length > 1)) {
-              val sccSubgraph = internalDeps.subgraph(scc.toSet)
-              val cycle = findCycleInSCC(sccSubgraph)
-              (cycle.zip(cycle.tail)).foreach({ case (a, b) => require(internalDeps.getEdges(a).contains(b)) })
-              // Reverse to make sure LHS comes after RHS, print repeated vertex at start for legibility
-              val intuitiveCycle = cycle.reverse
-              val repeatedInitial = prettyPrintAbsoluteRef(Seq(m.name), intuitiveCycle.head)
-              val expandedCycle = expandInstancePaths(m.name, moduleGraphs, moduleDeps, Seq(m.name), intuitiveCycle)
-              errors.append(new CombLoopException(m.info, m.name, repeatedInitial +: expandedCycle))
-            }
-          case m => throwInternalError(s"Module ${m.name} has unrecognized type")
-        }
-        ...
-      }
-    }
-    </code></pre>
-    <p>We are traversing the statements to build a graph of the nodes.</p>
-  </section>
-
-  <section data-auto-animate>
-    <h3>SSA Rep. Problem</h3>
-    <p>FIRRTL's combinational loop detection pass</p>
-    <pre data-id="code-animation"><code class="scala" data-trim data-line-numbers="42">
-    class CheckCombLoops
-        extends Transform
-        with RegisteredTransform
-        with DependencyAPIMigration {
-
-      ...
-
-      private def getStmtDeps(
-        simplifiedModules: mutable.Map[String, AbstractConnMap],
-        deps:              MutableConnMap
-      )(s:                 Statement
-      ): Unit = s match {
-        case Connect(info, loc, expr) => ...
-        case w: DefWire => ...
-        case DefNode(info, name, value) =>
-          ...
-          getExprDeps(deps, lhs, info)(value)
-        case m: DefMemory if (m.readLatency == 0) => ...
-        case i: WDefInstance => ...
-        case _ => s.foreach(getStmtDeps(simplifiedModules, deps))
-      }
-
-      private def run(state: CircuitState) = {
-        ...
-        topoSortedModules.foreach {
-          ...
-          case m: Module =>
-            val portSet = m.ports.map(p => LogicNode(p.name)).toSet
-            val internalDeps = new MutableDiGraph[LogicNode] with MutableEdgeData[LogicNode, Info]
-            portSet.foreach(internalDeps.addVertex(_))
-            m.foreach(getStmtDeps(simplifiedModuleGraphs, internalDeps))
-
-            moduleGraphs(m.name) = internalDeps
-            simplifiedModuleGraphs(m.name) = moduleGraphs(m.name).simplify(portSet)
-            // Find combinational nodes with self-edges; this is *NOT* the same as length-1 SCCs!
-            for (unitLoopNode &lt;- internalDeps.getVertices.filter(v => internalDeps.getEdges(v).contains(v))) {
-              errors.append(new CombLoopException(m.info, m.name, Seq(unitLoopNode.name)))
-            }
-
-            for (scc &lt;- internalDeps.findSCCs.filter(_.length > 1)) {
-              val sccSubgraph = internalDeps.subgraph(scc.toSet)
-              val cycle = findCycleInSCC(sccSubgraph)
-              (cycle.zip(cycle.tail)).foreach({ case (a, b) => require(internalDeps.getEdges(a).contains(b)) })
-              // Reverse to make sure LHS comes after RHS, print repeated vertex at start for legibility
-              val intuitiveCycle = cycle.reverse
-              val repeatedInitial = prettyPrintAbsoluteRef(Seq(m.name), intuitiveCycle.head)
-              val expandedCycle = expandInstancePaths(m.name, moduleGraphs, moduleDeps, Seq(m.name), intuitiveCycle)
-              errors.append(new CombLoopException(m.info, m.name, repeatedInitial +: expandedCycle))
-            }
-          case m => throwInternalError(s"Module ${m.name} has unrecognized type")
-        }
-        ...
-      }
-    }
-    </code></pre>
-    <p>We are traversing the graph once again to check for comb loops.</p>
-  </section>
-
 
   <section class="center">
     <h3>Graph Rep.</h3>
