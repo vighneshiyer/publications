@@ -87,7 +87,12 @@ $backgroundColor: $tn_bg_light;
 // Primary/body text
 $mainFont: 'Fira Sans', Helvetica, sans-serif;
 $mainFontSize: 1rem; // 1rem = :root font size
-$mainColor: $tn_white;
+@if $darkMode {
+  $mainColor: $tn_white;
+}
+@else {
+  $mainColor: $tn_black;
+}
 
 // Vertical spacing between blocks of text
 $blockMargin: 1rem;
@@ -95,7 +100,12 @@ $blockMargin: 1rem;
 // Headings
 $headingMargin: 0 0 $blockMargin 0;
 $headingFont: 'Fira Sans', Helvetica, sans-serif;
-$headingColor: $tn_white;
+@if $darkMode {
+  $headingColor: $tn_white;
+}
+@else {
+  $headingColor: $tn_blue;
+}
 $headingLineHeight: 1.2;
 $headingLetterSpacing: normal;
 $headingTextTransform: none;
@@ -116,8 +126,14 @@ $linkColor: $tn_orange;
 $linkColorHover: lighten( $linkColor, 20% );
 
 // Text selection
-$selectionBackgroundColor: $tn_black;
-$selectionColor: $tn_white;
+@if $darkMode {
+  $selectionBackgroundColor: $tn_black;
+  $selectionColor: $tn_white;
+}
+@else {
+  $selectionBackgroundColor: $tn_grey;
+  $selectionColor: $tn_white;
+}
 
 // Colors used for UI elements that are overlaid on top of
 // the presentation
@@ -153,6 +169,20 @@ $overlayElementFgColor: 0, 0, 0;
     text-align: left;
 }
 
+@counter-style numeric-no-dot {
+  system: fixed;
+  symbols: '1' '2' '3' '4' '5';
+  suffix: '   ';
+}
+
+// https://www.w3.org/TR/predefined-counter-styles/#digit-styles
+@counter-style parenthesized-decimal {
+  system: fixed;
+  symbols: '\2474' '\2475' '\2476' '\2477' '\2478' '\2479' '\247A' '\247B' '\247C' '\247D' '\247E' '\247F' '\2480' '\2481' '\2482' '\2483' '\2484' '\2485' '\2486' '\2487';
+  /* symbols: '⑴' '⑵' '⑶' '⑷' '⑸' '⑹' '⑺' '⑻' '⑼' '⑽' '⑾' '⑿' '⒀' '⒁' '⒂' '⒃' '⒄' '⒅' '⒆' '⒇'; */
+  suffix: ' ';
+}
+
 .reveal .slides section,
 .reveal .slides section>section {
     // Use the picocss line height
@@ -161,6 +191,10 @@ $overlayElementFgColor: 0, 0, 0;
     // Shift slide headings down by a bit for aesthetics
     h2 {
       margin-top: 0.5rem;
+    }
+
+    li::marker {
+      color: $tn_green;
     }
 
     // Add spacing between top-level bullets
@@ -176,6 +210,23 @@ $overlayElementFgColor: 0, 0, 0;
     blockquote {
         padding: 1rem;
     }
+
+    ol {
+      //list-style: parenthesized-decimal;
+      list-style: numeric-no-dot;
+      > li::marker {
+        color: $tn_green;
+        font-size: 0.9rem;
+        margin-right: 1rem;
+      }
+    }
+    //ol {list-style: none; counter-reset: li}
+
+    //ol > li::before {content: counter(li); color: red;
+    //  display: inline-block; width: 1em;
+    //  margin-left: -1em}
+
+    //li {counter-increment: li}
 }
 
 .container{
@@ -232,7 +283,12 @@ $overlayElementFgColor: 0, 0, 0;
 }
 
 .laser-pointer {
-  background: color.adjust($tn_red, $alpha: -0.3) !important;
+  @if $darkMode {
+    background: color.adjust($tn_red, $alpha: -0.3) !important;
+  }
+  @else {
+    background: color.adjust($tn_red, $lightness: +20%, $alpha: -0.3) !important;
+  }
 }
 
 // div.image: usually wrapping multiple images with one uniform background

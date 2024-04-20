@@ -131,13 +131,22 @@ Reveal.on( 'fragmenthidden', event => {
   <section>
     <h2>Talk Overview</h2>
     <ol>
-      <li class="fragment">The existing paradigm of hardware design and verification in industry</li>
-      <li class="fragment">What might come next? A view of the next paradigm of hardware design</li>
+      <li class="fragment">The existing paradigm of hardware design</li>
+      <li class="fragment">What could come next? A view of the next paradigm of hardware design</li>
       <li class="fragment">Recent efforts to build the next paradigm
         <ul>
-          <li class="fragment">New HDLs: <span class="small">Lava, Chisel, Amaranth, Spade, HeteroCL</span></li>
+          <li class="fragment">New HDLs and design abstractions: <span class="small">Lava, Chisel, Amaranth, Spade, HeteroCL</span></li>
           <li class="fragment">New SoC design frameworks: <span class="small">Chipyard, ESP, OpenPiton, PULP, BlackParrot</span></li>
+          <li class="fragment">New simulators: <span class="small">Verilator, FireSim, Manticore, Arcilator, RepCut, ESSENT</span></li>
         </ul>
+      </li>
+      <li class="fragment">What's still missing? Why are we not in the new age of hardware design?
+        <ul>
+          <li>It's a lot more than just the frontend language: PPA iteration cycle, verification, other stuff</li>
+        </ul>
+      </li>
+      <li class="fragment">A sketch of what matters to hardware designers and our broad vision
+    
       </li>
     </ol>
   </section>
@@ -161,8 +170,8 @@ Reveal.on( 'fragmenthidden', event => {
   <section class="center">
     <h2>What is Chipyard</h2>
     <ul>
-      <li class="fragment">An organized framework for various SoC design tools</li>
-      <li class="fragment">A curated IP library of open-source RISC-V SoC components</li>
+      <li class="fragment">An organized framework for various SoC design tools</li>
+      <li class="fragment">A curated IP library of open-source RISC-V SoC components</li>
       <li class="fragment">A methodology for agile SoC architecture design, exploration, and evaluation</li>
       <li class="fragment">A tapeout-ready chassis for custom RISC-V SoCs</li>
     </ul>
@@ -220,7 +229,7 @@ Reveal.on( 'fragmenthidden', event => {
         </font>
       </div>
       <div>
-        <img src="./figs/latte24/soc-rocc-accel.svg"/>
+        <img width="80%" src="./figs/latte24/soc-rocc-accel.svg"/>
       </div>
     </div>
   </section>
