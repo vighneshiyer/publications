@@ -3,7 +3,6 @@
 
 # Title : PL for HW, a Simulator centric Approach.
 
-
 ---
 
 # Talks [p1]
@@ -22,7 +21,7 @@
 
 ---
 
-## Vighnesh's table of contents
+## Talk Outline Sketch
 
 This talk should be about introducing the real world problems that HW designers face, and how we think PL techniques can be applied to solve these goals.
 Even for the API design, I shouldn't focus too much on the engineering aspect. I should just suggest a rough sketch of what we (as HW designers) want so that the PL people can concretize it.
@@ -31,24 +30,42 @@ Even for the API design, I shouldn't focus too much on the engineering aspect. I
     - "The Next Paradigm Shift of Hardware and SoC Design Methodology"
     - At a high level, we need to make it clear that this is the *hardware designer* perspective (NOT the PL person perspective)
     - We should claim right away that we aren't PL people, so we are just proposing ideas from our side
+
 - What is the current paradigm?
     - In terms of ergonomics, performance, agility, **beauty**, correctness
     - What can we do in the current paradigm? What are the limitations?
+
+- old paradigm
+    - wrt people, language, organization
+    - language: json on top of macros on top of macros on top of rtl, single abstraction at a time, messy and ugly interop, custom hacks for silicon flow vs FPGA flow vs emulator flow
+    - people: highly specialized, don't interact much, lots of people needed
+    - organization: teams are separated by function rather than design block
+    - tools: long iteration times, ugly APIs, build scripts on top of build scripts, everything is custom per company for no obvious reason (just historical in nature)
+    - flow: hand written cobweb of integrations, boundary bugs are common
+- new paradigm
+    - single person can tackle end-to-end development of a block
+
+- what do PL people want from the tools they build?
+- what do HW people want wrt new PL innovations?
+
 - What could be possible if we had magical tools?
     - What is the new paradigm?
     - What could the new paradigm enable that is hard or impossible now?
+
 - How have we tried to move towards that paradigm in the past?
-    - Here is where we discuss Chisel, FIRRTL Firesim, Chipyard
+    - Here is where we discuss Chisel, FIRRTL, Firesim, Chipyard
     - We can go deep into Chipyard/Chisel for a small example of SoC design.
     - Then work from other groups (Calyx, Filament, SpinalHDL, HeteroCL, PyMTL)
     - Why haven't these moved us into the new paradigm yet? What is still difficult? What just isn't beautiful?
+
 - What are the magical tools we would like to have?
     - Let this motivate the things we will discuss in the vision/proposal part of the talk
     - How do the magical tools allow us to move towards the new paradigm?
+
 - Now comes the vision, we want to split it into a few sections
     - The frontend design language + the new design/verification/modeling methodology
         - Incremental-first
-        - Mixed-abstraction for both design and modeling
+        - Mixed-abstraction for both design and modeling (consider that each hardware domain is suitable for a different abstraction. But, even within a hardware domain, there are specific )
         - Leveraging host-language type system for ...
     - The IR + the new simulation backends/synthesis backends that it enables to support the above methodology
         - Take inspiration from LNAST (graph native in-memory representation) + FIRRTL (in terms of passes and FireSim) + Circt dialects (the closest we have to mixed-abstraction today, but they don't support interaction semantics)
@@ -56,6 +73,11 @@ Even for the API design, I shouldn't focus too much on the engineering aspect. I
         - Also needs to support the same features as the frontend (incremental pass application, aggressive caching, mixed abstractions + semantics for their interaction, encoding of host language types to some degree for semantics preservation)
     - The SoC generator framework that can be built on top of these
     - The other tools that can be built (early fast PPA iteration, synthesis)
+
+- PL people are good at defining semantics and making them clear
+- HW arch people are good at knowing what matters and would help us
+- Consider how to describe nested multi abstraction circuits
+  - Consider the impact of an HLS top vs an RTL top and nested tops
 
 ---
 

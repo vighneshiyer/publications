@@ -190,7 +190,7 @@ $overlayElementFgColor: 0, 0, 0;
 
     // Shift slide headings down by a bit for aesthetics
     h2 {
-      margin-top: 0.5rem;
+      //margin-top: 0.5rem;
     }
 
     li::marker {
@@ -258,6 +258,10 @@ $overlayElementFgColor: 0, 0, 0;
 .bg-red {
   background: $tn_red;
   color: $tn_bg;
+}
+
+.bg-orange {
+  background: $tn_orange;
 }
 
 .bg-blue {

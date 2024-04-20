@@ -14,65 +14,38 @@
 
 {# Custom styles and JS for a particular talk #}
 {% block custom_head %}
+<style>
+.reveal table.old_paradigm_table {
+  width: 100%;
+  font-size: 60%;
+  border-collapse: separate;
+  border-spacing: 0.1rem;
+  margin-bottom: 1rem;
+  tr > th {
+    text-align:center;
+    border: none;
+  }
+  tr > td {
+      border: 2px solid black !important;
+      border-radius: 5px;
+  }
+  tbody tr td {
+      width: 16.6666%;
+      height: 1rem;
+      text-align: center;
+      vertical-align: middle;
+  }
+  tbody tr th {
+      vertical-align: middle;
+  }
+}
+</style>
 {% endblock %}
 
 {% block theme %}
 import '/themes/tokyonight-light.scss'
 import 'highlight.js/styles/tokyo-night-dark.css'
 {% endblock %}
-
-<!--
-- Focus on the 'next paradigm shift' - this should be the topic of our talk
-    - "The Next Paradigm Shift of Hardware and SoC Design Methodology"
-    - At a high level, we need to make it clear that this is the *hardware designer* perspective (NOT the PL person perspective)
-    - We should claim right away that we aren't PL people, so we are just proposing ideas from our side
-
-- What is the current paradigm?
-    - In terms of ergonomics, performance, agility, **beauty**, correctness
-    - What can we do in the current paradigm? What are the limitations?
-
-- old paradigm
-    - wrt people, language, organization
-    - language: json on top of macros on top of macros on top of rtl, single abstraction at a time, messy and ugly interop, custom hacks for silicon flow vs FPGA flow vs emulator flow
-    - people: highly specialized, don't interact much, lots of people needed
-    - organization: teams are separated by function rather than design block
-    - tools: long iteration times, ugly APIs, build scripts on top of build scripts, everything is custom per company for no obvious reason (just historical in nature)
-- new paradigm
-    - ???
-
-- What could be possible if we had magical tools?
-    - What is the new paradigm?
-    - What could the new paradigm enable that is hard or impossible now?
-
-- How have we tried to move towards that paradigm in the past?
-    - Here is where we discuss Chisel, FIRRTL, Firesim, Chipyard
-    - We can go deep into Chipyard/Chisel for a small example of SoC design.
-    - Then work from other groups (Calyx, Filament, SpinalHDL, HeteroCL, PyMTL)
-    - Why haven't these moved us into the new paradigm yet? What is still difficult? What just isn't beautiful?
-
-- What are the magical tools we would like to have?
-    - Let this motivate the things we will discuss in the vision/proposal part of the talk
-    - How do the magical tools allow us to move towards the new paradigm?
-
-- Now comes the vision, we want to split it into a few sections
-    - The frontend design language + the new design/verification/modeling methodology
-        - Incremental-first
-        - Mixed-abstraction for both design and modeling (consider that each hardware domain is suitable for a different abstraction. But, even within a hardware domain, there are specific )
-        - Leveraging host-language type system for ...
-    - The IR + the new simulation backends/synthesis backends that it enables to support the above methodology
-        - Take inspiration from LNAST (graph native in-memory representation) + FIRRTL (in terms of passes and FireSim) + Circt dialects (the closest we have to mixed-abstraction today, but they don't support interaction semantics)
-        - I think we need to think carefully about why existing IRs are not sufficient. We should come up with some points by talking to those who use Circt (Amelia / Kevin).
-        - Also needs to support the same features as the frontend (incremental pass application, aggressive caching, mixed abstractions + semantics for their interaction, encoding of host language types to some degree for semantics preservation)
-    - The SoC generator framework that can be built on top of these
-    - The other tools that can be built (early fast PPA iteration, synthesis)
--->
-
-<!--
-- PL people are good at defining semantics and making them clear
-- HW arch people are good at knowing what matters and would help us
-- Consider how to describe nested multi abstraction circuits
-  - Consider the impact of an HLS top vs an RTL top and nested tops
--->
 
 {% block slides %}
 <script type="module">
@@ -146,7 +119,7 @@ Reveal.on( 'fragmenthidden', event => {
         </ul>
       </li>
       <li class="fragment">A sketch of what matters to hardware designers and our broad vision
-    
+
       </li>
     </ol>
   </section>
@@ -154,11 +127,121 @@ Reveal.on( 'fragmenthidden', event => {
 
 <section>
   <section class="center">
-    <h2>The Existing Paradigm of Hardware Design</h2>
+    <h1>The Existing Paradigm of Hardware Design</h1>
+    <h2>Seen in Industry</h2>
   </section>
 
   <section>
-    <h2>
+    <h2>People and Organization</h2>
+
+    <table class="old_paradigm_table">
+      <thead>
+      <tr>
+        <th></th>
+        <th></th>
+        <th colspan="5">Teams within an SoC Design Organization</th>
+      </tr>
+      <tr style="text-align: center;">
+        <th></th>
+        <th></th>
+        <th>Spec / Arch</th>
+        <th>Perf Modeling</th>
+        <th>RTL</th>
+        <th>DV</th>
+        <th>PD</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr>
+        <th rowspan="3" style="vertical-align: middle;">Design block</th>
+        <th>Core</th>
+        <td class="bg-red"></td>
+        <td class="bg-orange"></td>
+        <td></td>
+        <td></td>
+        <td></td>
+      </tr>
+      <tr>
+        <th>LLC</th>
+        <td class="bg-red"></td>
+        <td class="bg-orange"></td>
+        <td></td>
+        <td></td>
+        <td></td>
+      </tr>
+      <tr>
+        <th>NPU</th>
+        <td class="bg-red"></td>
+        <td class="bg-orange"></td>
+        <td></td>
+        <td></td>
+        <td></td>
+      </tr>
+      </tbody>
+    </table>
+
+    <ul>
+      <li class="fragment">Highly specialized and large workforce</li>
+      <li class="fragment">Teams are separated by function rather than design block</li>
+      <li class="fragment">Duplicated work between specification, modeling, and RTL</li>
+      <li class="fragment">Little interaction between teams</li>
+      <li class="fragment">Complex tools and abstractions make transition between functions difficult</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Specification</h2>
+  </section>
+
+  <section>
+    <h2>Languages + Semantics</h2>
+    - ill defined / complex semantics, mixing simulation and synthesizable abstractions
+    - massive monolithic simulation/emulation tools
+    - macros on top of macros on top of web of Perl scripts
+  </section>
+
+  <section>
+    <h2>SoC Integration / Construction</h2>
+    - web of scripts and build systems, config systems on top of config systems
+    - multiple abstractions can only be blackboxed at the lowest level (practically)
+  </section>
+
+  <section>
+    <h2>Iteration Speed</h2>
+  </section>
+
+  <section>
+    <h2>Beauty / Elegance</h2>
+  </section>
+</section>
+
+<section>
+  <section class="center">
+    <h1>The Next Paradigm Shift of Hardware Design</h1>
+  </section>
+
+  <section>
+    <h2>Flat Organization</h2>
+  </section>
+
+  <section>
+    <h2>Rapid Iteration on all Axes</h2>
+  </section>
+
+  <section>
+    <h2>Clean Interop of Multiple Paradigms</h2>
+  </section>
+
+  <section>
+    <h2>New HDLs</h2>
+  </section>
+
+  <section>
+    <h2>New Simulators</h2>
+  </section>
+
+  <section>
+    <h2>New SoC Design Frameworks</h2>
   </section>
 </section>
 
