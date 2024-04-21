@@ -38,6 +38,18 @@
   tbody tr th {
       vertical-align: middle;
   }
+  tbody tr:nth-child(3) td:nth-child(3) {
+  }
+}
+.reveal table.old_paradigm_table.new.visible {
+  border-spacing: 0rem;
+  tr > td {
+    border-radius: 0;
+    border: 0 !important;
+  }
+  tbody tr:nth-child(1) td {
+      background: white !important;
+    }
 }
 </style>
 {% endblock %}
@@ -191,27 +203,74 @@ Reveal.on( 'fragmenthidden', event => {
 
   <section>
     <h2>Specification</h2>
+    <div class="center">
+      <p><em>Insert picture of random excel spreadsheets, AXI spec documents, DDR state machines</em></p>
+    </div>
+
+    <ul>
+      <li>English and Excel specs are the norm</li>
+      <li>Simulators, models, and verification collateral are handcrafted rather than generated</li>
+      <li>Translation errors due to undefined behaviors and misinterpretation are common</li>
+    </ul>
   </section>
 
   <section>
     <h2>Languages + Semantics</h2>
+    <div class="center">
+      <p><em>Insert picture of ugly SystemVerilog macros, Perl generators</em></p>
+    </div>
+
+    <!--
     - ill defined / complex semantics, mixing simulation and synthesizable abstractions
+    - multiple abstractions can only be blackboxed at the lowest level (practically)
     - massive monolithic simulation/emulation tools
     - macros on top of macros on top of web of Perl scripts
+    -->
+    <ul>
+      <li>Most design is done at the RTL abstraction in Verilog/VHDL</li>
+      <li>Limitations of these languages lead to a tower of macros on top of macros on top of a web of Perl</li>
+      <li>Simulation / synthesis semantics mismatch</li>
+      <li>Compositional semantics of mixing multiple abstractions isn't defined. Everything is lowered to RTL</li>
+      <li>Simulation / emulation tools are massive monolithic blobs</li>
+    </ul>
   </section>
 
   <section>
     <h2>SoC Integration / Construction</h2>
+    <div class="center">
+      <p><em>Image of Makefile calling other Makefiles and being wrapped in yet another custom build system</em></p>
+    </div>
+
+    <!--
     - web of scripts and build systems, config systems on top of config systems
-    - multiple abstractions can only be blackboxed at the lowest level (practically)
+    -->
+    <ul>
+      <li>Composing IP correctly is hard. Satisfying global constraints, verifying the interface</li>
+      <li>SoC construction described in ad-hoc phases</li>
+      <li>Collateral emission must synchronize the state and configuration of every IP</li>
+    </ul>
   </section>
 
   <section>
     <h2>Iteration Speed</h2>
+
+    <!--
+      - it's not worth mentioning that industry uses handcrafted tools - i think that's not too related to iteration speed issues
+    -->
+    <ul>
+      <li>Each new layer of tools adds latency from making a change to evaluation</li>
+      <li>Current generation of tools has ad-hoc support for incremental compilation of the design and simulator</li>
+      <li>It's well known that low iteration speed hampers developer productivity</li>
+    </ul>
   </section>
 
   <section>
     <h2>Beauty / Elegance</h2>
+
+    <ul>
+      <li>Compare / contrast SystemC HLS vs Halide or EXO as an example</li>
+      <li>How else can we demonstrate the lack of beauty?</li>
+    </ul>
   </section>
 </section>
 
@@ -222,6 +281,52 @@ Reveal.on( 'fragmenthidden', event => {
 
   <section>
     <h2>Flat Organization</h2>
+
+    <table class="old_paradigm_table fragment custom new">
+      <thead>
+      <tr>
+        <th></th>
+        <th></th>
+        <th colspan="5">Teams within an SoC Design Organization</th>
+      </tr>
+      <tr style="text-align: center;">
+        <th></th>
+        <th></th>
+        <th>Spec / Arch</th>
+        <th>Perf Modeling</th>
+        <th>RTL</th>
+        <th>DV</th>
+        <th>PD</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr>
+        <th rowspan="3" style="vertical-align: middle;">Design block</th>
+        <th>Core</th>
+        <td class="bg-red"></td>
+        <td class="bg-orange"></td>
+        <td></td>
+        <td></td>
+        <td></td>
+      </tr>
+      <tr>
+        <th>LLC</th>
+        <td class="bg-red"></td>
+        <td class="bg-orange"></td>
+        <td></td>
+        <td></td>
+        <td></td>
+      </tr>
+      <tr>
+        <th>NPU</th>
+        <td class="bg-red"></td>
+        <td class="bg-orange"></td>
+        <td></td>
+        <td></td>
+        <td></td>
+      </tr>
+      </tbody>
+    </table>
   </section>
 
   <section>
@@ -242,6 +347,18 @@ Reveal.on( 'fragmenthidden', event => {
 
   <section>
     <h2>New SoC Design Frameworks</h2>
+  </section>
+
+  <section>
+    <h2>Main Ideas</h2>
+    <dl>
+      <dt>Frontends</dt>
+      <dd>Mixed-abstraction, interop semantics, ergonomic external module integration, embedding PD/power/verification collateral</dd>
+      <dt>IRs</dt>
+      <dd>Preservation of semantics, graph-oriented representation</dd>
+      <dt>Tools / Simulators</dt>
+      <dd>Low latency iteration cycle (incremental)</dd>
+    </dl>
   </section>
 </section>
 

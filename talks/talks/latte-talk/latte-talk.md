@@ -37,9 +37,9 @@ Even for the API design, I shouldn't focus too much on the engineering aspect. I
 
 - old paradigm
     - wrt people, language, organization
-    - language: json on top of macros on top of macros on top of rtl, single abstraction at a time, messy and ugly interop, custom hacks for silicon flow vs FPGA flow vs emulator flow
     - people: highly specialized, don't interact much, lots of people needed
     - organization: teams are separated by function rather than design block
+    - language: json on top of macros on top of macros on top of rtl, single abstraction at a time, messy and ugly interop, custom hacks for silicon flow vs FPGA flow vs emulator flow
     - tools: long iteration times, ugly APIs, build scripts on top of build scripts, everything is custom per company for no obvious reason (just historical in nature)
     - flow: hand written cobweb of integrations, boundary bugs are common
 - new paradigm
