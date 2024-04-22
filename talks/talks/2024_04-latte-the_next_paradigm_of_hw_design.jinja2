@@ -48,8 +48,14 @@
     border: 0 !important;
   }
   tbody tr:nth-child(1) td {
-      background: white !important;
-    }
+      background: #34548a !important;
+  }
+  tbody tr:nth-child(2) td {
+      background: #0f4b6e !important;
+  }
+  tbody tr:nth-child(3) td {
+      background: #5a4a78 !important;
+  }
 }
 </style>
 {% endblock %}
@@ -120,15 +126,12 @@ Reveal.on( 'fragmenthidden', event => {
       <li class="fragment">What could come next? A view of the next paradigm of hardware design</li>
       <li class="fragment">Recent efforts to build the next paradigm
         <ul>
-          <li class="fragment">New HDLs and design abstractions: <span class="small">Lava, Chisel, Amaranth, Spade, HeteroCL</span></li>
-          <li class="fragment">New SoC design frameworks: <span class="small">Chipyard, ESP, OpenPiton, PULP, BlackParrot</span></li>
-          <li class="fragment">New simulators: <span class="small">Verilator, FireSim, Manticore, Arcilator, RepCut, ESSENT</span></li>
+          <li class="fragment">New HDLs and design abstractions</li>
+          <li class="fragment">New simulators</li>
+          <li class="fragment">New SoC design frameworks</li>
         </ul>
       </li>
       <li class="fragment">What's still missing? Why are we not in the new age of hardware design?
-        <ul>
-          <li>It's a lot more than just the frontend language: PPA iteration cycle, verification, other stuff</li>
-        </ul>
       </li>
       <li class="fragment">A sketch of what matters to hardware designers and our broad vision
 
@@ -257,6 +260,11 @@ Reveal.on( 'fragmenthidden', event => {
     <!--
       - it's not worth mentioning that industry uses handcrafted tools - i think that's not too related to iteration speed issues
     -->
+
+    <div class="center">
+      <p><em>Image of iteration speeds as they exist currently. few minutes from design change to elab (for Chipyard), 10s of minutes for HLS. time for RTL sim + eval. time for firesim fpga eval. time for PD flow for power/area.</em></p>
+    </div>
+
     <ul>
       <li>Each new layer of tools adds latency from making a change to evaluation</li>
       <li>Current generation of tools has ad-hoc support for incremental compilation of the design and simulator</li>
@@ -327,38 +335,105 @@ Reveal.on( 'fragmenthidden', event => {
       </tr>
       </tbody>
     </table>
+
+    <ul>
+      <li>Agile, small, and generalist workforce</li>
+      <li>Teams are specialized by design block rather than function</li>
+      <!--<li>Teams collaborate across functions</li>-->
+      <li>Design and specification artifacts are reused and contain semantics that span from specification to PD</li>
+      <li>Higher level abstractions enable productivity across the stack</li>
+    </ul>
   </section>
 
   <section>
     <h2>Rapid Iteration on all Axes</h2>
+
+    <div class="center">
+      <p><em>Modified image of iteration speeds. Make it clear that an fine-grained accuracy vs fidelity tradeoff is possible.</em></p>
+    </div>
+
+    <ul>
+      <li>Focus not only on performance (throughput) of existing frontend + simulation tools, but also on <em>startup latency</em></li>
+      <li>It's a lot more than just the frontend language: PPA iteration cycle, verification, other stuff</li>
+      <li><em>Call out LiveHD, LiveSim, LiveSynth for being the only works that tackle this critical problem</em></li>
+    </ul>
   </section>
 
   <section>
-    <h2>Clean Interop of Multiple Paradigms</h2>
-  </section>
+    <h2>Clean Interop of Multiple Abstractions</h2>
 
-  <section>
-    <h2>New HDLs</h2>
-  </section>
+    <div class="center">
+      <p>Image of the ESP overview (https://www.esp.cs.columbia.edu/).</p>
+    </div>
 
-  <section>
-    <h2>New Simulators</h2>
-  </section>
-
-  <section>
-    <h2>New SoC Design Frameworks</h2>
+    <ul>
+      <li>We are still far away from realizing true multi-abstraction interop
+        <ul>
+        <li>Blackboxing isn't true interop</li>
+        <li>Designers can benefit from fine-grained interop</li>
+        </ul>
+      </li>
+    </ul>
+    <dl>
+      <dt>Elaboration time interop</dt><dd>How a top-level generator invokes sub-generators</dd>
+      <dt>Runtime interop</dt><dd>Interaction semantics between abstractions</dd>
   </section>
 
   <section>
     <h2>Main Ideas</h2>
     <dl>
       <dt>Frontends</dt>
-      <dd>Mixed-abstraction, interop semantics, ergonomic external module integration, embedding PD/power/verification collateral</dd>
+      <dd>Mixed-abstraction, interop semantics, ergonomic external module integration, embedding PD/power/verification collateral, rewrite/spec/compiler generation</dd>
       <dt>IRs</dt>
       <dd>Preservation of semantics, graph-oriented representation</dd>
       <dt>Tools / Simulators</dt>
-      <dd>Low latency iteration cycle (incremental)</dd>
+      <dd>Low latency iteration cycle (incremental), full spectrum (from specification to PD)</dd>
     </dl>
+  </section>
+</section>
+
+<section>
+  <section class="center">
+    <h1>Showcase of Work Towards the Next Paradigm</h1>
+  </section>
+
+  <section>
+    <h2>New HDLs and Design Abstractions</h2>
+    <dl>
+      <dt class="fragment">Intermediate representations</dt>
+      <dd class="fragment small"><a href="https://github.com/chipsalliance/firrtl-spec">FIRRTL</a>, <a href="https://github.com/fabianschuiki/llhd">LLHD</a>, <a href="https://circt.llvm.org/docs/Dialects/">Circt</a> <small>(affine, handshake, ssp, pipeline, fsm, dc)</small>, <a href="https://dl.acm.org/doi/pdf/10.1145/3623278.3624767">HIR</a>, <a href="https://github.com/masc-ucsc/livehd/tree/master/lgraph">LGraph</a>/<a href="https://masc.soe.ucsc.edu/docs/woset19b.pdf">LNAST</a>, <a href="https://github.com/YosysHQ/yosys/blob/main/kernel/rtlil.h">Yosys RTLIL</a>, <a href="https://dl.acm.org/doi/abs/10.1145/3453483.3454075">Reticle</a></dd>
+      <dt class="fragment">RTL-level</dt>
+      <dd class="fragment small"><strong>Chisel</strong>, SpinalHDL (Scala) | Lava, Blarney (Haskell) | Amaranth, MyHDL, PyMTL3, <a href="https://github.com/UCSBarchlab/PyRTL">PyRTL</a>, Magma, (Python) | HardCaml (OCaml) | <a href="https://intel.github.io/rohd-website/">ROHD</a> (Dart) | pyrope, Veryl (freestanding)</dd>
+      <dt class="fragment">Dataflow</dt>
+      <dd class="fragment"><a href="https://spade-lang.org/">Spade</a>, Shakeflow, DFiant, Verilog-TL, PipelineC</dd>
+      <dt class="fragment">Control flow synthesis</dt>
+      <dd class="fragment">Calyx, XLS, Bluespec, <a href="https://github.com/mit-plv/koika">Koika</a>, <a href="https://clash-lang.org/">Clash</a><sup>*</sup></dd>
+      <dt class="fragment">Accelerator design languages</dt>
+      <dd class="fragment">Spatial, Dahlia, <a href="https://dl.acm.org/doi/abs/10.1145/3352460.3358292">μIR</a>, HeteroCL, <a href="https://arxiv.org/pdf/2404.04815.pdf">Allo</a></dd>
+      <dt class="fragment">General HLS</dt>
+      <dd class="fragment">SystemC (Catapult), C++ (<a href="">LegUp</a>, <a href="https://github.com/Xilinx/HLS">Vitis HLS</a>)</dd>
+    </dl>
+
+    <p class="center fragment">Enabling higher hardware design productivity. </p>
+  </section>
+
+  <section>
+    <h2>New Simulators</h2>
+    <dl>
+      <dt class="fragment">Higher-abstraction simulators</dt>
+      <dd class="fragment"><a href="https://docs.calyxir.org/debug/cider.html">Cider (Calyx)</a>, <a href="https://people.csail.mit.edu/bthom/asplos21-1.pdf">Cuttlesim</a> (Koika)</dd>
+      <dt class="fragment">RTL SW simulators</dt>
+      <dd class="fragment"><a href="https://www.veripool.org/verilator/">Verilator</a>, <a href="https://github.com/circt/arc-tests">Arcilator</a>, <a href="https://yosyshq.readthedocs.io/projects/yosys/en/latest/cmd/write_cxxrtl.html">CXXRTL</a>, <a href="https://github.com/chipsalliance/treadle">Treadle</a>, ESSENT, RepCut, Khronos</dd>
+      <dt class="fragment">HW accelerated RTL simulators</dt>
+      <dd class="fragment small"><strong><a href="https://fires.im/">FireSim</a></strong>, Manticore (FPGA) | RTLFlow (GPU) | <a href="https://dl.acm.org/doi/abs/10.1145/3613424.3614257">ASH</a><sup>*</sup> (ASIC) | <a href="https://arxiv.org/abs/2403.04714">Parendi</a> (Graphcore IPU)</dd>
+    </dl>
+    <p class="center fragment">Iteration speed is critical; simulation is the workhorse of HW design. SW RTL simulation isn't at its limit! HW accelerated RTL simulation has been scantly explored.</p>
+  </section>
+
+  <section>
+    <h2>New SoC Design Frameworks</h2>
+
+          <li class="fragment">new soc design frameworks: <span class="small">chipyard, esp, openpiton, pulp, blackparrot</span></li>
   </section>
 </section>
 
@@ -601,7 +676,7 @@ Reveal.on( 'fragmenthidden', event => {
     )(
       implicit p: Parameters
     ) extends ClockSinkDomain(ClockSinkParameters())(p) {
-      val device = new SimpleDevice("calyx-sum", Seq("ucbbar,calyx-sum")) 
+      val device = new SimpleDevice("calyx-sum", Seq("ucbbar,calyx-sum"))
       val node = TLRegisterNode(Seq(AddressSet(params.address, 4096-1)), device, "reg/control", beatBytes=beatBytes)
 
       val nBits = params.nBits
@@ -763,7 +838,7 @@ Reveal.on( 'fragmenthidden', event => {
     }
 
     static inline int calyx_sum_deq_valid() {
-      int val = reg_read32(CALYX_SUM_DEQ_VAL); 
+      int val = reg_read32(CALYX_SUM_DEQ_VAL);
       printf("calyx_sum_deq_val: %d\n", val);
       return (val != 0);
     }
