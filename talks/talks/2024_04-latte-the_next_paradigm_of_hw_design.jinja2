@@ -1706,12 +1706,16 @@ Reveal.on( 'fragmenthidden', event => {
           <li class="fragment">E.g., you don't want to connect a clock signal into a reset port.</li>
         </ul>
         <li class="fragment">(For a eDSL), differentiate types between the DSL and host language.</li>
+        <li class="fragment">Encode circuit properties to generate useful collateral.</li>
+        <ul>
+          <li class="fragment">E.g., Encoding circuit timing information as types to generate RTL assertions.</li>
+        </ul>
       </ul>
       <li class="fragment">Things that it shouldn't do?</li>
       <ul>
         <li class="fragment">Shouldn't make the language too verbose.</li>
         <li class="fragment">Shouldn't increase the compilation time significantly.</li>
-        <li class="fragment">Shouldn't try to prove circuit properties that should be checked during runtime.</li>
+{# <li class="fragment">Shouldn't try to prove circuit properties that should be checked during runtime.</li> #}
       </ul>
     </ul>
   </section>
