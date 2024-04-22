@@ -346,20 +346,6 @@ Reveal.on( 'fragmenthidden', event => {
   </section>
 
   <section>
-    <h2>Rapid Iteration on all Axes</h2>
-
-    <div class="center">
-      <p><em>Modified image of iteration speeds. Make it clear that an fine-grained accuracy vs fidelity tradeoff is possible.</em></p>
-    </div>
-
-    <ul>
-      <li>Focus not only on performance (throughput) of existing frontend + simulation tools, but also on <em>startup latency</em></li>
-      <li>It's a lot more than just the frontend language: PPA iteration cycle, verification, other stuff</li>
-      <li><em>Call out LiveHD, LiveSim, LiveSynth for being the only works that tackle this critical problem</em></li>
-    </ul>
-  </section>
-
-  <section>
     <h2>Clean Interop of Multiple Abstractions</h2>
 
     <div class="center">
@@ -377,6 +363,20 @@ Reveal.on( 'fragmenthidden', event => {
     <dl>
       <dt>Elaboration time interop</dt><dd>How a top-level generator invokes sub-generators</dd>
       <dt>Runtime interop</dt><dd>Interaction semantics between abstractions</dd>
+  </section>
+
+  <section>
+    <h2>Rapid Iteration on all Axes</h2>
+
+    <div class="center">
+      <p><em>Modified image of iteration speeds. Make it clear that an fine-grained accuracy vs fidelity tradeoff is possible.</em></p>
+    </div>
+
+    <ul>
+      <li>Focus not only on performance (throughput) of existing frontend + simulation tools, but also on <em>startup latency</em></li>
+      <li>It's a lot more than just the frontend language: PPA iteration cycle, verification, other stuff</li>
+      <li><em>Call out LiveHD, LiveSim, LiveSynth for being the only works that tackle this critical problem</em></li>
+    </ul>
   </section>
 
   <section>
@@ -432,8 +432,15 @@ Reveal.on( 'fragmenthidden', event => {
 
   <section>
     <h2>New SoC Design Frameworks</h2>
+    <ul class="fragment">
+      <li><strong><a href="https://github.com/ucb-bar/chipyard">Chipyard</a></strong>: Chisel-based, cores (Rocket, BOOM, CVA6), accelerators (Gemmini, NVDLA), memory system + NoC</li>
+      <li><a href="https://www.esp.cs.columbia.edu/">ESP</a>: Tile based SoC architecture, cores (CVA6, Ibex), accelerators (Verilog blackboxing), memory system + NoC</li>
+      <li><a href="https://github.com/pulp-platform/pulp">PULP</a>: Cores (RISCY, zero-riscy), ???</li>
+      <li><a href="https://github.com/black-parrot/black-parrot">BlackParrot</a>: ???</li>
+      <li><a href="https://github.com/OpenXiangShan/XiangShan">Xiangshan</a>: High performance OoO RISC-V core + L2</li>
+    </ul>
 
-          <li class="fragment">new soc design frameworks: <span class="small">chipyard, esp, openpiton, pulp, blackparrot</span></li>
+    <p class="center fragment">Full system evaluation at RTL-level. SoC level parameterization and integration of external IP.</p>
   </section>
 </section>
 
