@@ -223,8 +223,10 @@ Reveal.on( 'fragmenthidden', event => {
 
   <section>
     <h2>Languages + Semantics</h2>
-    <div class="center">
-      <p><em>Insert picture of ugly SystemVerilog macros, Perl generators</em></p>
+    <div class="center fragment">
+      <img class="image no-margin" src="./figs/dynamic/latte24/typical_flow.svg" />
+      <!--<figcaption class="small">A pretty typical flow</figcaption>-->
+      <!--<p><em>Insert picture of ugly SystemVerilog macros, Perl generators</em></p>-->
     </div>
 
     <!--
@@ -233,28 +235,29 @@ Reveal.on( 'fragmenthidden', event => {
     - massive monolithic simulation/emulation tools
     - macros on top of macros on top of web of Perl scripts
     -->
-    <ul>
-      <li>Most design is done at the RTL abstraction in Verilog/VHDL</li>
-      <li>Limitations of these languages lead to a tower of macros on top of macros on top of a web of Perl</li>
-      <li>Simulation / synthesis semantics mismatch</li>
-      <li>Compositional semantics of mixing multiple abstractions isn't defined. Everything is lowered to RTL</li>
-      <li>Simulation / emulation tools are massive monolithic blobs</li>
+    <ul class="small">
+      <li class="fragment">Most design is done at the RTL abstraction in Verilog/VHDL</li>
+      <li class="fragment">Limitations of these languages lead to a tower of macros on top of macros on top of a web of Perl</li>
+      <li class="fragment">Simulation / synthesis semantics mismatch</li>
+      <li class="fragment">Compositional semantics of mixing multiple abstractions isn't defined. Everything is lowered to RTL</li>
+      <li class="fragment">Simulation / emulation tools are massive monolithic blobs</li>
     </ul>
   </section>
 
   <section>
     <h2>SoC Integration / Construction</h2>
-    <div class="center">
-      <p><em>Image of Makefile calling other Makefiles and being wrapped in yet another custom build system</em></p>
+    <div class="center fragment">
+      <img class="image no-margin" src="./figs/dynamic/latte24/soc_construction.svg" />
+      <!--<p><em>Image of Makefile calling other Makefiles and being wrapped in yet another custom build system</em></p>-->
     </div>
 
     <!--
     - web of scripts and build systems, config systems on top of config systems
     -->
     <ul>
-      <li>Composing IP correctly is hard. Satisfying global constraints, verifying the interface</li>
-      <li>SoC construction described in ad-hoc phases</li>
-      <li>Collateral emission must synchronize the state and configuration of every IP</li>
+      <li class="fragment">Composing IP correctly is hard. Satisfying global constraints, verifying every interface conforms, parameter propagation</li>
+      <li class="fragment">SoC construction described in ad-hoc phases with yaml on top of Makefiles on top of Makefiles</li>
+      <li class="fragment">Collateral emission at block and SoC level must understand the configuration of every IP</li>
     </ul>
   </section>
 
@@ -439,6 +442,7 @@ Reveal.on( 'fragmenthidden', event => {
     <ul class="fragment">
       <li><strong><a href="https://github.com/ucb-bar/chipyard">Chipyard</a></strong>: Chisel-based, cores (Rocket, BOOM, CVA6), accelerators (Gemmini, NVDLA), memory system + NoC</li>
       <li><a href="https://www.esp.cs.columbia.edu/">ESP</a>: Tile based SoC architecture, cores (CVA6, Ibex), accelerators (Verilog blackboxing), memory system + NoC</li>
+      <li><a href="http://parallel.princeton.edu/openpiton/">OpenPiton</a>: Ariane + memory / uncore components</li>
       <li><a href="https://github.com/pulp-platform/pulp">PULP</a>: Cores (RISCY, zero-riscy), ???</li>
       <li><a href="https://github.com/black-parrot/black-parrot">BlackParrot</a>: ???</li>
       <li><a href="https://github.com/OpenXiangShan/XiangShan">Xiangshan</a>: High performance OoO RISC-V core + L2</li>
