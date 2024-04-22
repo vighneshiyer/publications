@@ -386,16 +386,21 @@ class GCDMMIOBlackBox(val w: Int)
   </section>
 
   <section>
-    <h2>Rapid Iteration on all Axes</h2>
+    <h2>Rapid Iteration Across the Design Flow</h2>
 
+    <div class="container image no-padding no-margin" style="grid-template-columns: 1fr 1fr;">
+      <div class="fragment"><img width="60%" src="./figs/latte24/livesynth.png" /></div>
+      <div class="fragment"><img src="./figs/latte24/livehd.png" /></div>
+      <!--<p><em>Modified image of iteration speeds. Make it clear that an fine-grained accuracy vs fidelity tradeoff is possible.</em></p>-->
+    </div>
     <div class="center">
-      <p><em>Modified image of iteration speeds. Make it clear that an fine-grained accuracy vs fidelity tradeoff is possible.</em></p>
+      <figcaption class="fragment small">LiveSynth and LiveHD make strong drive towards rapid iteration.</figcaption>
     </div>
 
     <ul>
-      <li>Focus not only on performance (throughput) of existing frontend + simulation tools, but also on <em>startup latency</em></li>
-      <li>It's a lot more than just the frontend language: PPA iteration cycle, verification, other stuff</li>
-      <li><em>Call out LiveHD, LiveSim, LiveSynth for being the only works that tackle this critical problem</em></li>
+      <li class="fragment">Focus not only on performance (throughput) of existing frontend + simulation tools, but also on <em>startup latency</em></li>
+      <li class="fragment">It's a lot more than just the frontend language: PPA evaluation, verification, and simulation is critical</li>
+      <!--<li><em>Call out LiveHD, LiveSim, LiveSynth for being the only works that tackle this critical problem</em></li>-->
     </ul>
   </section>
 
