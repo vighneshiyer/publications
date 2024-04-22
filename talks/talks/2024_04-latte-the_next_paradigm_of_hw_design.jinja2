@@ -110,8 +110,8 @@ Reveal.on( 'fragmenthidden', event => {
     <a href="https://github.com/ucb-bar/chipyard">
       <img src="./figs/logos/chipyard_logo.svg" class="image" style="height: 100px;">
     </a>
-    <h2 class="fragment">The Next Paradigm of Hardware and SoC Design</h2>
-    <h3>Chisel / Chipyard Overview + Demo</h3>
+    <h2 class="fragment">The Next Paradigm of SoC Design</h2>
+    <h3>Chipyard Overview + Calyx Integration Demo</h3>
     <h4 style="font-weight:normal;">
       Joonho Whangbo, Vighnesh Iyer, Bora Nikolic (UC Berkeley)
     </h4>
@@ -1310,23 +1310,39 @@ Reveal.on( 'fragmenthidden', event => {
 
 <section>
   <section class="center">
-    <h2>Retrospective</h2>
+    <h2>Why have we not reached the next paradigm?</h2>
   </section>
 
   <section class="center">
-    <h2>Retrospective</h2>
+    <h3>Why have we not reached the next paradigm?</h3>
     <ul>
-      <li class="fragment">Have we realized the RTL first methodology to its full potential?</li>
+      <li class="fragment">Iteration cycle.</li>
       <ul>
-        <li class="fragment">Compile time.</li>
-        <li class="fragment">Simulation time.</li>
-        <li class="fragment">Modeling time.</li>
+        <li class="fragment">Compile/simulation time.</li>
+        <li class="fragment">Fast power/area estimation capabilities.</li>
+      </ul>
+      <li class="fragment">Utilizing the suitable abstractions.</li>
+      <ul>
+        <li class="fragment">Design productivity.</li>
+        <li class="fragment">IP integration is always at the RTL level.</li>
+        <ul>
+          <li class="fragment">Ad-hoc blackboxing or DPI interfaces.</li>
+          <li class="fragment">Compromising simulation throughput.</li>
+        </ul>
+      </ul>
+      <li class="fragment">Other concerns.</li>
+      <ul>
+        <li class="fragment">Physical design, verification.</li>
+{# specifying clock/reset/power domains should be more explicit (we need to encode upf files in the frontend language) #}
+{# Since we are not specifying these semantics, we can't simulate these things. #}
+        <li class="fragment">Missing power/clock/reset semantics.</li>
+        <li class="fragment">Need a systematic way of generating collateral from specs.</li>
       </ul>
     </ul>
   </section>
 
   <section class="center">
-    <h2>Retrospective : Compile Time</h2>
+    <h2>CY/FireSim retrospective : Compile Time</h2>
     <font size="6">
     <ul>
       <li class="fragment">Compile time of our designs is longer than SystemVerilog based frameworks.</li>
@@ -1339,7 +1355,7 @@ Reveal.on( 'fragmenthidden', event => {
   </section>
 
   <section class="center">
-    <h3>Retrospective : Simulation Time</h3>
+    <h3>CY/FireSim retrospective : Simulation Time</h3>
     <ul>
       <li class="fragment">FireSim drastically reduced the simulation "runtime".</li>
       <li class="fragment">However, it takes hours to just compile FireSim bitstreams, making it unsuitable for meaningful DSE and debugging.</li>
@@ -1348,7 +1364,7 @@ Reveal.on( 'fragmenthidden', event => {
   </section>
 
   <section class="center">
-    <h3>Retrospective : Modeling Time</h3>
+    <h3>CY/FireSim retrospective : Modeling Time</h3>
     <ul>
       <li class="fragment">We are still stuck at the RTL level abstraction.</li>
       <li class="fragment">Need a way of raising the level of abstraction in the initial phase of your design.</li>
@@ -1383,7 +1399,16 @@ Reveal.on( 'fragmenthidden', event => {
 
   <section class="center">
     <h3>Rest of the talk</h3>
-    <img src="./figs/latte24/what-we-want.svg" />
+    <div class="container" style="grid-template-columns: 1.0fr 1.4fr;">
+    <div>
+      <img src="./figs/latte24/tool-stack.svg" />
+    </div>
+    <div>
+      <ul>
+        <li class="fragment">Our vision for rethinking the end-to-end flow for chip design.</li>
+      </ul>
+    </div>
+    </div>
   </section>
 </section>
 
@@ -1732,6 +1757,9 @@ Reveal.on( 'fragmenthidden', event => {
     <h2>Incremental First</h2>
     <ul>
       <li class="fragment">As mentioned in the previous section, it is crucial to support <strong>incremental compilation and caching</strong>.</li>
+      <ul>
+        <li class="fragment">Crucial for quick iteraion and early PPA estimation.</li>
+      </ul>
       <li class="fragment">Arguably the most important feature to hardware designers.</li>
       <li class="fragment">If we take the embedded DSL approach, we don't have to redo this ourselves!</li>
       <li class="fragment">E.g., Rust already has 3rd party build cache tools (sccache).</li>
@@ -1907,6 +1935,8 @@ Reveal.on( 'fragmenthidden', event => {
     case class DefInstance(...)
     case class DefMemory(...)
     abstract class PrimOp extends FirrtlNode
+    case class Clock(...)
+    case class Reset(...)
     case class OH(...)
     case class PriorityMux(...)
     case class BoolLiteral(...)
