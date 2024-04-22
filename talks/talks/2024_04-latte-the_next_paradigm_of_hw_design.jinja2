@@ -450,6 +450,261 @@ Reveal.on( 'fragmenthidden', event => {
 
 <section>
   <section class="center">
+    <h2>The RTL First Design Methodology</h2>
+    <p>"Just go write RTL"</p>
+  </section>
+
+  <section class="center">
+    <h3>We need to reduce the NRE cost</h3>
+    <img src="./figs/latte24/nre-cost.jpg"/>
+  </section>
+
+  <section class="center">
+    <h3>Typical hardware design cycle</h3>
+    <div class="container" style="grid-template-columns: 1.0fr 1.4fr;">
+      <div class="fragment">
+        <img src="./figs/latte24/design-process.svg" />
+      </div>
+      <div>
+        <font size="6">
+        <ul>
+          <li class="fragment">Iterate over a design point in various abstractions.</li>
+          <li class="fragment">You can get feedback from lower level abstractions.</li>
+          <li class="fragment">You are likely to run <strong>a lot of simulations</strong> in order to get functionality and performance correct.</li>
+        </ul>
+        </font>
+      </div>
+    </div>
+  </section>
+
+  <section class="center">
+    <h3>Time and effort is wasted</h3>
+    <div class="container" style="grid-template-columns: 1.0fr 1.4fr;">
+      <div class="fragment">
+        <img src="./figs/latte24/compiling.png" />
+      </div>
+      <div>
+        <font size="6">
+        <ul>
+          <li class="fragment">People just sit there waiting for code to compile or simulations to run.</li>
+          <li class="fragment">Large companies can afford to have separate teams for each step of the design process.</li>
+          <li class="fragment">Unsuitable for academics or startups with small teams.</li>
+        </ul>
+        </font>
+      </div>
+    </div>
+  </section>
+
+  <section class="center">
+    <h3>RTL first design methodology</h3>
+    <div class="container" style="grid-template-columns: 1.0fr 1.4fr;">
+      <div class="fragment">
+        <img src="./figs/latte24/design-process-rtl-first.svg" />
+      </div>
+      <div>
+        <font size="6">
+        <ul>
+          <li class="fragment">Modeling is required because <strong>RTL writing is hard</strong>.</li>
+          <li class="fragment">Modeling has a lot of errors and can lead designers to wrong conclusions.</li>
+          <li class="fragment">Redundant work is done by writing code twice for the same design.</li>
+          <li class="fragment">Make RTL writing so easy that we can just do modeling with RTL!</li>
+        </ul>
+        </font>
+      </div>
+    </div>
+  </section>
+
+  <section class="center">
+    <h3>Our efforts towards RTL first</h3>
+    <ul>
+      <li class="fragment">Design language : Chisel & FIRRTL</li>
+      <li class="fragment">SoC evaluation framework : Chipyard & FireSim</li>
+    </ul>
+  </section>
+</section>
+
+<section>
+  <section class="center">
+    <h2>Introduction to Chisel & FIRRTL</h2>
+  </section>
+
+  <section class="center">
+    <h2>Chisel</h2>
+    <ul>
+      <li class="fragment">HDL embedded in Scala.</li>
+      <li class="fragment">Metaprogramming on top of the RTL abstraction.</li>
+      <ul>
+        <li class="fragment">Scala enables high expressiveness compared to SV.</li>
+        <li class="fragment">Makes it much easier to read and write RTL.</li>
+      </ul>
+    </ul>
+  </section>
+
+  <section data-auto-animate>
+    <h3>Reduced Sum : System Verilog</h3>
+    <pre data-id="code-animation"><code class="verilog" data-trim data-line-numbers>
+    module MyModule
+      #(parameter N, M)
+      (
+        input  [N-1:0] a [0:M-1],
+        output [N-1:0] sum
+      );
+      ...
+
+    endmodule
+    </code></pre>
+  </section>
+
+  <section data-auto-animate>
+    <h3>Reduced Sum : System Verilog</h3>
+    <pre data-id="code-animation"><code class="verilog" data-trim data-line-numbers="8-18">
+    module MyModule
+      #(parameter N, M)
+      (
+        input  [N-1:0] a [0:M-1],
+        output [N-1:0] sum
+      );
+
+      reg [N-1:0] tmp [0:M];
+
+      tmp[0] = a[0];
+      sum = tmp[M];
+
+      genvar i;
+      generate
+        for (i = 1; i &lt; M; i = i + 1) begin
+          tmp[i] = tmp[i-1] + a[i];
+        end
+      endgenerate
+    endmodule
+    </code></pre>
+  </section>
+
+  <section data-auto-animate>
+    <h2>Reduced Sum : Chisel</h2>
+    <pre data-id="code-animation"><code class="scala" data-trim data-line-numbers>
+    class MyModule(N: Int, M: Int) extends Module {
+      val io = IO(new Bundle {
+        val a = Vec(M, Input(UInt(N.W)))
+        val sum  = Output(UInt(N.W))
+      })
+      ...
+    }
+    </code></pre>
+  </section>
+
+  <section data-auto-animate>
+    <h2>Reduced Sum : Chisel</h2>
+    <pre data-id="code-animation"><code class="scala" data-trim data-line-numbers="6">
+    class MyModule(N: Int, M: Int) extends Module {
+      val io = IO(new Bundle {
+        val a = Vec(M, Input(UInt(N.W)))
+        val sum  = Output(UInt(N.W))
+      })
+      io.sum := io.a.reduce(_ + _)
+    }
+    </code></pre>
+  </section>
+
+  <section class="center">
+    <h2>Chisel as a embedded DSL</h2>
+    <ul>
+      <li class="fragment">Enables us to use existing tools around the host language.</li>
+      <ul>
+        <li class="fragment">Package manager.</li>
+        <li class="fragment">Build systems.</li>
+        <li class="fragment">LSP.</li>
+      </ul>
+    </ul>
+  </section>
+
+  <section class="center">
+    <h2>FIRRTL</h2>
+    <ul>
+      <li class="fragment">Intermediate representation for Chisel.</li>
+      <li class="fragment">Designed to represent the generated circuit after Chisel's elaboration (after all meta programming has executed).</li>
+      <li class="fragment">Enables you to programmatically analyse and modify the circuit.</li>
+      <li class="fragment">SSA style in memory representation.</li>
+    </ul>
+  </section>
+
+  <section data-auto-animate>
+    <h2>Reduced Sum : FIRRTL</h2>
+    <pre data-id="code-animation"><code class="" data-trim data-line-numbers>
+    circuit MyModule :
+      module MyModule :
+        ...
+    </code></pre>
+  </section>
+
+  <section data-auto-animate>
+    <h2>Reduced Sum : FIRRTL</h2>
+    <pre data-id="code-animation"><code class="" data-trim data-line-numbers="2-5">
+    circuit MyModule :
+      module MyModule :
+        input clock : Clock
+        input reset : UInt&lbrack;1&rbrack;
+        output io : { flip a : UInt&lbrack;4&rbrack;[4], sum : UInt&lbrack;4&rbrack;}
+
+        node _io_sum_T = add(io.a[0], io.a[1]) @[MyModule.scala 14:27]
+        node _io_sum_T_1 = tail(_io_sum_T, 1) @[MyModule.scala 14:27]
+        node _io_sum_T_2 = add(_io_sum_T_1, io.a[2]) @[MyModule.scala 14:27]
+        node _io_sum_T_3 = tail(_io_sum_T_2, 1) @[MyModule.scala 14:27]
+        node _io_sum_T_4 = add(_io_sum_T_3, io.a[3]) @[MyModule.scala 14:27]
+        node _io_sum_T_5 = tail(_io_sum_T_4, 1) @[MyModule.scala 14:27]
+        io.sum &lt;= _io_sum_T_5 @[MyModule.scala 14:10]
+    </code></pre>
+    <p>FIRRTL resembles your circuit.</p>
+  </section>
+
+  <section data-auto-animate>
+    <h2>Reduced Sum : FIRRTL</h2>
+    <pre data-id="code-animation"><code class="" data-trim data-line-numbers="7-13">
+    circuit MyModule :
+      module MyModule :
+        input clock : Clock
+        input reset : UInt&lbrack;1&rbrack;
+        output io : { flip a : UInt&lbrack;4&rbrack;[4], sum : UInt&lbrack;4&rbrack;}
+
+        node _io_sum_T = add(io.a[0], io.a[1]) @[MyModule.scala 14:27]
+        node _io_sum_T_1 = tail(_io_sum_T, 1) @[MyModule.scala 14:27]
+        node _io_sum_T_2 = add(_io_sum_T_1, io.a[2]) @[MyModule.scala 14:27]
+        node _io_sum_T_3 = tail(_io_sum_T_2, 1) @[MyModule.scala 14:27]
+        node _io_sum_T_4 = add(_io_sum_T_3, io.a[3]) @[MyModule.scala 14:27]
+        node _io_sum_T_5 = tail(_io_sum_T_4, 1) @[MyModule.scala 14:27]
+        io.sum &lt;= _io_sum_T_5 @[MyModule.scala 14:10]
+    </code></pre>
+    <p>Metaprogramming has executed</p>
+  </section>
+
+  <section data-auto-animate>
+    <h3>Cool things that FIRRTL enables</h3>
+    <ul>
+      <li class="fragment">FAME transformations and FireSim.</li>
+      <figure>
+        <img class="fragment" src="./figs/latte24/li-bdn-transformed.svg" />
+        <figcaption class="fragment">Bold lines : Target design<br>Dashed lines : Timing control logic</figcaption>
+      </figure>
+    </ul>
+  </section>
+
+  <section data-auto-animate>
+    <h3>Cool things that FIRRTL enables</h3>
+    <ul>
+      <li class="fragment">Scan-chains.</li>
+      <li class="fragment">Error checking, generic compiler optimizations.</li>
+      <ul>
+        <li class="fragment">Combinational loop detection.</li>
+        <li class="fragment">DCE, CSE, Const Prop.</li>
+      </ul>
+    </ul>
+  </section>
+</section>
+
+{# -------------------------------------------------------------------------- #}
+
+<section>
+  <section class="center">
     <h2>Introduction to Chipyard and FireSim</h2>
   </section>
 
@@ -666,6 +921,25 @@ Reveal.on( 'fragmenthidden', event => {
       </div>
     </div>
   </section>
+
+  <section class="center">
+    <h3>Overview of the Current Infrastructure</h3>
+    <div class="container" style="grid-template-columns: 1.0fr 1.0fr;">
+      <div class="fragment">
+        <img src="./figs/latte24/tool-stack.svg" />
+      </div>
+      <div>
+        <font size="6">
+        <ul>
+          <li class="fragment">Chisel & FIRRTL : Expressive frontend and flexible IR.</li>
+          <li class="fragment">Chipyard : Composable SoC generator framework w/ a handful of grad students.</li>
+          <li class="fragment">FireSim : Fast RTL simulation.</li>
+          <li class="fragment">Enabled countless research projects from both industry and academia for the last 5+ years.</li>
+        </ul>
+        </font>
+      </div>
+    </div>
+  </section>
 </section>
 
 {# ----------------------------------------------------------------------- #}
@@ -681,6 +955,10 @@ Reveal.on( 'fragmenthidden', event => {
 <!-- - Then, we can explain about the two possible approaches. -->
 <!-- - short-term approach : Graal VM + have a way of interchanging SoC level parameters (Diplomacy+++) -->
 <!-- - long-term superior approach : unified frontend (we should also mention that the frontend should be extensible such that it doesn't limit further improvements in DSLs) -->
+  <section class="center">
+    <h2>Demo : Integrating External IP!</h2>
+  </section>
+
   <section class="center">
     <h2>Demo : Integrating External IP!</h2>
     <ul>
@@ -1024,261 +1302,10 @@ Reveal.on( 'fragmenthidden', event => {
 
 <!-- -------------------------------------------------------------------- -->
 
+
 <section>
   <section class="center">
-    <h2>The RTL First Design Methodology</h2>
-    <p>"Just go write RTL"</p>
-  </section>
-
-  <section class="center">
-    <h3>We need to reduce the NRE cost</h3>
-    <img src="./figs/latte24/nre-cost.jpg"/>
-  </section>
-
-  <section class="center">
-    <h3>Typical hardware design cycle</h3>
-    <div class="container" style="grid-template-columns: 1.0fr 1.4fr;">
-      <div class="fragment">
-        <img src="./figs/latte24/design-process.svg" />
-      </div>
-      <div>
-        <font size="6">
-        <ul>
-          <li class="fragment">Iterate over a design point in various abstractions.</li>
-          <li class="fragment">You can get feedback from lower level abstractions.</li>
-          <li class="fragment">You are likely to run <strong>a lot of simulations</strong> in order to get functionality and performance correct.</li>
-        </ul>
-        </font>
-      </div>
-    </div>
-  </section>
-
-  <section class="center">
-    <h3>Time and effort is wasted</h3>
-    <div class="container" style="grid-template-columns: 1.0fr 1.4fr;">
-      <div class="fragment">
-        <img src="./figs/latte24/compiling.png" />
-      </div>
-      <div>
-        <font size="6">
-        <ul>
-          <li class="fragment">People just sit there waiting for code to compile or simulations to run.</li>
-          <li class="fragment">Large companies can afford to have separate teams for each step of the design process.</li>
-          <li class="fragment">Unsuitable for academics or startups with small teams.</li>
-        </ul>
-        </font>
-      </div>
-    </div>
-  </section>
-
-  <section class="center">
-    <h3>RTL first design methodology</h3>
-    <div class="container" style="grid-template-columns: 1.0fr 1.4fr;">
-      <div class="fragment">
-        <img src="./figs/latte24/design-process-rtl-first.svg" />
-      </div>
-      <div>
-        <font size="6">
-        <ul>
-          <li class="fragment">Modeling is required because <strong>RTL writing is hard</strong>.</li>
-          <li class="fragment">Modeling has a lot of errors and can lead designers to wrong conclusions.</li>
-          <li class="fragment">Redundant work is done by writing code twice for the same design.</li>
-          <li class="fragment">Make RTL writing so easy that we can just do modeling with RTL!</li>
-        </ul>
-        </font>
-      </div>
-    </div>
-  </section>
-
-  <section class="center">
-    <h2>Chisel</h2>
-    <ul>
-      <li class="fragment">HDL embedded in Scala.</li>
-      <li class="fragment">Metaprogramming on top of the RTL abstraction.</li>
-      <ul>
-        <li class="fragment">Scala enables high expressiveness compared to SV.</li>
-        <li class="fragment">Makes it much easier to read and write RTL.</li>
-      </ul>
-    </ul>
-  </section>
-
-  <section data-auto-animate>
-    <h3>Reduced Sum : System Verilog</h3>
-    <pre data-id="code-animation"><code class="verilog" data-trim data-line-numbers>
-    module MyModule
-      #(parameter N, M)
-      (
-        input  [N-1:0] a [0:M-1],
-        output [N-1:0] sum
-      );
-      ...
-
-    endmodule
-    </code></pre>
-  </section>
-
-  <section data-auto-animate>
-    <h3>Reduced Sum : System Verilog</h3>
-    <pre data-id="code-animation"><code class="verilog" data-trim data-line-numbers="8-18">
-    module MyModule
-      #(parameter N, M)
-      (
-        input  [N-1:0] a [0:M-1],
-        output [N-1:0] sum
-      );
-
-      reg [N-1:0] tmp [0:M];
-
-      tmp[0] = a[0];
-      sum = tmp[M];
-
-      genvar i;
-      generate
-        for (i = 1; i &lt; M; i = i + 1) begin
-          tmp[i] = tmp[i-1] + a[i];
-        end
-      endgenerate
-    endmodule
-    </code></pre>
-  </section>
-
-  <section data-auto-animate>
-    <h2>Reduced Sum : Chisel</h2>
-    <pre data-id="code-animation"><code class="scala" data-trim data-line-numbers>
-    class MyModule(N: Int, M: Int) extends Module {
-      val io = IO(new Bundle {
-        val a = Vec(M, Input(UInt(N.W)))
-        val sum  = Output(UInt(N.W))
-      })
-      ...
-    }
-    </code></pre>
-  </section>
-
-  <section data-auto-animate>
-    <h2>Reduced Sum : Chisel</h2>
-    <pre data-id="code-animation"><code class="scala" data-trim data-line-numbers="6">
-    class MyModule(N: Int, M: Int) extends Module {
-      val io = IO(new Bundle {
-        val a = Vec(M, Input(UInt(N.W)))
-        val sum  = Output(UInt(N.W))
-      })
-      io.sum := io.a.reduce(_ + _)
-    }
-    </code></pre>
-  </section>
-
-  <section class="center">
-    <h2>Chisel as a embedded DSL</h2>
-    <ul>
-      <li class="fragment">Enables us to use existing tools around the host language.</li>
-      <ul>
-        <li class="fragment">Package manager.</li>
-        <li class="fragment">Build systems.</li>
-        <li class="fragment">LSP.</li>
-      </ul>
-    </ul>
-  </section>
-
-  <section class="center">
-    <h2>FIRRTL</h2>
-    <ul>
-      <li class="fragment">Intermediate representation for Chisel.</li>
-      <li class="fragment">Designed to represent the generated circuit after Chisel's elaboration (after all meta programming has executed).</li>
-      <li class="fragment">Enables you to programmatically analyse and modify the circuit.</li>
-      <li class="fragment">SSA style in memory representation.</li>
-    </ul>
-  </section>
-
-  <section data-auto-animate>
-    <h2>Reduced Sum : FIRRTL</h2>
-    <pre data-id="code-animation"><code class="" data-trim data-line-numbers>
-    circuit MyModule :
-      module MyModule :
-        ...
-    </code></pre>
-  </section>
-
-  <section data-auto-animate>
-    <h2>Reduced Sum : FIRRTL</h2>
-    <pre data-id="code-animation"><code class="" data-trim data-line-numbers="2-5">
-    circuit MyModule :
-      module MyModule :
-        input clock : Clock
-        input reset : UInt&lbrack;1&rbrack;
-        output io : { flip a : UInt&lbrack;4&rbrack;[4], sum : UInt&lbrack;4&rbrack;}
-
-        node _io_sum_T = add(io.a[0], io.a[1]) @[MyModule.scala 14:27]
-        node _io_sum_T_1 = tail(_io_sum_T, 1) @[MyModule.scala 14:27]
-        node _io_sum_T_2 = add(_io_sum_T_1, io.a[2]) @[MyModule.scala 14:27]
-        node _io_sum_T_3 = tail(_io_sum_T_2, 1) @[MyModule.scala 14:27]
-        node _io_sum_T_4 = add(_io_sum_T_3, io.a[3]) @[MyModule.scala 14:27]
-        node _io_sum_T_5 = tail(_io_sum_T_4, 1) @[MyModule.scala 14:27]
-        io.sum &lt;= _io_sum_T_5 @[MyModule.scala 14:10]
-    </code></pre>
-    <p>FIRRTL resembles your circuit.</p>
-  </section>
-
-  <section data-auto-animate>
-    <h2>Reduced Sum : FIRRTL</h2>
-    <pre data-id="code-animation"><code class="" data-trim data-line-numbers="7-13">
-    circuit MyModule :
-      module MyModule :
-        input clock : Clock
-        input reset : UInt&lbrack;1&rbrack;
-        output io : { flip a : UInt&lbrack;4&rbrack;[4], sum : UInt&lbrack;4&rbrack;}
-
-        node _io_sum_T = add(io.a[0], io.a[1]) @[MyModule.scala 14:27]
-        node _io_sum_T_1 = tail(_io_sum_T, 1) @[MyModule.scala 14:27]
-        node _io_sum_T_2 = add(_io_sum_T_1, io.a[2]) @[MyModule.scala 14:27]
-        node _io_sum_T_3 = tail(_io_sum_T_2, 1) @[MyModule.scala 14:27]
-        node _io_sum_T_4 = add(_io_sum_T_3, io.a[3]) @[MyModule.scala 14:27]
-        node _io_sum_T_5 = tail(_io_sum_T_4, 1) @[MyModule.scala 14:27]
-        io.sum &lt;= _io_sum_T_5 @[MyModule.scala 14:10]
-    </code></pre>
-    <p>Metaprogramming has executed</p>
-  </section>
-
-  <section data-auto-animate>
-    <h3>Cool things that FIRRTL enables</h3>
-    <ul>
-      <li class="fragment">FAME transformations and FireSim.</li>
-      <figure>
-        <img class="fragment" src="./figs/latte24/li-bdn-transformed.svg" />
-        <figcaption class="fragment">Bold lines : Target design<br>Dashed lines : Timing control logic</figcaption>
-      </figure>
-    </ul>
-  </section>
-
-  <section data-auto-animate>
-    <h3>Cool things that FIRRTL enables</h3>
-    <ul>
-      <li class="fragment">Scan-chains.</li>
-      <li class="fragment">Error checking, generic compiler optimizations.</li>
-      <ul>
-        <li class="fragment">Combinational loop detection.</li>
-        <li class="fragment">DCE, CSE, Const Prop.</li>
-      </ul>
-    </ul>
-  </section>
-
-  <section class="center">
-    <h3>Overview of the Current Infrastructure</h3>
-    <div class="container" style="grid-template-columns: 1.0fr 1.0fr;">
-      <div class="fragment">
-        <img src="./figs/latte24/tool-stack.svg" />
-      </div>
-      <div>
-        <font size="6">
-        <ul>
-          <li class="fragment">Chisel & FIRRTL : Expressive frontend and flexible IR.</li>
-          <li class="fragment">Chipyard : Composable SoC generator framework w/ a handful of grad students.</li>
-          <li class="fragment">FireSim : Fast RTL simulation.</li>
-          <li class="fragment">Enabled countless research projects from both industry and academia for the last 5+ years.</li>
-        </ul>
-        </font>
-      </div>
-    </div>
+    <h2>Retrospective</h2>
   </section>
 
   <section class="center">
