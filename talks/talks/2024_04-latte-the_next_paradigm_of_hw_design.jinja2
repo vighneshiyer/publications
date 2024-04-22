@@ -1723,7 +1723,7 @@ Reveal.on( 'fragmenthidden', event => {
     <ul>
       <li class="fragment">We all love static types.</li>
       <li class="fragment">However, we shouldn't be obsessed by it.</li>
-      <li class="fragment">Rule of thumb : should not hurt design productivity.</li>
+      <li class="fragment">Here, we are specifically talking about the types checked in the host language.</li>
       <li class="fragment">Things that it should do?</li>
       <ul>
         <li class="fragment">Check connection validity between signals.</li>
@@ -1731,10 +1731,14 @@ Reveal.on( 'fragmenthidden', event => {
           <li class="fragment">E.g., you don't want to connect a clock signal into a reset port.</li>
         </ul>
         <li class="fragment">(For a eDSL), differentiate types between the DSL and host language.</li>
-        <li class="fragment">Encode circuit properties to generate useful collateral.</li>
+        <li class="fragment">Pass physical encodings to the backing compiler and IR.</li>
         <ul>
-          <li class="fragment">E.g., Encoding circuit timing information as types to generate RTL assertions.</li>
+          <li class="fragment">UInt (unsigned integer) vs OneHot (array of wires).</li>
         </ul>
+{# <li class="fragment">Encode circuit properties to generate useful collateral.</li> #}
+{# <ul> #}
+{# <li class="fragment">.</li> #}
+{# </ul> #}
       </ul>
       <li class="fragment">Things that it shouldn't do?</li>
       <ul>
