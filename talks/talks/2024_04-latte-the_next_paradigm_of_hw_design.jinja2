@@ -580,7 +580,11 @@ Reveal.on( 'fragmenthidden', event => {
       </div>
     </div>
   </section>
+</section>
 
+{# ----------------------------------------------------------------------- #}
+
+<section>
 <!-- - What PL people want : they want to integration accelerators built w/ their DSLs and evaluate it in the SoC context. -->
 <!-- - We can provide an example on how to do this. -->
 <!-- - Then we can explain about all the short commings of this approach. -->
@@ -930,7 +934,6 @@ Reveal.on( 'fragmenthidden', event => {
       </div>
     </div>
   </section>
-
 </section>
 
 <!-- -------------------------------------------------------------------- -->
@@ -1426,7 +1429,7 @@ Reveal.on( 'fragmenthidden', event => {
         <font size="6">
         <ul>
           <li class="fragment">Clean (and good looking) APIs between the abstractions.</li>
-          <li class="fragment">Compiler backend that can stitch different abstraction together.</li>
+          <li class="fragment">Compiler backend that can stitch different abstractions together.</li>
         </ul>
         </font>
       </div>
@@ -1459,7 +1462,7 @@ Reveal.on( 'fragmenthidden', event => {
 
   <section data-auto-animate>
     <h2>API sketches for Embedded HLS</h2>
-    <pre data-id="code-animation"><code class="python" data-trim data-line-numbers="1|11|12|14-16|18-19|23|24-27|29-32|34-37|39">
+    <pre data-id="code-animation"><code class="python" data-trim data-line-numbers="1|13|14|16-18|20-21|25|26-29|31-34|36-39|41">
     class ExampleHLS:
       compiler_handles : List[Handles]
       bus_protocol  : str
@@ -1467,8 +1470,10 @@ Reveal.on( 'fragmenthidden', event => {
       input_len     : int
       unroll_factor : int
 
-      def __init__(self):
-        ...
+      def __init__(self, ...):
+        # Bus and compute configurations
+        hls.bus.set_protocol(bus_protocol)
+        hls.bus.set_width(bus_bytes)
 
       def compute(self, input : List[HLSInt]) -> HLSInt:
         sum = hls.init(0)
@@ -1488,14 +1493,9 @@ Reveal.on( 'fragmenthidden', event => {
           if h.is_loop_handle():
             h.unroll_loop(unroll_factor)
 
-        # Bus and compute configurations
-        hls.bus.set_protocol(bus_protocol)
-        hls.bus.set_width(bus_bytes)
-        f = hls.register_compute(self.compute)
-
         # Describe the dataflow
         input = hls.bus.read_and_save(input_len)
-        output = f(input)
+        output = self.compute(input)
         hls.bus.write(output)
 
         return hls.compile()
@@ -1728,7 +1728,7 @@ Reveal.on( 'fragmenthidden', event => {
         <img src="./figs/latte24/lgraph.jpg">
       </div>
       <div>
-        <font size="6">
+        <font size="5">
         <ul>
           <li class="fragment">lGraph : high perf. graph based IR.</li>
           <ul>
