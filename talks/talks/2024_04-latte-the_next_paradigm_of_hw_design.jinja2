@@ -280,14 +280,14 @@ Reveal.on( 'fragmenthidden', event => {
     </ul>
   </section>
 
-  <section>
+  <!--<section>
     <h2>Beauty / Elegance</h2>
 
     <ul>
       <li>Compare / contrast SystemC HLS vs Halide or EXO as an example</li>
       <li>How else can we demonstrate the lack of beauty?</li>
     </ul>
-  </section>
+  </section>-->
 </section>
 
 <section>
@@ -345,32 +345,44 @@ Reveal.on( 'fragmenthidden', event => {
     </table>
 
     <ul>
-      <li>Agile, small, and generalist workforce</li>
-      <li>Teams are specialized by design block rather than function</li>
+      <li class="fragment">Agile, small, and generalist workforce</li>
+      <li class="fragment">Teams are specialized by design block rather than function</li>
       <!--<li>Teams collaborate across functions</li>-->
-      <li>Design and specification artifacts are reused and contain semantics that span from specification to PD</li>
-      <li>Higher level abstractions enable productivity across the stack</li>
+      <li class="fragment">Design and specification artifacts are reused and contain semantics that span from specification to PD</li>
+      <li class="fragment">Higher level abstractions enable productivity across the stack</li>
     </ul>
   </section>
 
   <section>
     <h2>Clean Interop of Multiple Abstractions</h2>
 
-    <div class="center">
-      <p>Image of the ESP overview (https://www.esp.cs.columbia.edu/).</p>
+    <div class="container" style="grid-template-columns: 1fr 1fr;">
+      <div class="fragment"><img src="./figs/latte24/esp_flow.png" /></div>
+      <div class="fragment">
+    <pre><code class="scala" data-trim data-line-numbers>
+class GCDMMIOBlackBox(val w: Int)
+  extends BlackBox(Map("WIDTH" -> IntParam(w)))
+  with HasBlackBoxResource
+  with HasGCDIO
+{
+  addResource("/vsrc/GCDMMIOBlackBox.v")
+}
+    </code></pre>
+      </div>
     </div>
 
     <ul>
-      <li>We are still far away from realizing true multi-abstraction interop
+      <li class="fragment">We are still far away from realizing true multi-abstraction interop
         <ul>
-        <li>Blackboxing isn't true interop</li>
-        <li>Designers can benefit from fine-grained interop</li>
+        <li class="fragment">Blackboxing isn't true interop</li>
+        <li class="fragment">Designers can benefit from fine-grained interop</li>
         </ul>
       </li>
     </ul>
     <dl>
-      <dt>Elaboration time interop</dt><dd>How a top-level generator invokes sub-generators</dd>
-      <dt>Runtime interop</dt><dd>Interaction semantics between abstractions</dd>
+      <dt class="fragment">Elaboration time interop</dt><dd class="fragment">The practical mechanism (FFI) of invoking sub-generators</dd>
+      <dt class="fragment">Runtime interop</dt><dd class="fragment">Runtime interaction semantics between abstractions</dd>
+    </dl>
   </section>
 
   <section>
