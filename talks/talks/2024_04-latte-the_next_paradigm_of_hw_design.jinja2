@@ -48,14 +48,8 @@
     border: 0 !important;
   }
   tbody tr:nth-child(1) td {
-      background: #34548a !important;
-  }
-  tbody tr:nth-child(2) td {
-      background: #0f4b6e !important;
-  }
-  tbody tr:nth-child(3) td {
-      background: #5a4a78 !important;
-  }
+      background: white !important;
+    }
 }
 </style>
 {% endblock %}
@@ -126,12 +120,15 @@ Reveal.on( 'fragmenthidden', event => {
       <li class="fragment">What could come next? A view of the next paradigm of hardware design</li>
       <li class="fragment">Recent efforts to build the next paradigm
         <ul>
-          <li class="fragment">New HDLs and design abstractions</li>
-          <li class="fragment">New simulators</li>
-          <li class="fragment">New SoC design frameworks</li>
+          <li class="fragment">New HDLs and design abstractions: <span class="small">Lava, Chisel, Amaranth, Spade, HeteroCL</span></li>
+          <li class="fragment">New SoC design frameworks: <span class="small">Chipyard, ESP, OpenPiton, PULP, BlackParrot</span></li>
+          <li class="fragment">New simulators: <span class="small">Verilator, FireSim, Manticore, Arcilator, RepCut, ESSENT</span></li>
         </ul>
       </li>
       <li class="fragment">What's still missing? Why are we not in the new age of hardware design?
+        <ul>
+          <li>It's a lot more than just the frontend language: PPA iteration cycle, verification, other stuff</li>
+        </ul>
       </li>
       <li class="fragment">A sketch of what matters to hardware designers and our broad vision
 
@@ -585,24 +582,88 @@ Reveal.on( 'fragmenthidden', event => {
     <h2>FireSim at 35,000 feet</h2>
     <font size="6">
     <ul>
-      <li class="fragment">Open-source, fast, automatic, deterministic FPGA-accelerated <strong>hardware simulation</strong> for pre-silicon verification and performance validation</li>
-      <li class="fragment">Ingests:</li>
-      <ul>
-        <li class="fragment">Your RTL design: FIRRTL (Chisel), blackbox Verilog</li>
-        <li class="fragment">Or Chipyard-generated designs with Rocket Chip, BOOM, NVDLA, PicoRV32, and more</li>
-        <li class="fragment">HW and/or SW IO models (e.g. UART, Ethernet, DRAM, etc.)</li>
-        <li class="fragment">Workload descriptions</li>
-      </ul>
-      <li class="fragment">Produces: Fast, cycle-exact simulation of your design + models around it</li>
-      <li class="fragment">Automatically deployed to on-prem or cloud FPGAs</li>
-      <ul>
-        <li class="fragment">E.g., Xilinx Alveo, VCU118, AWS EC2 F1, etc.</li>
-      </ul>
+      <li class="fragment">Open-source, fast, automatic, deterministic FPGA-accelerated <strong>hardware simulation</strong> for pre-silicon verification and performance validation.</li>
     </ul>
     </font>
   </section>
 
+  <section class="center">
+    <h2>Simulation vs Prototype</h2>
+    <div class="container" style="grid-template-columns: 1.0fr 1.0fr;">
+      <div>
+        <img class="fragment" src="./figs/latte24/firesim-soc.png"/>
+        <p class="fragment">SoC sees <strong>100</strong> cycles of DRAM latency.</p>
+      </div>
+      <div>
+        <img class="fragment" src="./figs/latte24/firesim-prototype.png"/>
+        <p class="fragment">SoC sees <strong>10</strong> cycles of DRAM latency. Wrong!</p>
+      </div>
+    </div>
+  </section>
 
+  <section class="center">
+    <h2>Target vs Host</h2>
+    <div class="container" style="grid-template-columns: 1.0fr 1.0fr;">
+      <div>
+        <img class="fragment" src="./figs/latte24/firesim-target.svg"/>
+        <p class="fragment">Target: the machine under simulation.</p>
+      </div>
+      <div>
+        <img class="fragment" src="./figs/latte24/firesim-host.svg"/>
+        <p class="fragment">Host: the machine running the simulation.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="center">
+    <h2>Host decoupling</h2>
+    <div class="container" style="grid-template-columns: 1.0fr 1.0fr;">
+      <div>
+        <img class="fragment" src="./figs/latte24/firesim-before-transform.png"/>
+      </div>
+      <div>
+        <ul>
+          <li class="fragment">Starting with your target.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="center">
+    <h2>Host decoupling</h2>
+    <div class="container" style="grid-template-columns: 1.0fr 1.0fr;">
+      <div>
+        <img class="fragment" src="./figs/latte24/firesim-after-transform.png"/>
+      </div>
+      <div>
+        <ul>
+          <li class="fragment">Wrap the target RTL in a latency insensitive wrapper.</li>
+          <li class="fragment">Attach a DRAM timing model using host FPGA resources.</li>
+          <li class="fragment">These steps are automated by the FIRRTL compiler.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="center">
+    <h2>Host decoupling</h2>
+    <div class="container" style="grid-template-columns: 1.0fr 1.0fr;">
+      <div>
+        <img class="fragment" src="./figs/latte24/firesim-mapped.png"/>
+      </div>
+      <div>
+        <ul>
+          <li class="fragment">Map the simulation onto the host FPGA.</li>
+          <li class="fragment">SoC now sees 100 cycles of DRAM latency!</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+</section>
+
+{# ----------------------------------------------------------------------- #}
+
+<section>
 <!-- - What PL people want : they want to integration accelerators built w/ their DSLs and evaluate it in the SoC context. -->
 <!-- - We can provide an example on how to do this. -->
 <!-- - Then we can explain about all the short commings of this approach. -->
@@ -952,7 +1013,6 @@ Reveal.on( 'fragmenthidden', event => {
       </div>
     </div>
   </section>
-
 </section>
 
 <!-- -------------------------------------------------------------------- -->
@@ -1448,7 +1508,7 @@ Reveal.on( 'fragmenthidden', event => {
         <font size="6">
         <ul>
           <li class="fragment">Clean (and good looking) APIs between the abstractions.</li>
-          <li class="fragment">Compiler backend that can stitch different abstraction together.</li>
+          <li class="fragment">Compiler backend that can stitch different abstractions together.</li>
         </ul>
         </font>
       </div>
@@ -1481,7 +1541,7 @@ Reveal.on( 'fragmenthidden', event => {
 
   <section data-auto-animate>
     <h2>API sketches for Embedded HLS</h2>
-    <pre data-id="code-animation"><code class="python" data-trim data-line-numbers="1|11|12|14-16|18-19|23|24-27|29-32|34-37|39">
+    <pre data-id="code-animation"><code class="python" data-trim data-line-numbers="1|13|14|16-18|20-21|25|26-29|31-34|36-39|41">
     class ExampleHLS:
       compiler_handles : List[Handles]
       bus_protocol  : str
@@ -1489,8 +1549,10 @@ Reveal.on( 'fragmenthidden', event => {
       input_len     : int
       unroll_factor : int
 
-      def __init__(self):
-        ...
+      def __init__(self, ...):
+        # Bus and compute configurations
+        hls.bus.set_protocol(bus_protocol)
+        hls.bus.set_width(bus_bytes)
 
       def compute(self, input : List[HLSInt]) -> HLSInt:
         sum = hls.init(0)
@@ -1510,14 +1572,9 @@ Reveal.on( 'fragmenthidden', event => {
           if h.is_loop_handle():
             h.unroll_loop(unroll_factor)
 
-        # Bus and compute configurations
-        hls.bus.set_protocol(bus_protocol)
-        hls.bus.set_width(bus_bytes)
-        f = hls.register_compute(self.compute)
-
         # Describe the dataflow
         input = hls.bus.read_and_save(input_len)
-        output = f(input)
+        output = self.compute(input)
         hls.bus.write(output)
 
         return hls.compile()
@@ -1750,7 +1807,7 @@ Reveal.on( 'fragmenthidden', event => {
         <img src="./figs/latte24/lgraph.jpg">
       </div>
       <div>
-        <font size="6">
+        <font size="5">
         <ul>
           <li class="fragment">lGraph : high perf. graph based IR.</li>
           <ul>
