@@ -1252,7 +1252,7 @@ Reveal.on( 'fragmenthidden', event => {
     </ul>
   </section>
 
-  <section class=data-auto-animate>
+  <section data-auto-animate>
     <h2>Incremental First</h2>
     <pre data-id="code-animation"><code class="scala" data-trim data-line-numbers="6">
     class MyModule(N: Int, M: Int) extends Module {
@@ -1265,7 +1265,7 @@ Reveal.on( 'fragmenthidden', event => {
     </code></pre>
   </section>
 
-  <section class=data-auto-animate>
+  <section data-auto-animate>
     <h2>Incremental First</h2>
     <pre data-id="code-animation"><code class="scala" data-trim data-line-numbers="6">
     class MyModule(N: Int, M: Int) extends Module {
@@ -1351,7 +1351,6 @@ Reveal.on( 'fragmenthidden', event => {
     </ul>
   </section>
 
-<!-- Should I provide example code snippets for each of these? -->
   <section class="center">
     <h3>Existing Abstractions</h3>
     <ul>
@@ -1381,18 +1380,167 @@ Reveal.on( 'fragmenthidden', event => {
 
   <section class="center">
     <h2>Clean API</h2>
+    <ul>
+      <li class="fragment">Mixing abstractions in the module granularity seems reasonable.</li>
+      <ul>
+        <li class="fragment">Clean separation of compilers between abstractions.</li>
+        <li class="fragment">IO ports are concrete targets that the HLS compilers can try abstracting away.</li>
+      </ul>
   </section>
 
   <section class="center">
-    <h2>Compiler Backend</h2>
+    <h4>How should the HLS APIs look like in this world?</h4>
+    <ul>
+      <li class="fragment">Want to separate the compute description from the compiler flags (HeteroCL).</li>
+      <li class="fragment">Want to specify the HLS compiler flags in a single location.</li>
+      <ul>
+        <li class="fragment">Easier to specify relationships between flags.</li>
+        <li class="fragment">Cleaner code.</li>
+      </ul>
+      <li class="fragment">Want to abstract out the bus/RTL interface.</li>
+      <li class="fragment">Want to pass parameters from the SoC side.</li>
+    </ul>
+  </section>
+
+  <section data-auto-animate>
+    <h2>API sketches for Embedded HLS</h2>
+    <pre data-id="code-animation"><code class="python" data-trim data-line-numbers="1|11|12|14-16|18-19|23|24-27|29-32|34-37|39">
+    class ExampleHLS:
+      compiler_handles : List[Handles]
+      bus_protocol  : str
+      bus_bytes     : int
+      input_len     : int
+      unroll_factor : int
+
+      def __init__(self):
+        ...
+
+      def compute(self, input : List[HLSInt]) -> HLSInt:
+        sum = hls.init(0)
+
+        # Although we are adding the loop_handle manually here, this can be hidden.
+        (for_stmt, loop_handle) = hls.for()
+        compiler_handles.append(loop_handle)
+
+        for_stmt x in input:
+          sum += x
+
+        return sum
+
+      def synthesize(self) -> IR:
+        # Single place to specify HLS compiler options
+        for h in compiler_handles:
+          if h.is_loop_handle():
+            h.unroll_loop(unroll_factor)
+
+        # Bus and compute configurations
+        hls.bus.set_protocol(bus_protocol)
+        hls.bus.set_width(bus_bytes)
+        f = hls.register_compute(self.compute)
+
+        # Describe the dataflow
+        input = hls.bus.read_and_save(input_len)
+        output = f(input)
+        hls.bus.write(output)
+
+        return hls.compile()
+    </code></pre>
   </section>
 
   <section class="center">
-    <h2>3. Other concerns about the frontend</h2>
+    <h2>Compiler Backend - Goals</h2>
+    <div class="container" style="grid-template-columns: 1.4fr 1.0fr;">
+      <div>
+        <img src="./figs/latte24/backend-questionmark.svg" style="height: 500px;"/>
+      </div>
+      <div>
+        <font size="6">
+        <ul>
+          <li class="fragment">High simulation performance (don't lower everying into RTL).</li>
+          <li class="fragment">High QoR (need to preserve circuit semantics).</li>
+        </ul>
+        </font>
+      </div>
+    </div>
   </section>
 
   <section class="center">
-    <h2>What should be the role of type-systems</h2>
+    <h2>Compiler Backend - RTL Simulation</h2>
+    <div class="container" style="grid-template-columns: 1.4fr 1.0fr;">
+      <div>
+        <img src="./figs/latte24/backend-rtl-sim.png" style="height: 500px;"/>
+      </div>
+      <div>
+        <font size="6">
+        <ul>
+          <li class="fragment">Instead of lowering higher level abstractions into RTL, emit discrete event models and link them during simulator compile time.</li>
+        </ul>
+        </font>
+      </div>
+    </div>
+  </section>
+
+  <section class="center">
+    <h2>Compiler Backend - RTL Simulation</h2>
+    <div class="container" style="grid-template-columns: 1.4fr 1.0fr;">
+      <div>
+        <img src="./figs/latte24/backend-rtl-sim-details.png" style="height: 500px;"/>
+      </div>
+      <div>
+        <font size="6">
+        <ul>
+        <li class="fragment">Need to define a common transaction scheme between various abstractions.</li>
+        <li class="fragment">The scheduler can make optimizations across all abstractions.</li>
+        </ul>
+        </font>
+      </div>
+    </div>
+  </section>
+
+  <section class="center">
+    <h2>Compiler Backend - FPGA / ASIC</h2>
+    <div class="container" style="grid-template-columns: 1.4fr 1.0fr;">
+      <div>
+        <img src="./figs/latte24/backend-fpga-asic.svg" style="height: 500px;"/>
+      </div>
+      <div>
+        <font size="6">
+        <ul>
+          <li class="fragment">IRs such as Calyx & "RTL IR" should be able to preserve circuit semantics.</li>
+          <li class="fragment">In the short term we can generate Verilog.</li>
+          <li class="fragment">In the long term, fix backend tools to directly operate on the "RTL IR".</li>
+        </ul>
+        </font>
+      </div>
+    </div>
+  </section>
+
+  <section class="center">
+    <h2>Compiler Backend - Overall</h2>
+    <img src="./figs/latte24/backend-all.png" style="height: 500px;"/>
+  </section>
+
+  <section class="center">
+    <h4>Miscellaneous : what should be the role of type-systems?</h4>
+    <ul>
+      <li class="fragment">We all love static types.</li>
+      <li class="fragment">However, we shouldn't be obsessed by it.</li>
+      <li class="fragment">Rule of thumb : should not hurt design productivity.</li>
+      <li class="fragment">Things that it should do?</li>
+      <ul>
+        <li class="fragment">Check connection validity between signals.</li>
+        <ul>
+          <li class="fragment">E.g., you don't want to connect a clock signal into a reset port.</li>
+        </ul>
+        <li class="fragment">(For a eDSL), differentiate types between the DSL and host language.</li>
+      </ul>
+      <li class="fragment">Things that it shouldn't do?</li>
+      <ul>
+        <li class="fragment">Shouldn't make the language too verbose.</li>
+        <li class="fragment">Shouldn't increase the compilation time significantly.</li>
+        <li class="fragment">Shouldn't try to prove circuit properties that should be checked during runtime.</li>
+      </ul>
+    </ul>
   </section>
 </section>
 
@@ -1415,14 +1563,23 @@ Reveal.on( 'fragmenthidden', event => {
 
   <section class="center">
     <h3>RTL Level IR : Better In Memory Representation</h3>
-    <ul>
-      <li class="fragment">Why does this even matter?</li>
-      <li class="fragment">The primitives available in your IR affects QoR.</li>
-      <li class="fragment">The in memory representation of the circuit affects compiler performance.</li>
-      <ul>
-        <li class="fragment">Graph representation can affect graph traversal speed. <a href="https://www.hillelwayne.com/post/graph-types/">The hunt for missing datatypes</a></li>
-      </ul>
-    </ul>
+    <div class="container" style="grid-template-columns: 1.4fr 1.0fr;">
+      <div>
+        <img src="./figs/latte24/rtl-ir.png" style="height: 500px;" class="fragment"/>
+      </div>
+      <div>
+        <font size="5">
+        <ul>
+          <li class="fragment">Why does this even matter?</li>
+          <li class="fragment">The primitives available in your IR affects QoR.</li>
+          <li class="fragment">The in memory representation of the circuit affects compiler performance.</li>
+          <ul>
+            <li class="fragment">Graph representation can affect graph traversal speed. <a href="https://www.hillelwayne.com/post/graph-types/">The hunt for missing datatypes</a></li>
+          </ul>
+        </ul>
+        </font>
+      </div>
+    </div>
   </section>
 
   <section data-auto-animate>
@@ -1588,73 +1745,16 @@ Reveal.on( 'fragmenthidden', event => {
     <h3>Support for Multiple Abstractions</h3>
     <div class="container" style="grid-template-columns: 1.5fr 1.0fr;">
       <div class="fragment">
-        <img src="./figs/latte24/IR-overview.svg" />
+        <img src="./figs/latte24/backend-all.png" style="height: 500px;"/>
       </div>
       <div>
         <font size="5">
         <ul>
-          <li class="fragment">Need a way of integrating multiple abstractions into one representation.</li>
-          <li class="fragment">When building SW RTL simulations, we don't want to lower everything to RTL.</li>
-          <ul>
-            <li class="fragment">Higher level abstractions tend to have coarse grained update rules when it comes to simulation.</li>
-          </ul>
-          <li class="fragment">Open ended question : would it be possible to lift RTL level abstractions into Calyx?</li>
+          <li class="fragment">As we discussed, the IRs have to be able to support multiple abstractions from the frontend.</li>
         </ul>
         </font>
       </div>
     </div>
-  </section>
-
-
-
-<!-- <section class="center"> -->
-<!-- <h3>High Level IR</h3> -->
-<!-- <ul> -->
-<!-- <font size="6"> -->
-<!-- <li class="fragment">Need to provide support for multiples abstraction in the frontend.</li> -->
-<!-- <li class="fragment">Should not lower higher level abstractions into RTL level eagerly.</li> -->
-<!-- <ul> -->
-<!-- <li class="fragment">Can hurt simulation performance.</li> -->
-<!-- </ul> -->
-<!-- <li class="fragment">When lowering (especially when targetting synthesis tools), must be prudent about which circuit semantics to preserve and what not to.</li> -->
-<!-- <ul> -->
-<!-- <li class="fragment">If we try representing the circuit with only a handful of primitives, the QoR may become lower (e.g., priority mux, OH encoding).</li> -->
-<!-- <li class="fragment">If we support too many primitives, pass writing becomes difficult.</li> -->
-<!-- </ul> -->
-<!-- </font> -->
-<!-- </ul> -->
-<!-- </section> -->
-
-
-  <section class="center">
-    <h3>Miscellaneous</h3>
-    <ul>
-      <li class="fragment">Annotations XXXXXXXXXXXX</li>
-      <li class="fragment">Semantics preserving</li>
-      <li class="fragment">Testing</li>
-      <li class="fragment">Testing2</li>
-        <!-- ## Previous work : [FPGA technology mapping using sketch-guided program synthesis](https://www.google.com/url?sa=t&source=web&rct=j&opi=89978449&url=https://arxiv.org/pdf/2401.16526&ved=2ahUKEwjf_ban4buFAxVoMDQIHacGAIwQFnoECBIQAQ&usg=AOvVaw2YQo1m0HTct2CVqktRPvd-) -->
-        <!-- - Problem : existing FPGA tools are not good a mapping RTL into DSP primitives. -->
-        <!-- - Solution : by utilizing sketch-guided program synthesis, they came up with a way of automatically generating technology mappings from RTL to DSP modules. -->
-        <!-- - Method -->
-        <!-- - They have architecture independent descriptions (sketches) of DSP units. This is possible as DSP units across different FPGA vendors & models look kind of similar to each other. -->
-        <!-- - Then, by mixing this arch. independent sketches with arch. descriptions to generate a sketch of the mapping. -->
-        <!-- - With the sketch and the original RTL, we can start performing program synthesis by querying a SMT solver. The solver will identify whether if there exists a solution such that it fills in all the holes in the sketch. -->
-        <!-- - It is beneficial in cases where we do want to map a certain part of the design to a very specific circuit. It is better than pattern matching algorithms because... -->
-        <!-- - It ensures correctness as it uses SMT solvers. -->
-        <!-- - Pattern matching algorithms may fail to map the given circuit to a specific circuit. -->
-        <!-- - As this abstracts away the technology specific details of a circuit extending this for other technologies (arch.) is easier. -->
-        <!-- - However, this method does not scale to general RTL design as not all modules can be mapped to a generic sketch template. In their work, they restricted the scope to DSP units on FPGAs. -->
-    </ul>
-  </section>
-
-</section>
-
-<!-- -------------------------------------------------------------------- -->
-
-<section>
-  <section class="center">
-    <h2>Cool things that are enabled</h2>
   </section>
 </section>
 
