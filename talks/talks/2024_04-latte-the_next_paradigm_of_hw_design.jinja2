@@ -269,13 +269,14 @@ Reveal.on( 'fragmenthidden', event => {
     -->
 
     <div class="center">
-      <p><em>Image of iteration speeds as they exist currently. few minutes from design change to elab (for Chipyard), 10s of minutes for HLS. time for RTL sim + eval. time for firesim fpga eval. time for PD flow for power/area.</em></p>
+      <img class="image no-margin" src="./figs/dynamic/latte24/iteration_speeds.svg" />
+      <!--<p><em>Image of iteration speeds as they exist currently. few minutes from design change to elab (for Chipyard), 10s of minutes for HLS. time for RTL sim + eval. time for firesim fpga eval. time for PD flow for power/area.</em></p>-->
     </div>
 
     <ul>
-      <li>Each new layer of tools adds latency from making a change to evaluation</li>
-      <li>Current generation of tools has ad-hoc support for incremental compilation of the design and simulator</li>
-      <li>It's well known that low iteration speed hampers developer productivity</li>
+      <li class="fragment">Each new layer of tools adds latency from making a change to evaluation</li>
+      <li class="fragment">Current generation of tools has ad-hoc support for incremental compilation of the design and simulator</li>
+      <li class="fragment">It's well known that low iteration speed hampers developer productivity</li>
     </ul>
   </section>
 
