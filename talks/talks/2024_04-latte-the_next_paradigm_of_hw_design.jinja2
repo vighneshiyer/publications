@@ -1243,17 +1243,12 @@ Reveal.on( 'fragmenthidden', event => {
     </div>
   </section>
 
-  <section class="center">
+  <section data-auto-animate>
     <h2>Incremental First</h2>
     <ul>
       <li class="fragment">Hardware designers want more iterations to perform experiments.</li>
-      <li class="fragment">Waiting 10+ minutes on every simulation run isn't acceptable.</li>
       <li class="fragment">Most of the times, we write the entire module, and make small fixes to the control logic.</li>
     </ul>
-  </section>
-
-  <section data-auto-animate>
-    <h2>Incremental First</h2>
     <pre data-id="code-animation"><code class="scala" data-trim data-line-numbers="6">
     class MyModule(N: Int, M: Int) extends Module {
       val io = IO(new Bundle {
