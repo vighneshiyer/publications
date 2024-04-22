@@ -56,6 +56,7 @@ $(eval $(call dynamic_pdf,tidalsim,"gdrive:Tidalsim_Figs.pdf",\
     ))
 $(eval $(call dynamic_pdf,event_api,"gdrive:Event_API_Figs.pdf",simple_api absolute_tags freelist_tags multi_tags_in_flight simple_tracker rob_tracker))
 $(eval $(call dynamic_pdf,tidalsim-error,"gdrive:Temp_Tidalsim_Figs.pdf",pure_injection detailed_warmup functional_warmup))
+$(eval $(call dynamic_pdf,latte24,"gdrive:Latte_Talk_Figs.pdf",specification))
 
 # Targets to generate figures and use them downstream
 figs := $(figs_static) $(dynamic_figs)
