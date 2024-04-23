@@ -79,6 +79,10 @@ Even for the API design, I shouldn't focus too much on the engineering aspect. I
 - Consider how to describe nested multi abstraction circuits
   - Consider the impact of an HLS top vs an RTL top and nested tops
 
+- Jerry's advice:
+  - What matters: iteration time + **number of iterations** - both of them matter
+  - Making the developer more clever is more impactful than improving the iteration time itself
+
 ---
 
 ## Frontend language

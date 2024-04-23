@@ -3,7 +3,8 @@
 ## Dependencies
 
 - Install `npm`. Run `npm install`
-- Install `jinja2` (pip: `pip install Jinja2` , Arch: `pacman -S python-jinja`
+- Install `jinja2` (pip: `pip install Jinja2`, Arch: `pacman -S python-jinja`
+- Install `joblib` (pip: `pip install joblib`, Arch: `pacman -S python-joblib`)
 
 ## Developing a Talk
 

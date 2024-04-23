@@ -14,13 +14,13 @@
     "web": "https://vighneshiyer.com"
   },
   "devDependencies": {
-    "@fontsource/fira-sans": "^5.0.19",
-    "@fontsource/fira-code": "^5.0.17",
+    "@fontsource/fira-sans": "^5.0.20",
+    "@fontsource/fira-code": "^5.0.18",
     "@fontsource/source-sans-pro": "^5.0.8",
-    "reveal.js": "^5.0.5",
+    "reveal.js": "^5.1.0",
     "highlight.js": "^11.9",
-    "sass": "^1.72.0",
-    "vite": "^5.2.7",
+    "sass": "^1.75.0",
+    "vite": "^5.2.10",
     "vite-plugin-run": "^0.5.1"
   }
 }
