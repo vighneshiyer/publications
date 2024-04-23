@@ -472,13 +472,10 @@ class GCDMMIOBlackBox(val w: Int)
 
 <section>
   <section class="center">
-    <h2>The RTL First Design Methodology</h2>
-    <p>"Just go write RTL"</p>
-  </section>
-
-  <section class="center">
-    <h3>We need to reduce the NRE cost</h3>
-    <img src="./figs/latte24/nre-cost.jpg"/>
+    <h2>Berkeley's attempt<br>on the new HW design paradigm</h2>
+    <ul>
+      <li class="fragment">The RTL first methodology (just go write RTL).</li>
+    </ul>
   </section>
 
   <section class="center">
@@ -500,20 +497,16 @@ class GCDMMIOBlackBox(val w: Int)
   </section>
 
   <section class="center">
-    <h3>Time and effort is wasted</h3>
-    <div class="container" style="grid-template-columns: 1.0fr 1.4fr;">
-      <div class="fragment">
-        <img src="./figs/latte24/compiling.png" />
-      </div>
-      <div>
-        <font size="6">
-        <ul>
-          <li class="fragment">People just sit there waiting for code to compile or simulations to run.</li>
-          <li class="fragment">Large companies can afford to have separate teams for each step of the design process.</li>
-          <li class="fragment">Unsuitable for academics or startups with small teams.</li>
-        </ul>
-        </font>
-      </div>
+    <h3>Problems of modeling</h3>
+    <div class="container" style="grid-template-rows: 0.2fr 0.7fr;">
+    <div>
+      <img class="fragment" data-fragment-index="0" height=300px; src="./figs/latte24/modeling-errors.png" />
+    </div>
+    <div>
+      <ul>
+        <li class="fragment" data-fragment-index="0">Prone to errors.</li>
+        <li class="fragment">Redundant work.</li>
+      </ul>
     </div>
   </section>
 
@@ -527,9 +520,8 @@ class GCDMMIOBlackBox(val w: Int)
         <font size="6">
         <ul>
           <li class="fragment">Modeling is required because <strong>RTL writing is hard</strong>.</li>
-          <li class="fragment">Modeling has a lot of errors and can lead designers to wrong conclusions.</li>
-          <li class="fragment">Redundant work is done by writing code twice for the same design.</li>
-          <li class="fragment">Make RTL writing so easy that we can just do modeling with RTL!</li>
+          <li class="fragment">Make RTL writing so easy that we can just do modeling with RTL.</li>
+          <li class="fragment">Model large systems with high evaluation fidelity!</li>
         </ul>
         </font>
       </div>
@@ -542,12 +534,6 @@ class GCDMMIOBlackBox(val w: Int)
       <li class="fragment">Design language : Chisel & FIRRTL</li>
       <li class="fragment">SoC evaluation framework : Chipyard & FireSim</li>
     </ul>
-  </section>
-</section>
-
-<section>
-  <section class="center">
-    <h2>Introduction to Chisel & FIRRTL</h2>
   </section>
 
   <section class="center">
@@ -629,9 +615,11 @@ class GCDMMIOBlackBox(val w: Int)
   </section>
 
   <section class="center">
-    <h2>Chisel as a embedded DSL</h2>
+    <h2>Chisel Implications</h2>
     <ul>
-      <li class="fragment">Enables us to use existing tools around the host language.</li>
+      <li class="fragment">Much less verbose when describing HW.</li>
+      <li class="fragment">Easier to compose modules programmatically.</li>
+      <li class="fragment">eDSL : enables us to use existing tools around the host language.</li>
       <ul>
         <li class="fragment">Package manager.</li>
         <li class="fragment">Build systems.</li>
@@ -645,7 +633,6 @@ class GCDMMIOBlackBox(val w: Int)
     <ul>
       <li class="fragment">Intermediate representation for Chisel.</li>
       <li class="fragment">Designed to represent the generated circuit after Chisel's elaboration (after all meta programming has executed).</li>
-      <li class="fragment">Enables you to programmatically analyse and modify the circuit.</li>
       <li class="fragment">SSA style in memory representation.</li>
     </ul>
   </section>
@@ -702,6 +689,18 @@ class GCDMMIOBlackBox(val w: Int)
   <section data-auto-animate>
     <h3>Cool things that FIRRTL enables</h3>
     <ul>
+      <li class="fragment">Netlist manipulation : scan-chains, reparenting modules (for PD).</li>
+      <li class="fragment">Error checking, generic compiler optimizations.</li>
+      <ul>
+        <li class="fragment">Combinational loop detection.</li>
+        <li class="fragment">DCE, CSE, Const Prop.</li>
+      </ul>
+    </ul>
+  </section>
+
+  <section data-auto-animate>
+    <h3>Cool things that FIRRTL enables</h3>
+    <ul>
       <li class="fragment">FAME transformations and FireSim.</li>
       <figure>
         <img class="fragment" src="./figs/latte24/li-bdn-transformed.svg" />
@@ -710,239 +709,78 @@ class GCDMMIOBlackBox(val w: Int)
     </ul>
   </section>
 
-  <section data-auto-animate>
-    <h3>Cool things that FIRRTL enables</h3>
-    <ul>
-      <li class="fragment">Scan-chains.</li>
-      <li class="fragment">Error checking, generic compiler optimizations.</li>
-      <ul>
-        <li class="fragment">Combinational loop detection.</li>
-        <li class="fragment">DCE, CSE, Const Prop.</li>
-      </ul>
-    </ul>
-  </section>
-</section>
-
-{# -------------------------------------------------------------------------- #}
-
-<section>
   <section class="center">
-    <h2>Introduction to Chipyard and FireSim</h2>
+    <h2>FIRRTL Implications</h2>
+    <ul>
+      <li class="fragment">Enables you to programmatically traverse/modify the netlist.</li>
+      <li class="fragment">Given a single design, you are now able to generate various collateral by applying different compiler passes.</li>
+    </ul>
   </section>
 
   <section class="center">
     <h2>What is Chipyard</h2>
-    <ul>
-      <li class="fragment">An organized framework for various SoC design tools</li>
-      <li class="fragment">A curated IP library of open-source RISC-V SoC components</li>
-      <li class="fragment">A methodology for agile SoC architecture design, exploration, and evaluation</li>
-      <li class="fragment">A tapeout-ready chassis for custom RISC-V SoCs</li>
-    </ul>
-  </section>
-
-  <section class="center">
-    <h2>SoC Architecture</h2>
     <div class="container" style="grid-template-columns: 1.4fr 1.0fr;">
-      <div>
-        <img src="./figs/latte24/soc-arch.svg"/>
-      </div>
-      <div>
-        <font size="6">
+    <div>
+      <img src="./figs/latte24/soc-arch.svg"/>
+    </div>
+    <div>
+      <font size="5">
+      <ul>
+        <li class="fragment">Generator based SoC design framework.</li>
+        <li class="fragment">Easy to configure a diverse set of SoC design space.</li>
         <ul>
-          <li class="fragment">We can configure the tiles, accelerators, memory hierarchy, and the interconnect.</li>
+          <li class="fragment">IP shop for RISC-V cores, accelerators, memory elements and the bus hierarchy.</li>
         </ul>
-        </font>
-      </div>
-    </div>
-  </section>
-
-  <section class="center">
-    <h2>Tiles</h2>
-    <div class="container" style="grid-template-columns: 1.4fr 1.0fr;">
-      <div>
-        <img src="./figs/latte24/soc-tiles.svg"/>
-      </div>
-      <div>
-        <font size="5">
+        <li class="fragment">Ensures correct composition of the modules during elaboration time.</li>
         <ul>
-          <li class="fragment">Each Tile contains a RISC-V core and private caches</li>
-          <li class="fragment">Several varieties of Cores supported</li>
-          <ul>
-            <li class="fragment">Rocket: 5-stage single-issue in-order</li>
-            <li class="fragment">Shuttle: 6-stage superscalar in-order</li>
-            <li class="fragment">SonicBOOM: 12-stage superscalar out-of-order</li>
-          </ul>
-          <li class="fragment">Interface supports integrating your own RISC-V core implementation</li>
+          <li class="fragment">Parameter validity, SoC address space.</li>
         </ul>
-        </font>
-      </div>
-    </div>
-  </section>
-
-  <section class="center">
-    <h2>RoCC Accelerators</h2>
-    <div class="container" style="grid-template-rows: 0.3fr 0.7fr;">
-      <div>
-        <font size="6">
-          <ul>
-            <li class="fragment">Tightly-coupled accelerator interface</li>
-            <li class="fragment">Attach custom accelerators to Rocket or BOOM</li>
-            <li class="fragment">Includes example implementations</li>
-          </ul>
-        </font>
-      </div>
-      <div>
-        <img width="80%" src="./figs/latte24/soc-rocc-accel.svg"/>
-      </div>
-    </div>
-  </section>
-
-  <section class="center">
-    <h2>MMIO Accelerators</h2>
-    <div class="container" style="grid-template-columns: 1.0fr 1.0fr;">
-      <div>
-        <img src="./figs/latte24/soc-mmio-accel.svg"/>
-      </div>
-      <div>
-        <font size="6">
-          <ul>
-            <li class="fragment">Controlled by MMIO-mapped registers</li>
-            <li class="fragment">Supports DMA to memory system</li>
-          </ul>
-        </font>
-      </div>
-    </div>
-  </section>
-
-  <section class="center">
-    <h2>Bus Hierarchy</h2>
-    <div class="container" style="grid-template-columns: 1.0fr 1.0fr;">
-      <div>
-        <img src="./figs/latte24/soc-bus-hierarchy.svg"/>
-      </div>
-      <div>
-        <font size="5">
-          <ul>
-            <li class="fragment">Tilelink Standard:</li>
-            <ul>
-              <li class="fragment">TileLink is open-source chip-scale interconnect standard</li>
-              <li class="fragment">Comparable to AXI/ACE</li>
-              <li class="fragment">Supports multi-core, accelerators, peripherals, DMA, etc</li>
-            </ul>
-            <li class="fragment">Interconnect IP:</li>
-            <ul>
-              <li class="fragment">Library of TileLink RTL generators provided in RocketChip</li>
-              <li class="fragment">RTL generators for crossbar-based buses</li>
-              <li class="fragment">Width-adapters, clock-crossings, etc.</li>
-              <li class="fragment">Adapters to AXI4, APB</li>
-              <li class="fragment">New: Drop-in prefetchers</li>
-            </ul>
-          </ul>
-        </font>
-      </div>
-    </div>
-  </section>
-
-  <section class="center">
-    <h2>NoC Interconnect</h2>
-    <div class="container" style="grid-template-columns: 1.0fr 1.0fr;">
-      <div>
-        <img src="./figs/latte24/soc-noc.svg"/>
-      </div>
-      <div>
-        <font size="5">
-          <ul>
-            <li class="fragment">Constellation:</li>
-            <ul>
-              <li class="fragment">Drop-in replacement for TileLink crossbar buses</li>
-            </ul>
-          </ul>
-        </font>
-      </div>
+      </ul>
+      </font>
     </div>
   </section>
 
   <section class="center">
     <h2>FireSim at 35,000 feet</h2>
-    <font size="6">
-    <ul>
-      <li class="fragment">Open-source, fast, automatic, deterministic FPGA-accelerated <strong>hardware simulation</strong> for pre-silicon verification and performance validation.</li>
-    </ul>
-    </font>
-  </section>
-
-  <section class="center">
-    <h2>Simulation vs Prototype</h2>
-    <div class="container" style="grid-template-columns: 1.0fr 1.0fr;">
-      <div>
-        <img class="fragment" src="./figs/latte24/firesim-soc.png"/>
-        <p class="fragment">SoC sees <strong>100</strong> cycles of DRAM latency.</p>
-      </div>
-      <div>
-        <img class="fragment" src="./figs/latte24/firesim-prototype.png"/>
-        <p class="fragment">SoC sees <strong>10</strong> cycles of DRAM latency. Wrong!</p>
-      </div>
+    <div class="container" style="grid-template-columns: 1.0fr 1.4fr;">
+    <div>
+      <ul>
+        <img class="fragment" data-fragment-index="0" height=400px; src="./figs/latte24/firesim.svg" />
+      </ul>
+    </div>
+    <div>
+      <font size="6">
+      <ul>
+        <li class="fragment" data-fragment-index="0">FPGA accelerated RTL simulation platform.</li>
+        <li class="fragment">Enables us to perform end-to-end performance evaluation of our designs by running entire RISC-V binaries.</li>
+        <li class="fragment">Useful for discovering bugs that appear trillions of cycles into simulation.</li>
+      </ul>
+      </font>
     </div>
   </section>
 
-  <section class="center">
-    <h2>Target vs Host</h2>
-    <div class="container" style="grid-template-columns: 1.0fr 1.0fr;">
-      <div>
-        <img class="fragment" src="./figs/latte24/firesim-target.svg"/>
-        <p class="fragment">Target: the machine under simulation.</p>
-      </div>
-      <div>
-        <img class="fragment" src="./figs/latte24/firesim-host.svg"/>
-        <p class="fragment">Host: the machine running the simulation.</p>
-      </div>
-    </div>
-  </section>
-
-  <section class="center">
-    <h2>Host decoupling</h2>
-    <div class="container" style="grid-template-columns: 1.0fr 1.0fr;">
-      <div>
-        <img class="fragment" src="./figs/latte24/firesim-before-transform.png"/>
-      </div>
-      <div>
-        <ul>
-          <li class="fragment">Starting with your target.</li>
-        </ul>
-      </div>
-    </div>
-  </section>
-
-  <section class="center">
-    <h2>Host decoupling</h2>
-    <div class="container" style="grid-template-columns: 1.0fr 1.0fr;">
-      <div>
-        <img class="fragment" src="./figs/latte24/firesim-after-transform.png"/>
-      </div>
-      <div>
-        <ul>
-          <li class="fragment">Wrap the target RTL in a latency insensitive wrapper.</li>
-          <li class="fragment">Attach a DRAM timing model using host FPGA resources.</li>
-          <li class="fragment">These steps are automated by the FIRRTL compiler.</li>
-        </ul>
-      </div>
-    </div>
-  </section>
-
-  <section class="center">
-    <h2>Host decoupling</h2>
-    <div class="container" style="grid-template-columns: 1.0fr 1.0fr;">
-      <div>
-        <img class="fragment" src="./figs/latte24/firesim-mapped.png"/>
-      </div>
-      <div>
-        <ul>
-          <li class="fragment">Map the simulation onto the host FPGA.</li>
-          <li class="fragment">SoC now sees 100 cycles of DRAM latency!</li>
-        </ul>
-      </div>
-    </div>
-  </section>
+{# <section class="center"> #}
+{# <h2>Host decoupling</h2> #}
+{# <div class="container" style="grid-template-columns: 1.2fr 1.0fr;"> #}
+{# <div class="r-stack"> #}
+{# <img class="fragment fade-in-then-out" data-fragment-index="0" src="./figs/latte24/firesim-before-transform.png"/> #}
+{# <img class="fragment fade-in-then-out" data-fragment-index="1" src="./figs/latte24/firesim-after-transform.png"/> #}
+{# <img class="fragment"                  data-fragment-index="2" src="./figs/latte24/firesim-mapped.png"/> #}
+{# </div> #}
+{# <div> #}
+{# <font size="5"> #}
+{# <ul> #}
+{# <li class="fragment" data-fragment-index="0">Starting with your target.</li> #}
+{# <li class="fragment" data-fragment-index="1">Wrap the target RTL in a latency insensitive wrapper.</li> #}
+{# <li class="fragment" data-fragment-index="1">Attach a DRAM timing model using host FPGA resources.</li> #}
+{# <li class="fragment" data-fragment-index="1">These steps are automated by the FIRRTL compiler.</li> #}
+{# <li class="fragment" data-fragment-index="2">Map the simulation onto the host FPGA.</li> #}
+{# <li class="fragment" data-fragment-index="2">SoC now sees 100 cycles of DRAM latency!</li> #}
+{# </ul> #}
+{# </font> #}
+{# </div> #}
+{# </div> #}
+{# </section> #}
 
   <section class="center">
     <h3>Overview of the Current Infrastructure</h3>
@@ -954,7 +792,7 @@ class GCDMMIOBlackBox(val w: Int)
         <font size="6">
         <ul>
           <li class="fragment">Chisel & FIRRTL : Expressive frontend and flexible IR.</li>
-          <li class="fragment">Chipyard : Composable SoC generator framework w/ a handful of grad students.</li>
+          <li class="fragment">Chipyard : Composable SoC generator framework.</li>
           <li class="fragment">FireSim : Fast RTL simulation.</li>
           <li class="fragment">Enabled countless research projects from both industry and academia for the last 5+ years.</li>
         </ul>
@@ -967,32 +805,16 @@ class GCDMMIOBlackBox(val w: Int)
 {# ----------------------------------------------------------------------- #}
 
 <section>
-<!-- - What PL people want : they want to integration accelerators built w/ their DSLs and evaluate it in the SoC context. -->
-<!-- - We can provide an example on how to do this. -->
-<!-- - Then we can explain about all the short commings of this approach. -->
-<!-- - Janky, ad-hoc glue code -->
-<!-- - SoC level parameter negotiation is difficult -->
-<!-- - collateral generation (including compiler generation) -->
-<!-- - FYI : compiler generation is basically generating software stubs to program the accelerator -->
-<!-- - Then, we can explain about the two possible approaches. -->
-<!-- - short-term approach : Graal VM + have a way of interchanging SoC level parameters (Diplomacy+++) -->
-<!-- - long-term superior approach : unified frontend (we should also mention that the frontend should be extensible such that it doesn't limit further improvements in DSLs) -->
   <section class="center">
-    <h2>Demo : Integrating External IP!</h2>
-  </section>
-
-  <section class="center">
-    <h2>Demo : Integrating External IP!</h2>
+    <h3>Current methodology of mixed abstraction flow</h3>
     <ul>
-      <li class="fragment">How to integrate your own IP (generated from your own HDL) to perform full system SoC level evaluation?</li>
-      <li class="fragment">What are the challenges during the integration process?</li>
-      <li class="fragment">Future work on how we can fix the above problems as a community!</li>
+    <li class="fragment">Demo : How to integrate your own IP to perform full system SoC level evaluation?</li>
     </ul>
   </section>
 
   <section class="center">
     <h3>Step 1 : Generate RTL from your HDL (e.g. Calyx)</h3>
-    <pre data-id="code-animation"><code class="verilog" data-trim data-line-numbers="1">
+    <pre data-id="code-animation"><code class="verilog" data-trim>
     component CalyxSumBlackBox(in: 4) -> (out: 4) {
       cells { ... }
       wires { ... }
@@ -1005,192 +827,198 @@ class GCDMMIOBlackBox(val w: Int)
   </section>
 
   <section class="center">
-    <h3>Step 1 : Generate RTL from your HDL (e.g. Calyx)</h3>
-    <pre data-id="code-animation"><code class="verilog" data-trim data-line-numbers>
-    module CalyxSumBlackBox(
-      input logic clk,
-      input logic reset,
-
-      input logic [3:0] in,
-      input logic go,
-
-      output logic [3:0] out,
-      output logic done
-    );
-      ...
-    endmodule
-    </code></pre>
-  </section>
-
-  <section data-auto-animate>
     <h3>Step 2 : Create a BlackBox Module in Chipyard</h3>
-    <pre data-id="code-animation"><code class="scala" data-trim data-line-numbers="1|2-9|12|13-14">
-    class CalyxSumIO(nBits: Int) extends Bundle {
-      val clk   = Input(Clock())
-      val reset = Input(Bool())
+    <div class="container" style="grid-template-columns: 1.0fr 1.5fr;">
+      <div>
+        <pre data-id="code-animation"><code class="scala" data-trim data-line-numbers>
+        class CalyxSumIO(nBits: Int) extends Bundle {
+          val clk   = Input(Clock())
+          val reset = Input(Bool())
 
-      val in    = Input(UInt(nBits.W))
-      val go    = Input(Bool())
+          val in    = Input(UInt(nBits.W))
+          val go    = Input(Bool())
 
-      val out   = Output(UInt(nBits.W))
-      val done  = Output(Bool())
-    }
+          val out   = Output(UInt(nBits.W))
+          val done  = Output(Bool())
+        }
 
-    class CalyxSumBlackBox(nBits: Int) extends BlackBox with HasBlackBoxResource {
-      val io = IO(new CalyxSumIO(nBits))
-      addResource("/vsrc/aggregator.sv")
-    }
-    </code></pre>
+        class CalyxSumBlackBox(nBits: Int)
+            extends BlackBox
+            with HasBlackBoxResource {
+          val io = IO(new CalyxSumIO(nBits))
+          addResource("/vsrc/aggregator.sv")
+        }
+        </code></pre>
+      </div>
+      <div>
+        <img class="fragment" src="./figs/latte24/calyx-verilog.svg"/>
+      </div>
+    <div>
   </section>
 
   <section data-auto-animate>
     <h3>Step 3 : Generate a MMIO wrapper in Chipyard</h3>
-    <pre data-id="code-animation"><code class="scala" data-trim data-line-numbers="1|14|18|19-51|54-59">
-    class CalyxSumMMIOWrapper(
-      params: CalyxSumParams, beatBytes: Int
-    )(
-      implicit p: Parameters
-    ) extends ClockSinkDomain(ClockSinkParameters())(p) {
-      val device = new SimpleDevice("calyx-sum", Seq("ucbbar,calyx-sum"))
-      val node = TLRegisterNode(Seq(AddressSet(params.address, 4096-1)), device, "reg/control", beatBytes=beatBytes)
+    <div class="container" style="grid-template-columns: 1.0fr 1.5fr;">
+      <div>
+        <font size="4">
+        <pre data-id="code-animation"><code class="scala" data-trim data-line-numbers="1-35|37-73">
+        case class CalyxSumParams(
+          address: BigInt = 0x5000,
+          qDepth: Int = 4,
+          nBits: Int = 4,
+          nSum: Int = 3)
 
-      val nBits = params.nBits
-      val nSum  = params.nSum
+        case object CalyxSumKey extends Field[Option[CalyxSumParams]](None)
 
-      override lazy val module = new MMIOWrapperImpl
+        class CalyxSumMMIOWrapper(
+          params: CalyxSumParams, beatBytes: Int
+        )(
+          implicit p: Parameters
+        ) extends ClockSinkDomain(ClockSinkParameters())(p) {
+          val device = new SimpleDevice("calyx-sum", Seq("ucbbar,calyx-sum"))
+          val node = TLRegisterNode(Seq(AddressSet(params.address, 4096-1)),
+                                        device,
+                                        "reg/control",
+                                        beatBytes=beatBytes)
 
-      class MMIOWrapperImpl extends Impl with HasCalyxSumTopIO {
-        val io = IO(new CalyxSumTopIO)
+          val nBits = params.nBits
+          val nSum  = params.nSum
 
-        withClockAndReset(clock, reset) {
-          val bb    = Module(new CalyxSumBlackBox(nBits))
-          val in_q  = Module(new Queue(UInt(nBits.W), params.qDepth))
-          val out_q = Module(new Queue(UInt(nBits.W), params.qDepth))
+          override lazy val module = new MMIOWrapperImpl
 
-          val go = RegInit(false.B)
-          val cnt = RegInit(0.U(8.W))
+          class MMIOWrapperImpl extends Impl with HasCalyxSumTopIO {
+            val io = IO(new CalyxSumTopIO)
 
-          switch (go) {
-            is (false.B) {
-              when (in_q.io.count > 0.U && out_q.io.enq.ready) {
-                go := true.B
-                cnt := 0.U
+            withClockAndReset(clock, reset) {
+              val bb    = Module(new CalyxSumBlackBox(nBits))
+              val in_q  = Module(new Queue(UInt(nBits.W), params.qDepth))
+              val out_q = Module(new Queue(UInt(nBits.W), params.qDepth))
+
+              val go = RegInit(false.B)
+              val cnt = RegInit(0.U(8.W))
+
+              switch (go) {
+                is (false.B) {
+                  when (in_q.io.count > 0.U && out_q.io.enq.ready) {
+                    go := true.B
+                    cnt := 0.U
+                  }
+                }
+
+                is (true.B) {
+                  when (bb.io.done) {
+                    go := false.B
+                  }
+                }
               }
-            }
 
-            is (true.B) {
+              bb.io.clk   := clock
+              bb.io.reset := reset.asBool
+              bb.io.go    := go
+              bb.io.in    := in_q.io.deq.bits
+              in_q.io.deq.ready := bb.io.done
+
+              out_q.io.enq.bits  := bb.io.out
+              out_q.io.enq.valid := bb.io.done
+              io.done := bb.io.done
+
               when (bb.io.done) {
-                go := false.B
+                assert(out_q.io.enq.ready)
               }
+
+              node.regmap(
+                0x00 -> Seq(RegField.r(1,     in_q.io.enq.ready)),
+                0x04 -> Seq(RegField.w(nBits, in_q.io.enq)),
+                0x08 -> Seq(RegField.r(1,     out_q.io.deq.valid)),
+                0x0C -> Seq(RegField.r(nBits, out_q.io.deq))
+              )
+            }
+          }
+        }
+        </code></pre>
+        </font>
+      </div>
+      <div>
+        <img class="fragment" src="./figs/latte24/calyx-wrapped.svg"/>
+      </div>
+    </div>
+  </section>
+
+  <section data-auto-animate>
+    <h3>Step 4 : Add MMIO ports to the bus</h3>
+    <div class="container" style="grid-template-columns: 1.0fr 1.5fr;">
+      <div>
+        <font size="4">
+          <pre data-id="code-animation"><code class="scala" data-trim data-line-numbers="">
+          trait CanHaveMMIOCalyxSum { this: BaseSubsystem =>
+            private val pbus = locateTLBusWrapper(PBUS)
+
+            val calyx_sum_done = p(CalyxSumKey) match {
+              case Some(params) => {
+                val cs = LazyModule(new CalyxSumMMIOWrapper(params, pbus.beatBytes)(p))
+                cs.clockNode := pbus.fixedClockNode
+                pbus.coupleTo("calyx_sum_mmio_wrapper") {
+                  cs.node := TLFragmenter(pbus.beatBytes, pbus.blockBytes) := _
+                }
+
+                // Add port to DigitalTop (just for fun)
+                val calyx_sum_done = InModuleBody {
+                  val done = IO(Output(Bool())).suggestName("calyx_sum_done")
+                  done := cs.module.io.done
+                  done
+                }
+                Some(calyx_sum_done)
+              }
+              case None => None
             }
           }
 
-          bb.io.clk   := clock
-          bb.io.reset := reset.asBool
-          bb.io.go    := go
-          bb.io.in    := in_q.io.deq.bits
-          in_q.io.deq.ready := bb.io.done
-
-          out_q.io.enq.bits  := bb.io.out
-          out_q.io.enq.valid := bb.io.done
-          io.done := bb.io.done
-
-          when (bb.io.done) {
-            assert(out_q.io.enq.ready)
+          // DOC include start: DigitalTop
+          class DigitalTop(implicit p: Parameters) extends ChipyardSystem
+            ...
+            // Enables optionally adding a Calyx generated module as a MMIO device
+            with chipyard.example.CanHaveMMIOCalyxSum
+          {
+            override lazy val module = new DigitalTopModule(this)
           }
-
-          node.regmap(
-            0x00 -> Seq(RegField.r(1,     in_q.io.enq.ready)),
-            0x04 -> Seq(RegField.w(nBits, in_q.io.enq)),
-            0x08 -> Seq(RegField.r(1,     out_q.io.deq.valid)),
-            0x0C -> Seq(RegField.r(nBits, out_q.io.deq))
-          )
-        }
-      }
-    }
-    </code></pre>
-  </section>
-
-  <section data-auto-animate>
-    <h3>Step 4 : Add stubs to attach the MMIO wrapper to a bus</h3>
-    <pre data-id="code-animation"><code class="scala" data-trim data-line-numbers="1,7|2|9|10|12,13,28|14|15-18">
-    case class CalyxSumParams(
-      address: BigInt = 0x5000,
-      qDepth: Int = 4,
-      nBits: Int = 4,
-      nSum: Int = 3)
-
-    case object CalyxSumKey extends Field[Option[CalyxSumParams]](None)
-
-    trait CanHaveMMIOCalyxSum { this: BaseSubsystem =>
-      private val pbus = locateTLBusWrapper(PBUS)
-
-      val calyx_sum_done = p(CalyxSumKey) match {
-        case Some(params) => {
-          val cs = LazyModule(new CalyxSumMMIOWrapper(params, pbus.beatBytes)(p))
-          cs.clockNode := pbus.fixedClockNode
-          pbus.coupleTo("calyx_sum_mmio_wrapper") {
-            cs.node := TLFragmenter(pbus.beatBytes, pbus.blockBytes) := _
-          }
-
-          // Add port to DigitalTop (just for fun)
-          val calyx_sum_done = InModuleBody {
-            val done = IO(Output(Bool())).suggestName("calyx_sum_done")
-            done := cs.module.io.done
-            done
-          }
-          Some(calyx_sum_done)
-        }
-        case None => None
-      }
-    }
-    </code></pre>
-  </section>
-
-  <section data-auto-animate>
-    <h3>Step 5 : Mix the previous stub into your SoC</h3>
-    <pre data-id="code-animation"><code class="scala" data-trim data-line-numbers="2,4-5">
-    // DOC include start: DigitalTop
-    class DigitalTop(implicit p: Parameters) extends ChipyardSystem
-      ...
-      // Enables optionally adding a Calyx generated module as a MMIO device
-      with chipyard.example.CanHaveMMIOCalyxSum
-    {
-      override lazy val module = new DigitalTopModule(this)
-    }
-    </code></pre>
-  </section>
-
-  <section class="center">
-    <h3>What did we just do?</h3>
-    <img class="fragment" height=500px; src="./figs/latte24/demo-create-port.svg" />
+          </code></pre>
+        </font>
+      </div>
+      <div>
+        <img class="fragment" src="./figs/latte24/demo-create-port.svg" />
+      </div>
+    </div>
   </section>
 
   <section data-auto-animate>
     <h3>Step 6 : Configure your SoC to use the MMIO module</h3>
-    <pre data-id="code-animation"><code class="scala" data-trim data-line-numbers="1-3|5-6">
-    class WithCalyxSum extends Config((site, here, up) => {
-      case CalyxSumKey => Some(CalyxSumParams())
-    })
+    <div class="container" style="grid-template-columns: 1.0fr 1.5fr;">
+      <div>
+        <font size="5">
+        <pre data-id="code-animation"><code class="scala" data-trim data-line-numbers>
+        class WithCalyxSum extends Config((site, here, up) => {
+          case CalyxSumKey => Some(CalyxSumParams())
+        })
 
-    class CalyxSumRocketConfig extends Config(
-      new chipyard.example.WithCalyxSum ++
-      new freechips.rocketchip.subsystem.WithNBigCores(1) ++
-      new chipyard.config.AbstractConfig)
-    </code></pre>
+        class CalyxSumRocketConfig extends Config(
+          new chipyard.example.WithCalyxSum ++
+          new freechips.rocketchip.subsystem.WithNBigCores(1) ++
+          new chipyard.config.AbstractConfig)
+        </code></pre>
+        </font>
+      </div>
+      <div>
+        <img class="fragment" src="./figs/latte24/demo-overall-soc.svg" />
+      </div>
+    </div>
     <p>At this point, the SoC level configuration is finished</p>
-  </section>
-
-  <section class="center">
-    <h3>Overall SoC</h3>
-    <img class="fragment" height=500px; src="./figs/latte24/demo-overall-soc.svg" />
   </section>
 
   <section data-auto-animate>
     <h3>Step 7 : Write software to talk to the MMIO device</h3>
-    <pre data-id="code-animation"><code class="cpp" data-trim data-line-numbers="4-8|11,17,24,30|12,20,25,32">
+    <font size="4">
+    <pre data-id="code-animation"><code class="cpp" data-trim data-line-numbers="1-36|21-57">
     ...
-
 
     #define CALYX_SUM_BASE 0x5000
     #define CALYX_SUM_ENQ_RDY  (CALYX_SUM_BASE + 0)
@@ -1222,12 +1050,7 @@ class GCDMMIOBlackBox(val w: Int)
       while (!calyx_sum_deq_valid());
       return reg_read32(CALYX_SUM_DEQ_BITS);
     }
-    </code></pre>
-  </section>
 
-  <section data-auto-animate>
-    <h3>Step 7 : Write software to talk to the MMIO device</h3>
-    <pre data-id="code-animation"><code class="cpp" data-trim data-line-numbers="10|12|15-18,20">
     ...
 
     #define TEST_SIZE 3
@@ -1251,6 +1074,7 @@ class GCDMMIOBlackBox(val w: Int)
       return 0;
     }
     </code></pre>
+    </font>
   </section>
 
   <section data-auto-animate>
@@ -1270,40 +1094,6 @@ class GCDMMIOBlackBox(val w: Int)
   </section>
 
   <section class="center">
-    <h3>Challenges during the integration process</h3>
-    <ul>
-      <li class="fragment">Difficult to shared parameters btw the HDL and SoC framework.</li>
-      <ul>
-        <li class="fragment">HDL to SoC : port width of the module.</li>
-        <li class="fragment">SoC to HDL : bus width, bus beats, addresses.</li>
-      </ul>
-      <li class="fragment">Diffult to DRY out the port definitions between the HDL and SoC framework.</li>
-      <li class="fragment">Need a unified way of debugging the integration logic and the internal module.</li>
-      <ul>
-        <li class="fragment">HDL frameworks have their own way of debugging things (hard to look at waveforms of generated RTL).</li>
-        <li class="fragment">We want to look at waveforms for the SoC level things.</li>
-      </ul>
-      <li class="fragment">Expected simulation semantics might differ between frameworks.</li>
-    </ul>
-  </section>
-
-  <section class="center">
-    <h3>How can we fix the above issues<br>(as a community)?</h3>
-    <ul>
-      <li class="fragment">Short term</li>
-      <ul>
-        <li class="fragment">Graal VM to build and interface frameworks built in different languages.</li>
-        <li class="fragment">A library in Chipyard that exposes APIs that enables external frameworks to negotiate parameters with the SoC.</li>
-      </ul>
-      <li class="fragment">Long term</li>
-      <ul>
-        <li class="fragment">Unified language frontend that is highly extensible.</li>
-        <li class="fragment">No more hacky DPI interfaces, or clunky libraries required.</li>
-      </ul>
-    </ul>
-  </section>
-
-  <section class="center">
     <h2>Resources</h2>
     <div class="container" style="grid-template-columns: 1.0fr 1.0fr;">
       <div>
@@ -1314,7 +1104,6 @@ class GCDMMIOBlackBox(val w: Int)
         <ul>
           <li><a href="https://chipyard.readthedocs.io/en/stable/">Chipyard docs.</a></li>
           <li><a href="https://docs.fires.im/en/stable/">FireSim docs.</a></li>
-          <li><a href="https://askjerry.net/">Ask me (Jerry) anything website!</a></li>
           <li><a href="https://fires.im/asplos-2023-tutorial/">Link to previous tutorial recordings</a></li>
         </ul>
       </div>
@@ -1356,44 +1145,6 @@ class GCDMMIOBlackBox(val w: Int)
         <li class="fragment">Need a systematic way of generating collateral from specs.</li>
       </ul>
     </ul>
-  </section>
-
-  <section class="center">
-    <h2>CY/FireSim retrospective : Compile Time</h2>
-    <font size="6">
-    <ul>
-      <li class="fragment">Compile time of our designs is longer than SystemVerilog based frameworks.</li>
-      <li class="fragment">Extra steps introduced during compilation :<br>Chisel &rarr; FIRRTL & FIRRTL &rarr; Verilog</li>
-      <li class="fragment">No concept of deduplication :<br>If you have 10 of the same modules (cores) it will run the same compiler passes on all of them.</li>
-      <li class="fragment">Inefficient compiler passes due to wrong in memory representation.</li>
-      <li class="fragment">Rebuild everything whenever approach (tied to the SoC generator framework internals).</li>
-    </ul>
-    </font>
-  </section>
-
-  <section class="center">
-    <h3>CY/FireSim retrospective : Simulation Time</h3>
-    <ul>
-      <li class="fragment">FireSim drastically reduced the simulation "runtime".</li>
-      <li class="fragment">However, it takes hours to just compile FireSim bitstreams, making it unsuitable for meaningful DSE and debugging.</li>
-      <li class="fragment">Recent work (ESSENT & RepCut) that accelerates software RTL simulation suffers from long compilation times.</li>
-    </ul>
-  </section>
-
-  <section class="center">
-    <h3>CY/FireSim retrospective : Modeling Time</h3>
-    <ul>
-      <li class="fragment">We are still stuck at the RTL level abstraction.</li>
-      <li class="fragment">Need a way of raising the level of abstraction in the initial phase of your design.</li>
-      <li class="fragment">Must integrate existing tools that already do this <strong>seamlessly</strong> into our framework.</li>
-      <ul>
-        <li class="fragment">Commercial tools : Vivado HLS, SystemC, ...</li>
-        <li class="fragment">Academic tools : Calyx, Dahlia, PyMetal, HeteroCl, Filament</li>
-      </ul>
-    </ul>
-  </section>
-
-  <section class="center">
   </section>
 
   <section class="center">
@@ -1620,48 +1371,6 @@ class GCDMMIOBlackBox(val w: Int)
     </ul>
   </section>
 
-  <section data-auto-animate>
-    <h2>API sketches for Embedded HLS</h2>
-    <pre data-id="code-animation"><code class="python" data-trim data-line-numbers="1|13|14|16-18|20-21|25|26-29|31-34|36-39|41">
-    class ExampleHLS:
-      compiler_handles : List[Handles]
-      bus_protocol  : str
-      bus_bytes     : int
-      input_len     : int
-      unroll_factor : int
-
-      def __init__(self, ...):
-        # Bus and compute configurations
-        hls.bus.set_protocol(bus_protocol)
-        hls.bus.set_width(bus_bytes)
-
-      def compute(self, input : List[HLSInt]) -> HLSInt:
-        sum = hls.init(0)
-
-        # Although we are adding the loop_handle manually here, this can be hidden.
-        (for_stmt, loop_handle) = hls.for()
-        compiler_handles.append(loop_handle)
-
-        for_stmt x in input:
-          sum += x
-
-        return sum
-
-      def synthesize(self) -> IR:
-        # Single place to specify HLS compiler options
-        for h in compiler_handles:
-          if h.is_loop_handle():
-            h.unroll_loop(unroll_factor)
-
-        # Describe the dataflow
-        input = hls.bus.read_and_save(input_len)
-        output = self.compute(input)
-        hls.bus.write(output)
-
-        return hls.compile()
-    </code></pre>
-  </section>
-
   <section class="center">
     <h2>Compiler Backend - Goals</h2>
     <div class="container" style="grid-template-columns: 1.4fr 1.0fr;">
@@ -1733,37 +1442,6 @@ class GCDMMIOBlackBox(val w: Int)
   <section class="center">
     <h2>Compiler Backend - Overall</h2>
     <img src="./figs/latte24/backend-all.png" style="height: 500px;"/>
-  </section>
-
-  <section class="center">
-    <h4>Miscellaneous : what should be the role of type-systems?</h4>
-    <ul>
-      <li class="fragment">We all love static types.</li>
-      <li class="fragment">However, we shouldn't be obsessed by it.</li>
-      <li class="fragment">Here, we are specifically talking about the types checked in the host language.</li>
-      <li class="fragment">Things that it should do?</li>
-      <ul>
-        <li class="fragment">Check connection validity between signals.</li>
-        <ul>
-          <li class="fragment">E.g., you don't want to connect a clock signal into a reset port.</li>
-        </ul>
-        <li class="fragment">(For a eDSL), differentiate types between the DSL and host language.</li>
-        <li class="fragment">Pass physical encodings to the backing compiler and IR.</li>
-        <ul>
-          <li class="fragment">UInt (unsigned integer) vs OneHot (array of wires).</li>
-        </ul>
-{# <li class="fragment">Encode circuit properties to generate useful collateral.</li> #}
-{# <ul> #}
-{# <li class="fragment">.</li> #}
-{# </ul> #}
-      </ul>
-      <li class="fragment">Things that it shouldn't do?</li>
-      <ul>
-        <li class="fragment">Shouldn't make the language too verbose.</li>
-        <li class="fragment">Shouldn't increase the compilation time significantly.</li>
-{# <li class="fragment">Shouldn't try to prove circuit properties that should be checked during runtime.</li> #}
-      </ul>
-    </ul>
   </section>
 </section>
 
@@ -1902,72 +1580,72 @@ class GCDMMIOBlackBox(val w: Int)
         <font size="5">
         <ul>
           <li class="fragment">lGraph : high perf. graph based IR.</li>
-          <ul>
-            <li class="fragment">Hypergraph where each node represents a module and the edges represents the connections.</li>
-            <ul>
-              <li class="fragment">Submodules forms a graph within a node representing the parent module.</li>
-            </ul>
-            <li class="fragment">Mmaps disk pages onto virtual memory to reduce memcpy overheads.</li>
-            <li class="fragment">Supports graph traversals such that you can access nodes located in adjacent cachelines.</li>
-          </ul>
+{# <ul> #}
+{# <li class="fragment">Hypergraph where each node represents a module and the edges represents the connections.</li> #}
+{# <ul> #}
+{# <li class="fragment">Submodules forms a graph within a node representing the parent module.</li> #}
+{# </ul> #}
+{# <li class="fragment">Mmaps disk pages onto virtual memory to reduce memcpy overheads.</li> #}
+{# <li class="fragment">Supports graph traversals such that you can access nodes located in adjacent cachelines.</li> #}
+{# </ul> #}
         </ul>
         </font>
       </div>
   </section>
 
-  <section class="center">
-    <h3>Graph Rep. Exploiting Parallelism</h3>
-    <ul>
-      <li class="fragment">Again, the compiler performance is crucial for HW designers : exploit parallelism.</li>
-      <li class="fragment">The passes should be written as if it is working on a single thread.</li>
-      <ul>
-        <li class="fragment">The complexities of dealing with parallelism should be hidden from the pass-writer.</li>
-      </ul>
-      <li class="fragment">The interpreter (compiler) must be able to partition the graph and execute passes in parallel.</li>
-    </ul>
-  </section>
+{# <section class="center"> #}
+{# <h3>Graph Rep. Exploiting Parallelism</h3> #}
+{# <ul> #}
+{# <li class="fragment">Again, the compiler performance is crucial for HW designers : exploit parallelism.</li> #}
+{# <li class="fragment">The passes should be written as if it is working on a single thread.</li> #}
+{# <ul> #}
+{# <li class="fragment">The complexities of dealing with parallelism should be hidden from the pass-writer.</li> #}
+{# </ul> #}
+{# <li class="fragment">The interpreter (compiler) must be able to partition the graph and execute passes in parallel.</li> #}
+{# </ul> #}
+{# </section> #}
 
-  <section class="center">
-    <h4>FIRRTL In Memory Representation Problem 2</h4>
-    <pre data-id="code-animation"><code class="scala" data-trim data-line-numbers>
-    case class Mux(...)
-    case class UIntLiteral(...)
-    case class SIntLiteral(...)
-    case class DefWire(...)
-    case class DefRegister(...)
-    case class DefInstance(...)
-    case class DefMemory(...)
-    abstract class PrimOp extends FirrtlNode
-    </code></pre>
-    <ul>
-      <li class="fragment">Limited set of primitives &rarr; QoR may be low.</li>
-      <li class="fragment">Compiler & backend tools spends a lot of time recreating semantics.</li>
-    </ul>
-  </section>
+{# <section class="center"> #}
+{# <h4>FIRRTL In Memory Representation Problem 2</h4> #}
+{# <pre data-id="code-animation"><code class="scala" data-trim data-line-numbers> #}
+{# case class Mux(...) #}
+{# case class UIntLiteral(...) #}
+{# case class SIntLiteral(...) #}
+{# case class DefWire(...) #}
+{# case class DefRegister(...) #}
+{# case class DefInstance(...) #}
+{# case class DefMemory(...) #}
+{# abstract class PrimOp extends FirrtlNode #}
+{# </code></pre> #}
+{# <ul> #}
+{# <li class="fragment">Limited set of primitives &rarr; QoR may be low.</li> #}
+{# <li class="fragment">Compiler & backend tools spends a lot of time recreating semantics.</li> #}
+{# </ul> #}
+{# </section> #}
 
-  <section class="center">
-    <h4>Possible Primitives</h4>
-    <pre data-id="code-animation"><code class="scala" data-trim data-line-numbers="9-14">
-    case class Mux(...)
-    case class UIntLiteral(...)
-    case class SIntLiteral(...)
-    case class DefWire(...)
-    case class DefRegister(...)
-    case class DefInstance(...)
-    case class DefMemory(...)
-    abstract class PrimOp extends FirrtlNode
-    case class Clock(...)
-    case class Reset(...)
-    case class OH(...)
-    case class PriorityMux(...)
-    case class BoolLiteral(...)
-    case class DecoupledInterface(...)
-    </code></pre>
-    <ul>
-      <li class="fragment">Add more primitives such that we can preserve more higher level circuit semantics.</li>
-      <li class="fragment">Need to find a good balance between pass writing vs QoR.</li>
-    </ul>
-  </section>
+{# <section class="center"> #}
+{# <h4>Possible Primitives</h4> #}
+{# <pre data-id="code-animation"><code class="scala" data-trim data-line-numbers="9-14"> #}
+{# case class Mux(...) #}
+{# case class UIntLiteral(...) #}
+{# case class SIntLiteral(...) #}
+{# case class DefWire(...) #}
+{# case class DefRegister(...) #}
+{# case class DefInstance(...) #}
+{# case class DefMemory(...) #}
+{# abstract class PrimOp extends FirrtlNode #}
+{# case class Clock(...) #}
+{# case class Reset(...) #}
+{# case class OH(...) #}
+{# case class PriorityMux(...) #}
+{# case class BoolLiteral(...) #}
+{# case class DecoupledInterface(...) #}
+{# </code></pre> #}
+{# <ul> #}
+{# <li class="fragment">Add more primitives such that we can preserve more higher level circuit semantics.</li> #}
+{# <li class="fragment">Need to find a good balance between pass writing vs QoR.</li> #}
+{# </ul> #}
+{# </section> #}
 
   <section class="center">
     <h3>Support for Multiple Abstractions</h3>
