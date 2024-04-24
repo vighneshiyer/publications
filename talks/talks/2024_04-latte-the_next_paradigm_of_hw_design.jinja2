@@ -1342,7 +1342,7 @@ class GCDMMIOBlackBox(val w: Int)
         <ul>
           <ol class="fragment">1. Incremental compilation and cacheing</ol>
           <ol class="fragment">2. Mixed abstraction by elaboration interop</ol>
-          <ol class="fragment">3. Runtime interop + IR primitives for semantics preserving</ol>
+          <ol class="fragment">3. Runtime interop + IR primitives for semantics preservation</ol>
         </ul>
         </font>
       </div>
@@ -1505,13 +1505,11 @@ class GCDMMIOBlackBox(val w: Int)
     <h2>Semantics Preserving</h2>
     <div class="container" style="grid-template-columns: 1.4fr 1.0fr;">
     <div class="r-stack">
-      <img class="fragment fade-in-then-out" data-fragment-index="0" src="./figs/latte24/new-paradigm-runtime-interop.svg" />
-      <img class="fragment" data-fragment-index="1" src="./figs/latte24/new-paradigm-common-ir.svg" />
+      <img class="fragment" src="./figs/latte24/new-paradigm-runtime-interop.svg" />
     </div>
     <div>
       <ul>
-        <li class="fragment fade-in-then-out" data-fragment-index="0">Runtime interop : abstraction level semantics</li>
-        <li class="fragment" data-fragment-index="1">Common IR : circuit level semantics</li>
+        <li class="fragment">Runtime interop : abstraction level semantics</li>
       </ul>
     </div>
   </section>
@@ -1538,7 +1536,21 @@ class GCDMMIOBlackBox(val w: Int)
     </div>
     <ul>
       <li class="fragment">Faster simulation throughput than naive cycle-by-cycle updates</li>
+      <li class="fragment">Must consider various interface boundaries (e.g. lat-insensitive, wires, function calls, ...)</li>
     </ul>
+  </section>
+
+  <section class="center">
+    <h2>Semantics Preserving</h2>
+    <div class="container" style="grid-template-columns: 1.4fr 1.0fr;">
+    <div class="r-stack">
+      <img class="fragment" src="./figs/latte24/new-paradigm-common-ir.svg" />
+    </div>
+    <div>
+      <ul>
+        <li class="fragment">Common IR : circuit level semantics</li>
+      </ul>
+    </div>
   </section>
 
   <section class="center">
