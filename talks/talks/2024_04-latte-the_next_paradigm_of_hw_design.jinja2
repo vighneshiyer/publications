@@ -147,6 +147,89 @@ Reveal.on( 'fragmenthidden', event => {
 
 <section>
   <section class="center">
+    <h2>The Next Paradigm of Hardware Design</h2>
+    <img class="image fragment no-margin" width="50%" src="./figs/latte24/new-paradigm.svg" />
+
+    <ol>
+      <li class="fragment"><strong class="green">Rapid iteration cycle</strong>: seconds to evaluate a change</li>
+      <li class="fragment"><strong class="green">Seamless mixed-abstraction design</strong>: interop enables productivity and a common simulation/VLSI substrate</li>
+      <li class="fragment"><strong class="green">Semantics preserving stack</strong>: enrich every design layer with semantics (circuit constructs, power/clock/reset, verification) for better QoR</li>
+    </ol>
+  </section>
+
+  <!--<section>
+    <h2>Flat Organization</h2>
+
+    <table class="old_paradigm_table fragment custom new">
+      <thead>
+      <tr>
+        <th></th>
+        <th></th>
+        <th colspan="5">Teams within an SoC Design Organization</th>
+      </tr>
+      <tr style="text-align: center;">
+        <th></th>
+        <th></th>
+        <th>Spec / Arch</th>
+        <th>Perf Modeling</th>
+        <th>RTL</th>
+        <th>DV</th>
+        <th>PD</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr>
+        <th rowspan="3" style="vertical-align: middle;">Design block</th>
+        <th>Core</th>
+        <td class="bg-red"></td>
+        <td class="bg-orange"></td>
+        <td></td>
+        <td></td>
+        <td></td>
+      </tr>
+      <tr>
+        <th>LLC</th>
+        <td class="bg-red"></td>
+        <td class="bg-orange"></td>
+        <td></td>
+        <td></td>
+        <td></td>
+      </tr>
+      <tr>
+        <th>NPU</th>
+        <td class="bg-red"></td>
+        <td class="bg-orange"></td>
+        <td></td>
+        <td></td>
+        <td></td>
+      </tr>
+      </tbody>
+    </table>
+
+    <ul>
+      <li class="fragment">Agile, small, and generalist workforce</li>
+      <li class="fragment">Teams are specialized by design block rather than function</li>
+      <li>Teams collaborate across functions</li>
+      <li class="fragment">Design and specification artifacts are reused and contain semantics that span from specification to PD</li>
+      <li class="fragment">Higher level abstractions enable productivity across the stack</li>
+    </ul>
+  </section>-->
+
+  <!--<section>
+    <h2>Main Ideas</h2>
+    <dl>
+      <dt class="fragment">Frontends</dt>
+      <dd class="fragment">Mixed-abstraction, interop semantics, ergonomic external module integration, embedding PD/power/verification collateral, rewrite/spec/compiler generation</dd>
+      <dt class="fragment">IRs</dt>
+      <dd class="fragment">Preservation of semantics, graph-oriented representation</dd>
+      <dt class="fragment">Tools / Simulators</dt>
+      <dd class="fragment">Low latency iteration cycle (incremental), full spectrum (from specification to PD)</dd>
+    </dl>
+  </section>-->
+</section>
+
+<section>
+  <section class="center">
     <h2>The Current Paradigm of Hardware Design</h2>
 
     <div class="center fragment">
@@ -155,7 +238,7 @@ Reveal.on( 'fragmenthidden', event => {
 
     <ol>
       <li class="fragment"><strong class="red">Slow iteration cycle</strong>: minutes to hours for evaluating a change</li>
-      <li class="fragment"><strong class="red">One abstraction at a time</strong>: Coarse-grained integration of multiple design abstractions limits the productivity benefits of each one</li>
+      <li class="fragment"><strong class="red">One abstraction at a time</strong>: coarse-grained integration of multiple design abstractions limits the productivity benefits of each one</li>
       <li class="fragment"><strong class="red">Loss of semantics</strong>: RTL is the "narrow waist" in the stack; higher-level semantics are stripped</li>
     </ol>
   </section>
@@ -514,93 +597,24 @@ class GCDMMIOBlackBox(val w: Int)
   </section>-->
 </section>
 
-<section>
-  <section class="center">
-    <h1>The Next Paradigm Shift of Hardware Design</h1>
-  </section>
+<section class="center">
+  <h2>Current vs Next</h2>
 
-  <section>
-    <h2>Flat Organization</h2>
-
-    <table class="old_paradigm_table fragment custom new">
-      <thead>
-      <tr>
-        <th></th>
-        <th></th>
-        <th colspan="5">Teams within an SoC Design Organization</th>
-      </tr>
-      <tr style="text-align: center;">
-        <th></th>
-        <th></th>
-        <th>Spec / Arch</th>
-        <th>Perf Modeling</th>
-        <th>RTL</th>
-        <th>DV</th>
-        <th>PD</th>
-      </tr>
-      </thead>
-      <tbody>
-      <tr>
-        <th rowspan="3" style="vertical-align: middle;">Design block</th>
-        <th>Core</th>
-        <td class="bg-red"></td>
-        <td class="bg-orange"></td>
-        <td></td>
-        <td></td>
-        <td></td>
-      </tr>
-      <tr>
-        <th>LLC</th>
-        <td class="bg-red"></td>
-        <td class="bg-orange"></td>
-        <td></td>
-        <td></td>
-        <td></td>
-      </tr>
-      <tr>
-        <th>NPU</th>
-        <td class="bg-red"></td>
-        <td class="bg-orange"></td>
-        <td></td>
-        <td></td>
-        <td></td>
-      </tr>
-      </tbody>
-    </table>
-
-    <ul>
-      <li class="fragment">Agile, small, and generalist workforce</li>
-      <li class="fragment">Teams are specialized by design block rather than function</li>
-      <!--<li>Teams collaborate across functions</li>-->
-      <li class="fragment">Design and specification artifacts are reused and contain semantics that span from specification to PD</li>
-      <li class="fragment">Higher level abstractions enable productivity across the stack</li>
-    </ul>
-  </section>
-
-  <section>
-    <h2>Main Ideas</h2>
-    <dl>
-      <dt class="fragment">Frontends</dt>
-      <dd class="fragment">Mixed-abstraction, interop semantics, ergonomic external module integration, embedding PD/power/verification collateral, rewrite/spec/compiler generation</dd>
-      <dt class="fragment">IRs</dt>
-      <dd class="fragment">Preservation of semantics, graph-oriented representation</dd>
-      <dt class="fragment">Tools / Simulators</dt>
-      <dd class="fragment">Low latency iteration cycle (incremental), full spectrum (from specification to PD)</dd>
-    </dl>
-  </section>
-
-  <section>
-    <h2>New Paradigm</h2>
-    <img src="./figs/latte24/new-paradigm.svg" />
-  </section>
-
+  <div class="container fragment" style="grid-template-columns: 1fr 1fr; column-gap: 2rem;">
+    <div>
+      <img style="object-fit: contain; height: 220px;" class="image no-margin" src="./figs/latte24/current-paradigm.svg" />
+    </div>
+    <div>
+      <img style="object-fit: contain; height: 220px;" class="image no-margin" src="./figs/latte24/new-paradigm.svg" />
+    </div>
+  </div>
 </section>
 
 <section>
   <section class="center">
-    <h2>Berkeley's attempt<br>on the new HW design paradigm</h2>
+    <h2>Berkeley's Attempt to Build the Next Paradigm of Hardware Design</h2>
     <ul>
-      <li class="fragment">The RTL first methodology (just go write RTL)</li>
+      <li class="fragment">The RTL first methodology (“just go write RTL”)</li>
       <li class="fragment">Step towards higher design productivity</li>
       <li class="fragment">High fidelity evaluation results</li>
     </ul>
