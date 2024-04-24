@@ -218,6 +218,7 @@ $overlayElementFgColor: 0, 0, 0;
         color: $tn_green;
         font-size: 0.9rem;
         margin-right: 1rem;
+        font-weight: bold;
       }
     }
     //ol {list-style: none; counter-reset: li}
@@ -255,6 +256,10 @@ $overlayElementFgColor: 0, 0, 0;
     color: #666;
 }
 
+.red {
+  color: $tn_red;
+}
+
 .bg-red {
   background: $tn_red;
   color: $tn_bg;
@@ -275,6 +280,10 @@ $overlayElementFgColor: 0, 0, 0;
 .bg-yellow {
   background: $tn_yellow;
   color: $tn_bg;
+}
+
+.green {
+  color: $tn_green;
 }
 
 .bg-green {
@@ -312,4 +321,20 @@ img.image, div.image {
 // Add to any element to strip away padding (also usually applied to images)
 .no-padding {
   padding: 0 !important;
+}
+
+.footnote {
+    color: $tn_text;
+    border-top: 2px solid $tn_grey;
+    font-size: 0.5rem;
+    margin-left: 1rem;
+    margin-right: 1rem;
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+}
+
+.reference {
+  vertical-align: super;
+  font-size: 0.5rem;
+  color: $tn_text;
 }

@@ -54,13 +54,13 @@ def single_pdf_to_svg(pdf: Path, page: int, svg: Path, poppler: bool, wd: Path) 
 
 
 def pdf_to_svg(
-    pdf: Path, n_pages: int, prefix: str, poppler: bool, wd: Path, n_cores: int = -1
+    pdf: Path, n_pages: int, prefix: str, poppler: bool, wd: Path, n_cores: int = 1
 ) -> None:
     def convert(idx: int) -> None:
         svg = wd / f"{prefix}{idx:02d}.svg"
         single_pdf_to_svg(pdf, idx + 1, svg, poppler, wd)
 
-    Parallel(n_jobs=-1)(delayed(convert)(page) for page in range(n_pages))
+    Parallel(n_jobs=n_cores)(delayed(convert)(page) for page in range(n_pages))
 
 
 def strip_svg_background(

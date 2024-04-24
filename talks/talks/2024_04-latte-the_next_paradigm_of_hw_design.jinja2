@@ -12,6 +12,8 @@
 {% set pub_datetime_iso = "2024-04-29" %}
 {% set pub_date = "April 29, 2024" %}
 
+{% set rightarrow = "⮕" %}
+
 {# Custom styles and JS for a particular talk #}
 {% block custom_head %}
 <style>
@@ -145,6 +147,180 @@ Reveal.on( 'fragmenthidden', event => {
 
 <section>
   <section class="center">
+    <h2>The Current Paradigm of Hardware Design</h2>
+
+    <div class="center fragment">
+      <img width="50%" class="image no-margin" src="./figs/latte24/current-paradigm.svg" />
+    </div>
+
+    <ol>
+      <li class="fragment"><strong class="red">Slow iteration cycle</strong>: minutes to hours for evaluating a change</li>
+      <li class="fragment"><strong class="red">Loss of semantics</strong>: RTL is the "narrow waist" in the stack</li>
+      <li class="fragment"><strong class="red">One abstraction at a time</strong>: Coarse-grained integration of multiple design abstractions limits the productivity benefits of each one</li>
+    </ol>
+  </section>
+  
+  <!--<section>
+    <h2>Rapid Iteration Across the Design Flow</h2>
+
+    <div class="container image no-padding no-margin" style="grid-template-columns: 1fr 1fr;">
+      <div class="fragment"><img width="60%" src="./figs/latte24/livesynth.png" /></div>
+      <div class="fragment"><img src="./figs/latte24/livehd.png" /></div>
+      <p><em>Modified image of iteration speeds. Make it clear that an fine-grained accuracy vs fidelity tradeoff is possible.</em></p>
+    </div>
+    <div class="center">
+      <figcaption class="fragment small">LiveSynth and LiveHD make strong drive towards rapid iteration.</figcaption>
+    </div>
+
+    <ul>
+      <li class="fragment">Focus not only on performance (throughput) of existing frontend + simulation tools, but also on <em>startup latency</em></li>
+      <li class="fragment">It's a lot more than just the frontend language: PPA evaluation, verification, and simulation is critical</li>
+      <li><em>Call out LiveHD, LiveSim, LiveSynth for being the only works that tackle this critical problem</em></li>
+    </ul>
+  </section>-->
+
+  <section>
+    <div style="position: relative;">
+    <h2>1. <span class="red">Slow Iteration Cycle</span></h2>
+    <img class="image no-margin" style="position:absolute; top: 0; right: 0; transform-origin: top right; transform: scale(1); padding: 0.3rem; width: 20%; z-index: 1;" src="./figs/latte24/current-paradigm.svg" />
+
+    <div class="center">
+      <img class="image no-margin fragment" style="z-index:-9999;" src="./figs/dynamic/latte24/iteration_speeds.svg" />
+      <!--Image of iteration speeds as they exist currently. few minutes from design change to elab (for Chipyard), 10s of minutes for HLS. time for RTL sim + eval. time for firesim fpga eval. time for PD flow for power/area-->
+    </div>
+
+    <ul>
+      <li class="fragment">Each new layer of tools adds latency from making a change to evaluation</li>
+      <li class="fragment">Current generation of tools has ad-hoc support for <em>incremental compilation</em> of the design and simulator
+      <ul>
+        <li class="fragment"><strong class="green">Progress</strong>: LiveHD<span class="reference">[1]</span>, LiveSynth<span class="reference">[2]</span>, LiveSim<span class="reference">[3]</span>: efforts to make incremental execution and rapid iteration first-class features of the design cycle</li>
+      </ul>
+      </li>
+    </ul>
+
+    <div class="footnote fragment">
+    [1] Coffman, Hunter, Kenneth Mayer, Sakshi Garg, and Jose Renau. "A Multi-threaded Fast Hardware Compiler for HDLs." CC’23.<br />
+    [2] Possignolo, Rafael Trapani, and Jose Renau. "LiveSynth: Towards an interactive synthesis flow." DAC 2017.<br />
+    [3] Skinner, Haven, Rafael Trapani Possignolo, Sheng-Hong Wang, and Jose Renau. "LiveSim: A fast hot reload simulator for HDLs." ISPASS 2020.
+    </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>1. <span class="red">Slow Iteration Cycle</span> - <span class="green">New Simulators</span></h2>
+    <dl>
+      <div class="fragment">
+        <dt>Higher-abstraction simulators</dt>
+        <dd><a href="https://docs.calyxir.org/debug/cider.html">Cider (Calyx)</a>, <a href="https://people.csail.mit.edu/bthom/asplos21-1.pdf">Cuttlesim (Koika)</a>, <a href="https://github.com/accellera-official/systemc">SystemC</a></dd>
+      </div>
+
+      <div class="fragment">
+        <dt>RTL SW simulators</dt>
+        <dd><a href="https://www.veripool.org/verilator/">Verilator</a>, <a href="https://github.com/circt/arc-tests">Arcilator</a>, <a href="https://yosyshq.readthedocs.io/projects/yosys/en/latest/cmd/write_cxxrtl.html">CXXRTL</a>, <a href="https://github.com/chipsalliance/treadle">Treadle</a>, <a href="https://github.com/ucsc-vama/essent">ESSENT</a>, <a href="https://github.com/ucsc-vama/essent/tree/repcut">RepCut</a>, <a href="https://github.com/pku-liang/ksim/tree/main">Khronos</a></dd>
+      </div>
+
+      <div class="fragment">
+        <dt>HW accelerated RTL simulators</dt>
+        <dd class="small"><strong><a href="https://fires.im/">FireSim</a></strong>, <a href="https://github.com/ManticoreRTL">Manticore</a> (FPGA) | <a href="https://github.com/dian-lun-lin/RTLflow">RTLFlow</a> (GPU) | <a href="https://dl.acm.org/doi/abs/10.1145/3613424.3614257">ASH</a>> (ASIC) | <a href="https://arxiv.org/abs/2403.04714">Parendi</a> (Graphcore IPU)</dd>
+      </div>
+    </dl>
+
+    <hr class="fragment">
+
+    <ol>
+      <li class="fragment">Higher-level abstractions {{ rightarrow }} lower startup latency and higher throughput</li>
+      <li class="fragment">Optimize software RTL simulators {{ rightarrow }} higher throughput
+        <ul class="small"><li>Memory layout, SIMD, multicore, dynamic execution, IR interpreters</li></ul>
+      </li>
+      <li class="fragment">Leverage specialized hardware {{ rightarrow }} faster iteration on long workloads</li>
+    </ol>
+
+    <!--These simulators address iteration speed by either simulating higher level abstractions, optimizing simulation kernels, or using specialized hardware.-->
+    <!--<p class="center fragment">Iteration speed is critical; simulation is the workhorse of HW design. SW RTL simulation isn't at its limit! HW accelerated RTL simulation has been scantly explored.</p>-->
+  </section>
+
+  <section>
+    <div style="position: relative;">
+    <h2>2. <span class="red">Loss of Semantics</span></h2>
+    <img class="image no-margin" style="position:absolute; top: 0; right: 0; transform-origin: top right; transform: scale(1); padding: 0.3rem; width: 20%; z-index: 1;" src="./figs/latte24/current-paradigm.svg" />
+
+    <div class="container" style="grid-template-columns: 1fr 1fr; margin-bottom: 1rem;">
+      <div>
+        <img data-fragment-index=1 class="fragment image no-margin" src="./figs/dynamic/latte24/simulator_interop.svg" />
+      </div>
+      <div>
+        <img data-fragment-index=3 style="z-index:9999;" class="fragment image no-margin" src="./figs/dynamic/latte24/synthesis_semantics.svg" />
+      </div>
+    </div>
+
+    <ul>
+      <li class="fragment" data-fragment-index=2>Lack of a common runtime interop model {{ rightarrow }} hacked together composition / slow iteration</li>
+      <li class="fragment" data-fragment-index=4>Existing IRs erase design semantics {{ rightarrow }} must be recovered by synthesis / simulation tools, lower QoR</li>
+    </ul>
+
+    <!--<div class="center fragment">
+      <img class="image no-margin" src="./figs/dynamic/latte24/typical_flow.svg" />
+      <figcaption class="small">A pretty typical flow</figcaption>
+      <p><em>Insert picture of ugly SystemVerilog macros, Perl generators</em></p>
+    </div>-->
+
+    <!--
+    - ill defined / complex semantics, mixing simulation and synthesizable abstractions
+    - multiple abstractions can only be blackboxed at the lowest level (practically)
+    - massive monolithic simulation/emulation tools
+    - macros on top of macros on top of web of Perl scripts
+    -->
+
+    <!--<ul class="small">
+      <li class="fragment">Most design is done at the RTL abstraction in Verilog/VHDL</li>
+      <li class="fragment">Limitations of these languages lead to a tower of macros on top of macros on top of a web of Perl</li>
+      <li class="fragment">Simulation / synthesis semantics mismatch</li>
+      <li class="fragment">Compositional semantics of mixing multiple abstractions isn't defined. Everything is lowered to RTL</li>
+      <li class="fragment">Simulation / emulation tools are massive monolithic blobs</li>
+    </ul>
+
+    An adder is also a design semantic, we could have erased that and let synthesis recover it. but we don't. can we apply this elsewhere?-->
+    </div>
+  </section>
+
+  <section>
+    <h2>3. Design Productivity - New HDLs and Design Abstractions</h2>
+    <dl>
+      <dt class="fragment">Intermediate representations</dt>
+      <dd class="fragment small"><a href="https://github.com/chipsalliance/firrtl-spec">FIRRTL</a>, <a href="https://github.com/fabianschuiki/llhd">LLHD</a>, <a href="https://circt.llvm.org/docs/Dialects/">Circt</a> <small>(affine, handshake, ssp, pipeline, fsm, dc)</small>, <a href="https://dl.acm.org/doi/pdf/10.1145/3623278.3624767">HIR</a>, <a href="https://github.com/masc-ucsc/livehd/tree/master/lgraph">LGraph</a>/<a href="https://masc.soe.ucsc.edu/docs/woset19b.pdf">LNAST</a>, <a href="https://github.com/YosysHQ/yosys/blob/main/kernel/rtlil.h">Yosys RTLIL</a>, <a href="https://dl.acm.org/doi/abs/10.1145/3453483.3454075">Reticle</a></dd>
+      <dt class="fragment">RTL-level</dt>
+      <dd class="fragment small"><strong>Chisel</strong>, SpinalHDL (Scala) | Lava, Blarney (Haskell) | Amaranth, MyHDL, PyMTL3, <a href="https://github.com/UCSBarchlab/PyRTL">PyRTL</a>, Magma, (Python) | HardCaml (OCaml) | <a href="https://intel.github.io/rohd-website/">ROHD</a> (Dart) | pyrope, Veryl (freestanding)</dd>
+      <dt class="fragment">Dataflow</dt>
+      <dd class="fragment"><a href="https://spade-lang.org/">Spade</a>, Shakeflow, DFiant, Verilog-TL, PipelineC</dd>
+      <dt class="fragment">Control flow synthesis</dt>
+      <dd class="fragment">Calyx, XLS, Bluespec, <a href="https://github.com/mit-plv/koika">Koika</a>, <a href="https://clash-lang.org/">Clash</a><sup>*</sup></dd>
+      <dt class="fragment">Accelerator design languages</dt>
+      <dd class="fragment">Spatial, Dahlia, <a href="https://dl.acm.org/doi/abs/10.1145/3352460.3358292">μIR</a>, HeteroCL, <a href="https://arxiv.org/pdf/2404.04815.pdf">Allo</a></dd>
+      <dt class="fragment">General HLS</dt>
+      <dd class="fragment">SystemC (Catapult), C++ (<a href="">LegUp</a>, <a href="https://github.com/Xilinx/HLS">Vitis HLS</a>)</dd>
+    </dl>
+
+    <p class="center fragment">Enabling higher hardware design productivity. </p>
+  </section>
+
+
+  <section>
+    <h2>New SoC Design Frameworks</h2>
+    <ul class="fragment">
+      <li><strong><a href="https://github.com/ucb-bar/chipyard">Chipyard</a></strong>: Chisel-based, cores (Rocket, BOOM, CVA6), accelerators (Gemmini, NVDLA), memory system + NoC</li>
+      <li><a href="https://www.esp.cs.columbia.edu/">ESP</a>: Tile based SoC architecture, cores (CVA6, Ibex), accelerators (Verilog blackboxing), memory system + NoC</li>
+      <li><a href="http://parallel.princeton.edu/openpiton/">OpenPiton</a>: Ariane + memory / uncore components</li>
+      <li><a href="https://github.com/pulp-platform/pulp">PULP</a>: Cores (RISCY, zero-riscy), ???</li>
+      <li><a href="https://github.com/black-parrot/black-parrot">BlackParrot</a>: ???</li>
+      <li><a href="https://github.com/OpenXiangShan/XiangShan">Xiangshan</a>: High performance OoO RISC-V core + L2</li>
+    </ul>
+
+    <p class="center fragment">Full system evaluation at RTL-level. SoC level parameterization and integration of external IP.</p>
+  </section>
+</section>
+
+<section>
+  <section class="center">
     <h1>The Existing Paradigm of Hardware Design</h1>
     <h2>Seen in Industry</h2>
   </section>
@@ -221,28 +397,6 @@ Reveal.on( 'fragmenthidden', event => {
     </ul>
   </section>
 
-  <section>
-    <h2>Languages + Semantics</h2>
-    <div class="center fragment">
-      <img class="image no-margin" src="./figs/dynamic/latte24/typical_flow.svg" />
-      <!--<figcaption class="small">A pretty typical flow</figcaption>-->
-      <!--<p><em>Insert picture of ugly SystemVerilog macros, Perl generators</em></p>-->
-    </div>
-
-    <!--
-    - ill defined / complex semantics, mixing simulation and synthesizable abstractions
-    - multiple abstractions can only be blackboxed at the lowest level (practically)
-    - massive monolithic simulation/emulation tools
-    - macros on top of macros on top of web of Perl scripts
-    -->
-    <ul class="small">
-      <li class="fragment">Most design is done at the RTL abstraction in Verilog/VHDL</li>
-      <li class="fragment">Limitations of these languages lead to a tower of macros on top of macros on top of a web of Perl</li>
-      <li class="fragment">Simulation / synthesis semantics mismatch</li>
-      <li class="fragment">Compositional semantics of mixing multiple abstractions isn't defined. Everything is lowered to RTL</li>
-      <li class="fragment">Simulation / emulation tools are massive monolithic blobs</li>
-    </ul>
-  </section>
 
   <section>
     <h2>SoC Integration / Construction</h2>
@@ -261,24 +415,6 @@ Reveal.on( 'fragmenthidden', event => {
     </ul>
   </section>
 
-  <section>
-    <h2>Iteration Speed</h2>
-
-    <!--
-      - it's not worth mentioning that industry uses handcrafted tools - i think that's not too related to iteration speed issues
-    -->
-
-    <div class="center">
-      <img class="image no-margin" src="./figs/dynamic/latte24/iteration_speeds.svg" />
-      <!--<p><em>Image of iteration speeds as they exist currently. few minutes from design change to elab (for Chipyard), 10s of minutes for HLS. time for RTL sim + eval. time for firesim fpga eval. time for PD flow for power/area.</em></p>-->
-    </div>
-
-    <ul>
-      <li class="fragment">Each new layer of tools adds latency from making a change to evaluation</li>
-      <li class="fragment">Current generation of tools has ad-hoc support for incremental compilation of the design and simulator</li>
-      <li class="fragment">It's well known that low iteration speed hampers developer productivity</li>
-    </ul>
-  </section>
 
   <!--<section>
     <h2>Beauty / Elegance</h2>
@@ -288,22 +424,6 @@ Reveal.on( 'fragmenthidden', event => {
       <li>How else can we demonstrate the lack of beauty?</li>
     </ul>
   </section>-->
-
-  <section>
-    <h2>Vertical Separation</h2>
-    <div class="container" style="grid-template-columns: 1.4fr 1.0fr;">
-      <div>
-        <img class="fragment" src="./figs/latte24/current-paradigm.svg"/>
-      </div>
-      <div>
-        <ul>
-          <li class="fragment">Each level of the stack is agnostic of other layers</li>
-          <li class="fragment">Long latency</li>
-          <li class="fragment">(Possibly) missing out on QoR</li>
-        </ul>
-      </div>
-    </div>
-  </section>
 </section>
 
 <section>
@@ -401,24 +521,6 @@ class GCDMMIOBlackBox(val w: Int)
     </dl>
   </section>
 
-  <section>
-    <h2>Rapid Iteration Across the Design Flow</h2>
-
-    <div class="container image no-padding no-margin" style="grid-template-columns: 1fr 1fr;">
-      <div class="fragment"><img width="60%" src="./figs/latte24/livesynth.png" /></div>
-      <div class="fragment"><img src="./figs/latte24/livehd.png" /></div>
-      <!--<p><em>Modified image of iteration speeds. Make it clear that an fine-grained accuracy vs fidelity tradeoff is possible.</em></p>-->
-    </div>
-    <div class="center">
-      <figcaption class="fragment small">LiveSynth and LiveHD make strong drive towards rapid iteration.</figcaption>
-    </div>
-
-    <ul>
-      <li class="fragment">Focus not only on performance (throughput) of existing frontend + simulation tools, but also on <em>startup latency</em></li>
-      <li class="fragment">It's a lot more than just the frontend language: PPA evaluation, verification, and simulation is critical</li>
-      <!--<li><em>Call out LiveHD, LiveSim, LiveSynth for being the only works that tackle this critical problem</em></li>-->
-    </ul>
-  </section>
 
   <section>
     <h2>Main Ideas</h2>
@@ -437,59 +539,6 @@ class GCDMMIOBlackBox(val w: Int)
     <img src="./figs/latte24/new-paradigm.svg" />
   </section>
 
-</section>
-
-<section>
-  <section class="center">
-    <h1>Showcase of Work Towards the Next Paradigm</h1>
-  </section>
-
-  <section>
-    <h2>New HDLs and Design Abstractions</h2>
-    <dl>
-      <dt class="fragment">Intermediate representations</dt>
-      <dd class="fragment small"><a href="https://github.com/chipsalliance/firrtl-spec">FIRRTL</a>, <a href="https://github.com/fabianschuiki/llhd">LLHD</a>, <a href="https://circt.llvm.org/docs/Dialects/">Circt</a> <small>(affine, handshake, ssp, pipeline, fsm, dc)</small>, <a href="https://dl.acm.org/doi/pdf/10.1145/3623278.3624767">HIR</a>, <a href="https://github.com/masc-ucsc/livehd/tree/master/lgraph">LGraph</a>/<a href="https://masc.soe.ucsc.edu/docs/woset19b.pdf">LNAST</a>, <a href="https://github.com/YosysHQ/yosys/blob/main/kernel/rtlil.h">Yosys RTLIL</a>, <a href="https://dl.acm.org/doi/abs/10.1145/3453483.3454075">Reticle</a></dd>
-      <dt class="fragment">RTL-level</dt>
-      <dd class="fragment small"><strong>Chisel</strong>, SpinalHDL (Scala) | Lava, Blarney (Haskell) | Amaranth, MyHDL, PyMTL3, <a href="https://github.com/UCSBarchlab/PyRTL">PyRTL</a>, Magma, (Python) | HardCaml (OCaml) | <a href="https://intel.github.io/rohd-website/">ROHD</a> (Dart) | pyrope, Veryl (freestanding)</dd>
-      <dt class="fragment">Dataflow</dt>
-      <dd class="fragment"><a href="https://spade-lang.org/">Spade</a>, Shakeflow, DFiant, Verilog-TL, PipelineC</dd>
-      <dt class="fragment">Control flow synthesis</dt>
-      <dd class="fragment">Calyx, XLS, Bluespec, <a href="https://github.com/mit-plv/koika">Koika</a>, <a href="https://clash-lang.org/">Clash</a><sup>*</sup></dd>
-      <dt class="fragment">Accelerator design languages</dt>
-      <dd class="fragment">Spatial, Dahlia, <a href="https://dl.acm.org/doi/abs/10.1145/3352460.3358292">μIR</a>, HeteroCL, <a href="https://arxiv.org/pdf/2404.04815.pdf">Allo</a></dd>
-      <dt class="fragment">General HLS</dt>
-      <dd class="fragment">SystemC (Catapult), C++ (<a href="">LegUp</a>, <a href="https://github.com/Xilinx/HLS">Vitis HLS</a>)</dd>
-    </dl>
-
-    <p class="center fragment">Enabling higher hardware design productivity. </p>
-  </section>
-
-  <section>
-    <h2>New Simulators</h2>
-    <dl>
-      <dt class="fragment">Higher-abstraction simulators</dt>
-      <dd class="fragment"><a href="https://docs.calyxir.org/debug/cider.html">Cider (Calyx)</a>, <a href="https://people.csail.mit.edu/bthom/asplos21-1.pdf">Cuttlesim</a> (Koika)</dd>
-      <dt class="fragment">RTL SW simulators</dt>
-      <dd class="fragment"><a href="https://www.veripool.org/verilator/">Verilator</a>, <a href="https://github.com/circt/arc-tests">Arcilator</a>, <a href="https://yosyshq.readthedocs.io/projects/yosys/en/latest/cmd/write_cxxrtl.html">CXXRTL</a>, <a href="https://github.com/chipsalliance/treadle">Treadle</a>, ESSENT, RepCut, Khronos</dd>
-      <dt class="fragment">HW accelerated RTL simulators</dt>
-      <dd class="fragment small"><strong><a href="https://fires.im/">FireSim</a></strong>, Manticore (FPGA) | RTLFlow (GPU) | <a href="https://dl.acm.org/doi/abs/10.1145/3613424.3614257">ASH</a><sup>*</sup> (ASIC) | <a href="https://arxiv.org/abs/2403.04714">Parendi</a> (Graphcore IPU)</dd>
-    </dl>
-    <p class="center fragment">Iteration speed is critical; simulation is the workhorse of HW design. SW RTL simulation isn't at its limit! HW accelerated RTL simulation has been scantly explored.</p>
-  </section>
-
-  <section>
-    <h2>New SoC Design Frameworks</h2>
-    <ul class="fragment">
-      <li><strong><a href="https://github.com/ucb-bar/chipyard">Chipyard</a></strong>: Chisel-based, cores (Rocket, BOOM, CVA6), accelerators (Gemmini, NVDLA), memory system + NoC</li>
-      <li><a href="https://www.esp.cs.columbia.edu/">ESP</a>: Tile based SoC architecture, cores (CVA6, Ibex), accelerators (Verilog blackboxing), memory system + NoC</li>
-      <li><a href="http://parallel.princeton.edu/openpiton/">OpenPiton</a>: Ariane + memory / uncore components</li>
-      <li><a href="https://github.com/pulp-platform/pulp">PULP</a>: Cores (RISCY, zero-riscy), ???</li>
-      <li><a href="https://github.com/black-parrot/black-parrot">BlackParrot</a>: ???</li>
-      <li><a href="https://github.com/OpenXiangShan/XiangShan">Xiangshan</a>: High performance OoO RISC-V core + L2</li>
-    </ul>
-
-    <p class="center fragment">Full system evaluation at RTL-level. SoC level parameterization and integration of external IP.</p>
-  </section>
 </section>
 
 <section>
