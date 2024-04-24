@@ -429,8 +429,8 @@ class GCDMMIOBlackBox(val w: Int)
       </div>
     </dl>
 
-    <p class="center small fragment">Stack of Perl and macros in SystemVerilog <span class="green">{{ rightarrow }} new RTL-level DSLs</span></p>
-    <p class="center fragment">Rich ecosystem of design languages enable higher productivity, <strong class="red">but are difficult to compose and integrate.</strong></p>
+    <p class="center small fragment"><span class="red">Stack of Perl and macros in SystemVerilog</span> <span class="green">{{ rightarrow }} new RTL-level DSLs</span></p>
+    <p class="center fragment"><span class="green">Rich ecosystem of design languages</span> enable higher productivity, <strong class="red">but are difficult to compose and integrate.</strong></p>
   </section>
 
   <section>
@@ -598,7 +598,7 @@ class GCDMMIOBlackBox(val w: Int)
 </section>
 
 <section class="center">
-  <h2>Current vs Next</h2>
+  <h2>Current vs Next Paradigm</h2>
 
   <div class="container fragment" style="grid-template-columns: 1fr 1fr; column-gap: 2rem;">
     <div>
@@ -608,41 +608,49 @@ class GCDMMIOBlackBox(val w: Int)
       <img style="object-fit: contain; height: 220px;" class="image no-margin" src="./figs/latte24/new-paradigm.svg" />
     </div>
   </div>
+
+  <p class="center fragment">How do we move towards the next paradigm?</p>
+
+  <ol class="smallish">
+    <li class="fragment"><strong>Iteration cycle</strong>: build incremental and fast evaluation tools and languages</li>
+    <li class="fragment"><strong>Increase design productivity</strong>: design languages to address the mundane aspects of RTL design</li>
+    <li class="fragment"><strong>Capture design semantics</strong>: target an IR and annotate circuit nodes with semantic information</li>
+  </ol>
 </section>
 
 <section>
   <section class="center">
-    <h2>Berkeley's Attempt to Build the Next Paradigm of Hardware Design</h2>
+    <h2>Our Attempt to Build the Next Paradigm of Hardware Design</h2>
+
     <ul>
       <li class="fragment">The RTL first methodology (“just go write RTL”)</li>
-      <li class="fragment">Step towards higher design productivity</li>
-      <li class="fragment">High fidelity evaluation results</li>
+      <li class="fragment">Building languages and tools for higher design productivity</li>
+      <li class="fragment">Building simulators for high fidelity performance evaluation</li>
     </ul>
   </section>
 
   <section class="center">
-    <h3>Typical hardware design cycle</h3>
+    <h2>Typical Hardware Design Cycle</h2>
     <div class="container" style="grid-template-columns: 1.0fr 1.4fr;">
       <div class="fragment">
-        <img src="./figs/latte24/design-process.svg" />
+        <img src="./figs/dynamic/latte24/typical_hw_design.svg" />
       </div>
       <div>
-        <font size="6">
         <ul>
-          <li class="fragment">Iterate over a design point in various abstractions</li>
-          <li class="fragment">You can get feedback from lower level abstractions</li>
-          <li class="fragment">You are likely to run <strong>a lot of simulations</strong> in order to get functionality and performance correct</li>
+          <li class="fragment">Iterate over a design point in different abstractions</li>
+          <li class="fragment">Use feedback from lower abstractions to guide decisions at higher levels</li>
+          <li class="fragment">You are likely to run <strong>a lot of simulations</strong> to get functionality and performance correct</li>
         </ul>
-        </font>
       </div>
     </div>
   </section>
 
   <section class="center">
-    <h3>Problems of modeling</h3>
+    <h2>Limitations of Performance Modeling</h2>
     <div class="container" style="grid-template-rows: 0.2fr 0.7fr;">
     <div>
       <img class="fragment" data-fragment-index="0" height=300px; src="./figs/latte24/modeling-errors.png" />
+      <figcaption class="small"></figcaption>
     </div>
     <div>
       <ul>
@@ -653,19 +661,17 @@ class GCDMMIOBlackBox(val w: Int)
   </section>
 
   <section class="center">
-    <h3>RTL first design methodology</h3>
+    <h2>RTL First Design Methodology</h2>
     <div class="container" style="grid-template-columns: 1.0fr 1.4fr;">
       <div class="fragment">
-        <img src="./figs/latte24/design-process-rtl-first.svg" />
+        <img src="./figs/dynamic/latte24/rtl_first_design.svg" />
       </div>
       <div>
-        <font size="6">
-        <ul>
-          <li class="fragment">Modeling is required because <strong>RTL writing is hard</strong></li>
+        <p class="fragment center">We resort to performance models because <strong>writing and evaluating RTL is hard</strong></p>
+        <ol>
           <li class="fragment">Make RTL writing so easy that we can just do modeling with RTL</li>
           <li class="fragment">Model large systems with high evaluation fidelity!</li>
-        </ul>
-        </font>
+        </ol>
       </div>
     </div>
   </section>
