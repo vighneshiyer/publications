@@ -1610,212 +1610,6 @@ class GCDMMIOBlackBox(val w: Int)
       </font>
     </div>
   </section>
-
-  <section class="center">
-    <h3>RTL Level IR : Better In Memory Representation</h3>
-    <ul>
-      <li class="fragment">Why does this even matter?</li>
-      <li class="fragment">The primitives available in your IR affects QoR</li>
-    </ul>
-  </section>
-
-  <section data-auto-animate>
-    <h3>SSA Rep. Problem</h3>
-    <p>FIRRTL's combinational loop detection pass</p>
-    <pre data-id="code-animation"><code class="scala" data-trim data-line-numbers="1-6|23,27,31|8,13,14,15,18,19|42">
-    class CheckCombLoops
-        extends Transform
-        with RegisteredTransform
-        with DependencyAPIMigration {
-
-      ...
-
-      private def getStmtDeps(
-        simplifiedModules: mutable.Map[String, AbstractConnMap],
-        deps:              MutableConnMap
-      )(s:                 Statement
-      ): Unit = s match {
-        case Connect(info, loc, expr) => ...
-        case w: DefWire => ...
-        case DefNode(info, name, value) =>
-          ...
-          getExprDeps(deps, lhs, info)(value)
-        case m: DefMemory if (m.readLatency == 0) => ...
-        case i: WDefInstance => ...
-        case _ => s.foreach(getStmtDeps(simplifiedModules, deps))
-      }
-
-      private def run(state: CircuitState) = {
-        ...
-        topoSortedModules.foreach {
-          ...
-          case m: Module =>
-            val portSet = m.ports.map(p => LogicNode(p.name)).toSet
-            val internalDeps = new MutableDiGraph[LogicNode] with MutableEdgeData[LogicNode, Info]
-            portSet.foreach(internalDeps.addVertex(_))
-            m.foreach(getStmtDeps(simplifiedModuleGraphs, internalDeps))
-
-            moduleGraphs(m.name) = internalDeps
-            simplifiedModuleGraphs(m.name) = moduleGraphs(m.name).simplify(portSet)
-            // Find combinational nodes with self-edges; this is *NOT* the same as length-1 SCCs!
-            for (unitLoopNode &lt;- internalDeps.getVertices.filter(v =&gt; internalDeps.getEdges(v).contains(v))) {
-              errors.append(new CombLoopException(m.info, m.name, Seq(unitLoopNode.name)))
-            }
-
-            for (scc &lt;- internalDeps.findSCCs.filter(_.length &gt; 1)) {
-              val sccSubgraph = internalDeps.subgraph(scc.toSet)
-              val cycle = findCycleInSCC(sccSubgraph)
-              (cycle.zip(cycle.tail)).foreach({ case (a, b) =&gt; require(internalDeps.getEdges(a).contains(b)) })
-              // Reverse to make sure LHS comes after RHS, print repeated vertex at start for legibility
-              val intuitiveCycle = cycle.reverse
-              val repeatedInitial = prettyPrintAbsoluteRef(Seq(m.name), intuitiveCycle.head)
-              val expandedCycle = expandInstancePaths(m.name, moduleGraphs, moduleDeps, Seq(m.name), intuitiveCycle)
-              errors.append(new CombLoopException(m.info, m.name, repeatedInitial +: expandedCycle))
-            }
-          case m => throwInternalError(s"Module ${m.name} has unrecognized type")
-        }
-        ...
-      }
-    }
-    </code></pre>
-    <div class="r-stack">
-      <p id="special1" style="transition: all .2s ease; opacity: 0; visibility: hidden; will-change: opacity;">We are traversing the statements to build a graph of the nodes</p>
-      <p id="special2" style="transition: all .2s ease; opacity: 0; visibility: hidden; will-change: opacity;">We are traversing the graph once again to check for comb loops</p>
-    </div>
-  </section>
-
-  <section class="center">
-    <h3>Graph Rep</h3>
-    <ul>
-      <li class="fragment">The above pattern of traversing the graph twice is a very common pattern in FIRRTL passes</li>
-      <li class="fragment">If we had a graph representation of the circuit, we wouldn't have had to traverse the circuit twice</li>
-      <li class="fragment">Compared to a SSA style, "human readable" IR, debugging passes might become more difficult</li>
-    </ul>
-  </section>
-
-{# <section class="center"> #}
-{# <h3>Existing Abstractions</h3> #}
-{# <ul> #}
-{# <li class="fragment">Gate level : lets ignore this for now..</li> #}
-{# <li class="fragment">RTL : Explicitly defining registers and wires (e.g., Verilog, S-Verilog, Chisel)</li> #}
-{# <li class="fragment">Calyx : Explicit HW instantiations, imperative control flow</li> #}
-{# <li class="fragment">HLS : High level descriptions, compiler does it all</li> #}
-{# </ul> #}
-{# </section> #}
-
-{# <section class="center"> #}
-{# <h2>Problems with Mixing</h2> #}
-{# <div class="container" style="grid-template-columns: 1.0fr 1.4fr;"> #}
-{# <div> #}
-{# <img src="./figs/latte24/oil-water.jpg" /> #}
-{# </div> #}
-{# <div> #}
-{# <font size="6"> #}
-{# <ul> #}
-{# <li class="fragment">Clean (and good looking) APIs between the abstractions</li> #}
-{# <li class="fragment">Compiler backend that can stitch different abstractions together</li> #}
-{# </ul> #}
-{# </font> #}
-{# </div> #}
-{# </div> #}
-{# </section> #}
-
-{# <section class="center"> #}
-{# <h2>Clean API</h2> #}
-{# <ul> #}
-{# <li class="fragment">Mixing abstractions in the module granularity seems reasonable</li> #}
-{# <ul> #}
-{# <li class="fragment">Clean separation of compilers between abstractions</li> #}
-{# <li class="fragment">IO ports are concrete targets that the HLS compilers can try abstracting away</li> #}
-{# </ul> #}
-{# </section> #}
-
-{# <section class="center"> #}
-{# <h4>How should the HLS APIs look like in this world?</h4> #}
-{# <ul> #}
-{# <li class="fragment">Want to separate the compute description from the compiler flags (HeteroCL)</li> #}
-{# <li class="fragment">Want to specify the HLS compiler flags in a single location</li> #}
-{# <ul> #}
-{# <li class="fragment">Easier to specify relationships between flags</li> #}
-{# <li class="fragment">Cleaner code</li> #}
-{# </ul> #}
-{# <li class="fragment">Want to abstract out the bus/RTL interface</li> #}
-{# <li class="fragment">Want to pass parameters from the SoC side</li> #}
-{# </ul> #}
-{# </section> #}
-
-{# <section class="center"> #}
-{# <h2>Compiler Backend - Goals</h2> #}
-{# <div class="container" style="grid-template-columns: 1.4fr 1.0fr;"> #}
-{# <div> #}
-{# <img src="./figs/latte24/backend-questionmark.svg" style="height: 500px;"/> #}
-{# </div> #}
-{# <div> #}
-{# <font size="6"> #}
-{# <ul> #}
-{# <li class="fragment">High simulation performance (don't lower everying into RTL)</li> #}
-{# <li class="fragment">High QoR (need to preserve circuit semantics)</li> #}
-{# </ul> #}
-{# </font> #}
-{# </div> #}
-{# </div> #}
-{# </section> #}
-
-{# <section class="center"> #}
-{# <h2>Compiler Backend - RTL Simulation</h2> #}
-{# <div class="container" style="grid-template-columns: 1.4fr 1.0fr;"> #}
-{# <div> #}
-{# <img src="./figs/latte24/backend-rtl-sim.png" style="height: 500px;"/> #}
-{# </div> #}
-{# <div> #}
-{# <font size="6"> #}
-{# <ul> #}
-{# <li class="fragment">Instead of lowering higher level abstractions into RTL, emit discrete event models and link them during simulator compile time</li> #}
-{# </ul> #}
-{# </font> #}
-{# </div> #}
-{# </div> #}
-{# </section> #}
-
-{# <section class="center"> #}
-{# <h2>Compiler Backend - RTL Simulation</h2> #}
-{# <div class="container" style="grid-template-columns: 1.4fr 1.0fr;"> #}
-{# <div> #}
-{# <img src="./figs/latte24/backend-rtl-sim-details.png" style="height: 500px;"/> #}
-{# </div> #}
-{# <div> #}
-{# <font size="6"> #}
-{# <ul> #}
-{# <li class="fragment">Need to define a common transaction scheme between various abstractions</li> #}
-{# <li class="fragment">The scheduler can make optimizations across all abstractions</li> #}
-{# </ul> #}
-{# </font> #}
-{# </div> #}
-{# </div> #}
-{# </section> #}
-
-{# <section class="center"> #}
-{# <h2>Compiler Backend - FPGA / ASIC</h2> #}
-{# <div class="container" style="grid-template-columns: 1.4fr 1.0fr;"> #}
-{# <div> #}
-{# <img src="./figs/latte24/backend-fpga-asic.svg" style="height: 500px;"/> #}
-{# </div> #}
-{# <div> #}
-{# <font size="6"> #}
-{# <ul> #}
-{# <li class="fragment">IRs such as Calyx & "RTL IR" should be able to preserve circuit semantics</li> #}
-{# <li class="fragment">In the short term we can generate Verilog</li> #}
-{# <li class="fragment">In the long term, fix backend tools to directly operate on the "RTL IR"</li> #}
-{# </ul> #}
-{# </font> #}
-{# </div> #}
-{# </div> #}
-{# </section> #}
-
-{# <section class="center"> #}
-{# <h2>Compiler Backend - Overall</h2> #}
-{# <img src="./figs/latte24/backend-all.png" style="height: 500px;"/> #}
-{# </section> #}
 </section>
 
 <!-- -------------------------------------------------------------------- -->
@@ -1914,6 +1708,25 @@ class GCDMMIOBlackBox(val w: Int)
 <section>
   <section class="center">
     <h2>Reference</h2>
+  </section>
+</section>
+
+<section>
+  <section class="center">
+    <h2>Backup Slides</h2>
+  </section>
+
+  <section class="center">
+    <h2>CIRCT Comparisons</h2>
+    <ul>
+      <li class="fragment">Current paradigm's approach to mixed abstractions</li>
+      <ul>
+        <li class="fragment">Simulation is done in the RTL abstraction</li>
+        <li class="fragment">No notion of abstraction preservation</li>
+      </ul>
+      <li class="fragment">Incrementalism is a logistical issue</li>
+      <li class="fragment">Circuit semantics preservation is also a logistical issue</li>
+    </ul>
   </section>
 </section>
 
