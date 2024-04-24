@@ -431,6 +431,12 @@ class GCDMMIOBlackBox(val w: Int)
       <dd class="fragment">Low latency iteration cycle (incremental), full spectrum (from specification to PD)</dd>
     </dl>
   </section>
+
+  <section>
+    <h2>New Paradigm</h2>
+    <img src="./figs/latte24/new-paradigm.svg" />
+  </section>
+
 </section>
 
 <section>
@@ -490,7 +496,9 @@ class GCDMMIOBlackBox(val w: Int)
   <section class="center">
     <h2>Berkeley's attempt<br>on the new HW design paradigm</h2>
     <ul>
-      <li class="fragment">The RTL first methodology (just go write RTL).</li>
+      <li class="fragment">The RTL first methodology (just go write RTL)</li>
+      <li class="fragment">Step towards higher design productivity</li>
+      <li class="fragment">High fidelity evaluation results</li>
     </ul>
   </section>
 
@@ -503,9 +511,9 @@ class GCDMMIOBlackBox(val w: Int)
       <div>
         <font size="6">
         <ul>
-          <li class="fragment">Iterate over a design point in various abstractions.</li>
-          <li class="fragment">You can get feedback from lower level abstractions.</li>
-          <li class="fragment">You are likely to run <strong>a lot of simulations</strong> in order to get functionality and performance correct.</li>
+          <li class="fragment">Iterate over a design point in various abstractions</li>
+          <li class="fragment">You can get feedback from lower level abstractions</li>
+          <li class="fragment">You are likely to run <strong>a lot of simulations</strong> in order to get functionality and performance correct</li>
         </ul>
         </font>
       </div>
@@ -520,8 +528,8 @@ class GCDMMIOBlackBox(val w: Int)
     </div>
     <div>
       <ul>
-        <li class="fragment" data-fragment-index="0">Prone to errors.</li>
-        <li class="fragment">Redundant work.</li>
+        <li class="fragment" data-fragment-index="0">Prone to errors</li>
+        <li class="fragment">Redundant work</li>
       </ul>
     </div>
   </section>
@@ -535,8 +543,8 @@ class GCDMMIOBlackBox(val w: Int)
       <div>
         <font size="6">
         <ul>
-          <li class="fragment">Modeling is required because <strong>RTL writing is hard</strong>.</li>
-          <li class="fragment">Make RTL writing so easy that we can just do modeling with RTL.</li>
+          <li class="fragment">Modeling is required because <strong>RTL writing is hard</strong></li>
+          <li class="fragment">Make RTL writing so easy that we can just do modeling with RTL</li>
           <li class="fragment">Model large systems with high evaluation fidelity!</li>
         </ul>
         </font>
@@ -555,11 +563,11 @@ class GCDMMIOBlackBox(val w: Int)
   <section class="center">
     <h2>Chisel</h2>
     <ul>
-      <li class="fragment">HDL embedded in Scala.</li>
-      <li class="fragment">Metaprogramming on top of the RTL abstraction.</li>
+      <li class="fragment">HDL embedded in Scala</li>
+      <li class="fragment">Metaprogramming on top of the RTL abstraction</li>
       <ul>
-        <li class="fragment">Scala enables high expressiveness compared to SV.</li>
-        <li class="fragment">Makes it much easier to read and write RTL.</li>
+        <li class="fragment">Scala enables high expressiveness compared to SV</li>
+        <li class="fragment">Makes it much easier to read and write RTL</li>
       </ul>
     </ul>
   </section>
@@ -633,13 +641,13 @@ class GCDMMIOBlackBox(val w: Int)
   <section class="center">
     <h2>Chisel Implications</h2>
     <ul>
-      <li class="fragment">Much less verbose when describing HW.</li>
-      <li class="fragment">Easier to compose modules programmatically.</li>
-      <li class="fragment">eDSL : enables us to use existing tools around the host language.</li>
+      <li class="fragment">Much less verbose when describing HW</li>
+      <li class="fragment">Easier to compose modules programmatically</li>
+      <li class="fragment">eDSL : enables us to use existing tools around the host language</li>
       <ul>
-        <li class="fragment">Package manager.</li>
-        <li class="fragment">Build systems.</li>
-        <li class="fragment">LSP.</li>
+        <li class="fragment">Package manager</li>
+        <li class="fragment">Build systems</li>
+        <li class="fragment">LSP</li>
       </ul>
     </ul>
   </section>
@@ -647,9 +655,9 @@ class GCDMMIOBlackBox(val w: Int)
   <section class="center">
     <h2>FIRRTL</h2>
     <ul>
-      <li class="fragment">Intermediate representation for Chisel.</li>
-      <li class="fragment">Designed to represent the generated circuit after Chisel's elaboration (after all meta programming has executed).</li>
-      <li class="fragment">SSA style in memory representation.</li>
+      <li class="fragment">Intermediate representation for Chisel</li>
+      <li class="fragment">Designed to represent the generated circuit after Chisel's elaboration (after all meta programming has executed)</li>
+      <li class="fragment">SSA style in memory representation</li>
     </ul>
   </section>
 
@@ -679,7 +687,7 @@ class GCDMMIOBlackBox(val w: Int)
         node _io_sum_T_5 = tail(_io_sum_T_4, 1) @[MyModule.scala 14:27]
         io.sum &lt;= _io_sum_T_5 @[MyModule.scala 14:10]
     </code></pre>
-    <p>FIRRTL resembles your circuit.</p>
+    <p>FIRRTL resembles your circuit</p>
   </section>
 
   <section data-auto-animate>
@@ -705,11 +713,11 @@ class GCDMMIOBlackBox(val w: Int)
   <section data-auto-animate>
     <h3>Cool things that FIRRTL enables</h3>
     <ul>
-      <li class="fragment">Netlist manipulation : scan-chains, reparenting modules (for PD).</li>
-      <li class="fragment">Error checking, generic compiler optimizations.</li>
+      <li class="fragment">Netlist manipulation : scan-chains, reparenting modules (for PD)</li>
+      <li class="fragment">Error checking, generic compiler optimizations</li>
       <ul>
-        <li class="fragment">Combinational loop detection.</li>
-        <li class="fragment">DCE, CSE, Const Prop.</li>
+        <li class="fragment">Combinational loop detection</li>
+        <li class="fragment">DCE, CSE, Const Prop</li>
       </ul>
     </ul>
   </section>
@@ -717,7 +725,7 @@ class GCDMMIOBlackBox(val w: Int)
   <section data-auto-animate>
     <h3>Cool things that FIRRTL enables</h3>
     <ul>
-      <li class="fragment">FAME transformations and FireSim.</li>
+      <li class="fragment">FAME transformations and FireSim</li>
       <figure>
         <img class="fragment" src="./figs/latte24/li-bdn-transformed.svg" />
         <figcaption class="fragment">Bold lines : Target design<br>Dashed lines : Timing control logic</figcaption>
@@ -728,8 +736,8 @@ class GCDMMIOBlackBox(val w: Int)
   <section class="center">
     <h2>FIRRTL Implications</h2>
     <ul>
-      <li class="fragment">Enables you to programmatically traverse/modify the netlist.</li>
-      <li class="fragment">Given a single design, you are now able to generate various collateral by applying different compiler passes.</li>
+      <li class="fragment">Enables you to programmatically traverse/modify the netlist</li>
+      <li class="fragment">Given a single design, you are now able to generate various collateral by applying different compiler passes</li>
     </ul>
   </section>
 
@@ -742,14 +750,14 @@ class GCDMMIOBlackBox(val w: Int)
     <div>
       <font size="5">
       <ul>
-        <li class="fragment">Generator based SoC design framework.</li>
-        <li class="fragment">Easy to configure a diverse set of SoC design space.</li>
+        <li class="fragment">Generator based SoC design framework</li>
+        <li class="fragment">Easy to configure a diverse set of SoC design space</li>
         <ul>
-          <li class="fragment">IP shop for RISC-V cores, accelerators, memory elements and the bus hierarchy.</li>
+          <li class="fragment">IP shop for RISC-V cores, accelerators, memory elements and the bus hierarchy</li>
         </ul>
-        <li class="fragment">Ensures correct composition of the modules during elaboration time.</li>
+        <li class="fragment">Ensures correct composition of the modules during elaboration time</li>
         <ul>
-          <li class="fragment">Parameter validity, SoC address space.</li>
+          <li class="fragment">Parameter validity, SoC address space</li>
         </ul>
       </ul>
       </font>
@@ -767,9 +775,9 @@ class GCDMMIOBlackBox(val w: Int)
     <div>
       <font size="6">
       <ul>
-        <li class="fragment" data-fragment-index="0">FPGA accelerated RTL simulation platform.</li>
-        <li class="fragment">Enables us to perform end-to-end performance evaluation of our designs by running entire RISC-V binaries.</li>
-        <li class="fragment">Useful for discovering bugs that appear trillions of cycles into simulation.</li>
+        <li class="fragment" data-fragment-index="0">FPGA accelerated RTL simulation platform</li>
+        <li class="fragment">Enables us to perform end-to-end performance evaluation of our designs by running entire RISC-V binaries</li>
+        <li class="fragment">Useful for discovering bugs that appear trillions of cycles into simulation</li>
       </ul>
       </font>
     </div>
@@ -786,11 +794,11 @@ class GCDMMIOBlackBox(val w: Int)
 {# <div> #}
 {# <font size="5"> #}
 {# <ul> #}
-{# <li class="fragment" data-fragment-index="0">Starting with your target.</li> #}
-{# <li class="fragment" data-fragment-index="1">Wrap the target RTL in a latency insensitive wrapper.</li> #}
-{# <li class="fragment" data-fragment-index="1">Attach a DRAM timing model using host FPGA resources.</li> #}
-{# <li class="fragment" data-fragment-index="1">These steps are automated by the FIRRTL compiler.</li> #}
-{# <li class="fragment" data-fragment-index="2">Map the simulation onto the host FPGA.</li> #}
+{# <li class="fragment" data-fragment-index="0">Starting with your target</li> #}
+{# <li class="fragment" data-fragment-index="1">Wrap the target RTL in a latency insensitive wrapper</li> #}
+{# <li class="fragment" data-fragment-index="1">Attach a DRAM timing model using host FPGA resources</li> #}
+{# <li class="fragment" data-fragment-index="1">These steps are automated by the FIRRTL compiler</li> #}
+{# <li class="fragment" data-fragment-index="2">Map the simulation onto the host FPGA</li> #}
 {# <li class="fragment" data-fragment-index="2">SoC now sees 100 cycles of DRAM latency!</li> #}
 {# </ul> #}
 {# </font> #}
@@ -807,10 +815,10 @@ class GCDMMIOBlackBox(val w: Int)
       <div>
         <font size="6">
         <ul>
-          <li class="fragment">Chisel & FIRRTL : Expressive frontend and flexible IR.</li>
-          <li class="fragment">Chipyard : Composable SoC generator framework.</li>
-          <li class="fragment">FireSim : Fast RTL simulation.</li>
-          <li class="fragment">Enabled countless research projects from both industry and academia for the last 5+ years.</li>
+          <li class="fragment">Chisel & FIRRTL : Expressive frontend and flexible IR</li>
+          <li class="fragment">Chipyard : Composable SoC generator framework</li>
+          <li class="fragment">FireSim : Fast RTL simulation</li>
+          <li class="fragment">Enabled countless research projects from both industry and academia for the last 5+ years</li>
         </ul>
         </font>
       </div>
@@ -838,7 +846,7 @@ class GCDMMIOBlackBox(val w: Int)
     }
     </code></pre>
     <ul>
-      <li class="fragment">Given a input, add it three times to itself and output it.</li>
+      <li class="fragment">Given a input, add it three times to itself and output it</li>
     </ul>
   </section>
 
@@ -1118,8 +1126,8 @@ class GCDMMIOBlackBox(val w: Int)
       </div>
       <div>
         <ul>
-          <li><a href="https://chipyard.readthedocs.io/en/stable/">Chipyard docs.</a></li>
-          <li><a href="https://docs.fires.im/en/stable/">FireSim docs.</a></li>
+          <li><a href="https://chipyard.readthedocs.io/en/stable/">Chipyard docs</a></li>
+          <li><a href="https://docs.fires.im/en/stable/">FireSim docs</a></li>
           <li><a href="https://fires.im/asplos-2023-tutorial/">Link to previous tutorial recordings</a></li>
         </ul>
       </div>
@@ -1137,49 +1145,65 @@ class GCDMMIOBlackBox(val w: Int)
 
   <section class="center">
     <h3>Why have we not reached the next paradigm?</h3>
-    <ul>
-      <li class="fragment">Iteration cycle.</li>
-      <ul>
-        <li class="fragment">Compile/simulation time.</li>
-        <li class="fragment">Fast power/area estimation capabilities.</li>
-      </ul>
-      <li class="fragment">Utilizing the suitable abstractions.</li>
-      <ul>
-        <li class="fragment">Design productivity.</li>
-        <li class="fragment">IP integration is always at the RTL level.</li>
-        <ul>
-          <li class="fragment">Ad-hoc blackboxing or DPI interfaces.</li>
-          <li class="fragment">Compromising simulation throughput.</li>
-        </ul>
-      </ul>
-      <li class="fragment">Other concerns.</li>
-      <ul>
-        <li class="fragment">Physical design, verification.</li>
-{# specifying clock/reset/power domains should be more explicit (we need to encode upf files in the frontend language) #}
-{# Since we are not specifying these semantics, we can't simulate these things. #}
-        <li class="fragment">Missing power/clock/reset semantics.</li>
-        <li class="fragment">Need a systematic way of generating collateral from specs.</li>
-      </ul>
-    </ul>
-  </section>
-
-  <section class="center">
-    <h3>Feature Requests</h3>
-    <div class="container" style="grid-template-columns: 1.0fr 1.4fr;">
+    <div class="container" style="grid-template-columns: 1.4fr 1.0fr;">
       <div>
-        <img src="./figs/latte24/feature-request.jpg" />
+        <img src="./figs/latte24/current-paradigm.svg"/>
       </div>
       <div>
-        <font size="6">
         <ul>
-          <li class="fragment">Fast compilation time as well as quick feedback from the backend tools.</li>
-          <li class="fragment">Fast simulation that doesn't require hours of compile time.</li>
-          <li class="fragment">Support for higher level abstractions to enable designers to work on various levels of abstractions.</li>
+          <ol class="fragment">1. Long iteration time</ol>
+          <ol class="fragment">2. Lost design productivity</ol>
+          <ol class="fragment">3. Lost semantics</ol>
         </ul>
-        </font>
       </div>
     </div>
   </section>
+
+{# <section class="center"> #}
+{# <h3>Why have we not reached the next paradigm?</h3> #}
+{# <ul> #}
+{# <li class="fragment">Iteration cycle</li> #}
+{# <ul> #}
+{# <li class="fragment">Compile/simulation time</li> #}
+{# <li class="fragment">Fast power/area estimation capabilities</li> #}
+{# </ul> #}
+{# <li class="fragment">Utilizing the suitable abstractions</li> #}
+{# <ul> #}
+{# <li class="fragment">Design productivity</li> #}
+{# <li class="fragment">IP integration is always at the RTL level</li> #}
+{# <ul> #}
+{# <li class="fragment">Ad-hoc blackboxing or DPI interfaces</li> #}
+{# <li class="fragment">Compromising simulation throughput</li> #}
+{# </ul> #}
+{# </ul> #}
+{# <li class="fragment">Other concerns</li> #}
+{# <ul> #}
+{# <li class="fragment">Physical design, verification</li> #}
+{# specifying clock/reset/power domains should be more explicit (we need to encode upf files in the frontend language) #}
+{# Since we are not specifying these semantics, we can't simulate these things. #}
+{# <li class="fragment">Missing power/clock/reset semantics</li> #}
+{# <li class="fragment">Need a systematic way of generating collateral from specs</li> #}
+{# </ul> #}
+{# </ul> #}
+{# </section> #}
+
+{# <section class="center"> #}
+{# <h3>Feature Requests</h3> #}
+{# <div class="container" style="grid-template-columns: 1.0fr 1.4fr;"> #}
+{# <div> #}
+{# <img src="./figs/latte24/feature-request.jpg" /> #}
+{# </div> #}
+{# <div> #}
+{# <font size="6"> #}
+{# <ul> #}
+{# <li class="fragment">Fast compilation time as well as quick feedback from the backend tools</li> #}
+{# <li class="fragment">Fast simulation that doesn't require hours of compile time</li> #}
+{# <li class="fragment">Support for higher level abstractions to enable designers to work on various levels of abstractions</li> #}
+{# </ul> #}
+{# </font> #}
+{# </div> #}
+{# </div> #}
+{# </section> #}
 
   <section class="center">
     <h3>Rest of the talk</h3>
@@ -1189,7 +1213,7 @@ class GCDMMIOBlackBox(val w: Int)
     </div>
     <div>
       <ul>
-        <li class="fragment">Our vision for rethinking the end-to-end flow for chip design.</li>
+        <li class="fragment">Our vision for rethinking the end-to-end flow for chip design</li>
       </ul>
     </div>
     </div>
@@ -1204,40 +1228,46 @@ class GCDMMIOBlackBox(val w: Int)
   </section>
 
   <section class="center">
-    <h3>1. Reducing the Compile time</h3>
-  </section>
-
-  <section class="center">
-    <h2>Chipyard Compile Steps</h2>
-    <ul>
-      <li class="fragment">Scala FIRRTL Compiler (SFC) : Compiles the scala sources and generates CHIRRTL.</li>
-      <li class="fragment">MLIR FIRRTL Compiler (MFC) : Emits Verilog from CHIRRTL.</li>
-      <li class="fragment">Verilator : Verilog to C++ binary.</li>
-    </ul>
-  </section>
-
-  <section class="center">
-    <h2>Chipyard Compile Steps</h2>
-    <div class="container" style="grid-template-rows: 0.1fr 0.7fr;">
+    <h3>Language Frontend</h3>
+    <div class="container" style="grid-template-columns: 1.4fr 1.0fr;">
+      <div>
+        <img src="./figs/latte24/new-paradigm.svg"/>
+      </div>
       <div>
         <font size="5">
         <ul>
-          <li class="fragment">Imagine you are working on BOOM...</li>
-          <li class="fragment">Waiting 10 minutes every time you find a bug, just to start RTL simulation...</li>
+          <ol class="fragment">1. Incremental compilation and cacheing</ol>
+          <ol class="fragment">2. Mixed abstraction by elaboration interop</ol>
+          <ol class="fragment">3. Runtime interop + IR primitives for semantics preserving</ol>
         </ul>
         </font>
-      </div>
-      <div>
-        <img src="./figs/latte24/compile-time.svg" />
       </div>
     </div>
   </section>
 
+{# <section class="center"> #}
+{# <h2>Chipyard Compile Steps</h2> #}
+{# <ul> #}
+{# <li class="fragment">Scala FIRRTL Compiler (SFC) : Compiles the scala sources and generates CHIRRTL</li> #}
+{# <li class="fragment">MLIR FIRRTL Compiler (MFC) : Emits Verilog from CHIRRTL</li> #}
+{# <li class="fragment">Verilator : Verilog to C++ binary</li> #}
+{# </ul> #}
+{# </section> #}
+
+{# <section class="center"> #}
+{# <h2>Chipyard Compile Steps</h2> #}
+{# <div class="container" style="grid-template-rows: 0.1fr 0.7fr;"> #}
+{# <div> #}
+{# <img src="./figs/latte24/compile-time.svg" /> #}
+{# </div> #}
+{# </div> #}
+{# </section> #}
+
   <section data-auto-animate>
     <h2>Incremental First</h2>
     <ul>
-      <li class="fragment">Hardware designers want more iterations to perform experiments.</li>
-      <li class="fragment">Most of the times, we write the entire module, and make small fixes to the control logic.</li>
+      <li class="fragment">Hardware designers want more iterations to perform experiments</li>
+      <li class="fragment">Most of the times, we write the entire module, and make small fixes to the control logic</li>
     </ul>
     <pre data-id="code-animation"><code class="scala" data-trim data-line-numbers="6">
     class MyModule(N: Int, M: Int) extends Module {
@@ -1261,88 +1291,130 @@ class GCDMMIOBlackBox(val w: Int)
       io.sum := io.a.reduce(_ +& _)
     }
     </code></pre>
-    <p class="fragment">Are you ready to wait 10 more minutes for your code to compile?</p>
+    <p class="fragment">Code compilation time becomes the bottleneck</p>
   </section>
 
   <section class="center">
     <h2>Incremental First</h2>
     <ul>
-      <li class="fragment">This problem can be solved by adopting the incremental first approach to hardware design.</li>
-      <li class="fragment"><strong>Partial compilation & Cacheing.</strong></li>
+      <li class="fragment">This problem can be solved by adopting the incremental first approach to hardware design</li>
+      <li class="fragment"><strong>Partial compilation & Cacheing</strong></li>
     </ul>
   </section>
 
   <section class="center">
     <h2>Incremental First</h2>
-    <img src="./figs/latte24/incremental-1.svg" />
-  </section>
-
-  <section class="center">
-    <h2>Incremental First</h2>
-    <img src="./figs/latte24/incremental-2.svg" />
-    <ul>
-      <li class="fragment">classfiles are cached by the build system of the host language.</li>
-      <li class="fragment">Scala : <a href="https://mill-build.com/mill/Intro_to_Mill.html">mill</a></li>
-    </ul>
-  </section>
-
-  <section class="center">
-    <h2>Incremental First</h2>
-    <img src="./figs/latte24/incremental-3.svg" style="width:80%;height:auto;"/>
-    <ul>
-      <li class="fragment">Builder has to manage the cache for the generated output (*.sv).</li>
-    </ul>
-  </section>
-
-  <section class="center">
-    <h2>Incremental First</h2>
-    <img src="./figs/latte24/incremental-4.svg" style="width:80%;height:auto;"/>
-    <ul>
-      <li class="fragment">A1.class is invalidated by the host language build system.</li>
-    </ul>
-  </section>
-
-  <section class="center">
-    <h2>Incremental First</h2>
-    <img src="./figs/latte24/incremental-5.svg" style="width:80%;height:auto;"/>
-    <ul>
-      <li class="fragment">Builder.class investigates A1.class to see if there are any changes made.</li>
-    </ul>
+    <div class="container" style="grid-template-columns: 1.4fr 1.0fr;">
+      <div class="r-stack">
+        <img class="fragment fade-in-then-out" data-fragment-index="0" src="./figs/latte24/incremental-1.svg" />
+        <img class="fragment fade-in-then-out" data-fragment-index="1" src="./figs/latte24/incremental-2.svg" />
+        <img class="fragment fade-in-then-out" data-fragment-index="2" src="./figs/latte24/incremental-3.svg" />
+        <img class="fragment fade-in-then-out" data-fragment-index="3" src="./figs/latte24/incremental-4.svg" />
+        <img class="fragment fade-in-then-out" data-fragment-index="4" src="./figs/latte24/incremental-5.svg" />
+      </div>
+      <div>
+        <ul>
+          <li class="fragment" data-fragment-index="1">classfiles are cached by the build system of the host language</li>
+          <li class="fragment" data-fragment-index="2">Builder has to manage the cache for the generated output (*.sv)</li>
+          <li class="fragment" data-fragment-index="3">A1.class is invalidated by the host language build system</li>
+          <li class="fragment" data-fragment-index="4">Builder.class investigates A1.class to see if there are any changes made</li>
+        </ul>
+      </div>
+    </div>
   </section>
 
   <section class="center">
     <h2>Incremental First</h2>
     <ul>
-      <li class="fragment">We get halfway there by just utilizing the host buildsystem.</li>
-      <li class="fragment">The eDSL interpreter has to perform some tracking mechanism.</li>
+      <li class="fragment">We get halfway there just by utilizing the host buildsystem</li>
+      <li class="fragment">Incrementalism in every layer of the stack (including backend tools)</li>
     </ul>
-  </section>
-
-  <section class="center">
-    <h3>2. Reducing the Modeling time</h3>
   </section>
 
   <section class="center">
     <h2>Mixed Abstractions</h2>
     <ul>
-      <li class="fragment">We want to raise the level of abstraction to make HW design easier.</li>
+      <li class="fragment">We want to raise the level of abstraction to make HW design easier</li>
       <ul>
-        <li class="fragment">Accelerators, initial prototyping stage, (possibly) the bus hierarchy.</li>
+        <li class="fragment">Accelerators, initial prototyping stage, (possibly) the bus hierarchy</li>
       </ul>
-      <li class="fragment">However, we also need lower level abstractions (RTL) when designing an SoC.</li>
+      <li class="fragment">However, we also need lower level abstractions (RTL) when designing an SoC</li>
       <ul>
-        <li class="fragment">High perf cores and caches.</li>
+        <li class="fragment">High perf cores and caches</li>
       </ul>
     </ul>
   </section>
 
   <section class="center">
+    <h2>Mixed Abstractions</h2>
+    <div class="container" style="grid-template-columns: 1.4fr 1.0fr;">
+    <div>
+        <img src="./figs/latte24/new-paradigm-elab-interop.svg"/>
+    </div>
+    <div>
+      <ul>
+        <li class="fragment">Clean elaboration interop</li>
+        <li class="fragment">Different abstractions sits on top</li>
+      </ul>
+    </div>
+  </section>
+
+  <section data-auto-animate>
+    <h2>Mixed Abstraction</h2>
+    <div class="container" style="grid-template-columns: 1.4fr 1.0fr;">
+    <div>
+      <pre data-id="code-animation"><code class="scala" data-trim data-line-numbers>
+      object ElaborationInterop {
+        def connect(rtl : RTL, hls: HLS): Option[Edge]
+        def connect(rtl : RTL, als: ALS): Option[Edge]
+      }
+      </code></pre>
+      <img src="./figs/latte24/elab-interop.svg" />
+    </div>
+    <div>
+      <ul>
+        <li class="fragment">Connects different abstractions together</li>
+        <li class="fragment">Checks if the connections are valid</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="center">
+    <h2>Semantics Preserving</h2>
+    <ul>
+      <li class="fragment">Abstraction level semantics</li>
+      <ul>
+        <li class="fragment">How time advances during simulation?</li>
+      </ul>
+      <li class="fragment">Circuit level semantics</li>
+      <ul>
+        <li class="fragment">Which circuit primitives should we use?</li>
+      </ul>
+      <li class="fragment">Both broken when lowering to RTL</li>
+    </ul>
+  </section>
+
+  <section class="center">
+    <h2>Semantics Preserving</h2>
+    <div class="container" style="grid-template-columns: 1.4fr 1.0fr;">
+    <div>
+      <img src="./figs/latte24/new-paradigm.svg" />
+    </div>
+    <div>
+      <ul>
+        <li class="fragment">Abstraction level semantics</li>
+      </ul>
+    </div>
+  </section>
+
+
+  <section class="center">
     <h3>Existing Abstractions</h3>
     <ul>
-      <li class="fragment">Gate level : lets ignore this for now...</li>
-      <li class="fragment">RTL : Explicitly defining registers and wires (e.g., Verilog, S-Verilog, Chisel).</li>
-      <li class="fragment">Calyx : Explicit HW instantiations, imperative control flow.</li>
-      <li class="fragment">HLS : High level descriptions, compiler does it all.</li>
+      <li class="fragment">Gate level : lets ignore this for now..</li>
+      <li class="fragment">RTL : Explicitly defining registers and wires (e.g., Verilog, S-Verilog, Chisel)</li>
+      <li class="fragment">Calyx : Explicit HW instantiations, imperative control flow</li>
+      <li class="fragment">HLS : High level descriptions, compiler does it all</li>
     </ul>
   </section>
 
@@ -1355,8 +1427,8 @@ class GCDMMIOBlackBox(val w: Int)
       <div>
         <font size="6">
         <ul>
-          <li class="fragment">Clean (and good looking) APIs between the abstractions.</li>
-          <li class="fragment">Compiler backend that can stitch different abstractions together.</li>
+          <li class="fragment">Clean (and good looking) APIs between the abstractions</li>
+          <li class="fragment">Compiler backend that can stitch different abstractions together</li>
         </ul>
         </font>
       </div>
@@ -1366,24 +1438,24 @@ class GCDMMIOBlackBox(val w: Int)
   <section class="center">
     <h2>Clean API</h2>
     <ul>
-      <li class="fragment">Mixing abstractions in the module granularity seems reasonable.</li>
+      <li class="fragment">Mixing abstractions in the module granularity seems reasonable</li>
       <ul>
-        <li class="fragment">Clean separation of compilers between abstractions.</li>
-        <li class="fragment">IO ports are concrete targets that the HLS compilers can try abstracting away.</li>
+        <li class="fragment">Clean separation of compilers between abstractions</li>
+        <li class="fragment">IO ports are concrete targets that the HLS compilers can try abstracting away</li>
       </ul>
   </section>
 
   <section class="center">
     <h4>How should the HLS APIs look like in this world?</h4>
     <ul>
-      <li class="fragment">Want to separate the compute description from the compiler flags (HeteroCL).</li>
-      <li class="fragment">Want to specify the HLS compiler flags in a single location.</li>
+      <li class="fragment">Want to separate the compute description from the compiler flags (HeteroCL)</li>
+      <li class="fragment">Want to specify the HLS compiler flags in a single location</li>
       <ul>
-        <li class="fragment">Easier to specify relationships between flags.</li>
-        <li class="fragment">Cleaner code.</li>
+        <li class="fragment">Easier to specify relationships between flags</li>
+        <li class="fragment">Cleaner code</li>
       </ul>
-      <li class="fragment">Want to abstract out the bus/RTL interface.</li>
-      <li class="fragment">Want to pass parameters from the SoC side.</li>
+      <li class="fragment">Want to abstract out the bus/RTL interface</li>
+      <li class="fragment">Want to pass parameters from the SoC side</li>
     </ul>
   </section>
 
@@ -1396,8 +1468,8 @@ class GCDMMIOBlackBox(val w: Int)
       <div>
         <font size="6">
         <ul>
-          <li class="fragment">High simulation performance (don't lower everying into RTL).</li>
-          <li class="fragment">High QoR (need to preserve circuit semantics).</li>
+          <li class="fragment">High simulation performance (don't lower everying into RTL)</li>
+          <li class="fragment">High QoR (need to preserve circuit semantics)</li>
         </ul>
         </font>
       </div>
@@ -1413,7 +1485,7 @@ class GCDMMIOBlackBox(val w: Int)
       <div>
         <font size="6">
         <ul>
-          <li class="fragment">Instead of lowering higher level abstractions into RTL, emit discrete event models and link them during simulator compile time.</li>
+          <li class="fragment">Instead of lowering higher level abstractions into RTL, emit discrete event models and link them during simulator compile time</li>
         </ul>
         </font>
       </div>
@@ -1429,8 +1501,8 @@ class GCDMMIOBlackBox(val w: Int)
       <div>
         <font size="6">
         <ul>
-        <li class="fragment">Need to define a common transaction scheme between various abstractions.</li>
-        <li class="fragment">The scheduler can make optimizations across all abstractions.</li>
+        <li class="fragment">Need to define a common transaction scheme between various abstractions</li>
+        <li class="fragment">The scheduler can make optimizations across all abstractions</li>
         </ul>
         </font>
       </div>
@@ -1446,9 +1518,9 @@ class GCDMMIOBlackBox(val w: Int)
       <div>
         <font size="6">
         <ul>
-          <li class="fragment">IRs such as Calyx & "RTL IR" should be able to preserve circuit semantics.</li>
-          <li class="fragment">In the short term we can generate Verilog.</li>
-          <li class="fragment">In the long term, fix backend tools to directly operate on the "RTL IR".</li>
+          <li class="fragment">IRs such as Calyx & "RTL IR" should be able to preserve circuit semantics</li>
+          <li class="fragment">In the short term we can generate Verilog</li>
+          <li class="fragment">In the long term, fix backend tools to directly operate on the "RTL IR"</li>
         </ul>
         </font>
       </div>
@@ -1471,13 +1543,13 @@ class GCDMMIOBlackBox(val w: Int)
   <section class="center">
     <h2>Incremental First</h2>
     <ul>
-      <li class="fragment">As mentioned in the previous section, it is crucial to support <strong>incremental compilation and caching</strong>.</li>
+      <li class="fragment">As mentioned in the previous section, it is crucial to support <strong>incremental compilation and caching</strong></li>
       <ul>
-        <li class="fragment">Crucial for quick iteraion and early PPA estimation.</li>
+        <li class="fragment">Crucial for quick iteraion and early PPA estimation</li>
       </ul>
-      <li class="fragment">Arguably the most important feature to hardware designers.</li>
+      <li class="fragment">Arguably the most important feature to hardware designers</li>
       <li class="fragment">If we take the embedded DSL approach, we don't have to redo this ourselves!</li>
-      <li class="fragment">E.g., Rust already has 3rd party build cache tools (sccache).</li>
+      <li class="fragment">E.g., Rust already has 3rd party build cache tools (sccache)</li>
     </ul>
   </section>
 
@@ -1491,8 +1563,8 @@ class GCDMMIOBlackBox(val w: Int)
         <font size="5">
         <ul>
           <li class="fragment">Why does this even matter?</li>
-          <li class="fragment">The primitives available in your IR affects QoR.</li>
-          <li class="fragment">The in memory representation of the circuit affects compiler performance.</li>
+          <li class="fragment">The primitives available in your IR affects QoR</li>
+          <li class="fragment">The in memory representation of the circuit affects compiler performance</li>
           <ul>
             <li class="fragment">Graph representation can affect graph traversal speed. <a href="https://www.hillelwayne.com/post/graph-types/">The hunt for missing datatypes</a></li>
           </ul>
@@ -1562,24 +1634,24 @@ class GCDMMIOBlackBox(val w: Int)
     }
     </code></pre>
     <div class="r-stack">
-      <p id="special1" style="transition: all .2s ease; opacity: 0; visibility: hidden; will-change: opacity;">We are traversing the statements to build a graph of the nodes.</p>
-      <p id="special2" style="transition: all .2s ease; opacity: 0; visibility: hidden; will-change: opacity;">We are traversing the graph once again to check for comb loops.</p>
+      <p id="special1" style="transition: all .2s ease; opacity: 0; visibility: hidden; will-change: opacity;">We are traversing the statements to build a graph of the nodes</p>
+      <p id="special2" style="transition: all .2s ease; opacity: 0; visibility: hidden; will-change: opacity;">We are traversing the graph once again to check for comb loops</p>
     </div>
   </section>
 
   <section class="center">
-    <h3>Graph Rep.</h3>
+    <h3>Graph Rep</h3>
     <font size="6">
     <div class="container" style="grid-template-columns: 1.0fr 1.0fr;">
       <div>
         <ul>
-          <li class="fragment">The above pattern of traversing the graph twice is a very common pattern in FIRRTL passes.</li>
-          <li class="fragment">If we had a graph representation of the circuit, we wouldn't have had to traverse the circuit twice.</li>
+          <li class="fragment">The above pattern of traversing the graph twice is a very common pattern in FIRRTL passes</li>
+          <li class="fragment">If we had a graph representation of the circuit, we wouldn't have had to traverse the circuit twice</li>
         </ul>
       </div>
       <div>
         <ul>
-          <li class="fragment">Compared to a SSA style, "human readable" IR, debugging passes might become more difficult.</li>
+          <li class="fragment">Compared to a SSA style, "human readable" IR, debugging passes might become more difficult</li>
         </ul>
       </div>
     </div>
@@ -1595,14 +1667,14 @@ class GCDMMIOBlackBox(val w: Int)
       <div>
         <font size="5">
         <ul>
-          <li class="fragment">lGraph : high perf. graph based IR.</li>
+          <li class="fragment">lGraph : high perf. graph based IR</li>
 {# <ul> #}
-{# <li class="fragment">Hypergraph where each node represents a module and the edges represents the connections.</li> #}
+{# <li class="fragment">Hypergraph where each node represents a module and the edges represents the connections</li> #}
 {# <ul> #}
-{# <li class="fragment">Submodules forms a graph within a node representing the parent module.</li> #}
+{# <li class="fragment">Submodules forms a graph within a node representing the parent module</li> #}
 {# </ul> #}
-{# <li class="fragment">Mmaps disk pages onto virtual memory to reduce memcpy overheads.</li> #}
-{# <li class="fragment">Supports graph traversals such that you can access nodes located in adjacent cachelines.</li> #}
+{# <li class="fragment">Mmaps disk pages onto virtual memory to reduce memcpy overheads</li> #}
+{# <li class="fragment">Supports graph traversals such that you can access nodes located in adjacent cachelines</li> #}
 {# </ul> #}
         </ul>
         </font>
@@ -1612,12 +1684,12 @@ class GCDMMIOBlackBox(val w: Int)
 {# <section class="center"> #}
 {# <h3>Graph Rep. Exploiting Parallelism</h3> #}
 {# <ul> #}
-{# <li class="fragment">Again, the compiler performance is crucial for HW designers : exploit parallelism.</li> #}
-{# <li class="fragment">The passes should be written as if it is working on a single thread.</li> #}
+{# <li class="fragment">Again, the compiler performance is crucial for HW designers : exploit parallelism</li> #}
+{# <li class="fragment">The passes should be written as if it is working on a single thread</li> #}
 {# <ul> #}
-{# <li class="fragment">The complexities of dealing with parallelism should be hidden from the pass-writer.</li> #}
+{# <li class="fragment">The complexities of dealing with parallelism should be hidden from the pass-writer</li> #}
 {# </ul> #}
-{# <li class="fragment">The interpreter (compiler) must be able to partition the graph and execute passes in parallel.</li> #}
+{# <li class="fragment">The interpreter (compiler) must be able to partition the graph and execute passes in parallel</li> #}
 {# </ul> #}
 {# </section> #}
 
@@ -1634,8 +1706,8 @@ class GCDMMIOBlackBox(val w: Int)
 {# abstract class PrimOp extends FirrtlNode #}
 {# </code></pre> #}
 {# <ul> #}
-{# <li class="fragment">Limited set of primitives &rarr; QoR may be low.</li> #}
-{# <li class="fragment">Compiler & backend tools spends a lot of time recreating semantics.</li> #}
+{# <li class="fragment">Limited set of primitives &rarr; QoR may be low</li> #}
+{# <li class="fragment">Compiler & backend tools spends a lot of time recreating semantics</li> #}
 {# </ul> #}
 {# </section> #}
 
@@ -1658,8 +1730,8 @@ class GCDMMIOBlackBox(val w: Int)
 {# case class DecoupledInterface(...) #}
 {# </code></pre> #}
 {# <ul> #}
-{# <li class="fragment">Add more primitives such that we can preserve more higher level circuit semantics.</li> #}
-{# <li class="fragment">Need to find a good balance between pass writing vs QoR.</li> #}
+{# <li class="fragment">Add more primitives such that we can preserve more higher level circuit semantics</li> #}
+{# <li class="fragment">Need to find a good balance between pass writing vs QoR</li> #}
 {# </ul> #}
 {# </section> #}
 
@@ -1672,7 +1744,7 @@ class GCDMMIOBlackBox(val w: Int)
       <div>
         <font size="5">
         <ul>
-          <li class="fragment">As we discussed, the IRs have to be able to support multiple abstractions from the frontend.</li>
+          <li class="fragment">As we discussed, the IRs have to be able to support multiple abstractions from the frontend</li>
         </ul>
         </font>
       </div>
