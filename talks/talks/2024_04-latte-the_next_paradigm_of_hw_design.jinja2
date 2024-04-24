@@ -1449,6 +1449,8 @@ class GCDMMIOBlackBox(val w: Int)
       <ul>
         <li class="fragment">Only small changes are propagated</li>
       </ul>
+      <li class="fragment">Designers are less concerned about making changes and performing PPA evaluations</li>
+      <li class="fragment">More experiment chances to identify optimization opportunities</li>
     </ul>
   </section>
 
@@ -1498,6 +1500,15 @@ class GCDMMIOBlackBox(val w: Int)
         <li class="fragment">Checks if the compositions are valid</li>
       </ul>
     </div>
+  </section>
+
+  <section class="center">
+    <h2>Mixed Abstraction</h2>
+    <ul>
+      <li class="fragment">Enables high productivity by incrementally lowering</li>
+      <li class="fragment">Potentially higher simulation throughput</li>
+      <li class="fragment">Easier to incorporate models into the system</li>
+    </ul>
   </section>
 
   <section class="center">
@@ -1610,98 +1621,25 @@ class GCDMMIOBlackBox(val w: Int)
       </font>
     </div>
   </section>
+
+  <section class="center">
+    <h2>Semantics Preserving</h2>
+    <ul>
+      <li class="fragment">Higher QoR</li>
+      <li class="fragment">Lower backend tool execution time</li>
+    </ul>
+  </section>
 </section>
-
-<!-- -------------------------------------------------------------------- -->
-
-{# <section> #}
-{# <section class="center"> #}
-{# <h2>Intermediate Representation (IR)</h2> #}
-{# </section> #}
-
-{# <section class="center"> #}
-{# <h3>RTL Level IR : Better In Memory Representation</h3> #}
-{# <div class="container" style="grid-template-columns: 1.4fr 1.0fr;"> #}
-{# <div> #}
-{# <img src="./figs/latte24/rtl-ir.png" style="height: 500px;" class="fragment"/> #}
-{# </div> #}
-{# <div> #}
-{# <font size="5"> #}
-{# <ul> #}
-{# <li class="fragment">Why does this even matter?</li> #}
-{# <li class="fragment">The primitives available in your IR affects QoR</li> #}
-{# <li class="fragment">The in memory representation of the circuit affects compiler performance</li> #}
-{# </ul> #}
-{# </font> #}
-{# </div> #}
-{# </div> #}
-{# </section> #}
-
-
-{# <section class="center"> #}
-{# <h4>FIRRTL In Memory Representation Problem 2</h4> #}
-{# <pre data-id="code-animation"><code class="scala" data-trim data-line-numbers> #}
-{# case class Mux(...) #}
-{# case class UIntLiteral(...) #}
-{# case class SIntLiteral(...) #}
-{# case class DefWire(...) #}
-{# case class DefRegister(...) #}
-{# case class DefInstance(...) #}
-{# case class DefMemory(...) #}
-{# abstract class PrimOp extends FirrtlNode #}
-{# </code></pre> #}
-{# <ul> #}
-{# <li class="fragment">Limited set of primitives &rarr; QoR may be low</li> #}
-{# <li class="fragment">Compiler & backend tools spends a lot of time recreating semantics</li> #}
-{# </ul> #}
-{# </section> #}
-
-{# <section class="center"> #}
-{# <h4>Possible Primitives</h4> #}
-{# <pre data-id="code-animation"><code class="scala" data-trim data-line-numbers="9-14"> #}
-{# case class Mux(...) #}
-{# case class UIntLiteral(...) #}
-{# case class SIntLiteral(...) #}
-{# case class DefWire(...) #}
-{# case class DefRegister(...) #}
-{# case class DefInstance(...) #}
-{# case class DefMemory(...) #}
-{# abstract class PrimOp extends FirrtlNode #}
-{# case class Clock(...) #}
-{# case class Reset(...) #}
-{# case class OH(...) #}
-{# case class PriorityMux(...) #}
-{# case class BoolLiteral(...) #}
-{# case class DecoupledInterface(...) #}
-{# </code></pre> #}
-{# <ul> #}
-{# <li class="fragment">Add more primitives such that we can preserve more higher level circuit semantics</li> #}
-{# <li class="fragment">Need to find a good balance between pass writing vs QoR</li> #}
-{# </ul> #}
-{# </section> #}
-
-{# <section class="center"> #}
-{# <h3>Support for Multiple Abstractions</h3> #}
-{# <div class="container" style="grid-template-columns: 1.5fr 1.0fr;"> #}
-{# <div class="fragment"> #}
-{# <img src="./figs/latte24/backend-all.png" style="height: 500px;"/> #}
-{# </div> #}
-{# <div> #}
-{# <font size="5"> #}
-{# <ul> #}
-{# <li class="fragment">As we discussed, the IRs have to be able to support multiple abstractions from the frontend</li> #}
-{# </ul> #}
-{# </font> #}
-{# </div> #}
-{# </div> #}
-{# </section> #}
-{# </section> #}
 
 <!-- -------------------------------------------------------------------- -->
 
 <section>
   <section class="center">
     <h2>Conclusion</h2>
+    <ul>
+      <li class="fragment">We need to radically change how we approach hardware design in order to deliver innovations in HW design</li>
+      <li class="fragment">By tightly integrating the tools vertically, we can achieve low iteration time, high design productivity and high QoR</li>
+    </ul>
   </section>
 </section>
 
