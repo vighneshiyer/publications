@@ -1253,7 +1253,7 @@ class GCDMMIOBlackBox(val w: Int)
     <h2>Language Frontend & IR</h2>
     <div class="container" style="grid-template-columns: 1.2fr 1.0fr;">
       <div>
-        <img src="./figs/latte24/new-paradigm.svg"/>
+        <img style="object-fit: contain; height: 220px;" class="image no-margin" src="./figs/latte24/new-paradigm.svg"/>
       </div>
       <div>
         <ol class="smallish">
@@ -1268,7 +1268,7 @@ class GCDMMIOBlackBox(val w: Int)
   <section class="center">
     <h2>Incremental First</h2>
     <ul>
-      <li class="fragment"><strong class="green">Hours &rarr; minutes</strong> to obtain PPA results</li>
+      <li class="fragment">Hours &rarr; minutes to obtain PPA results</li>
       <li class="fragment">Encourages designers to try out new ideas (w/o worrying about how much time it takes)</li>
       <li class="fragment">Easier to fix backend tool issues (e.g. critical path, DRC)</li>
     </ul>
@@ -1324,13 +1324,13 @@ class GCDMMIOBlackBox(val w: Int)
     <h2>Incremental First</h2>
     <div class="container" style="grid-template-columns: 1.4fr 1.0fr;">
       <div class="r-stack">
-        <img class="fragment fade-in-then-out" data-fragment-index="0" height=500px; src="./figs/latte24/incremental-base.svg" />
-        <img class="fragment fade-in-then-out" data-fragment-index="1" height=500px; src="./figs/latte24/incremental-base.svg" />
-        <img class="fragment fade-in-then-out" data-fragment-index="2" height=500px; src="./figs/latte24/incremental-base.svg" />
-        <img class="fragment fade-in-then-out" data-fragment-index="3" height=500px; src="./figs/latte24/incremental-fe.svg" />
-        <img class="fragment fade-in-then-out" data-fragment-index="4" height=500px; src="./figs/latte24/incremental-ir.svg" />
-        <img class="fragment fade-in-then-out" data-fragment-index="5" height=500px; src="./figs/latte24/incremental-syn.svg" />
-        <img class="fragment" data-fragment-index="6" height=500px; src="./figs/latte24/incremental-pnr.svg" />
+        <img style="object-fit: contain;" class="image fragment fade-in-then-out" data-fragment-index="0" height=500px; src="./figs/latte24/incremental-base.svg" />
+        <img style="object-fit: contain;" class="image fragment fade-in-then-out" data-fragment-index="1" height=500px; src="./figs/latte24/incremental-base.svg" />
+        <img style="object-fit: contain;" class="image fragment fade-in-then-out" data-fragment-index="2" height=500px; src="./figs/latte24/incremental-base.svg" />
+        <img style="object-fit: contain;" class="image fragment fade-in-then-out" data-fragment-index="3" height=500px; src="./figs/latte24/incremental-fe.svg" />
+        <img style="object-fit: contain;" class="image fragment fade-in-then-out" data-fragment-index="4" height=500px; src="./figs/latte24/incremental-ir.svg" />
+        <img style="object-fit: contain;" class="image fragment fade-in-then-out" data-fragment-index="5" height=500px; src="./figs/latte24/incremental-syn.svg" />
+        <img style="object-fit: contain;" class="image fragment" data-fragment-index="6" height=500px; src="./figs/latte24/incremental-pnr.svg" />
       </div>
       <div>
         <ul>
@@ -1363,13 +1363,15 @@ class GCDMMIOBlackBox(val w: Int)
 
   <section class="center">
     <h2>Mixed Abstractions</h2>
-    <div class="container" style="grid-template-columns: 1.4fr 1.0fr;">
+    <div class="container" style="grid-template-columns: 1.4fr 0.1fr 1.0fr;">
       <div class="r-stack">
-        <img class="fragment fade-in-then-out" data-fragment-index="0" src="./figs/latte24/multi-abstraction-rtl.svg" />
-        <img class="fragment fade-in-then-out" data-fragment-index="1" src="./figs/latte24/multi-abstraction-ctrl.svg" />
-        <img class="fragment fade-in-then-out" data-fragment-index="2" src="./figs/latte24/multi-abstraction-data.svg" />
-        <img class="fragment fade-in-then-out" data-fragment-index="3" src="./figs/latte24/multi-abstraction-accel.svg" />
-        <img class="fragment fade-in-then-out" data-fragment-index="4" src="./figs/latte24/multi-abstraction-soc.svg" />
+        <img style="object-fit: contain;" class="image fragment fade-in-then-out" data-fragment-index="0" src="./figs/latte24/multi-abstraction-rtl.svg" />
+        <img style="object-fit: contain;" class="image fragment fade-in-then-out" data-fragment-index="1" src="./figs/latte24/multi-abstraction-ctrl.svg" />
+        <img style="object-fit: contain;" class="image fragment fade-in-then-out" data-fragment-index="2" src="./figs/latte24/multi-abstraction-data.svg" />
+        <img style="object-fit: contain;" class="image fragment fade-in-then-out" data-fragment-index="3" src="./figs/latte24/multi-abstraction-accel.svg" />
+        <img style="object-fit: contain;" class="image fragment fade-in-then-out" data-fragment-index="4" src="./figs/latte24/multi-abstraction-soc.svg" />
+      </div>
+      <div>
       </div>
       <div>
         <font size="5">
@@ -1389,7 +1391,7 @@ class GCDMMIOBlackBox(val w: Int)
     <h2>Mixed Abstractions</h2>
     <div class="container" style="grid-template-columns: 1.4fr 1.0fr;">
     <div>
-        <img src="./figs/latte24/new-paradigm-elab-interop.svg"/>
+        <img style="object-fit: contain; height: 220px;" class="image no-margin" src="./figs/latte24/new-paradigm-elab-interop.svg"/>
     </div>
     <div>
       <ul>
@@ -1409,7 +1411,7 @@ class GCDMMIOBlackBox(val w: Int)
           def compose(rtl : RTL, als: ALS): Option[Edge]
         }
         </code></pre>
-        <img class="fragment" src="./figs/latte24/elab-interop.svg" />
+        <img style="object-fit: contain; height: 220px;" class="fragment image no-margin" src="./figs/latte24/elab-interop.svg" />
       </div>
       <div>
         <ul>
@@ -1445,10 +1447,12 @@ class GCDMMIOBlackBox(val w: Int)
 
   <section class="center">
     <h2>Semantics Preserving</h2>
-    <div class="container" style="grid-template-columns: 1.4fr 1.0fr;">
+    <div class="container" style="grid-template-columns: 1.2fr 0.1fr 1.0fr;">
     <div class="r-stack">
-      <img class="fragment fade-in-then-out" data-fragment-index="0" src="./figs/latte24/new-paradigm-runtime-interop.svg" />
-      <img class="fragment"                  data-fragment-index="1" src="./figs/latte24/elab-interop-1.svg" />
+      <img style="object-fit: contain;" class="image fragment fade-in-then-out" data-fragment-index="0" src="./figs/latte24/new-paradigm-runtime-interop.svg" />
+      <img style="object-fit: contain;" class="image fragment"                  data-fragment-index="1" src="./figs/latte24/elab-interop-1.svg" />
+    </div>
+    <div>
     </div>
     <div>
       <ul>
@@ -1461,12 +1465,14 @@ class GCDMMIOBlackBox(val w: Int)
 
   <section class="center">
     <h2>Semantics Preserving</h2>
-    <div class="container" style="grid-template-columns: 1.4fr 1.0fr;">
+    <div class="container" style="grid-template-columns: 1.4fr 0.1fr 1.0fr;">
       <div class="r-stack">
-        <img class="fragment fade-in-then-out" data-fragment-index="0" src="./figs/latte24/runtime-interop-1.svg" />
-        <img class="fragment fade-in-then-out" data-fragment-index="1" src="./figs/latte24/runtime-interop-2.svg" />
-        <img class="fragment fade-in-then-out" data-fragment-index="2" src="./figs/latte24/runtime-interop-3.svg" />
-        <img class="fragment"                  data-fragment-index="3" src="./figs/latte24/runtime-interop-4.svg" />
+        <img style="object-fit: contain;" class="image fragment fade-in-then-out" data-fragment-index="0" src="./figs/latte24/runtime-interop-1.svg" />
+        <img style="object-fit: contain;" class="image fragment fade-in-then-out" data-fragment-index="1" src="./figs/latte24/runtime-interop-2.svg" />
+        <img style="object-fit: contain;" class="image fragment fade-in-then-out" data-fragment-index="2" src="./figs/latte24/runtime-interop-3.svg" />
+        <img style="object-fit: contain;" class="image fragment"                  data-fragment-index="3" src="./figs/latte24/runtime-interop-4.svg" />
+      </div>
+      <div>
       </div>
       <div>
         <font size="5">
@@ -1508,7 +1514,7 @@ class GCDMMIOBlackBox(val w: Int)
     <h2>Semantics Preserving</h2>
     <div class="container" style="grid-template-columns: 1.4fr 1.0fr;">
     <div class="r-stack">
-      <img class="fragment" src="./figs/latte24/new-paradigm-common-ir.svg" />
+      <img style="object-fit: contain;" class="image fragment" src="./figs/latte24/new-paradigm-common-ir.svg" />
     </div>
     <div>
       <ul>
