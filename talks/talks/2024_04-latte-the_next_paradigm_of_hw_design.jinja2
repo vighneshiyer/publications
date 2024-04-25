@@ -1227,15 +1227,15 @@ class GCDMMIOBlackBox(val w: Int)
 
   <section class="center">
     <h3>Why have we not reached the next paradigm?</h3>
-    <div class="container" style="grid-template-columns: 1.4fr 1.0fr;">
+    <div class="container" style="grid-template-columns: 1.0fr 1.0fr;">
       <div>
         <img src="./figs/latte24/current-paradigm.svg"/>
       </div>
       <div>
         <ul>
-          <ol class="fragment">1. Long iteration time</ol>
-          <ol class="fragment">2. Lost design productivity</ol>
-          <ol class="fragment">3. Lost semantics</ol>
+          <ol class="fragment"><strong class="red">1. Long iteration time</strong>: redudant computations for unchanged parts</ol>
+          <ol class="fragment"><strong class="red">2. Single abstraction</strong>: RTL level</ol>
+          <ol class="fragment"><strong class="red">3. Lost semantics</strong>: semantics are blasted when emitting SV</ol>
         </ul>
       </div>
     </div>
@@ -1272,9 +1272,9 @@ class GCDMMIOBlackBox(val w: Int)
       <div>
         <font size="5">
         <ul>
-          <ol class="fragment">1. Incremental compilation and cacheing</ol>
-          <ol class="fragment">2. Mixed abstraction by elaboration interop</ol>
-          <ol class="fragment">3. Runtime interop + IR primitives for semantics preservation</ol>
+          <ol class="fragment"><strong class="green">1. Iteration</strong>: incremental compilation and cacheing</ol>
+          <ol class="fragment"><strong class="green">2. Design productivity</strong>: mixed abstraction by elaboration interop</ol>
+          <ol class="fragment"><strong class="green">3. Semantics preservation</strong>: runtime interop + IR primitives for semantics preservation</ol>
         </ul>
         </font>
       </div>
@@ -1284,8 +1284,9 @@ class GCDMMIOBlackBox(val w: Int)
   <section class="center">
     <h2>Incremental First</h2>
     <ul>
-      <li class="fragment">Hours &rarr; minutes to obtain PPA results</li>
+      <li class="fragment"><strong class="green">Hours &rarr; minutes</strong> to obtain PPA results</li>
       <li class="fragment">Encourages designers to try out new ideas (w/o worrying about how much time it takes)</li>
+      <li class="fragment">Easier to fix backend tool issues (e.g. critical path, DRC)</li>
     </ul>
   </section>
 
@@ -1317,7 +1318,10 @@ class GCDMMIOBlackBox(val w: Int)
       io.sum := io.a.reduce(_ +& _)
     }
     </code></pre>
-    <p class="fragment">Code compilation time becomes the bottleneck</p>
+    <ul>
+      <li class="fragment">Initial design stage: code compilation time</li>
+      <li class="fragment">When design matures: backend tool latency</li>
+    </ul>
   </section>
 
   <section class="center">
@@ -1410,22 +1414,27 @@ class GCDMMIOBlackBox(val w: Int)
   <section data-auto-animate>
     <h2>Mixed Abstraction</h2>
     <div class="container" style="grid-template-columns: 1.4fr 1.0fr;">
-    <div>
-      <pre data-id="code-animation"><code class="scala" data-trim data-line-numbers>
-      object ElaborationInterop {
-        def compose(rtl : RTL, hls: HLS): Option[Edge]
-        def compose(rtl : RTL, als: ALS): Option[Edge]
-      }
-      </code></pre>
-      <img class="fragment" src="./figs/latte24/elab-interop.svg" />
+      <div>
+        <pre data-id="code-animation"><code class="scala" data-trim data-line-numbers>
+        object ElaborationInterop {
+          def compose(rtl : RTL, hls: HLS): Option[Edge]
+          def compose(rtl : RTL, als: ALS): Option[Edge]
+        }
+        </code></pre>
+        <img class="fragment" src="./figs/latte24/elab-interop.svg" />
+      </div>
+      <div>
+        <ul>
+          <li class="fragment">Composes different abstractions together</li>
+          <li class="fragment">Checks if the compositions are valid</li>
+          <li class="fragment">Corresponds to FFI in software<span class="reference">[1]</span></li>
+          <li class="fragment">We can defer the execution of the composition semantics to runtime</li>
+        </ul>
+      </div>
     </div>
-    <div>
-      <ul>
-        <li class="fragment">Composes different abstractions together</li>
-        <li class="fragment">Checks if the compositions are valid</li>
-        <li class="fragment">Corresponds to FFI in software</li>
-        <li class="fragment">We can defer the execution of the composition semantics to runtime</li>
-      </ul>
+
+    <div class="footnote fragment">
+      [1] Daly, Ross, Lenny Truong, and Pat Hanrahan. "Invoking and linking generators from multiple hardware languages using coreir." WOSET 2018.
     </div>
   </section>
 
