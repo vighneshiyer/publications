@@ -124,8 +124,8 @@ Reveal.on( 'fragmenthidden', event => {
   <section>
     <h2>Talk Overview</h2>
     <ol>
+      <li class="fragment">Overview of the next paradigm of hardware design</li>
       <li class="fragment">The existing paradigm of hardware design</li>
-      <li class="fragment">What could come next? A view of the next paradigm of hardware design</li>
       <li class="fragment">Recent efforts to build the next paradigm
         <ul>
           <li class="fragment">New HDLs and design abstractions</li>
@@ -1391,7 +1391,7 @@ class GCDMMIOBlackBox(val w: Int)
     <h2>Incremental First</h2>
     <ul>
       <li class="fragment">Hardware designers want more iterations to perform experiments</li>
-      <li class="fragment">Most of the times, we write the entire module, and make small fixes to the control logic</li>
+      <li class="fragment">Most of the times, we write the entire module, and make small bug fixes</li>
     </ul>
     <pre data-id="code-animation"><code class="scala" data-trim data-line-numbers="6">
     class MyModule(N: Int, M: Int) extends Module {
@@ -1430,18 +1430,16 @@ class GCDMMIOBlackBox(val w: Int)
     <h2>Incremental First</h2>
     <div class="container" style="grid-template-columns: 1.4fr 1.0fr;">
       <div class="r-stack">
-        <img class="fragment fade-in-then-out" data-fragment-index="0" src="./figs/latte24/incremental-1.svg" />
-        <img class="fragment fade-in-then-out" data-fragment-index="1" src="./figs/latte24/incremental-2.svg" />
-        <img class="fragment fade-in-then-out" data-fragment-index="2" src="./figs/latte24/incremental-3.svg" />
-        <img class="fragment fade-in-then-out" data-fragment-index="3" src="./figs/latte24/incremental-4.svg" />
-        <img class="fragment fade-in-then-out" data-fragment-index="4" src="./figs/latte24/incremental-5.svg" />
+        <img class="fragment fade-in-then-out" data-fragment-index="0" height=500px; src="./figs/latte24/incremental-first.svg" />
+{# HTML hack due to my incompetance #}
+        <img class="fragment fade-in-then-out" data-fragment-index="1" height=500px; src="./figs/latte24/incremental-first.svg" />
+        <img class="fragment fade-in-then-out" data-fragment-index="2" height=500px; src="./figs/latte24/incremental-delta.svg" />
       </div>
       <div>
         <ul>
-          <li class="fragment" data-fragment-index="1">classfiles are cached by the build system of the host language</li>
-          <li class="fragment" data-fragment-index="2">Builder has to manage the cache for the generated output (*.sv)</li>
-          <li class="fragment" data-fragment-index="3">A1.class is invalidated by the host language build system</li>
-          <li class="fragment" data-fragment-index="4">Builder.class investigates A1.class to see if there are any changes made</li>
+          <li class="fragment" data-fragment-index="1">Cacheing + incrementalism throughout the stack</li>
+          <li class="fragment" data-fragment-index="1">Host language + interpretter level cacheing in frontend</li>
+          <li class="fragment" data-fragment-index="2">Only propagate the delta</li>
         </ul>
       </div>
     </div>
@@ -1450,28 +1448,42 @@ class GCDMMIOBlackBox(val w: Int)
   <section class="center">
     <h2>Incremental First</h2>
     <ul>
-      <li class="fragment">We get halfway there just by utilizing the host buildsystem</li>
-      <li class="fragment">Should be supported by all levels of the stack</li>
-      <ul>
-        <li class="fragment">Only small changes are propagated</li>
-      </ul>
-      <li class="fragment">Designers are less concerned about making changes and performing PPA evaluations</li>
-      <li class="fragment">More experiment chances to identify optimization opportunities</li>
+      <li class="fragment">Hours &rarr; minutes to obtain PPA results</li>
+      <li class="fragment">Encourages designers to come up with new designs</li>
+      <li class="fragment">We can even cache RTL simulation results (LiveSim<span class="reference">[1]</span>)</li>
     </ul>
+
+    <div class="footnote fragment">
+    [1] Skinner, Haven, Rafael Trapani Possignolo, Sheng-Hong Wang, and Jose Renau. "LiveSim: A fast hot reload simulator for HDLs." ISPASS 2020.
+    </div>
   </section>
 
   <section class="center">
     <h2>Mixed Abstractions</h2>
-    <ul>
-      <li class="fragment">We want to raise the level of abstraction to make HW design easier</li>
-      <ul>
-        <li class="fragment">Accelerators, initial prototyping stage, (possibly) the bus hierarchy</li>
-      </ul>
-      <li class="fragment">However, we also need lower level abstractions (RTL) when designing an SoC</li>
-      <ul>
-        <li class="fragment">High perf cores and caches</li>
-      </ul>
-    </ul>
+  </section>
+
+  <section class="center">
+    <h2>Mixed Abstractions</h2>
+    <div class="container" style="grid-template-columns: 1.4fr 1.0fr;">
+      <div class="r-stack">
+        <img class="fragment fade-in-then-out" data-fragment-index="0" src="./figs/latte24/multi-abstraction-rtl.svg" />
+        <img class="fragment fade-in-then-out" data-fragment-index="1" src="./figs/latte24/multi-abstraction-ctrl.svg" />
+        <img class="fragment fade-in-then-out" data-fragment-index="2" src="./figs/latte24/multi-abstraction-data.svg" />
+        <img class="fragment fade-in-then-out" data-fragment-index="3" src="./figs/latte24/multi-abstraction-accel.svg" />
+        <img class="fragment fade-in-then-out" data-fragment-index="4" src="./figs/latte24/multi-abstraction-soc.svg" />
+      </div>
+      <div>
+        <font size="5">
+        <ul>
+          <li class="fragment" data-fragment-index="0">RTL : cores and caches</li>
+          <li class="fragment" data-fragment-index="1">Ctrl synthesis : cores and caches</li>
+          <li class="fragment" data-fragment-index="2">Dataflow description : dataflow accelerators</li>
+          <li class="fragment" data-fragment-index="3">Accel DSL : accelerators</li>
+          <li class="fragment" data-fragment-index="4">SoC : mosaic of different abstractions</li>
+        </ul>
+        </font>
+      </div>
+    </div>
   </section>
 
   <section class="center">
@@ -1512,9 +1524,12 @@ class GCDMMIOBlackBox(val w: Int)
   <section class="center">
     <h2>Mixed Abstraction</h2>
     <ul>
-      <li class="fragment">Enables high productivity by incrementally lowering</li>
+      <li class="fragment">Enables high productivity by incremental refining</li>
+      <ul>
+        <li class="fragment">Model &rarr; HLS &rarr; RTL</li>
+      </ul>
       <li class="fragment">Potentially higher simulation throughput</li>
-      <li class="fragment">Easier to incorporate models into the system</li>
+      <li class="fragment">Clean SoC level configuration/parameterization (e.g., address space)</li>
     </ul>
   </section>
 
