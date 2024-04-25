@@ -688,6 +688,10 @@ class GCDMMIOBlackBox(val w: Int)
 
   <section>
     <h2>Chisel</h2>
+    <div class="center">
+      <img class="image" src="./figs/logos/chisel_logo.svg" />
+    </div>
+
     <ul>
       <li class="fragment">Hardware design language (HDL) embedded in Scala</li>
       <li class="fragment">Metaprogramming on top of the RTL abstraction
@@ -699,7 +703,7 @@ class GCDMMIOBlackBox(val w: Int)
     </ul>
   </section>
 
-  <section data-auto-animate>
+  <section>
     <h2>Summing a Vector in SystemVerilog</h2>
     <p class="center fragment">Sum a vector with $M$, $N$-bit inputs</p>
 
@@ -747,36 +751,36 @@ class GCDMMIOBlackBox(val w: Int)
     <ul>
       <li class="fragment">Less verbosity vs SystemVerilog</li>
       <li class="fragment">Easier to compose modules programmatically</li>
-      <li class="fragment">eDSL: leverage the constructs and tooling of the host language</li>
-      <ul class="fragment">
-        <li>Package manager</li>
-        <li>Build systems</li>
-        <li>LSP</li>
-      </ul>
+      <li class="fragment">eDSL: leverage the constructs and tooling of the host language
+        <ul class="fragment">
+          <li>Package manager / repositories</li>
+          <li>Build systems</li>
+          <li>IDE</li>
+        </ul>
+      </li>
     </ul>
   </section>
 
-  <section class="center">
+  <section>
     <h2>FIRRTL</h2>
+    <div class="center">
+      <img width="30%" class="image no-margin" src="./figs/logos/firrtl_logo.svg" />
+    </div>
+
     <ul>
-      <li class="fragment">Intermediate representation for Chisel</li>
-      <li class="fragment">Designed to represent the generated circuit after Chisel's elaboration (after all meta programming has executed)</li>
-      <li class="fragment">SSA style in memory representation</li>
+      <li class="fragment">Intermediate representation for an elaborated Chisel circuit</li>
+      <li class="fragment">Represents the generated circuit after execution of the Scala generator
+        <ul>
+          <li>Mostly structural: registers, SRAMs, logic / arithmetic elements</li>
+        </ul>
+      </li>
+      <!--<li class="fragment">SSA style in memory representation</li>-->
     </ul>
   </section>
 
-  <section data-auto-animate>
-    <h2>Reduced Sum : FIRRTL</h2>
-    <pre data-id="code-animation"><code class="" data-trim data-line-numbers>
-    circuit MyModule :
-      module MyModule :
-        ...
-    </code></pre>
-  </section>
-
-  <section data-auto-animate>
-    <h2>Reduced Sum : FIRRTL</h2>
-    <pre data-id="code-animation"><code class="" data-trim data-line-numbers="2-5">
+  <section>
+    <h2>Summing a Vector as FIRRTL</h2>
+    <pre data-id="code-animation"><code class="" data-trim data-line-numbers="1-2|3-5|7-13">
     circuit MyModule :
       module MyModule :
         input clock : Clock
@@ -789,44 +793,37 @@ class GCDMMIOBlackBox(val w: Int)
         node _io_sum_T_3 = tail(_io_sum_T_2, 1) @[MyModule.scala 14:27]
         node _io_sum_T_4 = add(_io_sum_T_3, io.a[3]) @[MyModule.scala 14:27]
         node _io_sum_T_5 = tail(_io_sum_T_4, 1) @[MyModule.scala 14:27]
-        io.sum &lt;= _io_sum_T_5 @[MyModule.scala 14:10]
+        io.sum &lt;== _io_sum_T_5 @[MyModule.scala 14:10]
     </code></pre>
-    <p>FIRRTL resembles your circuit</p>
-  </section>
 
-  <section data-auto-animate>
-    <h2>Reduced Sum : FIRRTL</h2>
-    <pre data-id="code-animation"><code class="" data-trim data-line-numbers="7-13">
-    circuit MyModule :
-      module MyModule :
-        input clock : Clock
-        input reset : UInt&lbrack;1&rbrack;
-        output io : { flip a : UInt&lbrack;4&rbrack;[4], sum : UInt&lbrack;4&rbrack;}
-
-        node _io_sum_T = add(io.a[0], io.a[1]) @[MyModule.scala 14:27]
-        node _io_sum_T_1 = tail(_io_sum_T, 1) @[MyModule.scala 14:27]
-        node _io_sum_T_2 = add(_io_sum_T_1, io.a[2]) @[MyModule.scala 14:27]
-        node _io_sum_T_3 = tail(_io_sum_T_2, 1) @[MyModule.scala 14:27]
-        node _io_sum_T_4 = add(_io_sum_T_3, io.a[3]) @[MyModule.scala 14:27]
-        node _io_sum_T_5 = tail(_io_sum_T_4, 1) @[MyModule.scala 14:27]
-        io.sum &lt;= _io_sum_T_5 @[MyModule.scala 14:10]
-    </code></pre>
-    <p>Metaprogramming has executed</p>
-  </section>
-
-  <section data-auto-animate>
-    <h3>Cool things that FIRRTL enables</h3>
     <ul>
-      <li class="fragment">Netlist manipulation : scan-chains, reparenting modules (for PD)</li>
-      <li class="fragment">Error checking, generic compiler optimizations</li>
-      <ul>
-        <li class="fragment">Combinational loop detection</li>
-        <li class="fragment">DCE, CSE, Const Prop</li>
-      </ul>
+      <li>A FIRRTL circuit is composed of modules with ports, similar to SystemVerilog</li>
+      <li>Scala-level constructs are gone in FIRRTL</li>
     </ul>
   </section>
 
-  <section data-auto-animate>
+  <section>
+    <h2>Cool Things That FIRRTL Enables</h2>
+    <ul>
+      <li class="fragment">Error checking, bitvector width inference, general-purpose optimizations
+        <ul>
+          <li>Combinational loop detection</li>
+          <li>Dead code elimination (DCE), common subexpression elimination (CSE), constant propagation</li>
+        </ul>
+      </li>
+      <li class="fragment">Clean and programmatic netlist manipulation
+        <ul>
+          <li class="fragment">Scan-chain instrumentation for state injection / extraction</li>
+          <li class="fragment">Regrouping modules (for hierarchical physical design)</li>
+          <li class="fragment">Unrolling a circuit for bounded model checking (BMC)</li>
+          <li class="fragment">Automatic coverpoint instrumentation</li>
+        </ul>
+      </li>
+    </ul>
+    <!--<li class="fragment">Given a single design, you are now able to generate various collateral by applying different compiler passes</li>-->
+  </section>
+
+  <!--<section>
     <h3>Cool things that FIRRTL enables</h3>
     <ul>
       <li class="fragment">FAME transformations and FireSim</li>
@@ -835,18 +832,13 @@ class GCDMMIOBlackBox(val w: Int)
         <figcaption class="fragment">Bold lines : Target design<br>Dashed lines : Timing control logic</figcaption>
       </figure>
     </ul>
-  </section>
+  </section>-->
 
-  <section class="center">
-    <h2>FIRRTL Implications</h2>
-    <ul>
-      <li class="fragment">Enables you to programmatically traverse/modify the netlist</li>
-      <li class="fragment">Given a single design, you are now able to generate various collateral by applying different compiler passes</li>
-    </ul>
-  </section>
+  <section>
+    <div class="center">
+      <img width="40%" class="image no-margin" style="padding: 0.5rem;" src="./figs/logos/chipyard_logo.svg" />
+    </div>
 
-  <section class="center">
-    <h2>What is Chipyard</h2>
     <div class="container" style="grid-template-columns: 1.4fr 1.0fr;">
     <div>
       <img src="./figs/latte24/soc-arch.svg"/>
@@ -854,14 +846,14 @@ class GCDMMIOBlackBox(val w: Int)
     <div>
       <font size="5">
       <ul>
-        <li class="fragment">Generator based SoC design framework</li>
-        <li class="fragment">Easy to configure a diverse set of SoC design space</li>
+        <li class="fragment">Chisel-based SoC design framework</li>
+        <li class="fragment">Easy to build designs that cover a wide SoC design space</li>
         <ul>
-          <li class="fragment">IP shop for RISC-V cores, accelerators, memory elements and the bus hierarchy</li>
+          <li class="fragment">IP library of RISC-V cores, accelerators, bus components, peripherals, and network-on-chip</li>
         </ul>
-        <li class="fragment">Ensures correct composition of the modules during elaboration time</li>
+        <li class="fragment">Ensures correct composition of SoC components during elaboration time</li>
         <ul>
-          <li class="fragment">Parameter validity, SoC address space</li>
+          <li class="fragment">Parameter propagation and constraints, SoC memory map</li>
         </ul>
       </ul>
       </font>
@@ -888,20 +880,27 @@ class GCDMMIOBlackBox(val w: Int)
   </section>
 
   <section class="center">
-    <h3>Overview of the Current Infrastructure</h3>
-    <div class="container" style="grid-template-columns: 1.0fr 1.0fr;">
-      <div class="fragment">
-        <img src="./figs/latte24/tool-stack.svg" />
+    <h2>Overview of the Berkeley Infrastructure</h2>
+    <div class="container" style="grid-template-columns: 1.0fr 1.4fr; column-gap: 2rem;">
+      <div class="center">
+        <img class="image" src="./figs/latte24/tool-stack.svg" />
       </div>
       <div>
-        <font size="6">
-        <ul>
-          <li class="fragment">Chisel & FIRRTL : Expressive frontend and flexible IR</li>
-          <li class="fragment">Chipyard : Composable SoC generator framework</li>
-          <li class="fragment">FireSim : Fast RTL simulation</li>
-          <li class="fragment">Enabled countless research projects from both industry and academia for the last 5+ years</li>
-        </ul>
-        </font>
+        <dl>
+          <div class="fragment">
+            <dt>Chisel &amp; FIRRTL</dt>
+            <dd>Expressive frontend and flexible IR</dd>
+          </div>
+          <div class="fragment">
+            <dt>Chipyard</dt>
+            <dd>Composable SoC design framework</dd>
+          </div>
+          <div class="fragment">
+            <dt>FireSim</dt>
+            <dd>High throughput RTL simulation</dd>
+          </div>
+        </dl>
+        <p class="center fragment">Enabled countless research projects from both industry and academia for the last 5+ years</p>
       </div>
     </div>
   </section>
@@ -911,10 +910,12 @@ class GCDMMIOBlackBox(val w: Int)
 
 <section>
   <section class="center">
-    <h3>Current methodology of mixed abstraction flow</h3>
+    <h2>The Current State of Mixed Abstraction SoC Integration</h2>
     <ul>
-    <li class="fragment">Demo : How to integrate your own IP to perform full system SoC level evaluation?</li>
+      <li class="fragment">We claimed that we can integrate external IP from any source with our SoC design framework</li>
+      <li class="fragment">How is it done in practice?</li>
     </ul>
+    <p class="center fragment"><strong>Demo:</strong> Integrating IP from another design language to perform full system SoC-level evaluation</p>
   </section>
 
   <section class="center">
