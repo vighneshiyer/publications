@@ -131,7 +131,7 @@ $linkColorHover: lighten( $linkColor, 20% );
   $selectionColor: $tn_white;
 }
 @else {
-  $selectionBackgroundColor: $tn_grey;
+  $selectionBackgroundColor: color.adjust($tn_blue, $lightness: +40%);
   $selectionColor: $tn_white;
 }
 
@@ -228,6 +228,18 @@ $overlayElementFgColor: 0, 0, 0;
     //  margin-left: -1em}
 
     //li {counter-increment: li}
+    code {
+      background: color.adjust($tn_fg, $lightness: +10%);
+    }
+}
+
+.reveal{
+  .controls {
+    color: color.adjust($tn_orange, $lightness: +30%);
+  }
+  .slide-number {
+    background-color: rgba(0, 0, 0, 0.8);
+  }
 }
 
 .container{
@@ -250,6 +262,10 @@ $overlayElementFgColor: 0, 0, 0;
 
 .verysmall {
     font-size: 0.75rem;
+}
+
+.tiny {
+  font-size: 0.6rem;
 }
 
 .footnote {
