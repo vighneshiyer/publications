@@ -887,29 +887,6 @@ class GCDMMIOBlackBox(val w: Int)
     </div>
   </section>
 
-{# <section class="center"> #}
-{# <h2>Host decoupling</h2> #}
-{# <div class="container" style="grid-template-columns: 1.2fr 1.0fr;"> #}
-{# <div class="r-stack"> #}
-{# <img class="fragment fade-in-then-out" data-fragment-index="0" src="./figs/latte24/firesim-before-transform.png"/> #}
-{# <img class="fragment fade-in-then-out" data-fragment-index="1" src="./figs/latte24/firesim-after-transform.png"/> #}
-{# <img class="fragment"                  data-fragment-index="2" src="./figs/latte24/firesim-mapped.png"/> #}
-{# </div> #}
-{# <div> #}
-{# <font size="5"> #}
-{# <ul> #}
-{# <li class="fragment" data-fragment-index="0">Starting with your target</li> #}
-{# <li class="fragment" data-fragment-index="1">Wrap the target RTL in a latency insensitive wrapper</li> #}
-{# <li class="fragment" data-fragment-index="1">Attach a DRAM timing model using host FPGA resources</li> #}
-{# <li class="fragment" data-fragment-index="1">These steps are automated by the FIRRTL compiler</li> #}
-{# <li class="fragment" data-fragment-index="2">Map the simulation onto the host FPGA</li> #}
-{# <li class="fragment" data-fragment-index="2">SoC now sees 100 cycles of DRAM latency!</li> #}
-{# </ul> #}
-{# </font> #}
-{# </div> #}
-{# </div> #}
-{# </section> #}
-
   <section class="center">
     <h3>Overview of the Current Infrastructure</h3>
     <div class="container" style="grid-template-columns: 1.0fr 1.0fr;">
@@ -1263,52 +1240,6 @@ class GCDMMIOBlackBox(val w: Int)
     </div>
   </section>
 
-{# <section class="center"> #}
-{# <h3>Why have we not reached the next paradigm?</h3> #}
-{# <ul> #}
-{# <li class="fragment">Iteration cycle</li> #}
-{# <ul> #}
-{# <li class="fragment">Compile/simulation time</li> #}
-{# <li class="fragment">Fast power/area estimation capabilities</li> #}
-{# </ul> #}
-{# <li class="fragment">Utilizing the suitable abstractions</li> #}
-{# <ul> #}
-{# <li class="fragment">Design productivity</li> #}
-{# <li class="fragment">IP integration is always at the RTL level</li> #}
-{# <ul> #}
-{# <li class="fragment">Ad-hoc blackboxing or DPI interfaces</li> #}
-{# <li class="fragment">Compromising simulation throughput</li> #}
-{# </ul> #}
-{# </ul> #}
-{# <li class="fragment">Other concerns</li> #}
-{# <ul> #}
-{# <li class="fragment">Physical design, verification</li> #}
-{# specifying clock/reset/power domains should be more explicit (we need to encode upf files in the frontend language) #}
-{# Since we are not specifying these semantics, we can't simulate these things. #}
-{# <li class="fragment">Missing power/clock/reset semantics</li> #}
-{# <li class="fragment">Need a systematic way of generating collateral from specs</li> #}
-{# </ul> #}
-{# </ul> #}
-{# </section> #}
-
-{# <section class="center"> #}
-{# <h3>Feature Requests</h3> #}
-{# <div class="container" style="grid-template-columns: 1.0fr 1.4fr;"> #}
-{# <div> #}
-{# <img src="./figs/latte24/feature-request.jpg" /> #}
-{# </div> #}
-{# <div> #}
-{# <font size="6"> #}
-{# <ul> #}
-{# <li class="fragment">Fast compilation time as well as quick feedback from the backend tools</li> #}
-{# <li class="fragment">Fast simulation that doesn't require hours of compile time</li> #}
-{# <li class="fragment">Support for higher level abstractions to enable designers to work on various levels of abstractions</li> #}
-{# </ul> #}
-{# </font> #}
-{# </div> #}
-{# </div> #}
-{# </section> #}
-
   <section class="center">
     <h3>Rest of the talk</h3>
     <div class="container" style="grid-template-columns: 1.0fr 1.4fr;">
@@ -1348,24 +1279,6 @@ class GCDMMIOBlackBox(val w: Int)
       </div>
     </div>
   </section>
-
-{# <section class="center"> #}
-{# <h2>Chipyard Compile Steps</h2> #}
-{# <ul> #}
-{# <li class="fragment">Scala FIRRTL Compiler (SFC) : Compiles the scala sources and generates CHIRRTL</li> #}
-{# <li class="fragment">MLIR FIRRTL Compiler (MFC) : Emits Verilog from CHIRRTL</li> #}
-{# <li class="fragment">Verilator : Verilog to C++ binary</li> #}
-{# </ul> #}
-{# </section> #}
-
-{# <section class="center"> #}
-{# <h2>Chipyard Compile Steps</h2> #}
-{# <div class="container" style="grid-template-rows: 0.1fr 0.7fr;"> #}
-{# <div> #}
-{# <img src="./figs/latte24/compile-time.svg" /> #}
-{# </div> #}
-{# </div> #}
-{# </section> #}
 
   <section class="center">
     <h2>Incremental First</h2>
@@ -1418,17 +1331,20 @@ class GCDMMIOBlackBox(val w: Int)
     <h2>Incremental First</h2>
     <div class="container" style="grid-template-columns: 1.4fr 1.0fr;">
       <div class="r-stack">
-        <img class="fragment fade-in-then-out" data-fragment-index="0" height=500px; src="./figs/latte24/incremental-first.svg" />
-{# HTML hack due to my incompetance #}
-        <img class="fragment fade-in-then-out" data-fragment-index="1" height=500px; src="./figs/latte24/incremental-first.svg" />
-        <img class="fragment" data-fragment-index="2" height=500px; src="./figs/latte24/incremental-delta.svg" />
+        <img class="fragment fade-in-then-out" data-fragment-index="0" height=500px; src="./figs/latte24/incremental-base.svg" />
+        <img class="fragment fade-in-then-out" data-fragment-index="1" height=500px; src="./figs/latte24/incremental-base.svg" />
+        <img class="fragment fade-in-then-out" data-fragment-index="2" height=500px; src="./figs/latte24/incremental-base.svg" />
+        <img class="fragment fade-in-then-out" data-fragment-index="3" height=500px; src="./figs/latte24/incremental-fe.svg" />
+        <img class="fragment fade-in-then-out" data-fragment-index="4" height=500px; src="./figs/latte24/incremental-ir.svg" />
+        <img class="fragment fade-in-then-out" data-fragment-index="5" height=500px; src="./figs/latte24/incremental-syn.svg" />
+        <img class="fragment" data-fragment-index="6" height=500px; src="./figs/latte24/incremental-pnr.svg" />
       </div>
       <div>
         <ul>
           <li class="fragment" data-fragment-index="0">Cacheing + incrementalism throughout the stack</li>
-          <li class="fragment" data-fragment-index="1">Need to isolate parts of the design affected by the change (during elab. time)</li>
+          <li class="fragment" data-fragment-index="1">Need to isolate parts of the design affected by the change</li>
           <li class="fragment" data-fragment-index="2">Only run passes on the affected parts</li>
-          <li class="fragment" data-fragment-index="3">We can even cache RTL simulation results (LiveSim<span class="reference">[1]</span>)</li>
+          <li class="fragment" data-fragment-index="7">We can even cache RTL simulation results (LiveSim<span class="reference">[1]</span>)</li>
         </ul>
       </div>
     </div>
@@ -1646,12 +1562,6 @@ class GCDMMIOBlackBox(val w: Int)
 
 <section>
   <section class="center">
-    <h2>Reference</h2>
-  </section>
-</section>
-
-<section>
-  <section class="center">
     <h2>Backup Slides</h2>
   </section>
 
@@ -1683,6 +1593,230 @@ class GCDMMIOBlackBox(val w: Int)
       </div>
     </div>
   </section>
+
+  <section class="center">
+    <h2>Host decoupling</h2>
+    <div class="container" style="grid-template-columns: 1.2fr 1.0fr;">
+      <div class="r-stack">
+        <img class="fragment fade-in-then-out" data-fragment-index="0" src="./figs/latte24/firesim-before-transform.png"/>
+        <img class="fragment fade-in-then-out" data-fragment-index="1" src="./figs/latte24/firesim-after-transform.png"/>
+        <img class="fragment"                  data-fragment-index="2" src="./figs/latte24/firesim-mapped.png"/>
+      </div>
+      <div>
+        <font size="5">
+        <ul>
+        <li class="fragment" data-fragment-index="0">Starting with your target</li>
+        <li class="fragment" data-fragment-index="1">Wrap the target RTL in a latency insensitive wrapper</li>
+        <li class="fragment" data-fragment-index="1">Attach a DRAM timing model using host FPGA resources</li>
+        <li class="fragment" data-fragment-index="1">These steps are automated by the FIRRTL compiler</li>
+        <li class="fragment" data-fragment-index="2">Map the simulation onto the host FPGA</li>
+        <li class="fragment" data-fragment-index="2">SoC now sees 100 cycles of DRAM latency!</li>
+        </ul>
+        </font>
+      </div>
+    </div>
+  </section>
+
+  <section class="center">
+    <h2>Chipyard Compile Steps</h2>
+    <ul>
+      <li class="fragment">Scala FIRRTL Compiler (SFC) : Compiles the scala sources and generates CHIRRTL</li>
+      <li class="fragment">MLIR FIRRTL Compiler (MFC) : Emits Verilog from CHIRRTL</li>
+      <li class="fragment">Verilator : Verilog to C++ binary</li>
+    </ul>
+  </section>
+
+  <section class="center">
+    <h2>Chipyard Compile Steps</h2>
+    <div class="container" style="grid-template-rows: 0.1fr 0.7fr;">
+      <div>
+        <img src="./figs/latte24/compile-time.svg" />
+      </div>
+    </div>
+  </section>
+
+  <section class="center">
+    <h3>RTL Level IR : Better In Memory Representation</h3>
+    <div class="container" style="grid-template-columns: 1.4fr 1.0fr;">
+      <div>
+        <img src="./figs/latte24/rtl-ir.png" style="height: 500px;" class="fragment"/>
+      </div>
+      <div>
+        <font size="5">
+        <ul>
+          <li class="fragment">Why does this even matter?</li>
+          <li class="fragment">The primitives available in your IR affects QoR.</li>
+          <li class="fragment">The in memory representation of the circuit affects compiler performance.</li>
+          <ul>
+            <li class="fragment">Graph representation can affect graph traversal speed. <a href="https://www.hillelwayne.com/post/graph-types/">The hunt for missing datatypes</a></li>
+          </ul>
+        </ul>
+        </font>
+      </div>
+    </div>
+  </section>
+
+  <section data-auto-animate>
+    <h3>SSA Rep. Problem</h3>
+    <p>FIRRTL's combinational loop detection pass</p>
+    <pre data-id="code-animation"><code class="scala" data-trim data-line-numbers="1-6|23,27,31|8,13,14,15,18,19|42">
+    class CheckCombLoops
+        extends Transform
+        with RegisteredTransform
+        with DependencyAPIMigration {
+
+      ...
+
+      private def getStmtDeps(
+        simplifiedModules: mutable.Map[String, AbstractConnMap],
+        deps:              MutableConnMap
+      )(s:                 Statement
+      ): Unit = s match {
+        case Connect(info, loc, expr) => ...
+        case w: DefWire => ...
+        case DefNode(info, name, value) =>
+          ...
+          getExprDeps(deps, lhs, info)(value)
+        case m: DefMemory if (m.readLatency == 0) => ...
+        case i: WDefInstance => ...
+        case _ => s.foreach(getStmtDeps(simplifiedModules, deps))
+      }
+
+      private def run(state: CircuitState) = {
+        ...
+        topoSortedModules.foreach {
+          ...
+          case m: Module =>
+            val portSet = m.ports.map(p => LogicNode(p.name)).toSet
+            val internalDeps = new MutableDiGraph[LogicNode] with MutableEdgeData[LogicNode, Info]
+            portSet.foreach(internalDeps.addVertex(_))
+            m.foreach(getStmtDeps(simplifiedModuleGraphs, internalDeps))
+
+            moduleGraphs(m.name) = internalDeps
+            simplifiedModuleGraphs(m.name) = moduleGraphs(m.name).simplify(portSet)
+            // Find combinational nodes with self-edges; this is *NOT* the same as length-1 SCCs!
+            for (unitLoopNode &lt;- internalDeps.getVertices.filter(v =&gt; internalDeps.getEdges(v).contains(v))) {
+              errors.append(new CombLoopException(m.info, m.name, Seq(unitLoopNode.name)))
+            }
+
+            for (scc &lt;- internalDeps.findSCCs.filter(_.length &gt; 1)) {
+              val sccSubgraph = internalDeps.subgraph(scc.toSet)
+              val cycle = findCycleInSCC(sccSubgraph)
+              (cycle.zip(cycle.tail)).foreach({ case (a, b) =&gt; require(internalDeps.getEdges(a).contains(b)) })
+              // Reverse to make sure LHS comes after RHS, print repeated vertex at start for legibility
+              val intuitiveCycle = cycle.reverse
+              val repeatedInitial = prettyPrintAbsoluteRef(Seq(m.name), intuitiveCycle.head)
+              val expandedCycle = expandInstancePaths(m.name, moduleGraphs, moduleDeps, Seq(m.name), intuitiveCycle)
+              errors.append(new CombLoopException(m.info, m.name, repeatedInitial +: expandedCycle))
+            }
+          case m => throwInternalError(s"Module ${m.name} has unrecognized type")
+        }
+        ...
+      }
+    }
+    </code></pre>
+    <div class="r-stack">
+      <p id="special1" style="transition: all .2s ease; opacity: 0; visibility: hidden; will-change: opacity;">We are traversing the statements to build a graph of the nodes.</p>
+      <p id="special2" style="transition: all .2s ease; opacity: 0; visibility: hidden; will-change: opacity;">We are traversing the graph once again to check for comb loops.</p>
+    </div>
+  </section>
+
+  <section class="center">
+    <h3>Graph Rep.</h3>
+    <font size="6">
+    <div class="container" style="grid-template-columns: 1.0fr 1.0fr;">
+      <div>
+        <ul>
+          <li class="fragment">The above pattern of traversing the graph twice is a very common pattern in FIRRTL passes.</li>
+          <li class="fragment">If we had a graph representation of the circuit, we wouldn't have had to traverse the circuit twice.</li>
+        </ul>
+      </div>
+      <div>
+        <ul>
+          <li class="fragment">Compared to a SSA style, "human readable" IR, debugging passes might become more difficult.</li>
+        </ul>
+      </div>
+    </div>
+    </font>
+  </section>
+
+  <section class="center">
+    <h3>Graph Rep. Implementation Details</h3>
+    <div class="container" style="grid-template-columns: 1.0fr 1.4fr;">
+      <div>
+        <img src="./figs/latte24/lgraph.jpg">
+      </div>
+      <div>
+        <font size="6">
+        <ul>
+          <li class="fragment">lGraph : high perf. graph based IR.</li>
+          <ul>
+            <li class="fragment">Hypergraph where each node represents a module and the edges represents the connections.</li>
+            <ul>
+              <li class="fragment">Submodules forms a graph within a node representing the parent module.</li>
+            </ul>
+            <li class="fragment">Mmaps disk pages onto virtual memory to reduce memcpy overheads.</li>
+            <li class="fragment">Supports graph traversals such that you can access nodes located in adjacent cachelines.</li>
+          </ul>
+        </ul>
+        </font>
+      </div>
+  </section>
+
+  <section class="center">
+    <h3>Graph Rep. Exploiting Parallelism</h3>
+    <ul>
+      <li class="fragment">Again, the compiler performance is crucial for HW designers : exploit parallelism.</li>
+      <li class="fragment">The passes should be written as if it is working on a single thread.</li>
+      <ul>
+        <li class="fragment">The complexities of dealing with parallelism should be hidden from the pass-writer.</li>
+      </ul>
+      <li class="fragment">The interpreter (compiler) must be able to partition the graph and execute passes in parallel.</li>
+    </ul>
+  </section>
+
+
+  <section class="center">
+    <h4>FIRRTL In Memory Representation Problem 2</h4>
+    <pre data-id="code-animation"><code class="scala" data-trim data-line-numbers>
+    case class Mux(...)
+    case class UIntLiteral(...)
+    case class SIntLiteral(...)
+    case class DefWire(...)
+    case class DefRegister(...)
+    case class DefInstance(...)
+    case class DefMemory(...)
+    abstract class PrimOp extends FirrtlNode
+    </code></pre>
+    <ul>
+      <li class="fragment">Limited set of primitives &rarr; QoR may be low.</li>
+      <li class="fragment">Compiler & backend tools spends a lot of time recreating semantics.</li>
+    </ul>
+  </section>
+
+  <section class="center">
+    <h4>Possible Primitives</h4>
+    <pre data-id="code-animation"><code class="scala" data-trim data-line-numbers="9-12">
+    case class Mux(...)
+    case class UIntLiteral(...)
+    case class SIntLiteral(...)
+    case class DefWire(...)
+    case class DefRegister(...)
+    case class DefInstance(...)
+    case class DefMemory(...)
+    abstract class PrimOp extends FirrtlNode
+    case class OH(...)
+    case class PriorityMux(...)
+    case class BoolLiteral(...)
+    case class DecoupledInterface(...)
+    </code></pre>
+    <ul>
+      <li class="fragment">Add more primitives such that we can preserve more higher level circuit semantics.</li>
+      <li class="fragment">Need to find a good balance between pass writing vs QoR.</li>
+    </ul>
+  </section>
+
+
 </section>
 
 {% endblock %}
