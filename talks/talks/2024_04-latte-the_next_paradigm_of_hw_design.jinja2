@@ -1299,26 +1299,30 @@ class GCDMMIOBlackBox(val w: Int)
 
   <section data-auto-animate>
     <h2>Incremental First</h2>
-    <pre data-id="code-animation"><code class="scala" data-trim data-line-numbers="6">
-    class MyModule(N: Int, M: Int) extends Module {
-      val io = IO(new Bundle {
-        val a = Vec(M, Input(UInt(N.W)))
-        val sum  = Output(UInt((N + M - 1).W))
-      })
-      io.sum := io.a.reduce(_ +& _)
-    }
-    </code></pre>
-    <ul>
-      <li class="fragment">Initial design stage: code compilation time</li>
-      <li class="fragment">When design matures: backend tool latency</li>
-    </ul>
+    <div>
+      <pre data-id="code-animation"><code class="scala" data-trim data-line-numbers="6">
+      class MyModule(N: Int, M: Int) extends Module {
+        val io = IO(new Bundle {
+          val a = Vec(M, Input(UInt(N.W)))
+          val sum  = Output(UInt((N + M - 1).W))
+        })
+        io.sum := io.a.reduce(_ +& _)
+      }
+      </code></pre>
+    </div>
+    <div>
+      <ul>
+        <li class="fragment">Initial design stage: code compilation time</li>
+        <li class="fragment">When design matures: backend tool latency</li>
+      </ul>
+    </div>
   </section>
 
   <section class="center">
     <h2>Incremental First</h2>
     <ul>
       <li class="fragment">This problem can be solved by adopting the incremental first approach to hardware design</li>
-      <li class="fragment"><strong>Partial compilation & Cacheing</strong></li>
+      <li class="fragment"><strong class="green">Partial compilation & cacheing</strong></li>
     </ul>
   </section>
 
@@ -1441,7 +1445,7 @@ class GCDMMIOBlackBox(val w: Int)
         <li class="fragment">Avoid recreating semantics (QoR + latency)</li>
         <li class="fragment">Which circuit primitives should we support?</li>
       </ul>
-      <li class="fragment">Both broken when lowering to RTL</li>
+      <li class="fragment">Both broken when lowering to SV</li>
     </ul>
   </section>
 
