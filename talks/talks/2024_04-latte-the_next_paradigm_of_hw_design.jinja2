@@ -328,7 +328,7 @@ Reveal.on( 'fragmenthidden', event => {
     <img class="image no-margin" style="position:absolute; top: 0; right: 0; transform-origin: top right; transform: scale(1); padding: 0.3rem; width: 20%; z-index: 1;" src="./figs/latte24/current-paradigm.svg" />
 
     <div class="container" style="grid-template-columns: 1fr 1fr;">
-      <div class="fragment"><img src="./figs/latte24/esp_flow.png" /></div>
+      <div class="fragment"><img class="image no-margin no-padding" style="padding: 0.3rem;" src="./figs/latte24/esp_flow.png" /></div>
       <div class="fragment">
     <pre><code class="scala" data-trim data-line-numbers>
 class GCDMMIOBlackBox(val w: Int)
@@ -647,16 +647,18 @@ class GCDMMIOBlackBox(val w: Int)
 
   <section class="center">
     <h2>Limitations of Performance Modeling</h2>
-    <div class="container" style="grid-template-rows: 0.2fr 0.7fr;">
     <div>
-      <img class="fragment" data-fragment-index="0" height=300px; src="./figs/latte24/modeling-errors.png" />
-      <figcaption class="small"></figcaption>
+      <img class="fragment image no-margin" data-fragment-index="0" height=300px; src="./figs/latte24/modeling-errors.png" />
+      <figcaption class="small"><span class="reference">[1]</span></figcaption>
     </div>
-    <div>
-      <ul>
-        <li class="fragment" data-fragment-index="0">Prone to errors</li>
-        <li class="fragment">Redundant work</li>
-      </ul>
+
+    <ul>
+      <li class="fragment" data-fragment-index="0">Prone to errors</li>
+      <li class="fragment">Redundant work</li>
+    </ul>
+
+    <div class="footnote">
+    [1] Akram, Ayaz, and Lina Sawalha. "A survey of computer architecture simulation techniques and tools." IEEE Access 7 (2019).
     </div>
   </section>
 
