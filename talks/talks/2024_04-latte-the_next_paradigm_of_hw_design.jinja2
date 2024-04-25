@@ -629,7 +629,7 @@ class GCDMMIOBlackBox(val w: Int)
     </ul>
   </section>
 
-  <section class="center">
+  <section>
     <h2>Typical Hardware Design Cycle</h2>
     <div class="container" style="grid-template-columns: 1.0fr 1.4fr;">
       <div class="fragment">
@@ -645,77 +645,65 @@ class GCDMMIOBlackBox(val w: Int)
     </div>
   </section>
 
-  <section class="center">
+  <section>
     <h2>Limitations of Performance Modeling</h2>
-    <div>
-      <img class="fragment image no-margin" data-fragment-index="0" height=300px; src="./figs/latte24/modeling-errors.png" />
-      <figcaption class="small"><span class="reference">[1]</span></figcaption>
+    <div class="center">
+      <img class="fragment image no-margin" width="60%" src="./figs/latte24/modeling-errors.png" />
+      <figcaption class="small fragment">Performance models can have large errors with respect to the silicon they are modeling<span class="reference">[1]</span></figcaption>
     </div>
 
-    <ul>
-      <li class="fragment" data-fragment-index="0">Prone to errors</li>
-      <li class="fragment">Redundant work</li>
+    <ul style="margin-top: 1rem;">
+      <li class="fragment">Can we avoid modeling error altogether?</li>
+      <li class="fragment">Can we avoid the redundant work of implementing both a performance model and RTL to match it?</li>
     </ul>
 
-    <div class="footnote">
-    [1] Akram, Ayaz, and Lina Sawalha. "A survey of computer architecture simulation techniques and tools." IEEE Access 7 (2019).
+    <div class="footnote fragment">
+    [1] Akram, Ayaz, and Lina Sawalha. "x86 computer architecture simulators: A comparative study." ICCD 2016.
     </div>
   </section>
 
-  <section class="center">
+  <section>
     <h2>RTL First Design Methodology</h2>
-    <div class="container" style="grid-template-columns: 1.0fr 1.4fr;">
+
+    <div class="container" style="grid-template-columns: 1.0fr 1.6fr;">
       <div class="fragment">
         <img src="./figs/dynamic/latte24/rtl_first_design.svg" />
       </div>
       <div>
         <p class="fragment center">We resort to performance models because <strong>writing and evaluating RTL is hard</strong></p>
         <ol>
-          <li class="fragment">Make RTL writing so easy that we can just do modeling with RTL</li>
-          <li class="fragment">Model large systems with high evaluation fidelity!</li>
+          <li class="fragment">Make writing RTL so easy that we can <em>do away with performance models</em></li>
+          <li class="fragment">Model large and realistic SoCs</li>
+          <li class="fragment">Evaluate RTL designs on long and realistic workloads</li>
         </ol>
       </div>
     </div>
+
+    <ol style="margin-top: 1rem;">
+      <li class="fragment">Create a high productivity RTL design language and IR: <strong class="green">Chisel &amp; FIRRTL</strong></li>
+      <li class="fragment">Create a SoC design framework: <strong class="green">Chipyard</strong></li>
+      <li class="fragment">Create a fast RTL simulator: <strong class="green">FireSim</strong></li>
+    </ol>
   </section>
 
-  <section class="center">
-    <h3>Our efforts towards RTL first</h3>
-    <ul>
-      <li class="fragment">Design language : Chisel & FIRRTL</li>
-      <li class="fragment">SoC evaluation framework : Chipyard & FireSim</li>
-    </ul>
-  </section>
-
-  <section class="center">
+  <section>
     <h2>Chisel</h2>
     <ul>
-      <li class="fragment">HDL embedded in Scala</li>
-      <li class="fragment">Metaprogramming on top of the RTL abstraction</li>
-      <ul>
-        <li class="fragment">Scala enables high expressiveness compared to SV</li>
-        <li class="fragment">Makes it much easier to read and write RTL</li>
-      </ul>
+      <li class="fragment">Hardware design language (HDL) embedded in Scala</li>
+      <li class="fragment">Metaprogramming on top of the RTL abstraction
+        <ul>
+          <li class="fragment">Scala's OOP and FP constructs enable high expressiveness compared to SystemVerilog</li>
+          <li class="fragment">Makes writing RTL more productive</li>
+        </ul>
+      </li>
     </ul>
   </section>
 
   <section data-auto-animate>
-    <h3>Reduced Sum : System Verilog</h3>
-    <pre data-id="code-animation"><code class="verilog" data-trim data-line-numbers>
-    module MyModule
-      #(parameter N, M)
-      (
-        input  [N-1:0] a [0:M-1],
-        output [N-1:0] sum
-      );
-      ...
+    <h2>Summing a Vector in SystemVerilog</h2>
+    <p class="center fragment">Sum a vector with $M$, $N$-bit inputs</p>
 
-    endmodule
-    </code></pre>
-  </section>
-
-  <section data-auto-animate>
-    <h3>Reduced Sum : System Verilog</h3>
-    <pre data-id="code-animation"><code class="verilog" data-trim data-line-numbers="8-18">
+    <pre class="fragment" data-id="code-animation"><code class="verilog" data-trim data-line-numbers="1-6|8-18">
     module MyModule
       #(parameter N, M)
       (
@@ -739,21 +727,9 @@ class GCDMMIOBlackBox(val w: Int)
   </section>
 
   <section data-auto-animate>
-    <h2>Reduced Sum : Chisel</h2>
-    <pre data-id="code-animation"><code class="scala" data-trim data-line-numbers>
-    class MyModule(N: Int, M: Int) extends Module {
-      val io = IO(new Bundle {
-        val a = Vec(M, Input(UInt(N.W)))
-        val sum  = Output(UInt(N.W))
-      })
-      ...
-    }
-    </code></pre>
-  </section>
+    <h2>Summing a Vector in Chisel</h2>
 
-  <section data-auto-animate>
-    <h2>Reduced Sum : Chisel</h2>
-    <pre data-id="code-animation"><code class="scala" data-trim data-line-numbers="6">
+    <pre data-id="code-animation"><code class="scala" data-trim data-line-numbers="1-5|6">
     class MyModule(N: Int, M: Int) extends Module {
       val io = IO(new Bundle {
         val a = Vec(M, Input(UInt(N.W)))
@@ -762,18 +738,20 @@ class GCDMMIOBlackBox(val w: Int)
       io.sum := io.a.reduce(_ + _)
     }
     </code></pre>
+
+    <p class="fragment center">Leverage Scala's collection operators to make working with sequences easy</p>
   </section>
 
-  <section class="center">
-    <h2>Chisel Implications</h2>
+  <section>
+    <h2>Benefits of Chisel</h2>
     <ul>
-      <li class="fragment">Much less verbose when describing HW</li>
+      <li class="fragment">Less verbosity vs SystemVerilog</li>
       <li class="fragment">Easier to compose modules programmatically</li>
-      <li class="fragment">eDSL : enables us to use existing tools around the host language</li>
-      <ul>
-        <li class="fragment">Package manager</li>
-        <li class="fragment">Build systems</li>
-        <li class="fragment">LSP</li>
+      <li class="fragment">eDSL: leverage the constructs and tooling of the host language</li>
+      <ul class="fragment">
+        <li>Package manager</li>
+        <li>Build systems</li>
+        <li>LSP</li>
       </ul>
     </ul>
   </section>
