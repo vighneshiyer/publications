@@ -1410,33 +1410,37 @@ class GCDMMIOBlackBox(val w: Int)
   <section class="center">
     <h2>Incremental First</h2>
     <ul>
-      <li class="fragment">Hours &rarr; minutes to obtain PPA results</li>
-      <li class="fragment">Encourages designers to try out new ideas (w/o worrying about how much time it takes)</li>
-      <li class="fragment">Easier to fix backend tool issues (e.g. critical path, DRC)</li>
+      <li class="fragment">Hours &rarr; minutes to obtain simulation + PPA results</li>
+      <li class="fragment">Encourages designers to try out new ideas</li>
+      <li class="fragment">Makes <em>direct iteration on the design</em> (not the model) feasible</li>
+      <!--<li class="fragment">Easier to fix backend tool issues (e.g. critical path, DRC)</li>-->
     </ul>
   </section>
 
   <section data-auto-animate>
     <h2>Incremental First</h2>
     <ul>
-      <li class="fragment">Hardware designers want more iterations to perform experiments</li>
-      <li class="fragment">Most of the times, we write the entire module, and make small bug fixes</li>
+      <li class="fragment">Faster iterations {{ rightarrow }} faster convergence on correctness and optimization</li>
+      <li class="fragment">It's quick to sketch out a module, but time consuming to fix every bug
+        <ul>
+          <li>Software-like <strong>edit-run-debug loop</strong> is key</li>
+        </ul>
+      </li>
+      <!--Most of the times, we write the entire module, and make small bug fixes</li>-->
     </ul>
-    <pre data-id="code-animation"><code class="scala" data-trim data-line-numbers="6">
-    class MyModule(N: Int, M: Int) extends Module {
-      val io = IO(new Bundle {
-        val a = Vec(M, Input(UInt(N.W)))
-        val sum  = Output(UInt((N + M - 1).W))
-      })
-      io.sum := io.a.reduce(_ + _)
-    }
-    </code></pre>
-  </section>
 
-  <section data-auto-animate>
-    <h2>Incremental First</h2>
-    <div>
-      <pre data-id="code-animation"><code class="scala" data-trim data-line-numbers="6">
+    <div class="r-stack" style="margin-top: 1rem; margin-bottom: 1rem;">
+      <pre class="fragment fade-in-then-out" data-id="code-animation"><code class="scala" data-trim data-line-numbers="6">
+      class MyModule(N: Int, M: Int) extends Module {
+        val io = IO(new Bundle {
+          val a = Vec(M, Input(UInt(N.W)))
+          val sum  = Output(UInt((N + M - 1).W))
+        })
+        io.sum := io.a.reduce(_ + _)
+      }
+      </code></pre>
+
+      <pre class="fragment fade-in" data-id="code-animation"><code class="scala" data-trim data-line-numbers="6">
       class MyModule(N: Int, M: Int) extends Module {
         val io = IO(new Bundle {
           val a = Vec(M, Input(UInt(N.W)))
@@ -1446,16 +1450,18 @@ class GCDMMIOBlackBox(val w: Int)
       }
       </code></pre>
     </div>
-    <div>
+
+    <ul>
+      <li class="fragment">A tiny change shouldn't cause a rebuild of the full SoC design and simulator</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Incremental First</h2>
       <ul>
         <li class="fragment">Initial design stage: code compilation time</li>
         <li class="fragment">When design matures: backend tool latency</li>
       </ul>
-    </div>
-  </section>
-
-  <section class="center">
-    <h2>Incremental First</h2>
     <ul>
       <li class="fragment">This problem can be solved by adopting the incremental first approach to hardware design</li>
       <li class="fragment"><strong class="green">Partial compilation & cacheing</strong></li>
