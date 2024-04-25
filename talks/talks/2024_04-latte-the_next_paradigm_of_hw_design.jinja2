@@ -124,23 +124,26 @@ Reveal.on( 'fragmenthidden', event => {
   <section>
     <h2>Talk Overview</h2>
     <ol>
-      <li class="fragment">Overview of the next paradigm of hardware design</li>
-      <li class="fragment">The existing paradigm of hardware design</li>
-      <li class="fragment">Recent efforts to build the next paradigm
+      <li class="fragment">Our vision of the next paradigm of hardware design</li>
+      <li class="fragment">The current paradigm and prior work in building the future
         <ul>
           <li class="fragment">New HDLs and design abstractions</li>
           <li class="fragment">New simulators</li>
           <li class="fragment">New SoC design frameworks</li>
         </ul>
       </li>
-      <li class="fragment">What's still missing? Why are we not in the new age of hardware design?
+      <li class="fragment">Berkeley's effort to build the tools for the next paradigm
         <ul>
-          <li>It's a lot more than just the frontend language: PPA iteration cycle, verification, other stuff</li>
+          <li>Chisel, FIRRTL, Chipyard, FireSim</li>
+          <li>Demo of integrating external IP into a Chipyard SoC</li>
         </ul>
       </li>
-      <li class="fragment">A sketch of what matters to hardware designers and our broad vision
-
+      <li class="fragment">What's still missing? Why are we not in the new age of hardware design?
+        <!--<ul>
+          <li>It's a lot more than just the frontend language: PPA iteration cycle, verification, other stuff</li>
+        </ul>-->
       </li>
+      <li class="fragment">Our vision for the next generation of hardware design languages and tools</li>
     </ol>
   </section>
 </section>
@@ -1247,10 +1250,6 @@ class GCDMMIOBlackBox(val w: Int)
 <section>
   <section class="center">
     <h2>Language Frontend & IR</h2>
-  </section>
-
-  <section class="center">
-    <h2>Language Frontend & IR</h2>
     <div class="container" style="grid-template-columns: 1.2fr 1.0fr;">
       <div>
         <img style="object-fit: contain; height: 220px;" class="image no-margin" src="./figs/latte24/new-paradigm.svg"/>
@@ -1559,7 +1558,17 @@ class GCDMMIOBlackBox(val w: Int)
 <section>
   <section class="center">
     <h2>Conclusion</h2>
-    <ul>
+
+    <div class="container fragment" style="grid-template-columns: 1fr 1fr; column-gap: 2rem;">
+      <div>
+        <img style="object-fit: contain; height: 220px;" class="image no-margin" src="./figs/latte24/current-paradigm.svg" />
+      </div>
+      <div>
+        <img style="object-fit: contain; height: 220px;" class="image no-margin" src="./figs/latte24/new-paradigm.svg" />
+      </div>
+    </div>
+
+    <ul style="margin-top: 1rem;">
       <li class="fragment">We need to radically change the hardware design methodology in order to achieve higher PPA</li>
       <li class="fragment">By tightly integrating the tools vertically, we can achieve low iteration time, high design productivity and high QoR</li>
     </ul>
