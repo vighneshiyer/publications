@@ -1389,6 +1389,14 @@ class GCDMMIOBlackBox(val w: Int)
 {# </div> #}
 {# </section> #}
 
+  <section class="center">
+    <h2>Incremental First</h2>
+    <ul>
+      <li class="fragment">Hours &rarr; minutes to obtain PPA results</li>
+      <li class="fragment">Encourages designers to try out new ideas (w/o worrying about how much time it takes)</li>
+    </ul>
+  </section>
+
   <section data-auto-animate>
     <h2>Incremental First</h2>
     <ul>
@@ -1435,33 +1443,35 @@ class GCDMMIOBlackBox(val w: Int)
         <img class="fragment fade-in-then-out" data-fragment-index="0" height=500px; src="./figs/latte24/incremental-first.svg" />
 {# HTML hack due to my incompetance #}
         <img class="fragment fade-in-then-out" data-fragment-index="1" height=500px; src="./figs/latte24/incremental-first.svg" />
-        <img class="fragment fade-in-then-out" data-fragment-index="2" height=500px; src="./figs/latte24/incremental-delta.svg" />
+        <img class="fragment" data-fragment-index="2" height=500px; src="./figs/latte24/incremental-delta.svg" />
       </div>
       <div>
         <ul>
-          <li class="fragment" data-fragment-index="1">Cacheing + incrementalism throughout the stack</li>
-          <li class="fragment" data-fragment-index="1">Host language + interpretter level cacheing in frontend</li>
-          <li class="fragment" data-fragment-index="2">Only propagate the delta</li>
+          <li class="fragment" data-fragment-index="0">Cacheing + incrementalism throughout the stack</li>
+          <li class="fragment" data-fragment-index="1">Need to isolate parts of the design affected by the change (during elab. time)</li>
+          <li class="fragment" data-fragment-index="2">Only run passes on the affected parts</li>
+          <li class="fragment" data-fragment-index="3">We can even cache RTL simulation results (LiveSim<span class="reference">[1]</span>)</li>
         </ul>
       </div>
     </div>
-  </section>
-
-  <section class="center">
-    <h2>Incremental First</h2>
-    <ul>
-      <li class="fragment">Hours &rarr; minutes to obtain PPA results</li>
-      <li class="fragment">Encourages designers to come up with new designs</li>
-      <li class="fragment">We can even cache RTL simulation results (LiveSim<span class="reference">[1]</span>)</li>
-    </ul>
 
     <div class="footnote fragment">
     [1] Skinner, Haven, Rafael Trapani Possignolo, Sheng-Hong Wang, and Jose Renau. "LiveSim: A fast hot reload simulator for HDLs." ISPASS 2020.
     </div>
   </section>
 
+
   <section class="center">
-    <h2>Mixed Abstractions</h2>
+    <h2>Mixed Abstraction</h2>
+    <ul>
+      <li class="fragment">Enables high design productivity</li>
+      <ul>
+        <li class="fragment">Choose the right abstraction to work on</li>
+        <li class="fragment">Incremental refining : Model &rarr; HLS &rarr; RTL</li>
+      </ul>
+      <li class="fragment">Potentially higher simulation throughput</li>
+      <li class="fragment">Clean SoC level configuration/parameterization (e.g., address space)</li>
+    </ul>
   </section>
 
   <section class="center">
@@ -1478,7 +1488,7 @@ class GCDMMIOBlackBox(val w: Int)
         <font size="5">
         <ul>
           <li class="fragment" data-fragment-index="0">RTL : cores and caches</li>
-          <li class="fragment" data-fragment-index="1">Ctrl synthesis : cores and caches</li>
+          <li class="fragment" data-fragment-index="1">Ctrl synthesis : bus hierarchy, peripherals</li>
           <li class="fragment" data-fragment-index="2">Dataflow description : dataflow accelerators</li>
           <li class="fragment" data-fragment-index="3">Accel DSL : accelerators</li>
           <li class="fragment" data-fragment-index="4">SoC : mosaic of different abstractions</li>
@@ -1518,21 +1528,10 @@ class GCDMMIOBlackBox(val w: Int)
       <ul>
         <li class="fragment">Composes different abstractions together</li>
         <li class="fragment">Checks if the compositions are valid</li>
+        <li class="fragment">Corresponds to FFI in software</li>
         <li class="fragment">We can defer the execution of the composition semantics to runtime</li>
       </ul>
     </div>
-  </section>
-
-  <section class="center">
-    <h2>Mixed Abstraction</h2>
-    <ul>
-      <li class="fragment">Enables high productivity by incremental refining</li>
-      <ul>
-        <li class="fragment">Model &rarr; HLS &rarr; RTL</li>
-      </ul>
-      <li class="fragment">Potentially higher simulation throughput</li>
-      <li class="fragment">Clean SoC level configuration/parameterization (e.g., address space)</li>
-    </ul>
   </section>
 
   <section class="center">
@@ -1540,11 +1539,13 @@ class GCDMMIOBlackBox(val w: Int)
     <ul>
       <li class="fragment">Abstraction level semantics</li>
       <ul>
+        <li class="fragment">Avoid lowering everything to RTL (simulation)</li>
         <li class="fragment">How time advances during simulation?</li>
       </ul>
       <li class="fragment">Circuit level semantics</li>
       <ul>
-        <li class="fragment">Which circuit primitives should we use?</li>
+        <li class="fragment">Avoid recreating semantics (QoR + latency)</li>
+        <li class="fragment">Which circuit primitives should we support?</li>
       </ul>
       <li class="fragment">Both broken when lowering to RTL</li>
     </ul>
@@ -1554,11 +1555,14 @@ class GCDMMIOBlackBox(val w: Int)
     <h2>Semantics Preserving</h2>
     <div class="container" style="grid-template-columns: 1.4fr 1.0fr;">
     <div class="r-stack">
-      <img class="fragment" src="./figs/latte24/new-paradigm-runtime-interop.svg" />
+      <img class="fragment fade-in-then-out" data-fragment-index="0" src="./figs/latte24/new-paradigm-runtime-interop.svg" />
+      <img class="fragment"                  data-fragment-index="1" src="./figs/latte24/elab-interop-1.svg" />
     </div>
     <div>
       <ul>
-        <li class="fragment">Runtime interop : abstraction level semantics</li>
+        <li class="fragment" data-fragment-index="0">Runtime interop : orchestrate simulation execution btw abstractions</li>
+        <li class="fragment" data-fragment-index="1">Recall : we composed abstractions via elab. interop</li>
+        <li class="fragment" data-fragment-index="2">Edge semantics dictates the execution of runtime interop</li>
       </ul>
     </div>
   </section>
@@ -1575,9 +1579,9 @@ class GCDMMIOBlackBox(val w: Int)
       <div>
         <font size="5">
         <ul>
-          <li class="fragment" data-fragment-index="0">RT interop : dictates how time advances between each abstraction boundary</li>
-          <li class="fragment" data-fragment-index="0">Send req (function call)</li>
-          <li class="fragment" data-fragment-index="1">RTL advances time</li>
+          <li class="fragment" data-fragment-index="0">RT interop : manages how time advances between abstraction boundaries</li>
+          <li class="fragment" data-fragment-index="1">Send req (function call)</li>
+          <li class="fragment" data-fragment-index="2">RTL advances time</li>
           <li class="fragment" data-fragment-index="3">Runtime interop schedules the response & updates timing</li>
         </ul>
         </font>
@@ -1591,6 +1595,25 @@ class GCDMMIOBlackBox(val w: Int)
 
   <section class="center">
     <h2>Semantics Preserving</h2>
+    <div class="container" style="grid-template-columns: 1.0fr 1.0fr;">
+    <div>
+      <pre data-id="code-animation"><code class="verilog" data-trim data-line-numbers>
+      input [3:0] uint_val,
+      input [3:0] one_hot,
+      input [3:0] bit_vector,
+      </code></pre>
+    </div>
+    <div>
+      <ul>
+        <li class="fragment">SV : no notion of circuit semantics</li>
+        <li class="fragment">Semantics recreated : time consuming & low QoR</li>
+        <li class="fragment">Solve this by directly passing the semantics to the tools</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="center">
+    <h2>Semantics Preserving</h2>
     <div class="container" style="grid-template-columns: 1.4fr 1.0fr;">
     <div class="r-stack">
       <img class="fragment" src="./figs/latte24/new-paradigm-common-ir.svg" />
@@ -1598,23 +1621,6 @@ class GCDMMIOBlackBox(val w: Int)
     <div>
       <ul>
         <li class="fragment">Common IR : circuit level semantics</li>
-      </ul>
-    </div>
-  </section>
-
-  <section class="center">
-    <h2>Semantics Preserving</h2>
-    <div class="container" style="grid-template-columns: 1.0fr 1.0fr;">
-    <div>
-      <pre data-id="code-animation"><code class="verilog" data-trim data-line-numbers>
-      input [3:0] uint_val,
-      input [3:0] one_hot,
-      </code></pre>
-    </div>
-    <div>
-      <ul>
-        <li class="fragment">SV : no notion of circuit semantics</li>
-        <li class="fragment">Semantics recreated : time consuming & low QoR</li>
       </ul>
     </div>
   </section>
@@ -1646,13 +1652,6 @@ class GCDMMIOBlackBox(val w: Int)
     </div>
   </section>
 
-  <section class="center">
-    <h2>Semantics Preserving</h2>
-    <ul>
-      <li class="fragment">Higher QoR</li>
-      <li class="fragment">Lower backend tool execution time</li>
-    </ul>
-  </section>
 </section>
 
 <!-- -------------------------------------------------------------------- -->
@@ -1679,16 +1678,32 @@ class GCDMMIOBlackBox(val w: Int)
   </section>
 
   <section class="center">
-    <h2>CIRCT Comparisons</h2>
-    <ul>
-      <li class="fragment">Current paradigm's approach to mixed abstractions</li>
-      <ul>
-        <li class="fragment">Simulation is done in the RTL abstraction</li>
-        <li class="fragment">No notion of abstraction preservation</li>
-      </ul>
-      <li class="fragment">Incrementalism is a logistical issue</li>
-      <li class="fragment">Circuit semantics preservation is also a logistical issue</li>
-    </ul>
+    <h2>CIRCT Overview</h2>
+    <div class="container" style="grid-template-columns: 1fr 1.4fr;">
+      <div>
+        <img src="./figs/latte24/circt-overview.svg" />
+      </div>
+      <div>
+        <font size="5">
+        <ul>
+          <li class="fragment">Current paradigm's approach to mixed abstractions</li>
+          <ul>
+            <li class="fragment">Simulation is done in the RTL abstraction</li>
+            <li class="fragment">No notion of abstraction preservation</li>
+          </ul>
+          <li class="fragment">In the current architecture of CIRCT, incrementalism is logistically difficult to support</li>
+          <ul>
+            <li class="fragment">While running the passes, it has to track if a pass ran on some part of the design</li>
+            <li class="fragment">If a part of the design changes, it has to understand how the change propagates while running the passes</li>
+          </ul>
+          <li class="fragment">Circuit semantics preservation is also a huge logistical challenge</li>
+          <ul>
+            <li class="fragment">Need to support more HW primitives, but CIRCT's core dialects are frozen</li>
+          </ul>
+        </ul>
+        </font>
+      </div>
+    </div>
   </section>
 </section>
 
