@@ -330,7 +330,7 @@ $overlayElementFgColor: 0, 0, 0;
 
 // div.image: usually wrapping multiple images with one uniform background
 img.image, div.image {
-  padding: 1rem;
+  padding: 0.5rem;
   border-radius: 0.5rem;
   //background: color.adjust($tn_white, $lightness: +7%);
   background: white;

@@ -1646,9 +1646,49 @@ class GCDMMIOBlackBox(val w: Int)
   </section>
 
   <section>
+    <h2>2. <span class="green">Mixed Abstraction Design</span>: CIRCT</h2>
+    <div class="container" style="grid-template-columns: 1fr 1.4fr; column-gap: 2rem;">
+      <div>
+        <img class="image" src="./figs/latte24/circt-overview.svg" />
+      </div>
+      <div>
+        <ul>
+          <li class="fragment">The <a href="https://github.com/llvm/circt">CIRCT</a> project 
+            <ul>
+              <li class="fragment">Dialects for multiple design and intermediate abstractions</li>
+              <li class="fragment">Ability to ingest from multiple frontends</li>
+              <li class="fragment">Some support for embedding physical design semantics with the design</li>
+              <li class="fragment">Cross-dialect interaction (ESI)</li>
+              <li class="fragment">A CIRCT-native simulator (Arcilator)</li>
+            </ul>
+          <li class="fragment">We're exicted to see how CIRCT evolves to support mixed abstraction design</li>
+        </ul>
+      </div>
+      <!--<div>
+        <ul>
+          <li class="fragment">Current paradigm's approach to mixed abstractions</li>
+          <ul>
+            <li class="fragment">Simulation is done in the RTL abstraction</li>
+            <li class="fragment">No notion of abstraction preservation</li>
+          </ul>
+          <li class="fragment">In the current architecture of CIRCT, incrementalism is logistically difficult to support</li>
+          <ul>
+            <li class="fragment">While running the passes, it has to track if a pass ran on some part of the design</li>
+            <li class="fragment">If a part of the design changes, it has to understand how the change propagates while running the passes</li>
+          </ul>
+          <li class="fragment">Circuit semantics preservation is also a huge logistical challenge</li>
+          <ul>
+            <li class="fragment">Need to support more HW primitives, but CIRCT's core dialects are frozen</li>
+          </ul>
+        </ul>
+      </div>-->
+    </div>
+  </section>
+
+  <section>
     <h2>3. <span class="green">Preserving Semantics</span></h2>
     <ul>
-      <li class="fragment">Per-abstraction semantics
+      <li class="fragment">Abstraction-level semantics
         <ul>
           <li class="fragment">Avoid eagerly lowering all abstractions to RTL (for simulation)</li>
           <li class="fragment">Avoid blasting semantics when 'optimizing' RTL
@@ -1825,34 +1865,6 @@ class GCDMMIOBlackBox(val w: Int)
     <p class="center">The source of this presentation can be found here: <a href="https://github.com/vighneshiyer/publications/blob/master/talks/talks/2024_04-latte-the_next_paradigm_of_hw_design.jinja2">https://github.com/vighneshiyer/publications</a></p>
   </section>
 
-  <section class="center">
-    <h2>CIRCT Overview</h2>
-    <div class="container" style="grid-template-columns: 1fr 1.4fr;">
-      <div>
-        <img src="./figs/latte24/circt-overview.svg" />
-      </div>
-      <div>
-        <font size="5">
-        <ul>
-          <li class="fragment">Current paradigm's approach to mixed abstractions</li>
-          <ul>
-            <li class="fragment">Simulation is done in the RTL abstraction</li>
-            <li class="fragment">No notion of abstraction preservation</li>
-          </ul>
-          <li class="fragment">In the current architecture of CIRCT, incrementalism is logistically difficult to support</li>
-          <ul>
-            <li class="fragment">While running the passes, it has to track if a pass ran on some part of the design</li>
-            <li class="fragment">If a part of the design changes, it has to understand how the change propagates while running the passes</li>
-          </ul>
-          <li class="fragment">Circuit semantics preservation is also a huge logistical challenge</li>
-          <ul>
-            <li class="fragment">Need to support more HW primitives, but CIRCT's core dialects are frozen</li>
-          </ul>
-        </ul>
-        </font>
-      </div>
-    </div>
-  </section>
 
   <section class="center">
     <h2>Host decoupling</h2>
