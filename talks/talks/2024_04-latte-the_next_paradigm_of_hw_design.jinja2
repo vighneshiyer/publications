@@ -1452,7 +1452,7 @@ class GCDMMIOBlackBox(val w: Int)
     </div>
 
     <ul>
-      <li class="fragment">A tiny change shouldn't cause a rebuild of the full SoC design and simulator</li>
+      <li class="fragment">A tiny change shouldn't rebuild the full SoC design and simulator</li>
       <li class="fragment">Primary bottlenecks
         <ul class="smallish">
           <li class="fragment"><strong>Early design stage</strong>: design elaboration + simulator compilation {{ rightarrow }} fix functionality, add features</li>
@@ -1549,7 +1549,7 @@ class GCDMMIOBlackBox(val w: Int)
       <li class="fragment">Clean elaboration-time interop
         <ul>
           <li>API-level mechanism for calling between abstractions</li>
-          <li>Semantics with respect to legality of interactions</li>
+          <li>Define semantics with respect to the legality of cross-abstraction interactions</li>
         </ul>
       </li>
       <li class="fragment">Different abstractions sit on top of the elaboration-time interop shim</li>
@@ -1570,10 +1570,19 @@ class GCDMMIOBlackBox(val w: Int)
       </div>
       <div>
         <ul>
-          <li class="fragment">Compose different abstractions together</li>
+          <li class="fragment"><strong>Elaboration interop</strong>: how to combine multiple abstractions</li>
           <!--<li class="fragment">Check if the compositions are legal</li>-->
-          <li class="fragment"><strong>Practically</strong>: FFI<span class="reference">[1]</span> for calling into external generators</li>
-          <li class="fragment"><strong>Semantically</strong>: which connections are legal, APIs that define the interaction mechanism between abstractions</li>
+          <li class="fragment"><strong>Practical consideration</strong>
+            <ul>
+              <li>FFI<span class="reference">[1]</span> for calling into external generators</li>
+            </ul>
+          </li>
+          <li class="fragment"><strong>Semantics</strong>
+            <ul>
+              <li>Which connections are legal</li>
+              <li>APIs that define the interaction mechanism between abstractions</li>
+            </ul>
+          </li>
           <!--<li class="fragment">We can defer the execution of the composition semantics to runtime</li>-->
         </ul>
       </div>
@@ -1632,36 +1641,58 @@ class GCDMMIOBlackBox(val w: Int)
       </div>
       <div>
         <ul>
-          <li class="fragment" data-fragment-index="0">RT interop : manages how time advances between abstraction boundaries</li>
+          <li class="fragment" data-fragment-index="0"><strong>Runtime interop</strong>: how does time advance between abstraction boundaries?</li>
           <li class="fragment" data-fragment-index="1">Send req (function call)</li>
           <li class="fragment" data-fragment-index="2">RTL advances time</li>
-          <li class="fragment" data-fragment-index="3">Runtime interop schedules the response & updates timing</li>
+          <li class="fragment" data-fragment-index="3">Runtime interop semantics dictate scheduling the response &amp; updating timing</li>
         </ul>
       </div>
     </div>
-    <ul>
+
+    <ul style="margin-top: 1rem;">
       <li class="fragment">Faster simulation throughput than naive cycle-by-cycle updates</li>
-      <li class="fragment">Must consider various interface boundaries (e.g. lat-insensitive, wires, function calls, ...)</li>
+      <li class="fragment">Must consider various interface boundary types
+        <ul>
+          <li>Latency-insensitive interfaces, fixed-latency wires, function calls, etc.</li>
+        </ul>
+      </li>
     </ul>
   </section>
 
   <section>
     <h2>3. <span class="green">Preserving Semantics</span></h2>
     <div class="container" style="grid-template-columns: 1.0fr 1.0fr;">
-    <div>
-      <pre data-id="code-animation"><code class="verilog" data-trim data-line-numbers>
-      input [3:0] uint_val,
-      input [3:0] one_hot,
-      input [3:0] bit_vector,
-      </code></pre>
+      <div>
+        <pre data-id="code-animation"><code class="verilog" data-trim data-line-numbers>
+        wire [3:0] uint_val;
+        wire [3:0] one_hot;
+        wire [3:0] bit_vector;
+        </code></pre>
+      </div>
+      <div>
+        <ul>
+          <li class="fragment">No distinction between bitvectors and <em>semantic integers</em>
+            <ul>
+              <li class="fragment"><em>logical integer</em> vs <em>physical integer</em></li>
+              <li class="fragment">Binary coded, grey coded, one-hot, 2s complement / sign-magnitude</li>
+            </ul>
+          </li>
+        </ul>
+      </div>
     </div>
-    <div>
-      <ul>
-        <li class="fragment">SV : no notion of circuit semantics</li>
-        <li class="fragment">Semantics recreated : time consuming & low QoR</li>
-        <li class="fragment">Solve this by directly passing the semantics to the tools</li>
-      </ul>
-    </div>
+
+    <ul style="margin-top: 1rem;">
+      <li class="fragment">Push more arithmetic types and operations into primitives vs gates
+        <ul>
+          <li>e.g. floating point, fixed point, intervals, posits</li>
+        </ul>
+      </li>
+      <li class="fragment">Separate <em>logical data types</em> from <em>physical representations</em>
+        <ul>
+          <li>Let the synthesis tool pick a suitable representation</li>
+        </ul>
+      </li>
+    </ul>
   </section>
 
   <section class="center">
@@ -2021,6 +2052,30 @@ class GCDMMIOBlackBox(val w: Int)
         </ul>
       </li>
     </ul>
+  </section>
+
+  <section>
+    <h2>Design-First vs Spec-First Methodology</h2>
+
+    <!--
+    - HW designer oriented approach ("RTL-first" - actually, "design-first, don't model"):
+      - Make hardware design fast by being able to write the design directly in multiple abstractions
+        - Don't concretize interfaces too early, don't write too many tests early, get the whole system working asap!
+        - Once things are a bit mature, then more detailed verification work can begin, but never to the point of building new models
+      - Supercharged simulation latency and throughput enable quick bugfix and feature addition turnaround
+      - Single source of truth makes it easy to iterate on the design and ISA without rewriting all collateral
+      - This works (enabling a small team to produce the best open source IP): Chisel, rocket-chip, BOOM, Chipyard, etc. - existence proof
+    - PL researcher oriented approach ("specification to implementation", "correct by construction", "incremental refinement"):
+    -->
+
+    <ul>
+      <li>"Design-first", don't model!
+        <ul>
+          <li>Make hardware design productive with multiple abstractions and fast iteration</li>
+        </ul>
+      </li>
+    </ul>
+
   </section>
 
   <section class="center">
