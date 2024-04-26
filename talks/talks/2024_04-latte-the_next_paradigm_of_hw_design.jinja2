@@ -1511,8 +1511,17 @@ class GCDMMIOBlackBox(val w: Int)
           <li class="fragment">Incrementally refine to hit QoR targets: Model &rarr; HLS &rarr; RTL</li>
         </ul>
       </li>
-      <li class="fragment">Native mixed-abstraction simulators can achieve higher simulation throughput and lower simulator build latency</li>
-      <li class="fragment">Leverage SoC-level configuration/parameterization system to pass integration information to IP generators</li>
+      <li class="fragment">Native mixed-abstraction simulators
+        <ul>
+          <li>Higher simulation throughput</li>
+          <li>Lower simulator build latency</li>
+        </ul>
+      </li>
+      <li class="fragment">Leverage SoC-level configuration/parameterization system
+        <ul>
+          <li>Pass SoC integration collateral to IP generators</li>
+        </ul>
+      </li>
       <!--Clean SoC level configuration/parameterization (e.g., address space)</li>-->
     </ul>
   </section>
@@ -1599,8 +1608,12 @@ class GCDMMIOBlackBox(val w: Int)
       <li class="fragment">Per-abstraction semantics
         <ul>
           <li class="fragment">Avoid eagerly lowering all abstractions to RTL (for simulation)</li>
-          <li class="fragment">Avoid blasting semantics when 'optimizing' RTL (interfaces, structs, vectors, behavioral constructs, switch statements)</li>
-          <li class="fragment">How do we maintain IR simplicity and ease of pass writing without lowering?</li>
+          <li class="fragment">Avoid blasting semantics when 'optimizing' RTL
+            <ul>
+              <li>interfaces, structs, vectors, behavioral constructs, switch statements</li>
+            </ul>
+          </li>
+          <li class="fragment">How do we maintain IR simplicity and ease of pass writing?</li>
           <!--<li class="fragment">How time advances during simulation?</li>-->
         </ul>
       </li>
@@ -1695,48 +1708,37 @@ class GCDMMIOBlackBox(val w: Int)
     </ul>
   </section>
 
-  <section class="center">
-    <h2>Semantics Preserving</h2>
-    <div class="container" style="grid-template-columns: 1.4fr 0.1fr 1.0fr;">
-    <div class="r-stack">
-      <img style="object-fit: contain;" class="image fragment" src="./figs/latte24/new-paradigm-common-ir.svg" />
+  <section>
+    <h2>3. <span class="green">Preserving Semantics</span></h2>
+    <div class="container" style="grid-template-columns: 1fr 1.0fr;">
+      <div>
+        <img data-fragment-index=0 style="object-fit: contain;" class="image fragment no-margin" src="./figs/latte24/new-paradigm-common-ir.svg" />
+      </div>
+      <div>
+        <pre class="fragment" data-id="code-animation"><code class="scala" data-trim data-line-numbers>
+        case class Clock
+        case class Reset
+        case class PriorityMux
+        case class UInt(repr=Binary)
+        case class UInt(repr=OneHot)
+        case class BitVector
+        </code></pre>
+      </div>
     </div>
-    <div>
-    </div>
-    <div>
-      <ul>
-        <li class="fragment">Common IR : circuit level semantics</li>
-      </ul>
-    </div>
-  </section>
 
-  <section class="center">
-    <h2>Semantics Preserving</h2>
-    <div class="container" style="grid-template-columns: 1.0fr 1.0fr;">
-    <div>
-      <pre data-id="code-animation"><code class="verilog" data-trim data-line-numbers>
-      case class Clock(...)
-      case class Reset(...)
-      case class PriorityMux(...)
-      case class UInt(...)
-      case class OH(...)
-      case class BitVector(...)
-      </code></pre>
-    </div>
-    <div>
-      <font size="5">
-      <ul>
-        <li class="fragment">Pass logical semantics from upper levels</li>
-        <li class="fragment">Backend tools directly operate on the IR (instead of verilog)</li>
-        <li class="fragment">Logical representation can be casted into different physical representations</li>
+    <ul style="margin-top: 1rem;">
+      <li class="fragment" data-fragment-index=1><strong>Common IR</strong>: encode circuit-level semantics
         <ul>
-          <li class="fragment">FSM states can be UInt or BitVector depending on the number of states</li>
+          <li>Tunnel semantics from higher abstractions to tools directly</li>
+          <li>Backend tools directly operate on the IR (vs Verilog)</li>
         </ul>
-      </ul>
-      </font>
-    </div>
+      </li>
+      <!--<li class="fragment">Logical representation can be casted into different physical representations</li>
+      <ul>
+        <li class="fragment">FSM states can be UInt or BitVector depending on the number of states</li>
+      </ul>-->
+    </ul>
   </section>
-
 </section>
 
 <!-- -------------------------------------------------------------------- -->
@@ -1755,8 +1757,20 @@ class GCDMMIOBlackBox(val w: Int)
     </div>
 
     <ul style="margin-top: 1rem;">
-      <li class="fragment">We need to radically change the hardware design methodology in order to achieve higher PPA</li>
-      <li class="fragment">By tightly integrating the tools vertically, we can achieve low iteration time, high design productivity and high QoR</li>
+      <li class="fragment">Radically rethink the hardware design methodology
+        <ol class="smallish">
+          <li class="fragment">Rapid iteration cycle across the stack</li>
+          <li class="fragment">High productivity hardware design</li>
+        </ol>
+      </li>
+      <li class="fragment">Accomplish this by
+        <ol class="smallish">
+          <li class="fragment">Incrementalism throughout the language / compiler / simulator / VLSI stack</li>
+          <li class="fragment">Seamless mixed-abstraction frontends</li>
+          <li class="fragment">Preserving semantics through the design stack</li>
+        </ol>
+      </li>
+      <!--By tightly integrating the tools vertically, we can achieve low iteration time, high design productivity and high QoR</li>-->
     </ul>
   </section>
 </section>
