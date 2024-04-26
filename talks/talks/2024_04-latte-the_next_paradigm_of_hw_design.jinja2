@@ -433,7 +433,7 @@ class GCDMMIOBlackBox(val w: Int)
     </dl>
 
     <p class="center small fragment"><span class="red">Stack of Perl and macros in SystemVerilog</span> <span class="green">{{ rightarrow }} new RTL-level DSLs</span></p>
-    <p class="center fragment"><span class="green">Rich ecosystem of design languages</span> enable higher productivity, <strong class="red">but are difficult to compose and integrate.</strong></p>
+    <p class="center fragment"><span class="green">Rich ecosystem of design languages</span> enable higher productivity, but they are <strong class="red">difficult to compose and integrate.</strong></p>
   </section>
 
   <section>
@@ -808,7 +808,7 @@ class GCDMMIOBlackBox(val w: Int)
   <section>
     <h2>Cool Things That FIRRTL Enables</h2>
     <ul>
-      <li class="fragment">Error checking, bitvector width inference, general-purpose optimizations
+      <li class="fragment">Error checking, general-purpose optimizations
         <ul>
           <li>Combinational loop detection</li>
           <li>Dead code elimination (DCE), common subexpression elimination (CSE), constant propagation</li>
@@ -816,10 +816,11 @@ class GCDMMIOBlackBox(val w: Int)
       </li>
       <li class="fragment">Clean and programmatic netlist manipulation
         <ul>
+          <li class="fragment">Bitvector width inference</li>
           <li class="fragment">Scan-chain instrumentation for state injection / extraction</li>
           <li class="fragment">Regrouping modules (for hierarchical physical design)</li>
           <li class="fragment">Unrolling a circuit for bounded model checking (BMC)</li>
-          <li class="fragment">Automatic coverpoint instrumentation</li>
+          <!--<li class="fragment">Automatic coverpoint instrumentation</li>-->
         </ul>
       </li>
     </ul>
