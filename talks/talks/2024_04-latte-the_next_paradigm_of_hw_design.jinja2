@@ -856,11 +856,20 @@ class GCDMMIOBlackBox(val w: Int)
         </li>
         <li class="fragment">A methodology for agile SoC architecture design, exploration, and evaluation</li>
         <li class="fragment">A tapeout-ready chassis for custom RISC-V SoCs</li>
-        <!--<li class="fragment">Ensures correct composition of SoC components during elaboration time
-        <ul>
-          <li class="fragment">Parameter propagation and constraints, SoC memory map</li>
-        </ul></li>-->
       </ul>
+    </div>
+  </section>
+
+  <section>
+    <h2>Chipyard</h2>
+    <div class="container" style="grid-template-columns: 1.4fr 1.0fr;">
+    <div>
+      <img src="./figs/latte24/chipyard-big-design.svg"/>
+    </div>
+    <div>
+      <ul class="smallish">
+        <li class="fragment">Learn how to build complex SoC in a matter of hours!</li>
+        <li class="fragment"><a href="https://fires.im/asplos-2023-tutorial/">Link to previous tutorial recordings</a></li>
     </div>
   </section>
 
@@ -878,105 +887,105 @@ class GCDMMIOBlackBox(val w: Int)
     </div>
   </section>-->
 
-  <section class="center">
-    <h2>Tiles</h2>
-    <div class="container" style="grid-template-columns: 1.4fr 1.0fr;">
-      <div>
-        <img src="./figs/latte24/soc-tiles.svg"/>
-      </div>
-      <div>
-        <ul>
-          <li class="fragment">Each Tile contains a RISC-V core and private caches</li>
-          <li class="fragment">Several varieties of Cores supported
-            <ul>
-              <li class="fragment">Rocket: 5-stage single-issue in-order</li>
-              <li class="fragment">Shuttle: 6-stage superscalar in-order</li>
-              <li class="fragment">SonicBOOM: 12-stage superscalar out-of-order</li>
-            </ul>
-          </li>
-          <li class="fragment">Tiles can use any RISC-V core implementation (e.g. CVA6, Ibex, SpikeTile)</li>
-        </ul>
-      </div>
-    </div>
-  </section>
+{# <section class="center"> #}
+{# <h2>Tiles</h2> #}
+{# <div class="container" style="grid-template-columns: 1.4fr 1.0fr;"> #}
+{# <div> #}
+{# <img src="./figs/latte24/soc-tiles.svg"/> #}
+{# </div> #}
+{# <div> #}
+{# <ul> #}
+{# <li class="fragment">Each Tile contains a RISC-V core and private caches</li> #}
+{# <li class="fragment">Several varieties of Cores supported #}
+{# <ul> #}
+{# <li class="fragment">Rocket: 5-stage single-issue in-order</li> #}
+{# <li class="fragment">Shuttle: 6-stage superscalar in-order</li> #}
+{# <li class="fragment">SonicBOOM: 12-stage superscalar out-of-order</li> #}
+{# </ul> #}
+{# </li> #}
+{# <li class="fragment">Tiles can use any RISC-V core implementation (e.g. CVA6, Ibex, SpikeTile)</li> #}
+{# </ul> #}
+{# </div> #}
+{# </div> #}
+{# </section> #}
 
-  <section class="center">
-    <h2>RoCC Accelerators</h2>
-    <div class="container" style="grid-template-rows: 0.3fr 0.7fr;">
-      <div>
-        <ul>
-          <li class="fragment">Tightly-coupled accelerator interface</li>
-          <li class="fragment">Attach accelerators to Rocket or BOOM</li>
-          <li class="fragment"><strong>Examples</strong>: SHA3, FFT, DMA engines, Gemmini (DNN accelerator)</li>
-        </ul>
-      </div>
-      <div>
-        <img width="80%" src="./figs/latte24/soc-rocc-accel.svg"/>
-      </div>
-    </div>
-  </section>
+{# <section class="center"> #}
+{# <h2>RoCC Accelerators</h2> #}
+{# <div class="container" style="grid-template-rows: 0.3fr 0.7fr;"> #}
+{# <div> #}
+{# <ul> #}
+{# <li class="fragment">Tightly-coupled accelerator interface</li> #}
+{# <li class="fragment">Attach accelerators to Rocket or BOOM</li> #}
+{# <li class="fragment"><strong>Examples</strong>: SHA3, FFT, DMA engines, Gemmini (DNN accelerator)</li> #}
+{# </ul> #}
+{# </div> #}
+{# <div> #}
+{# <img width="80%" src="./figs/latte24/soc-rocc-accel.svg"/> #}
+{# </div> #}
+{# </div> #}
+{# </section> #}
 
-  <section class="center">
-    <h2>MMIO Accelerators</h2>
-    <div class="container" style="grid-template-columns: 1.0fr 1.0fr;">
-      <div>
-        <img src="./figs/latte24/soc-mmio-accel.svg"/>
-      </div>
-      <div>
-        <ul>
-          <li class="fragment">Controlled by MMIO-mapped registers</li>
-          <li class="fragment">Can supports both coherent and direct DMA with memory system</li>
-        </ul>
-      </div>
-    </div>
-  </section>
+{# <section class="center"> #}
+{# <h2>MMIO Accelerators</h2> #}
+{# <div class="container" style="grid-template-columns: 1.0fr 1.0fr;"> #}
+{# <div> #}
+{# <img src="./figs/latte24/soc-mmio-accel.svg"/> #}
+{# </div> #}
+{# <div> #}
+{# <ul> #}
+{# <li class="fragment">Controlled by MMIO-mapped registers</li> #}
+{# <li class="fragment">Can supports both coherent and direct DMA with memory system</li> #}
+{# </ul> #}
+{# </div> #}
+{# </div> #}
+{# </section> #}
 
-  <section class="center">
-    <h2>Bus Hierarchy</h2>
-    <div class="container" style="grid-template-columns: 1.0fr 1.0fr;">
-      <div>
-        <img src="./figs/latte24/soc-bus-hierarchy.svg"/>
-      </div>
-      <div>
-        <ul class="smallish">
-          <li class="fragment">TileLink bus protocol
-            <ul>
-              <li class="fragment">TileLink is open-source chip-scale interconnect standard</li>
-              <li class="fragment">Comparable to AXI/ACE</li>
-              <!--<li class="fragment">Supports multi-core, accelerators, peripherals, DMA, etc</li>-->
-            </ul>
-          </li>
-          <li class="fragment">Interconnect components
-            <ul>
-              <li class="fragment">Many TileLink bus components in rocket-chip
-                <ul><li>Crossbars, width-adapters, clock-crossings, etc.</li></ul>
-              </li>
-              <li class="fragment">Adapters to AXI4, APB</li>
-              <li class="fragment">Drop-in prefetchers</li>
-            </ul>
-          </li>
-        </ul>
-      </div>
-    </div>
-  </section>
+{# <section class="center"> #}
+{# <h2>Bus Hierarchy</h2> #}
+{# <div class="container" style="grid-template-columns: 1.0fr 1.0fr;"> #}
+{# <div> #}
+{# <img src="./figs/latte24/soc-bus-hierarchy.svg"/> #}
+{# </div> #}
+{# <div> #}
+{# <ul class="smallish"> #}
+{# <li class="fragment">TileLink bus protocol #}
+{# <ul> #}
+{# <li class="fragment">TileLink is open-source chip-scale interconnect standard</li> #}
+{# <li class="fragment">Comparable to AXI/ACE</li> #}
+{# <!--<li class="fragment">Supports multi-core, accelerators, peripherals, DMA, etc</li>--> #}
+{# </ul> #}
+{# </li> #}
+{# <li class="fragment">Interconnect components #}
+{# <ul> #}
+{# <li class="fragment">Many TileLink bus components in rocket-chip #}
+{# <ul><li>Crossbars, width-adapters, clock-crossings, etc.</li></ul> #}
+{# </li> #}
+{# <li class="fragment">Adapters to AXI4, APB</li> #}
+{# <li class="fragment">Drop-in prefetchers</li> #}
+{# </ul> #}
+{# </li> #}
+{# </ul> #}
+{# </div> #}
+{# </div> #}
+{# </section> #}
 
-  <section class="center">
-    <h2>NoC Interconnect</h2>
-    <div class="container" style="grid-template-columns: 1.0fr 1.0fr;">
-      <div>
-        <img src="./figs/latte24/soc-noc.svg"/>
-      </div>
-      <div>
-        <ul>
-          <li><a href="https://github.com/ucb-bar/constellation">Constellation NoC</a>
-            <ul>
-              <li>Drop-in replacement for TileLink crossbar buses</li>
-            </ul>
-          </li>
-        </ul>
-      </div>
-    </div>
-  </section>
+{# <section class="center"> #}
+{# <h2>NoC Interconnect</h2> #}
+{# <div class="container" style="grid-template-columns: 1.0fr 1.0fr;"> #}
+{# <div> #}
+{# <img src="./figs/latte24/soc-noc.svg"/> #}
+{# </div> #}
+{# <div> #}
+{# <ul> #}
+{# <li><a href="https://github.com/ucb-bar/constellation">Constellation NoC</a> #}
+{# <ul> #}
+{# <li>Drop-in replacement for TileLink crossbar buses</li> #}
+{# </ul> #}
+{# </li> #}
+{# </ul> #}
+{# </div> #}
+{# </div> #}
+{# </section> #}
 
 
   <section class="center">
@@ -993,6 +1002,30 @@ class GCDMMIOBlackBox(val w: Int)
         <li class="fragment">Perform end-to-end performance evaluation with real, long-running, RISC-V workloads on top of an OS</li>
         <li class="fragment">Useful for discovering bugs that appear trillions of cycles into simulation</li>
       </ul>
+    </div>
+  </section>
+
+  <section class="center">
+    <h2>FireSim Impact</h2>
+    <div class="r-stack">
+      <div>
+        <img class="fragment" height=500px; src="./figs/latte24/firesim-citations.svg" />
+      </div>
+      <div>
+      <ul>
+        <li>ISCA ‘18: Maas et. al.  HW-GC Accelerator (Berkeley)</li>
+        <li>MICRO ‘18: Zhang et. al. “Composable Building Blocks to Open up Processor Design” (MIT)</li>
+        <li>RTAS ‘20: Farshchi et. al. BRU (Kansas)</li>
+        <li>EuroSys ‘20: Lee et. al. Keystone (Berkeley)</li>
+        <li>OSDI ‘21: Ibanez et. al. nanoPU (Stanford)</li>
+        <li>USENIX Security ‘21: Saileshwar et. al. MIRAGE (Georgia Tech)</li>
+        <li>CCS ‘21: Ding et. al. “Hardware Support to Improve Fuzzing Performance and Precision” (Georgia Tech)</li>
+        <li>MICRO ’21: Karandikar et. al. “A Hardware Accelerator for Protocol Buffers” (Berkeley/Google)</li>
+        <li>MICRO ‘21: Gottschall et. al. TIP (NTNU)</li>
+        <li>Over 20 additional user papers on the FireSim website:</li>
+        <li>https://fires.im/publications/#userpapers</li>
+      </ul>
+      </div>
     </div>
   </section>
 
@@ -1017,7 +1050,6 @@ class GCDMMIOBlackBox(val w: Int)
             <dd>High throughput RTL simulation</dd>
           </div>
         </dl>
-        <p class="center fragment">Enabled many research projects from both industry and academia in the last 5+ years</p>
       </div>
     </div>
   </section>
@@ -1028,11 +1060,22 @@ class GCDMMIOBlackBox(val w: Int)
 <section>
   <section class="center">
     <h2>The Current State of Mixed Abstraction SoC Integration</h2>
-    <ul>
-      <li class="fragment">We claimed that we can integrate external IP from any source with our SoC design framework</li>
-      <li class="fragment">How is it done in practice?</li>
-    </ul>
+{# <ul> #}
+{# <li class="fragment">We claimed that we can integrate external IP from any source with our SoC design framework</li> #}
+{# <li class="fragment">How is it done in practice?</li> #}
+{# </ul> #}
     <p class="center fragment"><strong>Demo:</strong> Integrating IP from another design language to perform full system SoC-level evaluation</p>
+  </section>
+
+  <section class="center">
+    <h2>Key Takeaways</h2>
+    <ul>
+      <li class="fragment">External IP integration works, but not seamless as it could be</li>
+      <ul>
+        <li class="fragment">Lots of ad-hoc gluecode</li>
+        <li class="fragment">Redundant parameter definitions</li>
+      </ul>
+    </ul>
   </section>
 
   <section>
@@ -1319,7 +1362,6 @@ class GCDMMIOBlackBox(val w: Int)
     <ul>
       <li><a href="https://chipyard.readthedocs.io/en/stable/">Chipyard docs</a></li>
       <li><a href="https://docs.fires.im/en/stable/">FireSim docs</a></li>
-      <li><a href="https://fires.im/asplos-2023-tutorial/">Link to previous tutorial recordings</a></li>
     </ul>
   </section>
 </section>
@@ -1354,22 +1396,22 @@ class GCDMMIOBlackBox(val w: Int)
     <ol>
       <li class="fragment"><strong class="red">Long iteration time</strong>
         <ul class="small">
-          <li>More abstraction layers (Chisel → FIRRTL → Verilog) {{ rightarrow }} longer elaboration time</li>
-          <li>No incrementalism {{ rightarrow }} rebuild everything whenever anything changes</li>
-          <li>FireSim as simulation workhorse {{ rightarrow }} bottlenecked by FPGA build times</li>
-          <li>Evaluation of PPA requires traditional VLSI tools {{ rightarrow }} can't iterate on PPA</li>
+          <li class="fragment">More abstraction layers (Chisel → FIRRTL → Verilog) {{ rightarrow }} longer elaboration time</li>
+          <li class="fragment">No incrementalism {{ rightarrow }} rebuild everything whenever anything changes</li>
+          <li class="fragment">FireSim as simulation workhorse {{ rightarrow }} bottlenecked by FPGA build times</li>
+          <li class="fragment">Evaluation of PPA requires traditional VLSI tools {{ rightarrow }} can't iterate on PPA</li>
         </ul>
       </li>
       <li class="fragment"><strong class="red">Integration of multiple abstractions</strong>
         <ul class="small">
-          <li>IP integration is at the RTL level via ad-hoc blackboxing or DPI</li>
-          <li>No common simulation substrate for mixed abstraction designs</li>
+          <li class="fragment">IP integration is at the RTL level via ad-hoc blackboxing or DPI</li>
+          <li class="fragment">No common simulation substrate for mixed abstraction designs</li>
         </ul>
       </li>
       <li class="fragment"><strong class="red">Loss of semantics</strong>
         <ul class="small">
-          <li>Synthesis tools must still reconstruct circuit structures from RTL</li>
-          <li>Power/reset/clock/PD semantics aren't fully captured in the frontend</li>
+          <li class="fragment">Synthesis tools must still reconstruct circuit structures from RTL</li>
+          <li class="fragment">Power/reset/clock/PD semantics aren't fully captured in the frontend</li>
         </ul>
       </li>
     </ol>
@@ -1455,8 +1497,8 @@ class GCDMMIOBlackBox(val w: Int)
       <li class="fragment">A tiny change shouldn't rebuild the full SoC design and simulator</li>
       <li class="fragment">Primary bottlenecks
         <ul class="smallish">
-          <li class="fragment"><strong>Early design stage</strong>: design elaboration + simulator compilation {{ rightarrow }} fix functionality, add features</li>
-          <li class="fragment"><strong>Mature design</strong>: VLSI tools {{ rightarrow }} fix critical paths, optimize area / power</li>
+          <li class="fragment"><strong>Early design stage</strong>: fix functionality, add features {{ rightarrow }} design elaboration + simulator compilation</li>
+          <li class="fragment"><strong>Mature design</strong>: fix critical paths, optimize area / power {{ rightarrow }} VLSI</li>
         </ul>
       </li>
     </ul>
