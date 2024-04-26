@@ -1076,6 +1076,7 @@ class GCDMMIOBlackBox(val w: Int)
         <li class="fragment">Lots of ad-hoc gluecode</li>
         <li class="fragment">Redundant parameter definitions</li>
       </ul>
+      <li class="fragment">These takeaways are applicable to all SoC design frameworks out there</li>
     </ul>
   </section>
 
@@ -1518,16 +1519,6 @@ class GCDMMIOBlackBox(val w: Int)
 
   </section>
 
-  <!--<section>
-    <h2>Incremental First</h2>
-      <ul>
-        <li class="fragment">Initial design stage: code compilation time</li>
-        <li class="fragment">When design matures: backend tool latency</li>
-        <li class="fragment">This problem can be solved by adopting the incremental first approach to hardware design</li>
-        <li class="fragment"><strong class="green">Partial compilation & cacheing</strong></li>
-      </ul>
-  </section>-->
-
   <section>
     <h2>1. <span class="green">Incremental First</span></h2>
     <div class="container" style="grid-template-columns: 1.0fr 1.0fr;">
@@ -1643,7 +1634,6 @@ class GCDMMIOBlackBox(val w: Int)
       <div>
         <ul>
           <li class="fragment"><strong>Elaboration interop</strong>: how to combine multiple abstractions</li>
-          <!--<li class="fragment">Check if the compositions are legal</li>-->
           <li class="fragment"><strong>Practical consideration</strong>
             <ul>
               <li>FFI<span class="reference">[1]</span> for calling into external generators</li>
@@ -1655,7 +1645,6 @@ class GCDMMIOBlackBox(val w: Int)
               <li>APIs that define the interaction mechanism between abstractions</li>
             </ul>
           </li>
-          <!--<li class="fragment">We can defer the execution of the composition semantics to runtime</li>-->
         </ul>
       </div>
     </div>
@@ -1684,24 +1673,6 @@ class GCDMMIOBlackBox(val w: Int)
           <li class="fragment">We're exicted to see how CIRCT evolves to support mixed abstraction design</li>
         </ul>
       </div>
-      <!--<div>
-        <ul>
-          <li class="fragment">Current paradigm's approach to mixed abstractions</li>
-          <ul>
-            <li class="fragment">Simulation is done in the RTL abstraction</li>
-            <li class="fragment">No notion of abstraction preservation</li>
-          </ul>
-          <li class="fragment">In the current architecture of CIRCT, incrementalism is logistically difficult to support</li>
-          <ul>
-            <li class="fragment">While running the passes, it has to track if a pass ran on some part of the design</li>
-            <li class="fragment">If a part of the design changes, it has to understand how the change propagates while running the passes</li>
-          </ul>
-          <li class="fragment">Circuit semantics preservation is also a huge logistical challenge</li>
-          <ul>
-            <li class="fragment">Need to support more HW primitives, but CIRCT's core dialects are frozen</li>
-          </ul>
-        </ul>
-      </div>-->
     </div>
   </section>
 
@@ -1717,7 +1688,6 @@ class GCDMMIOBlackBox(val w: Int)
             </ul>
           </li>
           <li class="fragment">How do we maintain IR simplicity and ease of pass writing?</li>
-          <!--<li class="fragment">How time advances during simulation?</li>-->
         </ul>
       </li>
       <li class="fragment">RTL-level semantics
@@ -1727,7 +1697,6 @@ class GCDMMIOBlackBox(val w: Int)
           <li class="fragment">Which circuit primitives should be baked into an IR?</li>
         </ul>
       </li>
-      <!--<li class="fragment">Both broken when lowering to SV</li>-->
     </ul>
   </section>
 
@@ -1740,7 +1709,6 @@ class GCDMMIOBlackBox(val w: Int)
 
     <ul style="margin-top: 1rem;">
       <li class="fragment" data-fragment-index="0"><strong>Runtime interop</strong>: how do multiple abstractions interact at runtime?</li>
-      <!--orchestrate simulation execution between abstractions</li>-->
       <li class="fragment" data-fragment-index="1">Composition of abstractions via elaboration interop</li>
       <li class="fragment" data-fragment-index="2">Edge semantics dictate the semantics of runtime interop</li>
     </ul>
@@ -1836,10 +1804,6 @@ class GCDMMIOBlackBox(val w: Int)
           <li>Backend tools directly operate on the IR (vs Verilog)</li>
         </ul>
       </li>
-      <!--<li class="fragment">Logical representation can be casted into different physical representations</li>
-      <ul>
-        <li class="fragment">FSM states can be UInt or BitVector depending on the number of states</li>
-      </ul>-->
     </ul>
   </section>
 </section>
@@ -1873,7 +1837,6 @@ class GCDMMIOBlackBox(val w: Int)
           <li class="fragment">Preserving semantics through the design stack</li>
         </ol>
       </li>
-      <!--By tightly integrating the tools vertically, we can achieve low iteration time, high design productivity and high QoR</li>-->
     </ul>
   </section>
 </section>
