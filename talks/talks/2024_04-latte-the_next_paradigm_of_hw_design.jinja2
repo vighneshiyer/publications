@@ -1571,9 +1571,9 @@ class GCDMMIOBlackBox(val w: Int)
       <div>
         <ul>
           <li class="fragment">Compose different abstractions together</li>
-          <li class="fragment">Check if the compositions are legal</li>
-          <li class="fragment">Practically: FFI <span class="reference">[1]</span> + clean APIs</li>
-          <li class="fragment">Semantically: which connections are legal</li>
+          <!--<li class="fragment">Check if the compositions are legal</li>-->
+          <li class="fragment"><strong>Practically</strong>: FFI<span class="reference">[1]</span> for calling into external generators</li>
+          <li class="fragment"><strong>Semantically</strong>: which connections are legal, APIs that define the interaction mechanism between abstractions</li>
           <!--<li class="fragment">We can defer the execution of the composition semantics to runtime</li>-->
         </ul>
       </div>
@@ -1584,44 +1584,46 @@ class GCDMMIOBlackBox(val w: Int)
     </div>
   </section>
 
-  <section class="center">
-    <h2>Semantics Preserving</h2>
+  <section>
+    <h2>3. <span class="green">Preserving Semantics</span></h2>
     <ul>
-      <li class="fragment">Abstraction level semantics</li>
-      <ul>
-        <li class="fragment">Avoid lowering everything to RTL (simulation)</li>
-        <li class="fragment">How time advances during simulation?</li>
-      </ul>
-      <li class="fragment">Circuit level semantics</li>
-      <ul>
-        <li class="fragment">Avoid recreating semantics (QoR + latency)</li>
-        <li class="fragment">Which circuit primitives should we support?</li>
-      </ul>
-      <li class="fragment">Both broken when lowering to SV</li>
+      <li class="fragment">Per-abstraction semantics
+        <ul>
+          <li class="fragment">Avoid eagerly lowering all abstractions to RTL (for simulation)</li>
+          <li class="fragment">Avoid blasting semantics when 'optimizing' RTL (interfaces, structs, vectors, behavioral constructs, switch statements)</li>
+          <li class="fragment">How do we maintain IR simplicity and ease of pass writing without lowering?</li>
+          <!--<li class="fragment">How time advances during simulation?</li>-->
+        </ul>
+      </li>
+      <li class="fragment">RTL-level semantics
+        <ul>
+          <li class="fragment">Synthesis tools shouldn't have to 'reconstruct' designer intent from pattern-matching Verilog (e.g. FSMs)</li>
+          <li class="fragment">Potential to improve QoR and runtime</li>
+          <li class="fragment">Which circuit primitives should be baked into an IR?</li>
+        </ul>
+      </li>
+      <!--<li class="fragment">Both broken when lowering to SV</li>-->
     </ul>
   </section>
 
-  <section class="center">
-    <h2>Semantics Preserving</h2>
-    <div class="container" style="grid-template-columns: 1.2fr 0.1fr 1.0fr;">
+  <section>
+    <h2>3. <span class="green">Preserving Semantics</span></h2>
     <div class="r-stack">
-      <img style="object-fit: contain;" class="image fragment fade-in-then-out" data-fragment-index="0" src="./figs/latte24/new-paradigm-runtime-interop.svg" />
-      <img style="object-fit: contain;" class="image fragment"                  data-fragment-index="1" src="./figs/latte24/elab-interop-1.svg" />
+      <img style="object-fit: contain; width: 50%;" class="image fragment fade-in-then-out" data-fragment-index="0" src="./figs/latte24/new-paradigm-runtime-interop.svg" />
+      <img style="object-fit: contain; width: 50%;" class="image fragment"                  data-fragment-index="1" src="./figs/latte24/elab-interop-1.svg" />
     </div>
-    <div>
-    </div>
-    <div>
-      <ul>
-        <li class="fragment" data-fragment-index="0">Runtime interop : orchestrate simulation execution btw abstractions</li>
-        <li class="fragment" data-fragment-index="1">Recall : we composed abstractions via elab. interop</li>
-        <li class="fragment" data-fragment-index="2">Edge semantics dictates the execution of runtime interop</li>
-      </ul>
-    </div>
+
+    <ul style="margin-top: 1rem;">
+      <li class="fragment" data-fragment-index="0"><strong>Runtime interop</strong>: how do multiple abstractions interact at runtime?</li>
+      <!--orchestrate simulation execution between abstractions</li>-->
+      <li class="fragment" data-fragment-index="1">Composition of abstractions via elaboration interop</li>
+      <li class="fragment" data-fragment-index="2">Edge semantics dictate the semantics of runtime interop</li>
+    </ul>
   </section>
 
-  <section class="center">
-    <h2>Semantics Preserving</h2>
-    <div class="container" style="grid-template-columns: 1.4fr 0.1fr 1.0fr;">
+  <section>
+    <h2>3. <span class="green">Preserving Semantics</span></h2>
+    <div class="container" style="grid-template-columns: 1.2fr 1.0fr; column-gap: 2rem;">
       <div class="r-stack">
         <img style="object-fit: contain;" class="image fragment fade-in-then-out" data-fragment-index="0" src="./figs/latte24/runtime-interop-1.svg" />
         <img style="object-fit: contain;" class="image fragment fade-in-then-out" data-fragment-index="1" src="./figs/latte24/runtime-interop-2.svg" />
@@ -1629,16 +1631,12 @@ class GCDMMIOBlackBox(val w: Int)
         <img style="object-fit: contain;" class="image fragment"                  data-fragment-index="3" src="./figs/latte24/runtime-interop-4.svg" />
       </div>
       <div>
-      </div>
-      <div>
-        <font size="5">
         <ul>
           <li class="fragment" data-fragment-index="0">RT interop : manages how time advances between abstraction boundaries</li>
           <li class="fragment" data-fragment-index="1">Send req (function call)</li>
           <li class="fragment" data-fragment-index="2">RTL advances time</li>
           <li class="fragment" data-fragment-index="3">Runtime interop schedules the response & updates timing</li>
         </ul>
-        </font>
       </div>
     </div>
     <ul>
@@ -1647,8 +1645,8 @@ class GCDMMIOBlackBox(val w: Int)
     </ul>
   </section>
 
-  <section class="center">
-    <h2>Semantics Preserving</h2>
+  <section>
+    <h2>3. <span class="green">Preserving Semantics</span></h2>
     <div class="container" style="grid-template-columns: 1.0fr 1.0fr;">
     <div>
       <pre data-id="code-animation"><code class="verilog" data-trim data-line-numbers>
