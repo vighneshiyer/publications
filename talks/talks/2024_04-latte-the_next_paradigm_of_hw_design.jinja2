@@ -1550,8 +1550,8 @@ class GCDMMIOBlackBox(val w: Int)
       <li class="fragment">Enables high design productivity
         <ul>
           <li class="fragment">Pick the abstraction suitable for a design block</li>
-{# <li class="fragment">Mix abstractions at a fine granularity</li> #}
           <li class="fragment">Incrementally refine to hit QoR targets: Model &rarr; HLS &rarr; RTL</li>
+          <li class="fragment">Mix abstractions at a fine granularity</li>
         </ul>
       </li>
       <li class="fragment">Native mixed-abstraction simulators
@@ -1565,7 +1565,13 @@ class GCDMMIOBlackBox(val w: Int)
           <li>Pass SoC integration collateral to IP generators</li>
         </ul>
       </li>
-      <!--Clean SoC level configuration/parameterization (e.g., address space)</li>-->
+      <li class="fragment">Existing solutions such as SystemC virtual platform, Switchboard, cocotb have similar goals</li>
+        <ul>
+          <li>Limited range of abstraction support</li>
+          <li>Coarse-grained mixing</li>
+          <li>Makes it difficult to perform incremental refinement in reality</li>
+{# <li>Mismatch in simulation throughput due to mixed simulation backends</li> #}
+        </ul>
     </ul>
   </section>
 
@@ -1767,7 +1773,7 @@ class GCDMMIOBlackBox(val w: Int)
       </div>
       <div>
         <ul>
-          <li class="fragment">No distinction between bitvectors and <em>semantic integers</em>
+          <li class="fragment">No distinction between bitvectors and <em>logical integers</em>
             <ul>
               <li class="fragment"><em>logical integer</em> vs <em>physical integer</em></li>
               <li class="fragment">Binary coded, grey coded, one-hot, 2s complement / sign-magnitude</li>
