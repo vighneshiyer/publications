@@ -2015,6 +2015,28 @@ class GCDMMIOBlackBox(val w: Int)
     </ul>
   </section>
 
+  <section class="center">
+{# simulation sketch #}
+{# - various levels of simulation time is in the critical path of PPA estimation #}
+{# - functional simulation #}
+{# - this can become a bottleneck when running co-simulations, sampled simulation, program phase analysis #}
+{# - not just implementing ISA spec. need to capture various "undefined behaviors" of the spec w.r.t to the SoC implementation #}
+{# - can be generated from spec (prior work exists) #}
+{# - SW RTL simulation #}
+{# - crucial for checking functionality and performance #}
+{# - recent work focuses on better utilizing multiple cores, memory coalescing, ... #}
+{# - verilator internal representation seems like a nightmare to work with #}
+{# - however, these works doesn't focus on compile time except livesim #}
+{# - livesim comes closest to our vision of incremental design iteration where they utilize incremental cacheing + simulation snapshotting + parallel execution & validation #}
+{# - archilator directly operates on the circt IR to emit c++ code. they claim 2x faster performance vs verilator, but the sources of speedup wasn't really clear #}
+{# - HW RTL simulation #}
+{# - parendi, manticore, MIT palledium #}
+{# - IIRC, parendi took 40 minutes to compile the binaries which is pretty long #}
+{# - firesim #}
+{# - faster but bitstream #}
+
+  </section>
+
 </section>
 
 {% endblock %}
