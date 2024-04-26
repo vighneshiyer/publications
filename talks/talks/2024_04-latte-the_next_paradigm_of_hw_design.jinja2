@@ -1464,8 +1464,8 @@ class GCDMMIOBlackBox(val w: Int)
   <section data-auto-animate>
     <h2>1. <span class="green">Incremental First</span></h2>
     <ul>
-      <li class="fragment">Faster iterations {{ rightarrow }} faster convergence on correctness and optimization</li>
-      <li class="fragment">It's quick to sketch out a module, but time consuming to fix every bug
+      <li class="fragment" data-fragment-index="0">Faster iterations {{ rightarrow }} faster convergence on correctness and optimization</li>
+      <li class="fragment" data-fragment-index="1">It's quick to sketch out a module, but time consuming to fix every bug
         <ul>
           <li>Software-like <strong>edit-run-debug loop</strong> is key</li>
         </ul>
@@ -1476,15 +1476,18 @@ class GCDMMIOBlackBox(val w: Int)
     <div class="container" style="grid-template-columns: 1.0fr 1.2fr; column-gap: 2rem;">
       <div class="r-stack">
         <div>
-          <img class="fragment" height=300px; src="./figs/latte24/incremental-motivation-base.svg" />
+          <img class="fragment" height=300px; data-fragment-index="2" src="./figs/latte24/incremental-motivation-base.svg" />
         </div>
         <div>
-          <img class="fragment" height=300px; src="./figs/latte24/incremental-motivation-delta.svg" />
+          <img class="fragment" height=300px; data-fragment-index="3" src="./figs/latte24/incremental-motivation-delta.svg" />
+        </div>
+        <div>
+          <img class="fragment" height=300px; data-fragment-index="4" src="./figs/latte24/incremental-motivation-missing.svg" />
         </div>
       </div>
       <div>
         <ul>
-          <li class="fragment">A tiny change shouldn't rebuild the full SoC design and simulator</li>
+          <li class="fragment" data-fragment-index="4">A tiny change shouldn't rebuild the full SoC design and simulator</li>
           <li class="fragment">Primary bottlenecks
             <ul class="smallish">
               <li class="fragment"><strong>Early design stage</strong>: fix functionality, add features {{ rightarrow }} design elaboration + simulator compilation</li>
@@ -1523,19 +1526,24 @@ class GCDMMIOBlackBox(val w: Int)
     <h2>1. <span class="green">Incremental First</span></h2>
     <div class="container" style="grid-template-columns: 1.0fr 1.0fr;">
       <div class="r-stack">
-        <img style="object-fit: contain;" class="image fragment fade-in-then-out" data-fragment-index="0" height=400px; src="./figs/latte24/incremental-base.svg" />
-        <img style="object-fit: contain;" class="image fragment fade-in-then-out" data-fragment-index="1" height=400px; src="./figs/latte24/incremental-base.svg" />
-        <img style="object-fit: contain;" class="image fragment fade-in-then-out" data-fragment-index="2" height=400px; src="./figs/latte24/incremental-base.svg" />
-        <img style="object-fit: contain;" class="image fragment fade-in-then-out" data-fragment-index="3" height=400px; src="./figs/latte24/incremental-fe.svg" />
-        <img style="object-fit: contain;" class="image fragment fade-in-then-out" data-fragment-index="4" height=400px; src="./figs/latte24/incremental-ir.svg" />
-        <img style="object-fit: contain;" class="image fragment fade-in-then-out" data-fragment-index="5" height=400px; src="./figs/latte24/incremental-syn.svg" />
-        <img style="object-fit: contain;" class="image fragment" data-fragment-index="6"                  height=400px; src="./figs/latte24/incremental-pnr.svg" />
+        <img style="object-fit: contain;" class="image fragment fade-in-then-out" data-fragment-index="0" height=400px; src="./figs/latte24/incremental-motivation-base.svg" />
+        <img style="object-fit: contain;" class="image fragment fade-in-then-out" data-fragment-index="1" height=400px; src="./figs/latte24/incremental-motivation-base.svg" />
+        <img style="object-fit: contain;" class="image fragment fade-in-then-out" data-fragment-index="2" height=400px; src="./figs/latte24/incremental-motivation-base.svg" />
+        <img style="object-fit: contain;" class="image fragment fade-in-then-out" data-fragment-index="3" height=400px; src="./figs/latte24/incremental-motivation-delta.svg" />
+        <img style="object-fit: contain;" class="image fragment fade-in-then-out" data-fragment-index="4" height=400px; src="./figs/latte24/incremental-motivation-1.svg" />
+        <img style="object-fit: contain;" class="image fragment"                  data-fragment-index="5" height=400px; src="./figs/latte24/incremental-motivation-2.svg" />
+{# <img style="object-fit: contain;" class="image fragment" data-fragment-index="6"                  height=400px; src="./figs/latte24/incremental-pnr.svg" /> #}
       </div>
       <div>
         <ul>
           <li class="fragment" data-fragment-index="0"><strong class="green">Caching + incrementalism throughout the stack</strong></li>
           <li class="fragment" data-fragment-index="1">Isolate parts of the design affected by a change</li>
           <li class="fragment" data-fragment-index="2">Only run passes on the modified parts</li>
+          <ul class="small">
+            <li class="fragment" data-fragment-index="3">Changes to the frontend</li>
+            <li class="fragment" data-fragment-index="4">Compiler pass propagates the changes</li>
+            <li class="fragment" data-fragment-index="5">VLSI tools propagates the changes</li>
+          </ul>
           <li class="fragment" data-fragment-index="7">Extend incrementalism to RTL simulation (LiveSim<span class="reference">[1]</span>) and PPA evaluation (LiveSynth<span class="reference">[2]</span>)</li>
         </ul>
       </div>
@@ -1584,19 +1592,20 @@ class GCDMMIOBlackBox(val w: Int)
     <h2>2. <span class="green">Mixed Abstraction Design</span></h2>
     <div class="container" style="grid-template-columns: 1.2fr 1.0fr; column-gap: 2rem;">
       <div class="r-stack">
-        <img style="object-fit: contain;" class="image fragment fade-in-then-out" data-fragment-index="0" src="./figs/latte24/multi-abstraction-rtl.svg" />
-        <img style="object-fit: contain;" class="image fragment fade-in-then-out" data-fragment-index="1" src="./figs/latte24/multi-abstraction-ctrl.svg" />
-        <img style="object-fit: contain;" class="image fragment fade-in-then-out" data-fragment-index="2" src="./figs/latte24/multi-abstraction-data.svg" />
-        <img style="object-fit: contain;" class="image fragment fade-in-then-out" data-fragment-index="3" src="./figs/latte24/multi-abstraction-accel.svg" />
-        <img style="object-fit: contain;" class="image fragment fade-in-then-out" data-fragment-index="4" src="./figs/latte24/multi-abstraction-soc.svg" />
+        <img style="object-fit: contain;" class="image fragment fade-in-then-out" data-fragment-index="0" src="./figs/latte24/multi-abstraction-base.svg" />
+        <img style="object-fit: contain;" class="image fragment fade-in-then-out" data-fragment-index="1" src="./figs/latte24/multi-abstraction-rtl.svg" />
+        <img style="object-fit: contain;" class="image fragment fade-in-then-out" data-fragment-index="2" src="./figs/latte24/multi-abstraction-ctrl.svg" />
+        <img style="object-fit: contain;" class="image fragment fade-in-then-out" data-fragment-index="3" src="./figs/latte24/multi-abstraction-data.svg" />
+        <img style="object-fit: contain;" class="image fragment fade-in-then-out" data-fragment-index="4" src="./figs/latte24/multi-abstraction-accel.svg" />
+        <img style="object-fit: contain;" class="image fragment fade-in-then-out" data-fragment-index="5" src="./figs/latte24/multi-abstraction-soc.svg" />
       </div>
       <div>
         <ul>
-          <li class="fragment" data-fragment-index="0"><strong>RTL</strong>: cores and caches</li>
-          <li class="fragment" data-fragment-index="1"><strong>Control flow synthesis</strong>: bus components, peripherals</li>
-          <li class="fragment" data-fragment-index="2"><strong>Dataflow synthesis</strong>: dataflow accelerators</li>
-          <li class="fragment" data-fragment-index="3"><strong>Accelerator design languages</strong>: accelerators</li>
-          <li class="fragment" data-fragment-index="4"><strong>SoC</strong>: mosaic of different abstractions</li>
+          <li class="fragment" data-fragment-index="1"><strong>RTL</strong>: cores and caches</li>
+          <li class="fragment" data-fragment-index="2"><strong>Control flow synthesis</strong>: bus components, peripherals</li>
+          <li class="fragment" data-fragment-index="3"><strong>Dataflow synthesis</strong>: dataflow accelerators</li>
+          <li class="fragment" data-fragment-index="4"><strong>Accelerator design languages</strong>: accelerators</li>
+          <li class="fragment" data-fragment-index="5"><strong>SoC</strong>: mosaic of different abstractions</li>
         </ul>
       </div>
     </div>
