@@ -1407,18 +1407,18 @@ class GCDMMIOBlackBox(val w: Int)
     </div>
   </section>
 
-  <section class="center">
-    <h2>Incremental First</h2>
+  <section>
+    <h2>1. <span class="green">Incremental First</span></h2>
     <ul>
       <li class="fragment">Hours &rarr; minutes to obtain simulation + PPA results</li>
-      <li class="fragment">Encourages designers to try out new ideas</li>
-      <li class="fragment">Makes <em>direct iteration on the design</em> (not the model) feasible</li>
+      <li class="fragment">Encourage designers to try out new ideas without fearing latency</li>
+      <li class="fragment">Make <strong>direct iteration on the design</strong> <em>(not a model)</em> feasible</li>
       <!--<li class="fragment">Easier to fix backend tool issues (e.g. critical path, DRC)</li>-->
     </ul>
   </section>
 
   <section data-auto-animate>
-    <h2>Incremental First</h2>
+    <h2>1. <span class="green">Incremental First</span></h2>
     <ul>
       <li class="fragment">Faster iterations {{ rightarrow }} faster convergence on correctness and optimization</li>
       <li class="fragment">It's quick to sketch out a module, but time consuming to fix every bug
@@ -1453,65 +1453,73 @@ class GCDMMIOBlackBox(val w: Int)
 
     <ul>
       <li class="fragment">A tiny change shouldn't cause a rebuild of the full SoC design and simulator</li>
+      <li class="fragment">Primary bottlenecks
+        <ul class="smallish">
+          <li class="fragment"><strong>Early design stage</strong>: design elaboration + simulator compilation {{ rightarrow }} fix functionality, add features</li>
+          <li class="fragment"><strong>Mature design</strong>: VLSI tools {{ rightarrow }} fix critical paths, optimize area / power</li>
+        </ul>
+      </li>
     </ul>
   </section>
 
-  <section>
+  <!--<section>
     <h2>Incremental First</h2>
       <ul>
         <li class="fragment">Initial design stage: code compilation time</li>
         <li class="fragment">When design matures: backend tool latency</li>
+        <li class="fragment">This problem can be solved by adopting the incremental first approach to hardware design</li>
+        <li class="fragment"><strong class="green">Partial compilation & cacheing</strong></li>
       </ul>
-    <ul>
-      <li class="fragment">This problem can be solved by adopting the incremental first approach to hardware design</li>
-      <li class="fragment"><strong class="green">Partial compilation & cacheing</strong></li>
-    </ul>
-  </section>
+  </section>-->
 
-  <section class="center">
-    <h2>Incremental First</h2>
-    <div class="container" style="grid-template-columns: 1.4fr 1.0fr;">
+  <section>
+    <h2>1. <span class="green">Incremental First</span></h2>
+    <div class="container" style="grid-template-columns: 1.0fr 1.0fr;">
       <div class="r-stack">
-        <img style="object-fit: contain;" class="image fragment fade-in-then-out" data-fragment-index="0" height=500px; src="./figs/latte24/incremental-base.svg" />
-        <img style="object-fit: contain;" class="image fragment fade-in-then-out" data-fragment-index="1" height=500px; src="./figs/latte24/incremental-base.svg" />
-        <img style="object-fit: contain;" class="image fragment fade-in-then-out" data-fragment-index="2" height=500px; src="./figs/latte24/incremental-base.svg" />
-        <img style="object-fit: contain;" class="image fragment fade-in-then-out" data-fragment-index="3" height=500px; src="./figs/latte24/incremental-fe.svg" />
-        <img style="object-fit: contain;" class="image fragment fade-in-then-out" data-fragment-index="4" height=500px; src="./figs/latte24/incremental-ir.svg" />
-        <img style="object-fit: contain;" class="image fragment fade-in-then-out" data-fragment-index="5" height=500px; src="./figs/latte24/incremental-syn.svg" />
-        <img style="object-fit: contain;" class="image fragment" data-fragment-index="6" height=500px; src="./figs/latte24/incremental-pnr.svg" />
+        <img style="object-fit: contain;" class="image fragment fade-in-then-out" data-fragment-index="0" height=400px; src="./figs/latte24/incremental-base.svg" />
+        <img style="object-fit: contain;" class="image fragment fade-in-then-out" data-fragment-index="1" height=400px; src="./figs/latte24/incremental-base.svg" />
+        <img style="object-fit: contain;" class="image fragment fade-in-then-out" data-fragment-index="2" height=400px; src="./figs/latte24/incremental-base.svg" />
+        <img style="object-fit: contain;" class="image fragment fade-in-then-out" data-fragment-index="3" height=400px; src="./figs/latte24/incremental-fe.svg" />
+        <img style="object-fit: contain;" class="image fragment fade-in-then-out" data-fragment-index="4" height=400px; src="./figs/latte24/incremental-ir.svg" />
+        <img style="object-fit: contain;" class="image fragment fade-in-then-out" data-fragment-index="5" height=400px; src="./figs/latte24/incremental-syn.svg" />
+        <img style="object-fit: contain;" class="image fragment" data-fragment-index="6"                  height=400px; src="./figs/latte24/incremental-pnr.svg" />
       </div>
       <div>
         <ul>
-          <li class="fragment" data-fragment-index="0">Cacheing + incrementalism throughout the stack</li>
-          <li class="fragment" data-fragment-index="1">Need to isolate parts of the design affected by the change</li>
-          <li class="fragment" data-fragment-index="2">Only run passes on the affected parts</li>
-          <li class="fragment" data-fragment-index="7">We can even cache RTL simulation results (LiveSim<span class="reference">[1]</span>)</li>
+          <li class="fragment" data-fragment-index="0"><strong class="green">Caching + incrementalism throughout the stack</strong></li>
+          <li class="fragment" data-fragment-index="1">Isolate parts of the design affected by a change</li>
+          <li class="fragment" data-fragment-index="2">Only run passes on the modified parts</li>
+          <li class="fragment" data-fragment-index="7">Extend incrementalism to RTL simulation (LiveSim<span class="reference">[1]</span>) and PPA evaluation (LiveSynth<span class="reference">[2]</span>)</li>
         </ul>
       </div>
     </div>
 
     <div class="footnote fragment">
     [1] Skinner, Haven, Rafael Trapani Possignolo, Sheng-Hong Wang, and Jose Renau. "LiveSim: A fast hot reload simulator for HDLs." ISPASS 2020.
+    [2] Possignolo, Rafael Trapani, and Jose Renau. "LiveSynth: Towards an interactive synthesis flow." DAC 2017.<br />
     </div>
   </section>
 
 
-  <section class="center">
-    <h2>Mixed Abstraction</h2>
+  <section>
+    <h2>2. <span class="green">Mixed Abstraction Design</span></h2>
     <ul>
-      <li class="fragment">Enables high design productivity</li>
-      <ul>
-        <li class="fragment">Choose the right abstraction to work on</li>
-        <li class="fragment">Incremental refining : Model &rarr; HLS &rarr; RTL</li>
-      </ul>
-      <li class="fragment">Potentially higher simulation throughput</li>
-      <li class="fragment">Clean SoC level configuration/parameterization (e.g., address space)</li>
+      <li class="fragment">Enables high design productivity
+        <ul>
+          <li class="fragment">Pick the abstraction suitable for a design block</li>
+          <li class="fragment">Mix abstractions at a fine granularity</li>
+          <li class="fragment">Incrementally refine to hit QoR targets: Model &rarr; HLS &rarr; RTL</li>
+        </ul>
+      </li>
+      <li class="fragment">Native mixed-abstraction simulators can achieve higher simulation throughput and lower simulator build latency</li>
+      <li class="fragment">Leverage SoC-level configuration/parameterization system to pass integration information to IP generators</li>
+      <!--Clean SoC level configuration/parameterization (e.g., address space)</li>-->
     </ul>
   </section>
 
-  <section class="center">
-    <h2>Mixed Abstractions</h2>
-    <div class="container" style="grid-template-columns: 1.4fr 0.1fr 1.0fr;">
+  <section>
+    <h2>2. <span class="green">Mixed Abstraction Design</span></h2>
+    <div class="container" style="grid-template-columns: 1.2fr 1.0fr; column-gap: 2rem;">
       <div class="r-stack">
         <img style="object-fit: contain;" class="image fragment fade-in-then-out" data-fragment-index="0" src="./figs/latte24/multi-abstraction-rtl.svg" />
         <img style="object-fit: contain;" class="image fragment fade-in-then-out" data-fragment-index="1" src="./figs/latte24/multi-abstraction-ctrl.svg" />
@@ -1520,37 +1528,36 @@ class GCDMMIOBlackBox(val w: Int)
         <img style="object-fit: contain;" class="image fragment fade-in-then-out" data-fragment-index="4" src="./figs/latte24/multi-abstraction-soc.svg" />
       </div>
       <div>
-      </div>
-      <div>
-        <font size="5">
         <ul>
-          <li class="fragment" data-fragment-index="0">RTL : cores and caches</li>
-          <li class="fragment" data-fragment-index="1">Ctrl synthesis : bus hierarchy, peripherals</li>
-          <li class="fragment" data-fragment-index="2">Dataflow description : dataflow accelerators</li>
-          <li class="fragment" data-fragment-index="3">Accel DSL : accelerators</li>
-          <li class="fragment" data-fragment-index="4">SoC : mosaic of different abstractions</li>
+          <li class="fragment" data-fragment-index="0"><strong>RTL</strong>: cores and caches</li>
+          <li class="fragment" data-fragment-index="1"><strong>Control flow synthesis</strong>: bus components, peripherals</li>
+          <li class="fragment" data-fragment-index="2"><strong>Dataflow synthesis</strong>: dataflow accelerators</li>
+          <li class="fragment" data-fragment-index="3"><strong>Accelerator design languages</strong>: accelerators</li>
+          <li class="fragment" data-fragment-index="4"><strong>SoC</strong>: mosaic of different abstractions</li>
         </ul>
-        </font>
       </div>
     </div>
   </section>
 
-  <section class="center">
-    <h2>Mixed Abstractions</h2>
-    <div class="container" style="grid-template-columns: 1.4fr 1.0fr;">
-    <div>
+  <section>
+    <h2>2. <span class="green">Mixed Abstraction Design</span></h2>
+    <div class="center">
         <img style="object-fit: contain; height: 220px;" class="image no-margin" src="./figs/latte24/new-paradigm-elab-interop.svg"/>
     </div>
-    <div>
-      <ul>
-        <li class="fragment">Clean elaboration interop</li>
-        <li class="fragment">Different abstractions sits on top</li>
-      </ul>
-    </div>
+
+    <ul style="margin-top: 1rem;">
+      <li class="fragment">Clean elaboration-time interop
+        <ul>
+          <li>API-level mechanism for calling between abstractions</li>
+          <li>Semantics with respect to legality of interactions</li>
+        </ul>
+      </li>
+      <li class="fragment">Different abstractions sit on top of the elaboration-time interop shim</li>
+    </ul>
   </section>
 
   <section data-auto-animate>
-    <h2>Mixed Abstraction</h2>
+    <h2>2. <span class="green">Mixed Abstraction Design</span></h2>
     <div class="container" style="grid-template-columns: 1.4fr 1.0fr;">
       <div>
         <pre data-id="code-animation"><code class="scala" data-trim data-line-numbers>
@@ -1563,10 +1570,11 @@ class GCDMMIOBlackBox(val w: Int)
       </div>
       <div>
         <ul>
-          <li class="fragment">Composes different abstractions together</li>
-          <li class="fragment">Checks if the compositions are valid</li>
-          <li class="fragment">Corresponds to FFI in software<span class="reference">[1]</span></li>
-          <li class="fragment">We can defer the execution of the composition semantics to runtime</li>
+          <li class="fragment">Compose different abstractions together</li>
+          <li class="fragment">Check if the compositions are legal</li>
+          <li class="fragment">Practically: FFI <span class="reference">[1]</span> + clean APIs</li>
+          <li class="fragment">Semantically: which connections are legal</li>
+          <!--<li class="fragment">We can defer the execution of the composition semantics to runtime</li>-->
         </ul>
       </div>
     </div>
@@ -1727,6 +1735,8 @@ class GCDMMIOBlackBox(val w: Int)
 <section>
   <section class="center">
     <h2>Backup Slides</h2>
+
+    <p class="center">The source of this presentation can be found here: <a href="https://github.com/vighneshiyer/publications/blob/master/talks/talks/2024_04-latte-the_next_paradigm_of_hw_design.jinja2">https://github.com/vighneshiyer/publications</a></p>
   </section>
 
   <section class="center">
