@@ -1472,37 +1472,50 @@ class GCDMMIOBlackBox(val w: Int)
       <!--Most of the times, we write the entire module, and make small bug fixes</li>-->
     </ul>
 
-    <div class="r-stack" style="margin-top: 1rem; margin-bottom: 1rem;">
-      <pre class="fragment fade-in-then-out" data-id="code-animation"><code class="scala" data-trim data-line-numbers="6">
-      class MyModule(N: Int, M: Int) extends Module {
-        val io = IO(new Bundle {
-          val a = Vec(M, Input(UInt(N.W)))
-          val sum  = Output(UInt((N + M - 1).W))
-        })
-        io.sum := io.a.reduce(_ + _)
-      }
-      </code></pre>
-
-      <pre class="fragment fade-in" data-id="code-animation"><code class="scala" data-trim data-line-numbers="6">
-      class MyModule(N: Int, M: Int) extends Module {
-        val io = IO(new Bundle {
-          val a = Vec(M, Input(UInt(N.W)))
-          val sum  = Output(UInt((N + M - 1).W))
-        })
-        io.sum := io.a.reduce(_ +& _)
-      }
-      </code></pre>
+    <div class="container" style="grid-template-columns: 1.0fr 1.2fr; column-gap: 2rem;">
+      <div class="r-stack">
+        <div>
+          <img class="fragment" height=300px; src="./figs/latte24/incremental-motivation-base.svg" />
+        </div>
+        <div>
+          <img class="fragment" height=300px; src="./figs/latte24/incremental-motivation-delta.svg" />
+        </div>
+      </div>
+      <div>
+        <ul>
+          <li class="fragment">A tiny change shouldn't rebuild the full SoC design and simulator</li>
+          <li class="fragment">Primary bottlenecks
+            <ul class="smallish">
+              <li class="fragment"><strong>Early design stage</strong>: fix functionality, add features {{ rightarrow }} design elaboration + simulator compilation</li>
+              <li class="fragment"><strong>Mature design</strong>: fix critical paths, optimize area / power {{ rightarrow }} VLSI</li>
+            </ul>
+          </li>
+        </ul>
+      </div>
     </div>
 
-    <ul>
-      <li class="fragment">A tiny change shouldn't rebuild the full SoC design and simulator</li>
-      <li class="fragment">Primary bottlenecks
-        <ul class="smallish">
-          <li class="fragment"><strong>Early design stage</strong>: fix functionality, add features {{ rightarrow }} design elaboration + simulator compilation</li>
-          <li class="fragment"><strong>Mature design</strong>: fix critical paths, optimize area / power {{ rightarrow }} VLSI</li>
-        </ul>
-      </li>
-    </ul>
+{# <div class="r-stack" style="margin-top: 1rem; margin-bottom: 1rem;"> #}
+{# <pre class="fragment fade-in-then-out" data-id="code-animation"><code class="scala" data-trim data-line-numbers="6"> #}
+{# class MyModule(N: Int, M: Int) extends Module { #}
+{# val io = IO(new Bundle { #}
+{# val a = Vec(M, Input(UInt(N.W))) #}
+{# val sum  = Output(UInt((N + M - 1).W)) #}
+{# }) #}
+{# io.sum := io.a.reduce(_ + _) #}
+{# } #}
+{# </code></pre> #}
+
+{# <pre class="fragment fade-in" data-id="code-animation"><code class="scala" data-trim data-line-numbers="6"> #}
+{# class MyModule(N: Int, M: Int) extends Module { #}
+{# val io = IO(new Bundle { #}
+{# val a = Vec(M, Input(UInt(N.W))) #}
+{# val sum  = Output(UInt((N + M - 1).W)) #}
+{# }) #}
+{# io.sum := io.a.reduce(_ +& _) #}
+{# } #}
+{# </code></pre> #}
+{# </div> #}
+
   </section>
 
   <!--<section>
@@ -1565,13 +1578,14 @@ class GCDMMIOBlackBox(val w: Int)
           <li>Pass SoC integration collateral to IP generators</li>
         </ul>
       </li>
-      <li class="fragment">Existing solutions such as SystemC virtual platform, Switchboard, cocotb have similar goals</li>
+      <li class="fragment">Existing solutions such as SystemC virtual platform, Switchboard, cocotb have similar goals
         <ul>
           <li>Limited range of abstraction support</li>
           <li>Coarse-grained mixing</li>
           <li>Makes it difficult to perform incremental refinement in reality</li>
 {# <li>Mismatch in simulation throughput due to mixed simulation backends</li> #}
         </ul>
+      </li>
     </ul>
   </section>
 
