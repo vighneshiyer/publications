@@ -2168,6 +2168,33 @@ class GCDMMIOBlackBox(val w: Int)
   </section>
 
   <section class="center">
+    <h2>HW Accelerated Simulation</h2>
+    <ul>
+      <li class="fragment">HW accelerated RTL simulation is receiving more attention recently
+        <ul>
+          <li>FireSim, Parendi, Manticore, MIT emulator etc</li>
+        </ul>
+      </li>
+      <li class="fragment">Main focus of these platforms are in simulation throughput</li>
+      <li class="fragment">Simulation build time is also crucial
+        <ul>
+          <li>Especially during the initial phase of the design</li>
+        </ul>
+      </li>
+      <li class="fragment">Direct FPGA simulation (FireSim) &rarr; partial reconfiguration
+        <ul>
+          <li>Limited in resources, flexibility and speed</li>
+        </ul>
+      </li>
+      <li class="fragment">FPGA overlayed emulation &rarr; partial comp. + caching
+        <ul>
+          <li>Only have to rebuild the software (no FPGA tools involved)</li>
+          <li>Fixes aren't limited by the FPGA partial-reconfig region</li>
+          <li>Better option for initial iteration phase when combined with partial compilation and caching</li>
+        </ul>
+      </li>
+    </ul>
+
 {# simulation sketch #}
 {# - various levels of simulation time is in the critical path of PPA estimation #}
 {# - functional simulation #}
