@@ -2131,9 +2131,30 @@ class GCDMMIOBlackBox(val w: Int)
     -->
 
     <ul>
-      <li>"Design-first", don't model!
+      <li class="fragment">"Design-first", don't model!
         <ul>
-          <li>Make hardware design productive with multiple abstractions and fast iteration</li>
+          <li>Enhance productivity with multiple abstractions and fast, low-latency simulation</li>
+          <li>Don't specify module interfaces too early - get the whole system working first</li>
+          <li>Iterate at the <em>system-level</em> in the <em>early stage</em></li>
+        </ul>
+      </li>
+      <li class="fragment">Single source of truth
+        <ul>
+          <li>Maintaining models that need to match the RTL creates more problems than it solves</li>
+          <li>Iterate on the <em>design directly</em></li>
+        </ul>
+      </li>
+      <li class="fragment">This methodology works
+        <ul>
+          <li>The "design-first" approach has built robust, high-performance open source RISC-V IP (rocket-chip, BOOM, Hwacha, Chipyard, Constellation) with small teams of grad students</li>
+        </ul>
+      </li>
+      <li class="fragment">The alternatives:
+        <ul>
+          <li>"Specification to implementation"</li>
+          <li>"Correct by construction"</li>
+          <li>"Incremental refinement"</li>
+          <li>We argue: these approaches ensure correctness, but compromise on productivity</li>
         </ul>
       </li>
     </ul>
