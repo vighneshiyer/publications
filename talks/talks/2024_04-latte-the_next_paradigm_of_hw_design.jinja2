@@ -112,7 +112,7 @@ Reveal.on( 'fragmenthidden', event => {
     <a href="https://github.com/ucb-bar/chipyard">
       <img src="./figs/logos/chipyard_logo.svg" class="image" style="height: 100px;">
     </a>
-    <h2 class="fragment">The Next Paradigm of SoC Design</h2>
+    <h2 class="fragment">The Next Paradigm of Hardware Design</h2>
     <h3>Chipyard Overview + Calyx Integration Demo</h3>
     <h4 style="font-weight:normal;">
       Joonho Whangbo, Vighnesh Iyer, Sophia Shao, Krste Asanović, Bora Nikolić (UC Berkeley)
@@ -143,7 +143,7 @@ Reveal.on( 'fragmenthidden', event => {
           <li>It's a lot more than just the frontend language: PPA iteration cycle, verification, other stuff</li>
         </ul>-->
       </li>
-      <li class="fragment">Our vision for the next generation of hardware design languages and tools</li>
+      <li class="fragment">Design considerations for the next generation of hardware design languages and tools</li>
     </ol>
   </section>
 </section>
@@ -1015,10 +1015,10 @@ class GCDMMIOBlackBox(val w: Int)
     <h2>FireSim Impact</h2>
     <div class="r-stack">
       <div>
-        <img class="fragment" height=500px; src="./figs/latte24/firesim-citations.svg" />
+        <img class="fragment" style="object-fit: contain;" height=500px; src="./figs/latte24/firesim-citations.svg" />
       </div>
       <div>
-      <ul>
+      <ul class="smallish">
         <li>ISCA ‘18: Maas et. al.  HW-GC Accelerator (Berkeley)</li>
         <li>MICRO ‘18: Zhang et. al. “Composable Building Blocks to Open up Processor Design” (MIT)</li>
         <li>RTAS ‘20: Farshchi et. al. BRU (Kansas)</li>
@@ -1029,7 +1029,7 @@ class GCDMMIOBlackBox(val w: Int)
         <li>MICRO ’21: Karandikar et. al. “A Hardware Accelerator for Protocol Buffers” (Berkeley/Google)</li>
         <li>MICRO ‘21: Gottschall et. al. TIP (NTNU)</li>
         <li>Over 20 additional user papers on the FireSim website:</li>
-        <li>https://fires.im/publications/#userpapers</li>
+        <li><a href="https://fires.im/publications/#userpapers">https://fires.im/publications/#userpapers</a></li>
       </ul>
       </div>
     </div>
@@ -1396,7 +1396,7 @@ class GCDMMIOBlackBox(val w: Int)
       <li class="fragment"><strong class="red">Lost semantics</strong>: SystemVerilog is still the lowest common denominator</li>
     </ol>
 
-    <p class="center fragment">We still have a long way to go</p>
+    <p class="center fragment"><strong>We still have a long way to go</strong></p>
   </section>
 
   <section>
@@ -1433,7 +1433,7 @@ class GCDMMIOBlackBox(val w: Int)
         <img class="image" src="./figs/latte24/tool-stack.svg" />
       </div>
       <div>
-        <p class="center">Our vision for the next generation of languages and tools for hardware design</p>
+        <p class="center">Our take on design considerations for the next generation of hardware design languages and tools</p>
       </div>
     </div>
   </section>
@@ -1673,7 +1673,7 @@ class GCDMMIOBlackBox(val w: Int)
 
   <section>
     <h2>2. <span class="green">Mixed Abstraction Design</span>: CIRCT</h2>
-    <div class="container" style="grid-template-columns: 1fr 1.4fr; column-gap: 2rem;">
+    <div class="container" style="grid-template-columns: 1fr 1.0fr; column-gap: 2rem;">
       <div>
         <img class="image" src="./figs/latte24/circt-overview.svg" />
       </div>
