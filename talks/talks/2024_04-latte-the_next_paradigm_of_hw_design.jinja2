@@ -1584,11 +1584,12 @@ class GCDMMIOBlackBox(val w: Int)
           <li>Pass SoC integration collateral to IP generators</li>
         </ul>
       </li>
-      <li class="fragment">Existing solutions such as SystemC virtual platform, Switchboard, cocotb have similar goals
+      <li class="fragment"><span class="green"><strong>Progress:</strong></span> <a href="https://www.ovpworld.org/technology_systemc">SystemC virtual platforms</a>, <a href="https://github.com/zeroasiccorp/switchboard">switchboard</a>, <a href="https://github.com/cocotb/cocotb">cocotb</a>, <a href="https://docs.fires.im/en/stable/Golden-Gate/Bridges.html">FireSim bridges to CPU or FPGA hosted models</a>
         <ul>
-          <li>Limited range of abstraction support</li>
-          <li>Coarse-grained mixing</li>
-          <li>Makes it difficult to perform incremental refinement in reality</li>
+          <li class="fragment">Limited range of abstraction support</li>
+          <li class="fragment">Coarse-grained mixing</li>
+          <!--<li class="fragment">Makes it difficult to perform incremental refinement in reality</li>-->
+          <li class="fragment">Clunky and un-ergonomic APIs</li>
 {# <li>Mismatch in simulation throughput due to mixed simulation backends</li> #}
         </ul>
       </li>
