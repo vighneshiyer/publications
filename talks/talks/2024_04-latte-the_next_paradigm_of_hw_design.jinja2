@@ -870,7 +870,11 @@ class GCDMMIOBlackBox(val w: Int)
     </div>
     <div>
       <ul class="smallish">
-        <li class="fragment">Learn how to build complex SoC in a matter of hours!</li>
+        <li>Learn how to build and simulate a complex SoC in a matter of hours!
+          <ul>
+            <li>Tutorial participants configured, elaborated, and simulated this SoC configuration live</li>
+          </ul>
+        </li>
         <li class="fragment"><a href="https://fires.im/asplos-2023-tutorial/">Link to previous tutorial recordings</a></li>
     </div>
   </section>
@@ -1072,12 +1076,14 @@ class GCDMMIOBlackBox(val w: Int)
   <section class="center">
     <h2>Key Takeaways</h2>
     <ul>
-      <li class="fragment">External IP integration works, but not seamless as it could be</li>
-      <ul>
-        <li class="fragment">Lots of ad-hoc gluecode</li>
-        <li class="fragment">Redundant parameter definitions</li>
-      </ul>
-      <li class="fragment">These takeaways are applicable to all SoC design frameworks out there</li>
+      <li class="fragment">External IP integration works, but not seamless as it could be
+        <ul>
+          <li class="fragment">Lots of ad-hoc gluecode</li>
+          <li class="fragment">Redundant parameter definitions</li>
+          <li class="fragment">Restricted to Verilog blackboxing and on predefined integration interfaces</li>
+        </ul>
+      </li>
+      <li class="fragment">These takeaways are applicable to all SoC design frameworks out there (not just Chipyard)</li>
     </ul>
   </section>
 
@@ -2151,12 +2157,11 @@ class GCDMMIOBlackBox(val w: Int)
       </li>
       <li class="fragment">The alternatives:
         <ul>
-          <li>"Specification to implementation"</li>
-          <li>"Correct by construction"</li>
-          <li>"Incremental refinement"</li>
+          <li>"Specification to implementation", "Correct by construction", "Incremental refinement"</li>
           <li>We argue: these approaches ensure correctness, but compromise on productivity</li>
         </ul>
       </li>
+      <p class="center fragment"><strong>"Spec-first" and "design-first" methodologies need to meet in the middle</strong></p>
     </ul>
 
   </section>
