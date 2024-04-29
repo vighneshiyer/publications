@@ -370,6 +370,148 @@ import 'highlight.js/styles/tokyo-night-dark.css'
 
 <section>
   <section class="center">
+    <h2>TidalSim Implementation</h2>
+  </section>
+
+  <section style="text-align: center;">
+    <h2>Overview of the TidalSim Flow</h2>
+    <img src="./figs/dynamic/tidalsim/overview.svg" />
+  </section>
+
+  <section>
+    <h2>Implementation Details For TidalSim</h2>
+    <div class="container" style="grid-template-columns: 1.2fr 1fr;">
+    <div>
+    <ul class="smallish">
+      <li class="fragment">Basic block identification
+        <ul><li>BB identification from spike commit log or from static ELF analysis</li></ul>
+      </li>
+      <li class="fragment">Basic block embedding of intervals</li>
+      <li class="fragment">Clustering and checkpointing
+        <ul>
+          <li>k-means, PCA-based n-clusters</li>
+          <li>spike-based checkpoints</li>
+        </ul>
+      </li>
+      <li class="fragment">RTL simulation and performance metric extraction
+        <ul><li>Custom force-based RTL state injection, out-of-band IPC measurement</li></ul>
+      </li>
+      <li class="fragment">Extrapolation
+        <ul><li>Estimate IPC of each interval based on its embedding and distances to RTL-simulated intervals</li></ul>
+      </li>
+    </ul>
+    </div>
+    <div style="display:grid; align-content: center;">
+      <img src="./figs/dynamic/tidalsim/overview.svg" />
+    </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Overall Functional Warmup Flow</h2>
+    <div class="center">
+      <img src="./figs/dynamic/tidalsim/full_flow_detail.svg" />
+    </div>
+
+    <ul class="small">
+      <li class="fragment">uarch-agnostic cache checkpoints as memory timestamp record (MTR) checkpoints</li>
+      <li class="fragment">Convert MTR checkpoints into concrete cache state with specific cache parameters DRAM contents</li>
+      <li class="fragment">RTL simulation harness injects cache state into L1d tag+data arrays via 2d reg forcing</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Memory Timestamp Record</h2>
+    <div class="center">
+      <img src="./figs/dynamic/tidalsim/mtr_flow.svg" />
+    </div>
+
+    <ul class="small">
+      <li class="fragment">Construct MTR table from a memory trace, save MTR tables at checkpoint times</li>
+      <li class="fragment">Given a cache with n sets, group block addresses by set index</li>
+      <li class="fragment">Given a cache with k ways, pick the k most recently accessed addresses from each set</li>
+      <li class="fragment">Knowing every resident cache line, fetch the data from the DRAM dump</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Results on wikisort</h2>
+
+    <div class="center r-stack">
+      <div class="fragment fade-in-then-out">
+        <img src="./figs/multi-level-sim/wikisort_results.svg" />
+        <figcaption>No functional warmup, there are significant IPC underpredictions</figcaption>
+      </div>
+      <div class="fragment fade-in">
+        <img src="./figs/multi-level-sim/wikisort_results-l1d_warmup.svg" />
+        <figcaption>L1d functional warmup, errors are substantially reduced</figcaption>
+      </div>
+    </div>
+
+    <p class="center fragment"><strong>L1d functional warmup brings IPC error from 7% to 2%</strong></p>
+  </section>
+
+  <section>
+    <h2>Results on huffbench</h2>
+
+    <div class="center r-stack">
+      <div class="fragment fade-in-then-out">
+        <img src="./figs/multi-level-sim/huffbench_results-no_warmup.svg" />
+        <figcaption>No functional warmup, there are significant IPC underpredictions</figcaption>
+      </div>
+      <div class="fragment fade-in">
+        <img src="./figs/multi-level-sim/huffbench_results-warmup.svg" />
+        <figcaption>L1d functional warmup, errors are substantially reduced</figcaption>
+      </div>
+    </div>
+
+    <p class="center fragment"><strong>L1d functional warmup brings IPC error from 7% to 2%</strong></p>
+  </section>
+
+  <!--<section>
+    <h2>Aggregate IPC Prediction for Embench Suite</h2>
+    <div class="center">
+      <img src="./figs/multi-level-sim/embench_ipc_error.svg" style="margin-bottom:0;" />
+    </div>
+    <p class="center fragment">Typical IPC error (<strong>without</strong> functional warmup and with fine time-domain precision of 10k instructions) <strong>is &lt; 5%</strong></p>
+  </section>
+
+  <section>
+    <h2>CoreMark Smoke Test</h2>
+    <div class="center">
+      <img width="100%" src="./figs/multi-level-sim/coremark_results.svg" />
+    </div>
+
+    <ul>
+      <li><strong>NO</strong> functional warmup</li>
+      <li>10k instruction intervals, 30 clusters, 2k detailed warmup</li>
+      <li>Larger working set means functional warmup is crucial</li>
+    </ul>
+  </section>-->
+</section>
+
+<section>
+  <section class="center">
+    <h2>Functional Warmup of L1d Cache + Early Results</h2>
+  </section>
+
+
+
+  <section>
+    <h2>Caveats</h2>
+
+    <ul>
+      <li class="fragment">Currently all cache lines are marked as dirty, even if read-only</li>
+      <li class="fragment">There seems to be a lingering bug causing unaligned DRAM accesses from L1, still under investigation</li>
+      <li class="fragment">Injection harness is hardcoded for a specific Rocket L1 cache configuration</li>
+      <li class="fragment">Cannot perform L2 injection or handle multiple cores</li>
+    </ul>
+  </section>
+</section>
+
+
+<section>
+  <section class="center">
     <h1>Ideas Around Error Analysis</h1>
   </section>
 
