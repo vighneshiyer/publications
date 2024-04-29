@@ -1,0 +1,677 @@
+{% extends "base/base.jinja2" %}
+
+{# HTML title #}
+{% set webpage_title = "TidalSim: Fast, High-Fidelity Microarchitectural Simulation" %}
+{# Short description #}
+{% set description = "" %}
+{# List of authors #}
+{% set author = "Vighnesh Iyer" %}
+{# Change ‘venue’ to a conference or workshop name if any #}
+{% set venue = "ATHLETE Quarterly Update (April 2024)" %}
+{# Publication info (hidden by default) #}
+{% set pub_datetime_iso = "2024-04-28" %}
+{% set pub_date = "April 28, 2024" %}
+
+{# Custom styles and JS for a particular talk #}
+{% block custom_head %}
+<style>
+table.detailed_warmup_table {
+  width: 100%;
+  font-size: 60%;
+  border-collapse: separate;
+  tr > th {
+    text-align:center;
+    border: none;
+  }
+  tr > td {
+      border: 1px solid white;
+  }
+  tr:last-child > td {
+      border-bottom: 1px solid white !important;
+  }
+  tbody tr td {
+      width: 16.6666%;
+      height: 2rem;
+      text-align: center;
+      vertical-align: middle;
+  }
+  tbody tr th {
+      vertical-align: middle;
+  }
+}
+table.comparison_table {
+  width: 100%;
+  font-size: 60%;
+  border-collapse: separate !important;
+  thead > tr > th:first-child {
+    border-right: 2px solid #222222;
+  }
+  tbody > tr > td:first-child {
+    border-right: 2px solid #222222;
+  }
+}
+</style>
+{% endblock %}
+
+{% block theme %}
+import '/themes/tokyonight-light.scss'
+import 'highlight.js/styles/tokyo-night-dark.css'
+{% endblock %}
+
+{% set center = true %}
+
+{% set rightarrow = "<strong>→</strong>" %}
+
+{% block slides %}
+<section class="center">
+  <h2>TidalSim: Fast, High-Fidelity, Low-Latency Microarchitectural Simulation</h2>
+  <h3 style="font-weight: normal;">Functional Warmup, Error Analysis, Caching and Parallelism API</h3>
+  <h5 style="font-weight: normal;"><strong>Vighnesh Iyer</strong>, Dhruv Vaish, Raghav Gupta, Young-Jin Park, Charles Hong, Sophia Shao, Bora Nikolic</h5>
+  
+  <h5>ATHLETE Quarterly Update<br />
+  Monday, April 29th, 2024</h5>
+</section>
+
+<section>
+  <section class="center">
+    <h1>Motivation</h1>
+    <ul>
+      <li>What are we trying to solve?</li>
+      <li>Why is it worth solving?</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Existing Hardware Simulation Techniques</h2>
+
+    <table class="comparison_table">
+      <thead><tr>
+        <th></th>
+        <th>Examples</th>
+        <th>Throughput</th>
+        <th>Latency</th>
+        <th>Accuracy</th>
+        <th>Cost</th>
+      </tr></thead>
+      <tbody>
+      <tr class="fragment">
+        <td>JIT-based Simulators / VMs</td>
+        <td>qemu, KVM, VMWare Fusion</td>
+        <td class="bg-green">1-3 GIPS</td>
+        <td class="bg-green">&lt;1 second</td>
+        <td class="bg-red">None</td>
+        <td class="bg-green">Minimal</td>
+      </tr>
+      <tr class="fragment">
+        <td>Architectural Simulators</td>
+        <td>spike, dromajo</td>
+        <td class="bg-green">10-100+ MIPS</td>
+        <td class="bg-green">&lt;1 second</td>
+        <td class="bg-red">None</td>
+        <td class="bg-green">Minimal</td>
+      </tr>
+      <tr class="fragment">
+        <td>General-purpose μArch Simulators</td>
+        <td>gem5, Sniper, ZSim, SST</td>
+        <td class="bg-orange">100 KIPS (gem5) - 100 MIPS (Sniper)</td>
+        <td class="bg-green">&lt;1 minute</td>
+        <td class="bg-orange">10-50% IPC error</td>
+        <td class="bg-green">Minimal</td>
+      </tr>
+      <tr class="fragment">
+        <td>Bespoke μArch Simulators</td>
+        <td>Industry performance models</td>
+        <td class="bg-orange">≈ 0.1-1 MIPS</td>
+        <td class="bg-green">&lt;1 minute</td>
+        <td class="bg-green">Close</td>
+        <td class="bg-red">$1M+</td>
+      </tr>
+      <tr class="fragment">
+        <td>RTL Simulators</td>
+        <td>Verilator, VCS, Xcelium</td>
+        <td class="bg-red">1-10 KIPS</td>
+        <td class="bg-orange">2-10 minutes</td>
+        <td class="bg-green">Cycle-exact</td>
+        <td class="bg-green">Minimal</td>
+      </tr>
+      <tr class="fragment">
+        <td>FPGA-Based Emulators</td>
+        <td>Firesim</td>
+        <td class="bg-green">≈ 10 MIPS</td>
+        <td class="bg-red">2-6 hours</td>
+        <td class="bg-green">Cycle-exact</td>
+        <td class="bg-orange">$10k+</td>
+      </tr>
+      <tr class="fragment">
+        <td>ASIC-Based Emulators</td>
+        <td>Palladium, Veloce</td>
+        <td class="bg-green">≈ 0.5-10 MIPS</td>
+        <td class="bg-orange">&lt;1 hour</td>
+        <td class="bg-green">Cycle-exact</td>
+        <td class="bg-red">$10M+</td>
+      </tr>
+      <!--<tr class="fragment">
+        <td>Multi-level Sampled Simulation</td>
+        <td><strong>TidalSim</strong></td>
+        <td class="bg-green">10+ MIPS</td>
+        <td class="bg-green">&lt;1 minute</td>
+        <td class="bg-green">&lt;1% IPC error</td>
+        <td class="bg-green">Minimal</td>
+      </tr>-->
+      </tbody>
+    </table>
+  
+    <ul style="margin-top: 1rem;">
+      <li class="fragment">There is no simulation technique that meets all our criteria:
+        <ol>
+          <li class="fragment"><strong>High throughput</strong>: same order as interpreted ISA simulators</li>
+          <li class="fragment"><strong>Low latency</strong>: startup time ≈ RTL simulator compilation</li>
+          <li class="fragment"><strong>Accurate</strong>: small IPC errors, usable for evaluating optimizations</li>
+          <li class="fragment"><strong>Low cost</strong>: usable by academics</li>
+        </ol>
+      </li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Accuracy of Microarchitectural Simulators</h2>
+
+    <!-- Want to show:
+      - simulators are generally inaccurate wrt real hardware first of all
+      - simulators disagree with each other a lot
+      - simulators poorly model the impact of various uarch changes (pipeline width, cache size, branch predictor)
+      - simulators need calibration with silicon to get decent accuracy (which is painful and doesn't prove anything about generalizability)
+    -->
+
+    <div class="center r-stack">
+      <div class="fragment fade-in-then-out" style="display: grid; place-items: center;">
+        <img width="80%" class="image no-margin" src="./figs/quals/uarch_simulator_study-ipc2.png" />
+        <figcaption class="small center">Raw IPC errors on 64-bit workloads vs real Haswell<sup>[1]</sup>. Microarchitectural simulators have substantial errors exceeding 20%.
+        </figcaption>
+      </div>
+      <div class="fragment fade-in" style="display: grid; place-items: center;">
+        <img width="80%" class="image no-margin" src="./figs/quals/uarch_simulator_study-branch_predictor.png" />
+        <figcaption class="small center">Impact of using a bimodal branch predictor vs the Haswell BP<sup>[1]</sup>.
+        Simulators disagree with each other! The sensitivity of each simulator is wildly different!
+        </figcaption>
+      </div>
+    </div>
+
+    <!-- Trends aren't enough - see the sensitivity differences of these simulators! Gradients are critical! -->
+    <!-- if these detailed uArch models aren't good enough wrt accuracy, then throw the rest of the less detailed ones away too! -->
+
+    <p class="smallish fragment center">Trends aren't enough<sup>[2]</sup>. Note the sensitivity differences - gradients are critical!</p>
+    <p class="smallish fragment center">uArch simulators are <strong>not accurate enough</strong> for microarchitectural evaluation.</p>
+
+    <div class="footnote">
+      [1]: Akram, A. and Sawalha, L., 2019. A survey of computer architecture simulation techniques and tools. IEEE Access<br />
+      [2]: Nowatzki, T., Menon, J., Ho, C.H. and Sankaralingam, K., 2015. Architectural simulators considered harmful. Micro.
+    </div>
+  </section>
+
+  <section class="center">
+    <h3>What are we trying to solve?</h3>
+    <p>We want a tool to evaluate microarchitectural changes on real workloads at high fidelity</p>
+  </section>
+
+  <section>
+    <h2>The "Design-First" Methodology</h2>
+    <ul>
+      <li class="fragment">"Design-first", don't model!
+        <ul>
+          <li>Build the whole system and evaluate it directly</li>
+          <li>Iterate at the <em>system-level</em></li>
+        </ul>
+      </li>
+      <li class="fragment">Single source of truth
+        <ul>
+          <li>Maintaining models that need to match the RTL creates more problems than it solves</li>
+          <li>Iterate on the <em>design directly</em></li>
+        </ul>
+      </li>
+      <li class="fragment">This methodology works
+        <ul>
+          <li>The "design-first" approach has built robust, high-performance open source RISC-V IP (rocket-chip, BOOM, Hwacha, Chipyard, Constellation) with small teams of grad students</li>
+        </ul>
+      </li>
+      <li class="fragment">This methodology demands new tools
+        <ul>
+          <li>FireSim: FPGA-accelerated deterministic RTL simulation</li>
+          <li class="fragment">But, FireSim isn't suitable for rapid iteration</li>
+        </ul>
+      </li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Why Use RTL-Level Simulation?</h2>
+    <div class="container" style="grid-template-columns: 1.4fr 1fr;">
+      <div class="fragment">
+        <img class="image" src="./figs/dynamic/tidalsim/why_rtl.svg" />
+      </div>
+      <div>
+        <ul class="smallish">
+          <li class="fragment">Eliminate modeling errors
+            <ul>
+              <li>Remaining errors can be handled via statistical techniques</li>
+            </ul>
+          </li>
+          <li class="fragment">No need to correlate performance model and RTL
+            <ul>
+              <li>Let the RTL serve as the source of truth</li>
+            </ul>
+          </li>
+          <li class="fragment">Can produce RTL-level collateral
+            <ul>
+              <li>Leverage for applications in verification and power modeling</li>
+            </ul>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="center">
+    <h3>What are we trying to solve?</h3>
+    <p>We want a tool to evaluate microarchitectural changes on real workloads at high fidelity</p>
+
+    <h4>Why should we attempt RTL-level sampled simulation?</h4>
+
+    <p>A critical tool that solves a long-standing problem to enable the "design-first" methodology</p>
+  </section>
+
+</section>
+
+<section>
+  <section class="center">
+    <h1>Background</h1>
+  </section>
+
+  <section>
+    <h2>Sampled Simulation</h2>
+
+    <p class="center fragment">Instead of running the entire program in uArch simulation, run the entire program in <em>functional simulation</em> and only run <em>samples</em> in uArch simulation</p>
+
+    <div class="fragment center">
+      <img class="image no-margin" width="60%" src="./figs/multi-level-sim/sampled_simulation0.png" />
+    </div>
+
+    <p class="fragment center">The full workload is represented by a selection of <em>sampling units</em>.</p>
+
+    <ol class="smallish">
+      <li class="fragment">How should sampling units be selected?</li> <!-- sampling methodology -->
+      <li class="fragment">How can we accurately estimate the performance of a sampling unit?</li> <!-- functional and detailed warmup -->
+      <li class="fragment">How can we estimate errors when extrapolating from sampling units?</li> <!-- error bounding via CLT or other heuristics -->
+    </ol>
+  </section>
+
+  <section>
+    <h2>Existing Sampling Techniques</h2>
+
+    <div class="container" style="grid-template-columns: 1fr 1fr;">
+    <div>
+    <h3 class="center fragment">SimPoint</h3>
+    <div class="fragment image no-padding" style="display:grid; align-content: center; justify-items:center; grid-template-columns:1fr 1fr;">
+      <img class="no-margin" style="display:grid;" src="./figs/multi-level-sim/simpoint-gzip_phases.gif" />
+      <img class="no-margin" style="display:grid;" src="./figs/multi-level-sim/simpoint-gcc_phases.gif" />
+    </div>
+    <ul class="small">
+      <li class="fragment">Program execution traces aren’t random
+        <ul class="fragment">
+          <li>They execute the same code again-and-again</li>
+          <li>Workload execution traces can be split into <strong style="text-decoration:underline;">phases</strong> that exhibit similar μArch behavior</li>
+        </ul>
+      </li>
+      <li class="fragment">SimPoint-style representative sampling
+        <ul class="fragment">
+          <li>Compute an embedding for each program interval (e.g. blocks of 100M instructions)</li>
+          <li>Cluster interval embeddings using k-means</li>
+          <li>Choose representative intervals from each cluster as <em>sampling units</em></li>
+        </ul>
+      </li>
+    </ul>
+    </div>
+    <div>
+      <h3 class="center fragment">SMARTS</h3>
+      <img class="fragment image no-margin no-padding" src="./figs/quals/smarts.png" />
+      <ul class="small">
+        <li class="fragment">Rigorous statistical sampling enables computation of confidence bounds
+          <ul class="fragment">
+            <li>Use random sampling on a full execution trace to derive a population sample</li>
+            <li>Central limit theorem provides confidence bounds</li>
+          </ul>
+        </li>
+        <li class="fragment">SMARTS-style random sampling
+          <ul class="fragment">
+            <li>Pick a large number of samples to take before program execution</li>
+            <li>If the sample variance is too high after simulation, then collect more sampling units</li>
+            <li>Use CLT to derive a confidence bound for the aggregate performance metric</li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Functional Warmup</h2>
+
+    <p class="fragment center">The state from a sampling unit checkpoint is only <em>architectural</em> state. The <em>microarchitectural</em> state of the uArch simulator starts at the reset state!</p>
+
+    <div class="fragment center">
+      <img width="50%" class="image" src="./figs/multi-level-sim/sampled_simulation.png" />
+    </div>
+
+    <ul>
+      <li class="fragment">We need to seed long-lived uArch state at the beginning of each sampling unit</li>
+      <li class="fragment">This process is called <em>functional warmup</em></li>
+    </ul>
+  </section>
+</section>
+
+<section>
+  <section class="center">
+    <h1>Ideas Around Error Analysis</h1>
+  </section>
+
+  <section>
+    <h2>Sampled Simulation on wikisort</h2>
+
+    <div class="center r-stack">
+      <div class="fragment fade-in-then-out">
+        <img class="image" src="./figs/multi-level-sim/wikisort_results.svg" />
+        <figcaption>No functional warmup, there are significant IPC underpredictions</figcaption>
+      </div>
+      <div class="fragment fade-in">
+        <img class="image" src="./figs/multi-level-sim/wikisort_results-l1d_warmup.svg" />
+        <figcaption>L1d functional warmup, errors are substantially reduced</figcaption>
+      </div>
+    </div>
+
+    <p class="center fragment"><strong>L1d functional warmup brings IPC error from 7% to 2%</strong></p>
+  </section>
+
+  <section>
+    <h2>Error Analysis</h2>
+    <ul>
+      <li class="fragment">Where does this 7% error come from? Why does it go down to 2%?</li>
+      <li class="fragment">For a given interval for which we know the IPC error, what parts contribute what amount to the error?</li>
+      <li class="fragment">How does the error breakdown change based on workload and sampling algorithm?</li>
+      <li class="fragment">How do we even break down the error? Can we leverage the access we have to full RTL simulation?</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Sources of IPC Error</h2>
+
+    <ul>
+      <li class="fragment">Embedding error
+        <ul>
+          <li class="fragment">Error caused by representing one interval by a mix of sampled intervals</li>
+          <li class="fragment">Without sampling, there is no embedding error</li>
+        </ul>
+      </li>
+      <li class="fragment">Functional warmup errors
+        <ul>
+          <li class="fragment">Error that wouldn't be present had the functional warmup of specific long-lived state was perfect (matched the full RTL simulation)</li>
+          <li class="fragment">Each additional long-lived block that's warmed-up has the effect of:
+            <ol>
+              <li>Reducing error attributed to detailed warmup</li>
+              <li>Adding (usually a smaller) error attributed to functional warmup</li>
+            </ol>
+          </li>
+        </ul>
+      </li>
+      <li class="fragment">Detailed warmup error
+        <ol class="small">
+          <li>Bias caused by starting IPC measurement for an interval only after detailed warmup is complete</li>
+          <li>Error caused by difference of uArch state vs full RTL simulation (coupled to functional warmup)</li>
+        </ol>
+      </li>
+      <li class="fragment">Time modeling error
+
+      </li>
+      <li class="fragment">External model latent state errors
+
+      </li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Error Analysis Methodology</h2>
+
+    <ul>
+      <li class="fragment">Simplifying assumptions
+        <ul>
+          <li class="fragment">Single-threaded workloads without time-related behaviors or I/O {{ rightarrow }} <strong>No time modeling error</strong></li>
+          <li class="fragment">External model latent state (DRAM MC model) contributes marginally to error {{ rightarrow }} <strong>No latent state errors</strong></li>
+          <li class="fragment">No sampling, every interval is simulated {{ rightarrow }} <strong>No embedding errors</strong></li>
+        </ul>
+      <li class="fragment">Remaining error sources
+        <ul>
+          <li class="fragment">Functional warmup mismatches versus the golden RTL simulation + breakdown of per-block warmup errors</li>
+          <li class="fragment">Detailed warmup errors from interval offset measurement bias</li>
+          <li class="fragment">Error from the impact of functional warmup error on detailed warmup error</li>
+        </ul>
+      </li>
+      <li class="fragment">How can we isolate each of these error sources?</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Removing Embedding Errors</h2>
+
+    <img class="fragment image no-margin" src="./figs/dynamic/tidalsim-error/pure_injection.svg" width="100%" />
+
+    <ul class="smallish">
+      <li class="fragment">If we only inject every interval's architectural state into RTL simulation, then we get a worst case per-interval error</li>
+      <li class="fragment">This error doesn't contain any offset measurement bias</li>
+      <li class="fragment">On its own, this error is the <em>maximum</em> error possible per interval
+        <ul>
+          <li>Each extra thing we do (functional warmup, detailed warmup, warmup offset selection) serves to <em>reduce</em> this baseline error</li>
+          <li>The remaining error can be attributed to deficiencies in functional or detailed warmup (marginal) + embedding error</li>
+        </ul>
+      </li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Evaluating Detailed Warmup Errors</h2>
+
+    <img class="fragment image no-margin" src="./figs/dynamic/tidalsim-error/detailed_warmup.svg" width="100%" />
+
+    <ul>
+      <li class="fragment">We can first measure the impact of detailed warmup wrt the number of instructions and the offset (measurement bias)</li>
+      <li class="fragment">The <em>error differences</em> seen here are the errors mitigated by detailed warmup alone</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Evaluating Functional Warmup Errors</h2>
+
+    <img class="fragment image no-margin" src="./figs/dynamic/tidalsim-error/functional_warmup.svg" width="100%" />
+
+    <ul>
+      <li class="fragment">We can use a similar technique to measure the impact of functional warmup</li>
+      <li class="fragment">The final error model would also contain a term that describes the combined error reduction of functional and detailed warmup</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Warmup Oracles</h2>
+
+    <img class="fragment image no-margin" src="./figs/dynamic/tidalsim-error/functional_warmup.svg" width="100%" />
+
+    <ul class="smallish">
+      <li class="fragment">'Perfect' functional warmup with RTL simulation waveforms from the full run</li>
+      <li class="fragment">We can measure the impact of the warmup model vs the warmup oracle</li>
+      <li class="fragment">Detailed warmup is more tricky
+        <ul>
+          <li>Emulating 'perfect' detailed warmup with our functional warmup model requires (likely impossible) state injection</li>
+        </ul>
+      </li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Evaluation - Detailed Warmup Alone</h2>
+
+    <p class="center small">For a given workload interval and a interval length $N$ (e.g. $N = 10000$) and <em>without</em> functional warmup, we can compute this table. <small>(each cell is IPC error wrt the full RTL simulation)</small></p>
+
+    <table class="detailed_warmup_table">
+      <thead>
+      <tr>
+        <th></th>
+        <th></th>
+        <th colspan="6">Detailed warmup instructions ($ n_{\text{warmup}} $)</th>
+      </tr>
+      <tr style="text-align: center;">
+        <th></th>
+        <th></th>
+        <th>0</th>
+        <th>100</th>
+        <th>500</th>
+        <th>1000</th>
+        <th>2000</th>
+        <th>5000</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr class="fragment">
+        <!-- style="writing-mode:sideways-lr; text-orientation: sideways;" -->
+        <th rowspan="6" style="vertical-align: middle;">Detailed warmup offset ($ n_{\text{offset}} $)</th>
+        <th>0</th>
+        <td class="bg-red">Worst case</td>
+        <td style="font-size: 80%">Offset error ↑<br />Warmup error ↓</td>
+        <td style="font-size: 80%">Offset error 2↑<br />Warmup error 2↓</td>
+        <td style="font-size: 80%">Offset error 3↑<br />Warmup error 3↓</td>
+        <td style="font-size: 80%">Offset error 4↑<br />Warmup error 4↓</td>
+        <td>Maximum offset error</td>
+      </tr>
+      <tr class="fragment">
+        <th>-100</th>
+        <td class="bg-grey">Invalid</td>
+        <td class="bg-yellow">No offset error</td>
+        <td>''</td>
+        <td>''</td>
+        <td>''</td>
+        <td>''</td>
+      </tr>
+      <tr class="fragment">
+        <th>-500</th>
+        <td class="bg-grey"></td>
+        <td class="bg-grey"></td>
+        <td class="bg-yellow">No offset error</td>
+        <td>''</td>
+        <td>''</td>
+        <td>''</td>
+      </tr>
+      <tr class="fragment">
+        <th>-1000</th>
+        <td class="bg-grey"></td>
+        <td class="bg-grey"></td>
+        <td class="bg-grey"></td>
+        <td class="bg-yellow">No offset error</td>
+        <td>''</td>
+        <td>''</td>
+      </tr>
+      <tr class="fragment">
+        <th>-2000</th>
+        <td class="bg-grey"></td>
+        <td class="bg-grey"></td>
+        <td class="bg-grey"></td>
+        <td class="bg-grey"></td>
+        <td class="bg-yellow">No offset error</td>
+        <td>''</td>
+      </tr>
+      <tr class="fragment">
+        <th>-5000</th>
+        <td class="bg-grey"></td>
+        <td class="bg-grey"></td>
+        <td class="bg-grey"></td>
+        <td class="bg-grey"></td>
+        <td class="bg-grey"></td>
+        <td class="bg-green">No offset error, best case</td>
+      </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2>Detailed Warmup Error Model</h2>
+
+    <p class="fragment">Given the data in the table for every interval and for different interval lengths $N$, fit the following model:</p>
+
+    <div class="fragment">
+    \[\begin{aligned}
+      \left(\frac{1}{\text{error}}\right) &amp;= f(N, n_{\text{warmup}}, n_{\text{offset}}) \\
+      &amp;= \frac{1}{1 + e^{-(n_{\text{warmup}}/N - \mu) / s}} + \alpha \frac{n_{\text{warmup}} - n_{\text{offset}}}{N} + \beta N
+    \end{aligned} \]
+    </div>
+
+    <ul>
+      <li class="fragment">Logistic term to model error reduction from warmup</li>
+      <li class="fragment">Linear term to model error reduction from offset elimination</li>
+      <li class="fragment">Linear term to model relationship of interval length to IPC error</li>
+      <li class="fragment">There might also be a term that mixes $n_{\text{warmup}}$ and $n_{\text{offset}}$ (TBD)</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Extending the Error Model</h2>
+
+    <ul>
+      <li class="fragment">Consider building more tables with different functional warmup types (L1i, L1d, L2, BP, combinations) and fidelity (perfect vs model)</li>
+      <li class="fragment">Still an open question: how can we mix the functional warmup type/fidelity into the error model?</li>
+      <li class="fragment">Given a particular sampled simulation configuration ($N$, $n_{\text{warmup}}$, $n_{\text{offset}}$, functional warmup type + fidelity) for a given workload
+        <ul>
+          <li>The remaining error from the table cell is <em>attributable to inaccurate warmup</em> (functional + detailed)</li>
+          <li>Any additional error seen in <em>actual</em> sampled simulation is <em>attributable to embedding</em></li>
+        </ul>
+      </li>
+    </ul>
+  </section>
+
+  <!--<section>
+    <h2>Time-Based Intervals</h2>
+  </section>-->
+</section>
+
+<section>
+  <section class="center">
+    <h1>Caching and Execution Model</h1>
+  </section>
+
+  <section>
+    <h2>Complexity of the Flow</h2>
+
+    <div class="center">
+      <img class="image no-margin" src="./figs/dynamic/tidalsim/full_flow_detail.svg" />
+    </div>
+
+    <ul>
+      <li>We have a manual caching mechanism for every box input and output</li>
+      <li>There is no exploitation of parallelism beyond RTL simulations</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>WIP: A Sampled Simulation Manager</h2>
+
+    <ul>
+      <li class="fragment">Basically a build system, dependency tracker, and parallel/distributed executor for sampled simulation</li>
+      <li class="fragment">Keys are dataclasses with
+        <ul>
+          <li>Dependencies on other keys</li>
+          <li>Outputs that can be files or in-memory Python objects</li>
+          <li>Parameters that are used to determine whether a cache entry exists</li>
+          <li>Rules (Python functions) for building the outputs from dependencies and parameters</li>
+        </ul>
+      </li>
+      <li class="fragment">Simulation artifacts are placed on disk by the execution runtime</li>
+      <li class="fragment">Top-level flow requests keys and the key's rule operates on dependent keys (monadically, lazy)</li>
+      <li class="fragment">Build graph is constructed and execution is lazy</li>
+    </ul>
+  </section>
+</section>
+
+{% endblock %}

@@ -279,7 +279,12 @@ $overlayElementFgColor: 0, 0, 0;
 
 .bg-red {
   background: $tn_red;
-  color: $tn_bg;
+  @if $darkMode {
+    color: $tn_bg;
+  }
+  @else {
+    color: $tn_bg_light;
+  }
 }
 
 .orange {
@@ -288,6 +293,12 @@ $overlayElementFgColor: 0, 0, 0;
 
 .bg-orange {
   background: $tn_orange;
+  @if $darkMode {
+    color: $tn_bg;
+  }
+  @else {
+    color: $tn_bg_light;
+  }
 }
 
 .bg-blue {
@@ -313,7 +324,12 @@ $overlayElementFgColor: 0, 0, 0;
 
 .bg-green {
   background: $tn_green;
+  @if $darkMode {
   color: $tn_bg;
+  }
+  @else {
+    color: $tn_bg_light;
+  }
 }
 
 .bg-white {
