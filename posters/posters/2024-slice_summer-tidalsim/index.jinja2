@@ -1,0 +1,327 @@
+{% extends "templates/slice/slice.jinja2" %}
+
+{## Header ##}
+
+{% set poster_title = "TidalSim: Fast, Accurate, Low Latency, Multi-Level Microarchitectural Simulation" %}
+{# ‘poster_subtitle’ is optional; use "" to hide it #}
+{% set poster_subtitle = "" %}
+{# Change ‘venue’ to a conference or workshop name if any #}
+{% set venue = "SLICE Summer 2024 Retreat" %}
+{# ‘webpage_title’ is displayed in the browser’s top bar #}
+{% set webpage_title = poster_title %}
+{# ‘project_url’ is used in the footer and for the logo #}
+{% set project_url = "https://github.com/euphoric-hardware/tidalsim" %}
+
+{# Publication info is hidden by default (.publication-info in CSS) #}
+{% set pub_datetime_iso = "2020-09-08" %}
+{% set pub_date = "September 8, 2020" %}
+
+{# Custom styles and JS for a particular poster #}
+{% block custom_head %}
+{% endblock %}
+
+{% block fonts %}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&family=Fira+Sans+Condensed:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
+{% endblock %}
+
+{% block authors %}
+  {# Put authors here, with one link per author. #}
+  <a property="author">Vighnesh Iyer</a>,
+  <a property="author">Raghav Gupta</a>,
+  <a property="author">Dhruv Vaish</a>,
+  <a property="author">Charles Hong</a>,
+  <a property="author">Young-Jin Park</a>,
+  <a property="author">Sophia Shao</a>,
+  <a property="author">Borivoje Nikolic</a>
+{% endblock %}
+
+{% block affiliations %}
+  <a property="sourceOrganization">UC Berkeley</a>
+{% endblock %}
+
+{### Footer ##}
+
+{% block footer_left %}
+  <a href="{{ project_url }}">{{ project_url }}</a>
+{% endblock %}
+
+{% block footer_center %}
+    {vighnesh.iyer,raghavgupta}@berkeley.edu
+{% endblock %}
+
+{% block footer_right %}
+  <span class="credits">
+    SLICE Retreat, Summer 2024
+  </span>
+{% endblock %}
+
+{% set rightarrow = "<strong>→</strong>" %}
+
+{### Contents ###}
+
+{# Contents are individual boxes (typically ‘article’s or ‘figure’s).  Each
+   ‘article’ contains a header and some contents. #}
+{% block contents %}
+<article>
+  <header><h3>Microarchitectural Optimization</h3></header>
+  <ul class="smallish">
+    <li class="fragment">We want optimal designs for heterogeneous, domain-specialized, workload-tuned SoCs</li>
+    <li class="fragment">Limited time to iterate on microarchitecture and <em>optimize PPA</em> on <em>real workloads</em></li>
+    <li class="fragment">Time per evaluation limits number of evaluations</li>
+  </ul>
+  <p class="center fragment"><strong>More evaluations = more opportunities for optimization</strong></p>
+</article>
+
+<article style="display: none;">
+  <header><h3>The Microarchitectural Iteration Loop</h3></header>
+
+  <div class="center">
+    <img src="./figs/dynamic/tidalsim/uarch_iteration_flow_v2.svg" />
+  </div>
+</article>
+
+<article>
+  <header><h3>Limtations of Existing Simulators</h3></header>
+  <table class="comparison_table">
+    <thead><tr>
+      <th style="text-align: left;">Simulator</th>
+      <th>Examples</th>
+      <th>Throughput</th>
+      <th>Latency</th>
+      <th>Accuracy</th>
+    </tr></thead>
+    <tbody>
+      <tr>
+        <td>JIT-ed Sim</td>
+        <td>KVM, qemu</td>
+        <td class="bg-green">1-3 GIPS</td>
+        <td class="bg-green">&lt;1 second</td>
+        <td class="bg-red">None</td>
+      </tr>
+      <tr>
+        <td>Arch Sim</td>
+        <td>spike, dromajo</td>
+        <td class="bg-green">10-100+ MIPS</td>
+        <td class="bg-green">&lt;1 second</td>
+        <td class="bg-red">None</td>
+      </tr>
+      <tr>
+        <td>μArch Perf Sim</td>
+        <td>gem5, Sniper, ZSim</td>
+        <td class="bg-orange">100+ KIPS</td>
+        <td class="bg-green">&lt;1 minute</td>
+        <td class="bg-orange">10-50+% error</td>
+      </tr>
+      <tr>
+        <td>Bespoke μArch Sim</td>
+        <td>Industry models</td>
+        <td class="bg-orange">100+ KIPS</td>
+        <td class="bg-green">&lt;1 minute</td>
+        <td class="bg-green">close (?)</td>
+      </tr>
+      <tr>
+        <td>RTL Simulators</td>
+        <td>Verilator, VCS</td>
+        <td class="bg-red">1-10 KIPS</td>
+        <td class="bg-orange">~minutes</td>
+        <td class="bg-green">cycle-exact</td>
+      </tr>
+      <tr>
+        <td>Emulator (FPGA)</td>
+        <td>FireSim</td>
+        <td class="bg-green">50 MIPS</td>
+        <td class="bg-red">2-6 hours</td>
+        <td class="bg-green">cycle-exact</td>
+      </tr>
+      <tr>
+        <td>Emulator (ASIC)</td>
+        <td>Palladium</td>
+        <td class="bg-green">50 MIPS</td>
+        <td class="bg-red">2-6 hours</td>
+        <td class="bg-green">cycle-exact</td>
+      </tr>
+      <tr>
+        <td>Sampled RTL Sim</td>
+        <td><strong>TidalSim</strong></td>
+        <td class="bg-green">10+ MIPS</td>
+        <td class="bg-green">&lt;1 minute</td>
+        <td class="bg-green">&lt;5% IPC error</td>
+      </tr>
+    </tbody>
+  </table>
+</article>
+
+<article>
+  <header><h3>The Vision for TidalSim</h3></header>
+  <img src="./figs/dynamic/tidalsim/uarch_iteration_flow_tidalsim.svg" />
+  <figcaption class="small center">A fast, accurate, low latency, low cost microarchitectural simulation methodology that produces RTL-level collateral for performance and power estimation and verification on real workloads.</figcaption>
+</article>
+
+<article>
+  <header><h3>Sampled Simulation</h3></header>
+</article>
+
+<article>
+  <header><h3>Representative Sampling</h3></header>
+  <div style="display:grid; grid-template-columns: 1fr 1fr">
+    <img style="display:grid;" src="./figs/multi-level-sim/simpoint-gzip_phases.gif" />
+    <!--<img style="display:grid;" width="100%" src="./figs/multi-level-sim/sampled_simulation.png" />-->
+    <ul style="display:grid; font-size:90%;">
+      <li>Execution traces can be split into <strong style="text-decoration:underline;">phases</strong> that exhibit similar behavior (sampling)</li>
+      <li>Only execute unique intervals in performance simulation! Extrapolate to a full trace.</li>
+    </ul>
+  </div>
+</article>
+
+<article>
+  <header><h3>RTL-Level Sampled Simulation</h3></header>
+  <p class="center" style="font-size:110%">TidalSim leverages <strong>RTL simulation</strong><br />not uArch simulators, for performance estimation!</p>
+  <ul>
+    <li>No performance model correlation error</li>
+    <li>Can derive accurate PPA numbers</li>
+    <li>Leverage waveforms from RTL simulation</li>
+  </ul>
+</article>
+
+<article>
+  <header><h3>TidalSim v0.1 Overview</h3></header>
+  <img class="fragment" src="./figs/dynamic/tidalsim/overview.svg"/>
+</article>
+
+<article>
+  <header><h3>TidalSim Flow</h3></header>
+  <ul>
+    <li>SimPoint-style Sampling
+      <ul style="font-size:90%">
+        <li>Divide execution trace into fixed-length (N) intervals
+        <li>Populate basic blocks frequency vector for each interval (embedding)
+        <li>k-means, PCA-based n-clusters to identify representative intervals
+      </ul>
+    </li>
+    <li>Capture arch checkpoints for each cluster centroid (arch state + raw memory contents) from spike</li>
+    <li>Perform RTL state injection using SystemVerilog <code>force/release</code>, out-of-band IPC measurement</li>
+    <li>Parallel RTL simulation of representative intervals</li>
+    <li>IPC trace reconstruction from interval clustering</li>
+  </ul>
+</article>
+
+<article>
+  <header><h3>Results</h3></header>
+  <ul>
+    <li>Evaluated on Embench (vs full RTL sim in VCS) for a base Chipyard Rocket SoC</li>
+    <li>Tidalsim takes <strong>10s vs. 5-15 minutes</strong> for VCS</li>
+    <li>Typical <strong>IPC error under 5%</strong> with <strong>runtime speedup of 70x</strong></li>
+  </ul>
+</article>
+
+<article>
+  <header><h3>Execution Trace Clustering</h3></header>
+
+  <figure style="font-size:70%;">
+    <img class="fragment" src="./figs/multi-level-sim/aha-mont64_clustering.svg"/>
+    <figcaption>Heatmap of each cluster's centroid for aha-mont64 with 12 clusters and N = 1k</figcaption>
+  </figure>
+</article>
+
+<article>
+  <header><h3>IPC Trace Reconstruction</h3></header>
+  <figure style="font-size:70%;">
+    <img class="fragment" src="./figs/multi-level-sim/aha-mont64_results.svg"/>
+    <figcaption>Reconstructed IPC trace of aha-mont64 with 12 clusters and N = 1k</figcaption>
+  </figure>
+
+  <figure style="font-size:70%;">
+    <img class="fragment" src="./figs/multi-level-sim/huffbench_results.svg"/>
+    <figcaption>Reconstructed IPC trace of huffbench with 18 clusters and N = 10k</figcaption>
+  </figure>
+
+</article>
+
+<article>
+  <header><h3>IPC Errors for Embench</h3></header>
+
+  <figure width="50%" style="font-size:60%;">
+    <img class="fragment" width="50%" src="./figs/multi-level-sim/embench_ipc_error.svg"/>
+    <!--<figcaption>Mean absolute IPC error</figcaption>-->
+  </figure>
+</article>
+
+<!--<article>
+  <header><h3>Cache Warmup</h3></header>
+  <ul>
+    <li>Cold long-lived μArch blocks such as cache-like modules and branch predictors are primarily responsible for IPC error v full RTL sim
+    <li>Detailed warmup is too short to deal with long-lived μArch state
+    <li>Need abstract and highly parametrizable models to enable DSE
+    <li>For caches, we use Memory Timestamp Record - a data structure populated from a memory transaction trace used to handle cache state
+  </ul>
+
+  <figure style="font-size:60%;">
+  <img class="fragment" src="./figs/dynamic/tidalsim/mtr_entry_update.svg"/>
+  <figcaption>Updating entries in MTR</figcaption>
+  </figure>
+
+  <figure style="font-size:60%;">
+  <img class="fragment" src="./figs/dynamic/tidalsim/mtr_reconstruction.svg"/>
+  <figcaption>Cache reconstruction from MTR checkpoint</figcaption>
+  </figure>
+</article>-->
+
+<!--<article>
+  <header><h3>Cache Warmup</h3></header>
+  <ul>
+    <li>Cold long-lived μArch blocks such as cache-like modules and branch predictors are primarily responsible for IPC error v full RTL sim
+    <li>Detailed warmup is too short to deal with long-lived μArch state
+    <li>Need abstract and highly parametrizable models to enable DSE
+    <li>For caches, we use Memory Timestamp Record - a data structure populated from a memory transaction trace used to handle cache state
+  </ul>
+  <figure style="font-size:60%;">
+    <img class="fragment" src="./figs/dynamic/tidalsim/mtr_entry_update.svg"/>
+    <figcaption>Updating entries in MTR</figcaption>
+  </figure>
+</article>-->
+
+<article style="display:none;">
+  <header><h3>Next Steps/Future Work</h3></header>
+  <ul>
+  <li>Functional warmup
+    <ul>
+      <li>A general warmup methodology ingests a subset of a functional simulation log
+      <li>Each unit needs a custom model, injection logic, and perf metric extraction
+      <img class="fragment" src="./figs/dynamic/tidalsim/uarch_models.svg"/>
+      <li>Implemnting for caches (integration in-progress), branch predictors (building on Branch Trace Compression), prefetchers (build our own model)
+    </ul>
+  </li>
+  <li>Embedding-driven Extrapolation
+  <li>Automatic selection of interval length and warmup period
+  <li>Feedback from RTL sim to ISA sim
+  </ul>
+</article>
+
+<article>
+  <header><h3>Functional Cache Warmup Model</h3></header>
+
+  <p class="center">Memory Timestamp Record cache warmup model, supports many cache parameterizations from one memory trace (WIP)</p>
+
+  <figure style="font-size:85%;">
+    <img class="fragment" src="./figs/dynamic/tidalsim/mtr_entry_update.svg"/>
+    <figcaption>Updating entries in MTR</figcaption>
+  </figure>
+
+  <figure style="font-size:85%;">
+    <img class="fragment" src="./figs/dynamic/tidalsim/mtr_reconstruction.svg"/>
+    <figcaption>Cache reconstruction from MTR checkpoint</figcaption>
+  </figure>
+</article>
+
+<article>
+  <header><h3>Next Steps/Future Work</h3></header>
+  <ul>
+    <li>Automatic selection of interval length and warmup period</li>
+    <li>Integrating functional warmup models for caches</li>
+    <li>Feedback from RTL sim to ISA sim to model timing-critical events (interrupts, timers)</li>
+  </ul>
+</article>
+
+{% endblock %}

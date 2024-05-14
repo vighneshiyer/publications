@@ -30,6 +30,7 @@ $(eval $(call poster,2023-slice_summer-simcommand_chiseltest,slice))
 $(eval $(call poster,2023-slice_summer-rtl2graph,slice))
 $(eval $(call poster,2023-slice_summer-distpcsr,slice))
 $(eval $(call poster,2024-slice_winter-tidalsim,slice))
+$(eval $(call poster,2024-slice_summer-tidalsim,slice))
 
 all: $(posters) posters/index.html
 
