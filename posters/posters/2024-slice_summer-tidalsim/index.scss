@@ -1,4 +1,4 @@
-@use 'templates/slice/slice.scss' with ($style: "shaded");
+@use 'templates/slice/slice.scss';// with ($style: "bordered");
 @use 'sass:color';
 
 @media print {
@@ -42,7 +42,24 @@ table.comparison_table {
   }
   tbody {
     td {
-      padding: 0.1rem;
+      padding: 0.2rem;
+    }
+  }
+}
+
+.smallish {
+  font-size: 1rem;
+}
+
+.red {
+  color: $red;
+}
+
+ul {
+  li {
+    ul {
+      font-size: 0.9rem;
+      margin-top: 0.25rem;
     }
   }
 }

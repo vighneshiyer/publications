@@ -2,7 +2,7 @@
 
 {## Header ##}
 
-{% set poster_title = "TidalSim: Fast, Accurate, Low Latency, Multi-Level Microarchitectural Simulation" %}
+{% set poster_title = "TidalSim: Multi-Level Sampled Simulation" %}
 {# ‘poster_subtitle’ is optional; use "" to hide it #}
 {% set poster_subtitle = "" %}
 {# Change ‘venue’ to a conference or workshop name if any #}
@@ -66,8 +66,8 @@
 {% block contents %}
 <article>
   <header><h3>Microarchitectural Optimization</h3></header>
-  <ul class="smallish">
-    <li class="fragment">We want optimal designs for heterogeneous, domain-specialized, workload-tuned SoCs</li>
+  <ul>
+    <li class="fragment">We want optimal workload-tuned SoCs</li>
     <li class="fragment">Limited time to iterate on microarchitecture and <em>optimize PPA</em> on <em>real workloads</em></li>
     <li class="fragment">Time per evaluation limits number of evaluations</li>
   </ul>
@@ -151,16 +151,28 @@
       </tr>
     </tbody>
   </table>
+
+  <p class="center smallish">No existing simulator can deliver high throughput, low startup latency, high accuracy, and low cost</p>
 </article>
 
 <article>
   <header><h3>The Vision for TidalSim</h3></header>
   <img src="./figs/dynamic/tidalsim/uarch_iteration_flow_tidalsim.svg" />
-  <figcaption class="small center">A fast, accurate, low latency, low cost microarchitectural simulation methodology that produces RTL-level collateral for performance and power estimation and verification on real workloads.</figcaption>
+  <!--<figcaption class="small center">A fast, accurate, low latency, low cost simulation methodology that produces RTL-level collateral for performance and power estimation and verification on real workloads.</figcaption>-->
 </article>
 
 <article>
   <header><h3>Sampled Simulation</h3></header>
+  <img class="center" style="width: 80%;" src="./figs/multi-level-sim/sampled_simulation.png" />
+
+  <ul>
+    <li>The workload is represented with <em>sampling units</em></li>
+    <li>Only run <em>sampling units</em> in detailed simulation
+      <ul>
+        <li>Run the rest of the workload in functional simulation</li>
+      </ul>
+    </li>
+  </ul>
 </article>
 
 <article>
@@ -168,64 +180,75 @@
   <div style="display:grid; grid-template-columns: 1fr 1fr">
     <img style="display:grid;" src="./figs/multi-level-sim/simpoint-gzip_phases.gif" />
     <!--<img style="display:grid;" width="100%" src="./figs/multi-level-sim/sampled_simulation.png" />-->
-    <ul style="display:grid; font-size:90%;">
-      <li>Execution traces can be split into <strong style="text-decoration:underline;">phases</strong> that exhibit similar behavior (sampling)</li>
-      <li>Only execute unique intervals in performance simulation! Extrapolate to a full trace.</li>
+    <ul style="display:grid; font-size:90%; align-content: center;">
+      <li>A workload goes through <em style="text-decoration:underline;">phases</em> that exhibit similar μArch behavior</li>
+      <li>Pick snippets of each phase as <em>sampling units</em></li>
+      <!--<li>Only execute unique intervals in performance simulation! Extrapolate to a full trace.</li>-->
     </ul>
   </div>
 </article>
 
 <article>
   <header><h3>RTL-Level Sampled Simulation</h3></header>
-  <p class="center" style="font-size:110%">TidalSim leverages <strong>RTL simulation</strong><br />not uArch simulators, for performance estimation!</p>
-  <ul>
+  <div style="display: grid; grid-template-columns: 1fr 1.4fr">
+    <div style="display: grid; align-content: center; margin-right: 0.25rem;">
+      <ul>
+        <!--<li>Use <strong>RTL simulation</strong></li>-->
+        <li><strong>Eliminate</strong> modeling errors</li>
+        <li><strong>Eliminate</strong> need for model corrlation</li>
+        <li><strong>Enable</strong> RTL-first design methodology</li>
+      </ul>
+    </div>
+    <img style="display: grid;" src="./figs/dynamic/tidalsim/why_rtl.svg" />
+  </div>
+  <!--<ul>
     <li>No performance model correlation error</li>
     <li>Can derive accurate PPA numbers</li>
     <li>Leverage waveforms from RTL simulation</li>
-  </ul>
+  </ul>-->
 </article>
 
 <article>
-  <header><h3>TidalSim v0.1 Overview</h3></header>
+  <header><h3>Overview of Sampled Simulation Flow</h3></header>
   <img class="fragment" src="./figs/dynamic/tidalsim/overview.svg"/>
 </article>
 
 <article>
-  <header><h3>TidalSim Flow</h3></header>
+  <header><h3>Simulation Methodology Details</h3></header>
   <ul>
-    <li>SimPoint-style Sampling
-      <ul style="font-size:90%">
-        <li>Divide execution trace into fixed-length (N) intervals
-        <li>Populate basic blocks frequency vector for each interval (embedding)
-        <li>k-means, PCA-based n-clusters to identify representative intervals
+    <li>SimPoint-style representative sampling
+      <ul>
+        <li>Chunk trace into fixed-length (N) intervals</li>
+        <li>Compute basic block vector (BBV) embedding</li>
+        <li>k-means clustering to pick sampling units</li>
       </ul>
     </li>
-    <li>Capture arch checkpoints for each cluster centroid (arch state + raw memory contents) from spike</li>
-    <li>Perform RTL state injection using SystemVerilog <code>force/release</code>, out-of-band IPC measurement</li>
-    <li>Parallel RTL simulation of representative intervals</li>
+    <li>Take arch checkpoints for each sampling unit from spike</li>
+    <li>Inject each checkpoint in parallel in RTL simulation</li>
     <li>IPC trace reconstruction from interval clustering</li>
   </ul>
 </article>
 
 <article>
-  <header><h3>Results</h3></header>
-  <ul>
-    <li>Evaluated on Embench (vs full RTL sim in VCS) for a base Chipyard Rocket SoC</li>
-    <li>Tidalsim takes <strong>10s vs. 5-15 minutes</strong> for VCS</li>
-    <li>Typical <strong>IPC error under 5%</strong> with <strong>runtime speedup of 70x</strong></li>
+  <header><h3>Summary of Results</h3></header>
+  <ul class="smallish">
+    <li><strong>RTL</strong>: Default Rocket config with L1</li>
+    <li><strong>Workloads</strong>: Embench, Coremark</li>
+    <li><strong>Runtime</strong>: Tidalsim (<strong>10s</strong>), VCS (<strong>5-30 mins</strong>)</li>
+    <li><strong>Accuracy</strong>: Typical IPC error <strong>under 5%</strong></li>
   </ul>
 </article>
 
-<article>
+<!--<article>
   <header><h3>Execution Trace Clustering</h3></header>
 
   <figure style="font-size:70%;">
     <img class="fragment" src="./figs/multi-level-sim/aha-mont64_clustering.svg"/>
     <figcaption>Heatmap of each cluster's centroid for aha-mont64 with 12 clusters and N = 1k</figcaption>
   </figure>
-</article>
+</article>-->
 
-<article>
+<!--<article>
   <header><h3>IPC Trace Reconstruction</h3></header>
   <figure style="font-size:70%;">
     <img class="fragment" src="./figs/multi-level-sim/aha-mont64_results.svg"/>
@@ -236,16 +259,59 @@
     <img class="fragment" src="./figs/multi-level-sim/huffbench_results.svg"/>
     <figcaption>Reconstructed IPC trace of huffbench with 18 clusters and N = 10k</figcaption>
   </figure>
+</article>-->
 
+<article>
+  <header><h3>Functional Warmup Flow</h3></header>
+  <img src="./figs/dynamic/tidalsim/full_flow_detail.svg" />
+  <p class="center">Cache snapshots are captured along with arch checkpoints; L1d restored in RTL simulation</p>
+</article>
+
+<article>
+  <header><h3>Memory Timestamp Record</h3></header>
+  <img src="./figs/dynamic/tidalsim/mtr_flow.svg" />
+  <ul>
+    <li>Cache snapshots are μArch agnostic</li>
+    <li>Snapshots are turned into banked .bin files for L1d injection given concrete cache parameters</li>
+  </ul>
+</article>
+
+<article>
+  <header><h3>IPC Trace Reconstruction - Embench</h3></header>
+  <p class="center red">TODO TODO: One smallish example e.g. wikisort / huffbench</p>
+  <img src="./figs/multi-level-sim/aha-mont64_results.svg"/>
+</article>
+
+<article>
+  <header><h3>IPC Trace Reconstruction - CoreMark</h3></header>
+  <p class="center red">TODO TODO: One large example e.g. CoreMark</p>
+  <img src="./figs/multi-level-sim/huffbench_results.svg"/>
 </article>
 
 <article>
   <header><h3>IPC Errors for Embench</h3></header>
-
+  <p class="center red">TODO TODO: Bar plot of embench errors with and without fn warmup + runtime speedups</p>
   <figure width="50%" style="font-size:60%;">
     <img class="fragment" width="50%" src="./figs/multi-level-sim/embench_ipc_error.svg"/>
-    <!--<figcaption>Mean absolute IPC error</figcaption>-->
+    <figcaption>Mean absolute IPC error</figcaption>
   </figure>
+</article>
+
+<article>
+  <header><h3>Error Analysis</h3></header>
+
+  <ul>
+    <li>Small sampling intervals → sampling + functional/detailed warmup errors can be large</li>
+    <li>Executing all intervals eliminates sampling error</li>
+  </ul>
+
+  <img style="margin:0;" src="./figs/dynamic/tidalsim-error/pure_injection.svg" />
+
+  <ul>
+    <li>Vary the amount and offset of detailed warmup to measure its impact</li>
+  </ul>
+
+  <img style="margin:0;" src="./figs/dynamic/tidalsim-error/detailed_warmup.svg" />
 </article>
 
 <!--<article>
@@ -282,7 +348,7 @@
   </figure>
 </article>-->
 
-<article style="display:none;">
+<!--<article>
   <header><h3>Next Steps/Future Work</h3></header>
   <ul>
   <li>Functional warmup
@@ -297,9 +363,9 @@
   <li>Automatic selection of interval length and warmup period
   <li>Feedback from RTL sim to ISA sim
   </ul>
-</article>
+</article>-->
 
-<article>
+<!--<article>
   <header><h3>Functional Cache Warmup Model</h3></header>
 
   <p class="center">Memory Timestamp Record cache warmup model, supports many cache parameterizations from one memory trace (WIP)</p>
@@ -313,14 +379,19 @@
     <img class="fragment" src="./figs/dynamic/tidalsim/mtr_reconstruction.svg"/>
     <figcaption>Cache reconstruction from MTR checkpoint</figcaption>
   </figure>
-</article>
+</article>-->
 
 <article>
-  <header><h3>Next Steps/Future Work</h3></header>
-  <ul>
+  <header><h3>Next Steps</h3></header>
+  <!--<ul>
     <li>Automatic selection of interval length and warmup period</li>
     <li>Integrating functional warmup models for caches</li>
     <li>Feedback from RTL sim to ISA sim to model timing-critical events (interrupts, timers)</li>
+  </ul>-->
+  <ul>
+    <li>Streaming sampled simulation</li>
+    <li>Better interval embeddings</li>
+    <li>Generating the injection testharness</li>
   </ul>
 </article>
 
