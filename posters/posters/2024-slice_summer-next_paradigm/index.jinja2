@@ -1,0 +1,232 @@
+{% extends "templates/slice/slice.jinja2" %}
+
+{## Header ##}
+
+{% set poster_title = "The Next Paradigm of Hardware Design" %}
+{# ‘poster_subtitle’ is optional; use "" to hide it #}
+{% set poster_subtitle = "" %}
+{# Change ‘venue’ to a conference or workshop name if any #}
+{% set venue = "SLICE Summer 2024 Retreat" %}
+{# ‘webpage_title’ is displayed in the browser’s top bar #}
+{% set webpage_title = poster_title %}
+{# ‘project_url’ is used in the footer and for the logo #}
+{% set project_url = "Talk presented at LATTE 2024" %}
+
+{# Publication info is hidden by default (.publication-info in CSS) #}
+{% set pub_datetime_iso = "2020-09-08" %}
+{% set pub_date = "September 8, 2020" %}
+
+{# Custom styles and JS for a particular poster #}
+{% block custom_head %}
+{% endblock %}
+
+{% block fonts %}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&family=Fira+Sans+Condensed:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
+{% endblock %}
+
+{% block authors %}
+  {# Put authors here, with one link per author. #}
+  <a property="author">Joonho Whangbo</a>,
+  <a property="author">Vighnesh Iyer</a>
+{% endblock %}
+
+{% block affiliations %}
+  <a property="sourceOrganization">UC Berkeley</a>
+{% endblock %}
+
+{### Footer ##}
+
+{% block footer_left %}
+  {{ project_url }}
+{% endblock %}
+
+{% block footer_center %}
+    {joonho.whangbo,vighnesh.iyer}@berkeley.edu
+{% endblock %}
+
+{% block footer_right %}
+  <span class="credits">
+    SLICE Retreat, Summer 2024
+  </span>
+{% endblock %}
+
+{% set rightarrow = "<strong>→</strong>" %}
+
+{### Contents ###}
+
+{# Contents are individual boxes (typically ‘article’s or ‘figure’s).  Each
+   ‘article’ contains a header and some contents. #}
+{% block contents %}
+<article>
+  <header><h3>The Current Paradigm of Hardware Design</h3></header>
+
+  <div class="center">
+    <img width="90%" class="image no-margin" src="./figs/latte24/current-paradigm.svg" />
+  </div>
+
+  <ol>
+    <li class="fragment"><strong class="red">Slow iteration cycle</strong>: minutes to hours for evaluating a change</li>
+    <li class="fragment"><strong class="red">One abstraction at a time</strong>: coarse-grained integration of multiple design abstractions limits the productivity benefits of each one</li>
+    <li class="fragment"><strong class="red">Loss of semantics</strong>: RTL is the "narrow waist" in the stack; higher-level semantics are stripped</li>
+  </ol>
+</article>
+
+<article>
+  <header><h3>1. Slow Iteration Cycle</h3></header>
+
+  <div class="center">
+    <img class="image no-margin fragment" style="z-index:-9999;" src="./figs/dynamic/latte24/iteration_speeds.svg" />
+    <!--Image of iteration speeds as they exist currently. few minutes from design change to elab (for Chipyard), 10s of minutes for HLS. time for RTL sim + eval. time for firesim fpga eval. time for PD flow for power/area-->
+  </div>
+
+  <ul>
+    <li class="fragment">Each new layer of tools adds latency from making a change to evaluation</li>
+    <li class="fragment">Current generation of tools has ad-hoc support for <em>incremental compilation</em> of the design and simulator
+    <!--<ul>
+      <li class="fragment"><strong class="green">Progress</strong>: LiveHD<span class="reference">[1]</span>, LiveSynth<span class="reference">[2]</span>, LiveSim<span class="reference">[3]</span>: efforts to make incremental execution and rapid iteration first-class features of the design cycle</li>
+    </ul>-->
+    </li>
+  </ul>
+
+  <!--<div class="footnote fragment">
+  [1] Coffman, Hunter, Kenneth Mayer, Sakshi Garg, and Jose Renau. "A Multi-threaded Fast Hardware Compiler for HDLs." CC’23.<br />
+  [2] Possignolo, Rafael Trapani, and Jose Renau. "LiveSynth: Towards an interactive synthesis flow." DAC 2017.<br />
+  [3] Skinner, Haven, Rafael Trapani Possignolo, Sheng-Hong Wang, and Jose Renau. "LiveSim: A fast hot reload simulator for HDLs." ISPASS 2020.
+  </div>-->
+</article>
+
+<article>
+  <header><h3>2. One Abstraction at a Time</h3></header>
+  <img src="./figs/latte24/esp_flow.png" style="width: 80%" />
+
+  <ul>
+    <li class="fragment">We are still far away from realizing true multi-abstraction interop
+      <ul>
+      <li class="fragment">Verilog blackboxing is too coarse-grained and means lowering everything to RTL</li>
+      <li class="fragment">Designers can benefit from fine-grained interop</li>
+      </ul>
+    </li>
+  </ul>
+
+  <!--<dl>
+    <dt class="fragment">Elaboration time interop</dt><dd class="fragment">The practical mechanism (FFI) of invoking sub-generators<span class="reference">[1]</span></dd>
+    <dt class="fragment">Runtime interop</dt><dd class="fragment">Runtime interaction semantics between abstractions</dd>
+  </dl>-->
+</article>
+
+<article>
+  <header><h3 class="no-margin">2. New HDLs and Design Abstractions</h3></header>
+
+  <dl class="smallish">
+      <dt>Intermediate representations</dt>
+      <dd class="small">
+      <a href="https://github.com/chipsalliance/firrtl-spec"><strong>FIRRTL</strong></a>,
+      <a href="https://github.com/fabianschuiki/llhd">LLHD</a>,
+      <a href="https://circt.llvm.org/docs/Dialects/">Circt</a>,
+      <a href="https://dl.acm.org/doi/pdf/10.1145/3623278.3624767">HIR</a>,
+      <a href="https://github.com/masc-ucsc/livehd/tree/master/lgraph">LGraph</a>/<a href="https://masc.soe.ucsc.edu/docs/woset19b.pdf">LNAST</a>,
+      <a href="https://github.com/YosysHQ/yosys/blob/main/kernel/rtlil.h">Yosys RTLIL</a>,
+      <a href="https://dl.acm.org/doi/abs/10.1145/3453483.3454075">Reticle</a>
+      </dd>
+      <dt>RTL-level</dt>
+      <dd class="small">
+      <strong><a href="https://www.chisel-lang.org/">Chisel</a></strong>, <a href="https://github.com/SpinalHDL/SpinalHDL?tab=readme-ov-file">SpinalHDL</a> (Scala) |
+      <a href="https://ieeexplore.ieee.org/document/1420905">Lava</a>, <a href="https://github.com/blarney-lang/blarney">Blarney</a> (Haskell) |
+      <a href="https://github.com/amaranth-lang/amaranth">Amaranth</a>, <a href="https://www.myhdl.org/">MyHDL</a>, <a href="https://github.com/pymtl/pymtl3">PyMTL3</a>, <a href="https://github.com/UCSBarchlab/PyRTL">PyRTL</a>, <a href="https://github.com/phanrahan/magma">Magma</a>, (Python) |
+      <a href="https://github.com/janestreet/hardcaml">HardCaml</a> (OCaml) |
+      <a href="https://intel.github.io/rohd-website/">ROHD</a> (Dart) |
+      <a href="https://github.com/masc-ucsc/pyrope_artifacts">pyrope</a>, <a href="https://github.com/veryl-lang/veryl">Veryl</a> (freestanding)
+      </dd>
+      <dt>Dataflow</dt>
+      <dd class="small">
+      <a href="https://spade-lang.org/">Spade</a>,
+      <a href="https://github.com/kaist-cp/shakeflow">Shakeflow</a>,
+      <a href="https://github.com/DFiantHDL/DFiant">DFiant</a>,
+      <a href="https://github.com/JulianKemmerer/PipelineC">PipelineC</a>,
+      <a href="https://www.redwoodeda.com/tl-verilog">TL-Verilog</a>
+      </dd>
+      <dt>Control flow synthesis</dt>
+      <dd class="small">
+      <a href="https://calyxir.org/">Calyx</a>,
+      <a href="https://github.com/google/xls">XLS</a>,
+      <a href="https://github.com/B-Lang-org/bsc">Bluespec</a>,
+      <a href="https://github.com/mit-plv/koika">Koika</a>,
+      <a href="https://clash-lang.org/">Clash</a>
+      </dd>
+      <dt>Accelerator design languages</dt>
+      <dd class="small">
+      <a href="https://spatial-lang.org/">Spatial</a>,
+      <a href="https://capra.cs.cornell.edu/dahlia/">Dahlia</a>,
+      <a href="https://dl.acm.org/doi/abs/10.1145/3352460.3358292">μIR</a>,
+      <a href="https://github.com/cornell-zhang/heterocl">HeteroCL</a>,
+      <a href="https://arxiv.org/pdf/2404.04815.pdf">Allo</a>
+      </dd>
+      <dt>General HLS</dt>
+      <dd class="small">
+      SystemC (<a href="https://eda.sw.siemens.com/en-US/ic/catapult-high-level-synthesis/">Catapult</a>),
+      C++ (<a href="http://lightsail.legupcomputing.com/">LegUp</a>, <a href="https://github.com/Xilinx/HLS">Vitis HLS</a>)
+      </dd>
+  </dl>
+
+  <!--<p class="center small fragment"><span class="red">Stack of Perl and macros in SystemVerilog</span> <span class="green">{{ rightarrow }} new RTL-level DSLs</span></p>-->
+  <p class="center fragment"><span class="green">Rich ecosystem of design languages</span> enable higher productivity, but they are <strong class="red">difficult to compose and integrate.</strong></p>
+</article>
+
+<article>
+  <header><h3>3. Loss of Semantics</h3></header>
+
+  <div class="container" style="grid-template-columns: 1.3fr 1fr;">
+    <div style="display: grid; align-conrent: center;">
+      <img data-fragment-index=1 src="./figs/dynamic/latte24/simulator_interop.svg" />
+    </div>
+    <div style="display: grid; align-content: center;">
+      <img data-fragment-index=3 style="z-index:9999;" src="./figs/dynamic/latte24/synthesis_semantics.svg" />
+    </div>
+  </div>
+
+  <ul>
+    <li class="fragment" data-fragment-index=2>Lack of a common runtime interop model {{ rightarrow }} hacked together composition / slow iteration</li>
+    <li class="fragment" data-fragment-index=4>Existing IRs erase design semantics {{ rightarrow }} must be recovered by synthesis / simulation tools, lower QoR</li>
+  </ul>
+</article>
+
+<article>
+  <header><h3>Our Attempt at Building a New Paradigm</h3></header>
+
+  <div class="container" style="grid-template-columns: 1.0fr 1.3fr;">
+    <div style="display: grid;">
+      <img src="./figs/dynamic/latte24/rtl_first_design.svg" />
+    </div>
+    <div style="display: grid;">
+      <!--<p class="fragment center">We resort to performance models because <strong>writing and evaluating RTL is hard</strong></p>-->
+      <ol style="font-size: 0.9rem;">
+        <li class="fragment">Make writing RTL so easy that we can <em>do away with performance models</em></li>
+        <li class="fragment">Build realistic SoCs</li>
+        <li class="fragment">Evaluate RTL designs on long and realistic workloads</li>
+      </ol>
+    </div>
+  </div>
+
+  <p class="center">The <strong>"RTL-first"</strong> research methodology</p>
+
+  <ol>
+    <li class="fragment">Create a high productivity RTL design language and IR: <strong class="green">Chisel &amp; FIRRTL</strong></li>
+    <li class="fragment">Create a SoC design framework: <strong class="green">Chipyard</strong></li>
+    <li class="fragment">Create a fast RTL simulator: <strong class="green">FireSim</strong></li>
+  </ol>
+</article>
+
+
+<article>
+  <header><h3>The Next Paradigm of Hardware Design</h3></header>
+  <img width="90%" src="./figs/latte24/new-paradigm.svg" />
+
+  <ol>
+    <li class="fragment"><strong class="green">Rapid iteration cycle</strong>: seconds to evaluate a change</li>
+    <li class="fragment"><strong class="green">Seamless mixed-abstraction design</strong>: interop enables productivity and a common simulation/VLSI substrate</li>
+    <li class="fragment"><strong class="green">Semantics preserving stack</strong>: enrich every design layer with semantics (circuit constructs, power/clock/reset, verification) for better QoR</li>
+  </ol>
+</article>
+{% endblock %}
