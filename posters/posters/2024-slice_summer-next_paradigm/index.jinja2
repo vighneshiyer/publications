@@ -218,6 +218,17 @@
   </ol>
 </article>
 
+<article>
+  <header><h3>Did We Succeed?</h3></header>
+
+  <ol>
+    <li class="fragment"><strong class="red">Long iteration time</strong>: generator and simulator is rebuilt for any change</li>
+    <li class="fragment"><strong class="red">Integration of multiple abstractions</strong>: coarse-grained and un-ergonomic</li>
+    <li class="fragment"><strong class="red">Lost semantics</strong>: SystemVerilog is still the lowest common denominator</li>
+  </ol>
+
+  <p class="center"><strong>How should we fix these shortcomings?</strong></p>
+</article>
 
 <article>
   <header><h3>The Next Paradigm of Hardware Design</h3></header>
@@ -229,4 +240,55 @@
     <li class="fragment"><strong class="green">Semantics preserving stack</strong>: enrich every design layer with semantics (circuit constructs, power/clock/reset, verification) for better QoR</li>
   </ol>
 </article>
+
+<article>
+  <header><h3>1. Incremental First</h3></header>
+  <ul>
+    <!--<li class="fragment" data-fragment-index="0">Faster iterations {{ rightarrow }} faster convergence on correctness and optimization</li>-->
+    <li><strong class="green">Caching + incrementalism throughout the stack</strong></li>
+    <li class="fragment" data-fragment-index="1">It's quick to sketch out a module, but time consuming to fix every bug
+      <ul>
+        <li>Software-like <strong>edit-run-debug loop</strong> is key</li>
+      </ul>
+    </li>
+    <!--Most of the times, we write the entire module, and make small bug fixes</li>-->
+  </ul>
+
+  <div class="container" style="grid-template-columns: 1.2fr 1.0fr;">
+    <div style="display: grid;">
+      <img style="object-fit: contain;" class="image fragment" data-fragment-index="5" src="./figs/latte24/incremental-motivation-2.svg" />
+    </div>
+    <div style="display: grid;">
+      <ul class="smallish">
+        <!--<li class="fragment" data-fragment-index="1">Isolate parts of the design affected by a change</li>
+        <li class="fragment" data-fragment-index="2">Only run passes on the modified parts</li>-->
+        <li>A tiny change shouldn't rebuild the full SoC design and simulator</li>
+        <li>Extend incrementalism to RTL simulation and PPA evaluation</li>
+        <!--<li class="fragment">Primary bottlenecks
+          <ul class="smallish">
+            <li class="fragment"><strong>Early design stage</strong>: fix functionality, add features {{ rightarrow }} design elaboration + simulator compilation</li>
+            <li class="fragment"><strong>Mature design</strong>: fix critical paths, optimize area / power {{ rightarrow }} VLSI</li>
+          </ul>
+        </li>-->
+      </ul>
+    </div>
+  </div>
+</article>
+
+<article>
+  <header><h3>2. Mixed Abstraction Design</h3></header>
+  <img style="display: grid; width: 80%;" class="image fragment fade-in-then-out" data-fragment-index="5" src="./figs/latte24/multi-abstraction-soc.svg" />
+  <ul class="medium">
+    <li class="fragment" data-fragment-index="1"><strong>RTL</strong>: cores and caches</li>
+    <li class="fragment" data-fragment-index="2"><strong>Control flow synthesis</strong>: bus components, peripherals</li>
+    <li class="fragment" data-fragment-index="3"><strong>Dataflow synthesis</strong>: DSP pipelines</li>
+    <li class="fragment" data-fragment-index="4"><strong>Accelerator design languages</strong>: accelerators</li>
+    <li class="fragment" data-fragment-index="5"><strong>SoC</strong>: mosaic of different abstractions</li>
+  </ul>
+  <div class="container" style="grid-template-columns: 1.2fr 1.0fr;">
+    <div style="display: grid;">
+    </div>
+  </div>
+</article>
+
 {% endblock %}
