@@ -39,7 +39,7 @@
 {### Footer ##}
 
 {% block footer_left %}
-  {{ project_url }}
+  {{ project_url }} <span style="font-size: 0.5rem;">(https://vighneshiyer.github.io/2024_04-latte-the_next_paradigm_of_hw_design.html)</span>
 {% endblock %}
 
 {% block footer_center %}
@@ -285,10 +285,70 @@
     <li class="fragment" data-fragment-index="4"><strong>Accelerator design languages</strong>: accelerators</li>
     <li class="fragment" data-fragment-index="5"><strong>SoC</strong>: mosaic of different abstractions</li>
   </ul>
-  <div class="container" style="grid-template-columns: 1.2fr 1.0fr;">
-    <div style="display: grid;">
-    </div>
-  </div>
+</article>
+
+<article>
+  <header><h3>2. Mixed-Abstraction Interop</h3></header>
+
+  <img style="width: 50%;" class="fragment image no-margin" src="./figs/latte24/elab-interop.svg" />
+  <dl>
+    <dt>Elaboration interop<span style="font-weight: normal;">: how to compose abstractions</span></dt>
+    <dd class="medium">FFI for calling into generators, APIs for port/function/message-level interaction, composition legality semantics</dd>
+    <dt>Runtime interop<span style="font-weight: normal;">: how composed abstractions behave</span></dt>
+    <dd class="medium">Semantics for how time advances between abstractions, bridging interfaces (LI, fixed latency, function calls)</dd>
+  </dl>
+</article>
+
+<article>
+  <header><h3>3. Preserving Semantics</h3></header>
+  <ul>
+    <li class="fragment">Abstraction-level semantics
+      <ul>
+        <li class="fragment">Avoid eagerly lowering all abstractions to RTL</li>
+        <li class="fragment">Avoid blasting semantics when 'optimizing' RTL
+          <ul>
+            <li>Interfaces, structs, vectors, behavioral when, switch</li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+  </ul>
+
+  <p class="center"><strong>How can we make pass writing easy for a complex IR?</strong></p>
+
+  <ul>
+    <li class="fragment">RTL-level semantics
+      <ul>
+        <li class="fragment">Synthesis tools shouldn't have to 'reconstruct' designer intent from pattern-matching Verilog (e.g. FSMs)</li>
+        <li class="fragment">Potential to improve QoR and runtime</li>
+      </ul>
+    </li>
+  </ul>
+
+  <p class="center"><strong>Which circuit primitives should be baked into an IR?</strong></p>
+</article>
+
+<article>
+  <header><h3>3. Examples of Semantics to Preserve</h3></header>
+  <ul>
+    <li class="fragment">No distinction between <em>bitvectors</em> and <em>integers</em></li>
+    <li class="fragment">No distinction between a <em>logical</em> vs <em>physical</em> integer
+      <ul>
+        <li class="fragment">Binary/grey/one-hot coded, 2s complement/sign-magnitude</li>
+        <li>Let the synthesis tool pick a suitable representation</li>
+      </ul>
+    </li>
+    <li class="fragment">Push more arithmetic types and operations into primitives vs gates
+      <ul>
+        <li>e.g. floating point, fixed point, intervals, posits</li>
+      </ul>
+    </li>
+  </ul>
+</article>
+
+<article>
+  <header><h3>Looking Forward</h3></header>
+
 </article>
 
 {% endblock %}
