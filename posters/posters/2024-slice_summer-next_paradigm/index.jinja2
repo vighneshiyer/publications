@@ -100,6 +100,7 @@
 <article>
   <header><h3>2. One Abstraction at a Time</h3></header>
   <img src="./figs/latte24/esp_flow.png" style="width: 80%" />
+  <figcaption class="center">OpenESP and Chipyard market "easy external IP integration"</figcaption>
 
   <ul>
     <li class="fragment">We are still far away from realizing true multi-abstraction interop
@@ -199,7 +200,7 @@
     <div style="display: grid;">
       <img src="./figs/dynamic/latte24/rtl_first_design.svg" />
     </div>
-    <div style="display: grid;">
+    <div style="display: grid; align-contents: center;">
       <!--<p class="fragment center">We resort to performance models because <strong>writing and evaluating RTL is hard</strong></p>-->
       <ol style="font-size: 0.9rem;">
         <li class="fragment">Make writing RTL so easy that we can <em>do away with performance models</em></li>
@@ -258,7 +259,7 @@
     <div style="display: grid;">
       <img style="object-fit: contain;" class="image fragment" data-fragment-index="5" src="./figs/latte24/incremental-motivation-2.svg" />
     </div>
-    <div style="display: grid;">
+    <div style="display: grid; align-content: center;">
       <ul class="smallish">
         <!--<li class="fragment" data-fragment-index="1">Isolate parts of the design affected by a change</li>
         <li class="fragment" data-fragment-index="2">Only run passes on the modified parts</li>-->
@@ -277,26 +278,30 @@
 
 <article>
   <header><h3>2. Mixed Abstraction Design</h3></header>
-  <img style="display: grid; width: 80%;" class="image fragment fade-in-then-out" data-fragment-index="5" src="./figs/latte24/multi-abstraction-soc.svg" />
-  <ul class="medium">
-    <li class="fragment" data-fragment-index="1"><strong>RTL</strong>: cores and caches</li>
-    <li class="fragment" data-fragment-index="2"><strong>Control flow synthesis</strong>: bus components, peripherals</li>
-    <li class="fragment" data-fragment-index="3"><strong>Dataflow synthesis</strong>: DSP pipelines</li>
-    <li class="fragment" data-fragment-index="4"><strong>Accelerator design languages</strong>: accelerators</li>
-    <li class="fragment" data-fragment-index="5"><strong>SoC</strong>: mosaic of different abstractions</li>
-  </ul>
+  <div style="display: grid; grid-template-columns: 1fr 1fr">
+    <img style="display: grid;" class="image fragment fade-in-then-out" data-fragment-index="5" src="./figs/latte24/multi-abstraction-soc.svg" />
+    <ul style="display: grid; margin-left: 1rem;" class="medium">
+      <li class="fragment" data-fragment-index="1"><strong>RTL</strong>: cores and caches</li>
+      <li class="fragment" data-fragment-index="2"><strong>Control flow synthesis</strong>: bus components, peripherals</li>
+      <li class="fragment" data-fragment-index="3"><strong>Dataflow synthesis</strong>: DSP pipelines</li>
+      <li class="fragment" data-fragment-index="4"><strong>Accelerator design languages</strong>: accelerators</li>
+      <li class="fragment" data-fragment-index="5"><strong>SoC</strong>: mosaic of different abstractions</li>
+    </ul>
+  </div>
 </article>
 
 <article>
   <header><h3>2. Mixed-Abstraction Interop</h3></header>
 
-  <img style="width: 50%;" class="fragment image no-margin" src="./figs/latte24/elab-interop.svg" />
-  <dl>
-    <dt>Elaboration interop<span style="font-weight: normal;">: how to compose abstractions</span></dt>
-    <dd class="medium">FFI for calling into generators, APIs for port/function/message-level interaction, composition legality semantics</dd>
-    <dt>Runtime interop<span style="font-weight: normal;">: how composed abstractions behave</span></dt>
-    <dd class="medium">Semantics for how time advances between abstractions, bridging interfaces (LI, fixed latency, function calls)</dd>
-  </dl>
+  <div style="display:grid; grid-template-columns: 1.3fr 1.0fr;">
+    <dl style="display:grid;">
+      <dt>Elaboration interop<!--<span style="font-weight: normal;">: how to compose abstractions</span>--></dt>
+      <dd class="medium">FFI, APIs for port / function / message-level interaction<!--, composition legality semantics--></dd>
+      <dt>Runtime interop<!--<span style="font-weight: normal;">: how composed abstractions behave</span>--></dt>
+      <dd class="medium">Semantics for time advancement, bridging interfaces (LI, fixed latency, function calls)</dd>
+    </dl>
+    <img style="display:grid; margin-left: 0.5rem; margin-right: 0.5rem;" class="fragment image no-margin" src="./figs/latte24/elab-interop.svg" />
+  </div>
 </article>
 
 <article>
@@ -331,14 +336,14 @@
 <article>
   <header><h3>3. Examples of Semantics to Preserve</h3></header>
   <ul>
-    <li class="fragment">No distinction between <em>bitvectors</em> and <em>integers</em></li>
+    <!--<li class="fragment">No distinction between <em>bitvectors</em> and <em>integers</em></li>-->
     <li class="fragment">No distinction between a <em>logical</em> vs <em>physical</em> integer
       <ul>
         <li class="fragment">Binary/grey/one-hot coded, 2s complement/sign-magnitude</li>
         <li>Let the synthesis tool pick a suitable representation</li>
       </ul>
     </li>
-    <li class="fragment">Push more arithmetic types and operations into primitives vs gates
+    <li class="fragment">Push more arithmetic types and operations into primitives
       <ul>
         <li>e.g. floating point, fixed point, intervals, posits</li>
       </ul>
@@ -348,7 +353,11 @@
 
 <article>
   <header><h3>Looking Forward</h3></header>
-
+  <ul>
+    <li>Unified multi-abstraction frontend + semantically-rich IR</li>
+    <li>Incrementalism throughout the language / compiler / simulator / VLSI stack</li>
+    <li>A common simulation/synthesis substrate that operates directly on the IR</li>
+  </ul>
 </article>
 
 {% endblock %}
