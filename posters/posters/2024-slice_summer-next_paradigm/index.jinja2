@@ -220,6 +220,25 @@
 </article>
 
 <article>
+  <header><h3>Ongoing efforts: CIRCT</h3></header>
+
+  <div class="container" style="grid-template-columns: 0.8fr 1.0fr;">
+    <div style="display: grid;">
+      <img src="./figs/dynamic/latte24/circt-overview.svg" />
+    </div>
+    <div style="display: grid; align-contents: center;">
+      <ul style="font-size: 0.9rem;">
+        <li class="fragment">Limited HW primitives (e.g., no XOR support)</li>
+        <li class="fragment">SSA style in memory representations needlessly complicates pass writing</li>
+        <li class="fragment">No such concept of runtime interop (everything is lowered to RTL)</li>
+        <li class="fragment">Although it supports cross-dialect interactions, it is used only for lowering in practice</li>
+        <!--<li class="fragment">What is worse is that you have to define yet another dialect to perform cross-dialect interactions</li>-->
+      </ul>
+    </div>
+  </div>
+</article>
+
+<!--<article>
   <header><h3>Did We Succeed?</h3></header>
 
   <ol>
@@ -229,7 +248,7 @@
   </ol>
 
   <p class="center"><strong>How should we fix these shortcomings?</strong></p>
-</article>
+</article>-->
 
 <article>
   <header><h3>The Next Paradigm of Hardware Design</h3></header>
