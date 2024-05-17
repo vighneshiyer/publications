@@ -39,7 +39,7 @@
 {### Footer ##}
 
 {% block footer_left %}
-  {{ project_url }} <span style="font-size: 0.5rem;">(https://vighneshiyer.github.io/2024_04-latte-the_next_paradigm_of_hw_design.html)</span>
+  {{ project_url }} <span style="font-size: 0.7rem;">(https://vighneshiyer.github.io/2024_04-latte-the_next_paradigm_of_hw_design.html)</span>
 {% endblock %}
 
 {% block footer_center %}
@@ -103,9 +103,9 @@
   <figcaption class="center">OpenESP and Chipyard market "easy external IP integration"</figcaption>
 
   <ul>
-    <li class="fragment">We are still far away from realizing true multi-abstraction interop
+    <li class="fragment">But, we are still far away from realizing universal and seamless multi-abstraction interop
       <ul>
-      <li class="fragment">Verilog blackboxing is too coarse-grained and means lowering everything to RTL</li>
+      <li class="fragment">Verilog blackboxing is too coarse-grained and means lowering everything to RTL + manual parameter matching</li>
       <li class="fragment">Designers can benefit from fine-grained interop</li>
       </ul>
     </li>
@@ -188,8 +188,8 @@
   </div>
 
   <ul>
-    <li class="fragment" data-fragment-index=2>Lack of a common runtime interop model {{ rightarrow }} hacked together composition / slow iteration</li>
-    <li class="fragment" data-fragment-index=4>Existing IRs erase design semantics {{ rightarrow }} must be recovered by synthesis / simulation tools, lower QoR</li>
+    <li class="fragment" data-fragment-index=2>Lack of a common runtime interop model ⮕<br/> hacked together composition / slow iteration</li>
+    <li class="fragment" data-fragment-index=4>Existing IRs erase design semantics ⮕ <br/> recovered by synthesis / simulation tools ⮕ <br/>lower QoR / simulation performance</li>
   </ul>
 </article>
 
@@ -220,18 +220,29 @@
 </article>
 
 <article>
-  <header><h3>Ongoing efforts: CIRCT</h3></header>
+  <header><h3>Ongoing Effort: CIRCT</h3></header>
 
-  <div class="container" style="grid-template-columns: 0.8fr 1.0fr;">
+  <div class="container" style="grid-template-columns: 1.0fr 1.0fr; column-gap: 0;">
     <div style="display: grid;">
       <img src="./figs/dynamic/latte24/circt-overview.svg" />
     </div>
     <div style="display: grid; align-contents: center;">
       <ul style="font-size: 0.9rem;">
-        <li class="fragment">Limited HW primitives (e.g., Comb dialect doesn't have NOT support)</li>
-        <li class="fragment">SSA style in memory representations needlessly complicates pass writing</li>
-        <li class="fragment">No such concept of runtime interop (everything is lowered to RTL)</li>
-        <li class="fragment">Although it supports cross-dialect interactions, it is used only for lowering in practice</li>
+        <li class="fragment">Aggressively minimal IR
+          <ul class="medium">
+            <li><code>comb</code> dialect doesn't have a NOT primitive (\(\overline{A} = A \oplus 1\))</li>
+          </ul>
+        </li>
+        <li>CFG / statement-oriented IR complicates pass writing</li>
+        <!--<li class="fragment">SSA style in memory representations needlessly complicates pass writing</li>-->
+        <li>Difficult to define interop semantics between dialects
+          <ul class="medium">
+            <li>Interop only possible between module boundaries</li>
+            <li>In practice, all dialects are lowered to RTL (<code>hw</code> dialect)</li>
+          </ul>
+        </li>
+        <!--<li class="fragment">No such concept of runtime interop (everything is lowered to RTL)</li>-->
+        <!--<li class="fragment">Although it supports cross-dialect interactions, it is used only for lowering in practice</li>-->
         <!--<li class="fragment">What is worse is that you have to define yet another dialect to perform cross-dialect interactions</li>-->
       </ul>
     </div>
@@ -262,7 +273,7 @@
 </article>
 
 <article>
-  <header><h3>1. Incremental First</h3></header>
+  <header><h3>1. Incremental-First</h3></header>
   <ul>
     <!--<li class="fragment" data-fragment-index="0">Faster iterations {{ rightarrow }} faster convergence on correctness and optimization</li>-->
     <li><strong class="green">Caching + incrementalism throughout the stack</strong></li>
