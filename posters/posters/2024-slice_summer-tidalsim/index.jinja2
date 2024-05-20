@@ -277,41 +277,58 @@
 </article>
 
 <article>
-  <header><h3>IPC Trace Reconstruction - Embench</h3></header>
-  <p class="center red">TODO TODO: One smallish example e.g. wikisort / huffbench</p>
-  <img src="./figs/multi-level-sim/aha-mont64_results.svg"/>
+  <header><h3>IPC Trace Reconstruction - huffbench (Embench)</h3></header>
+  <!--<p class="center red">TODO TODO: One smallish example e.g. wikisort / huffbench</p>-->
+  <img src="./figs/multi-level-sim/05_2024/huffbench.svg"/>
+  <p class="center">\( \small{ N = 10000, \: C = 18, \: \text{MAPE}_{\text{\:IPC}} = 6.6\% \rightarrow 4.1\% } \)</p>
 </article>
 
 <article>
-  <header><h3>IPC Trace Reconstruction - CoreMark</h3></header>
-  <p class="center red">TODO TODO: One large example e.g. CoreMark</p>
-  <img src="./figs/multi-level-sim/huffbench_results.svg"/>
+  <header><h3>IPC Trace Reconstruction - wikisort (Embench)</h3></header>
+  <!--<p class="center red">TODO TODO: One large example e.g. CoreMark</p>-->
+  <img src="./figs/multi-level-sim/05_2024/wikisort.svg"/>
+  <p class="center">\( \small{ N = 10000, \: C = 18, \: \text{MAPE}_{\text{\:IPC}} = 12.3\% \rightarrow 4.5\% } \)</p>
+  <ul>
+    <!--<li>There are still intervals with uncorrected mismatch after L1d warmup</li>-->
+    <li><strong>WIP</strong>: L1i warmup, warmup model validation</li>
+  </ul>
 </article>
 
-<article>
+<!--<article>
   <header><h3>IPC Errors for Embench</h3></header>
   <p class="center red">TODO TODO: Bar plot of embench errors with and without fn warmup + runtime speedups</p>
   <figure width="50%" style="font-size:60%;">
     <img class="fragment" width="50%" src="./figs/multi-level-sim/embench_ipc_error.svg"/>
     <figcaption>Mean absolute IPC error</figcaption>
   </figure>
-</article>
+</article>-->
 
 <article>
-  <header><h3>Error Analysis</h3></header>
+  <header><h3>WIP: Detailed Error Analysis</h3></header>
 
   <ul>
     <li>Small sampling intervals → sampling + functional/detailed warmup errors can be large</li>
-    <li>Executing all intervals eliminates sampling error</li>
+    <li>We need a precise understanding of the sources of error in sampled simulation</li>
   </ul>
+</article>
 
-  <img style="margin:0;" src="./figs/dynamic/tidalsim-error/pure_injection.svg" />
+<article>
+  <header><h3>Eliminating Sampling Error</h3></header>
+  <p class="center">Executing all intervals eliminates sampling error. No warmup yields the maximum possible error per interval.</p>
+  <img src="./figs/dynamic/tidalsim-error/pure_injection.svg" />
+</article>
 
-  <ul>
-    <li>Vary the amount and offset of detailed warmup to measure its impact</li>
-  </ul>
-
+<article>
+  <header><h3 style="font-size: 1.1rem;">Measuring the Impact of Detailed Warmup and Offset</h3></header>
+  <p class="center">Vary the <em>amount</em> and <em>offset</em> of detailed warmup to measure its impact on <em>error reduction</em>.</p>
   <img style="margin:0;" src="./figs/dynamic/tidalsim-error/detailed_warmup.svg" />
+</article>
+
+<article>
+  <header><h3 style="font-size: 1.1rem;">Measuring the Impact of Functional Warmup Models</h3></header>
+
+  <p class="center">Leverage RTL simulation to provide <em>perfect</em> functional warmup and measure the impact of model error.</p>
+  <img style="margin:0;" src="./figs/dynamic/tidalsim-error/functional_warmup.svg" />
 </article>
 
 <!--<article>
@@ -390,6 +407,7 @@
   </ul>-->
   <ul>
     <li>Streaming sampled simulation</li>
+    <li>Getting the flow working for Linux workloads</li>
     <li>Better interval embeddings</li>
     <li>Generating the injection testharness</li>
   </ul>
