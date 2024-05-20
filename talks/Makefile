@@ -38,6 +38,7 @@ $(eval $(call talk,2024_03-intel-tidalsim_overview))
 $(eval $(call talk,2024_04-athlete-tidalsim_error_analysis_and_caching))
 $(eval $(call talk,2024_04-latte-the_next_paradigm_of_hw_design))
 $(eval $(call talk,2024_04-athlete-tidalsim_overview))
+$(eval $(call talk,2024_05-slice_summer-tidalsim))
 
 talks_output = $(addsuffix .html,$(talks))
 
