@@ -19,6 +19,6 @@ $(main)_quick.pdf: $(main).tex $(figs) $(references_all)
 	texfot pdflatex -jobname=$(main)_quick -shell-escape $<
 
 clean:
-	rm -rf *.pdf *.aux *.out *.log _minted* *.bbl *.blg comment.cut
+	rm -rf *.pdf *.aux *.out *.log _minted* *.bbl *.blg comment.cut *.bcf *.glo *.idx *.ilg *.ind *.lof *.lol *.lot *.mw *.nlo *.run.xml *.toc *.xdy
 
 .PHONY: pdf quick clean

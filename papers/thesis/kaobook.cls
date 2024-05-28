@@ -1,0 +1,1 @@
+../templates/kaobook/kaobook.cls
