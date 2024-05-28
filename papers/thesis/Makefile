@@ -12,6 +12,6 @@ $(references_all): $(references)
 	cat $^ > $@
 
 clean:
-	rm -rf *.pdf *.aux *.out *.log _minted* *.bbl *.blg comment.cut *.bcf *.glo *.idx *.ilg *.ind *.lof *.lol *.lot *.mw *.nlo *.run.xml *.toc *.xdy latexmkrc.f*
+	rm -rf *.pdf *.aux *.out *.log _minted* *.bbl *.blg comment.cut *.bcf *.glo *.idx *.ilg *.ind *.lof *.lol *.lot *.mw *.nlo *.run.xml *.toc *.xdy latexmkrc.f* *.fdb_latexmk *.fls *.glg *.gls *.log *.nls *.bcf *.glo *.idx *.lof *.mw *.nlo
 
 .PHONY: clean
