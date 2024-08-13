@@ -82,17 +82,17 @@
 %	BOOK INFORMATION
 %----------------------------------------------------------------------------------------
 
-\titlehead{The \texttt{kaobook} class}
-\subject{Use this document as a template}
+%\titlehead{The \texttt{kaobook} class}
+%\subject{Use this document as a template}
 
-\title[Example and documentation of the {\normalfont\texttt{kaobook}} class]{Example and documentation \\ of the {\normalfont\texttt{kaobook}} class}
-\subtitle{Customise this page according to your needs}
+\title[TidalSim: A Unified Microarchitectural Simulation Framework]{TidalSim: A Unified Microarchitectural Simulation Framework}
+\subtitle{To Identify and Leverage Unique Aspects of Workloads on Heterogeneous SoCs for Performance Estimation and Verification}
 
-\author[Federico Marotta]{Federico Marotta\thanks{A \LaTeX\ lover}}
+\author[Vighnesh Iyer]{Vighnesh Iyer}
 
 \date{\today}
 
-\publishers{An Awesome Publisher}
+\publishers{PhD Thesis, UC Berkeley}
 
 %----------------------------------------------------------------------------------------
 
@@ -153,8 +153,7 @@
 %----------------------------------------------------------------------------------------
 
 \dedication{
-	The harmony of the world is made manifest in Form and Number, and the heart and soul and all the poetry of Natural Philosophy are embodied in the concept of mathematical beauty.\\
-	\flushright -- D'Arcy Wentworth Thompson
+Dedication TBD
 }
 
 %----------------------------------------------------------------------------------------
@@ -208,6 +207,10 @@
 
 \mainmatter % Denotes the start of the main document content, resets page numbering and uses arabic numbers
 \setchapterstyle{kao} % Choose the default chapter heading style
+
+\pagelayout{wide} % No margins
+\addpart{Introduction and Background}
+\pagelayout{margin} % Restore margins
 
 \input{chapters/introduction.tex}
 

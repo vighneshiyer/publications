@@ -1,0 +1,591 @@
+{% extends "base/base.jinja2" %}
+
+{# HTML title #}
+{% set webpage_title = "TidalSim and TraceKit" %}
+{# Short description #}
+{% set description = "" %}
+{# List of authors #}
+{% set author = "Vighnesh Iyer" %}
+{# Change ‘venue’ to a conference or workshop name if any #}
+{% set venue = "ATHLETE Update" %}
+{# Publication info (hidden by default) #}
+{% set pub_datetime_iso = "2024-08-12" %}
+{% set pub_date = "August 12, 2024" %}
+
+{# Custom styles and JS for a particular talk #}
+{% block custom_head %}
+<style>
+table.detailed_warmup_table {
+  width: 100%;
+  font-size: 60%;
+  border-collapse: separate;
+  tr > th {
+    text-align:center;
+    border: none;
+  }
+  tr > td {
+      border: 1px solid white;
+  }
+  tr:last-child > td {
+      border-bottom: 1px solid white !important;
+  }
+  tbody tr td {
+      width: 16.6666%;
+      height: 2rem;
+      text-align: center;
+      vertical-align: middle;
+  }
+  tbody tr th {
+      vertical-align: middle;
+  }
+}
+table.comparison_table {
+  width: 100%;
+  font-size: 60%;
+  border-collapse: separate !important;
+  thead > tr > th:first-child {
+    border-right: 2px solid #222222;
+  }
+  tbody > tr > td:first-child {
+    border-right: 2px solid #222222;
+  }
+}
+</style>
+{% endblock %}
+
+{% block theme %}
+import '/themes/tokyonight-light.scss'
+import 'highlight.js/styles/tokyo-night-dark.css'
+{% endblock %}
+
+{% set center = true %}
+
+{% set rightarrow = "<strong>→</strong>" %}
+
+{% block slides %}
+<section class="center">
+  <h1>TidalSim and TraceKit</h1>
+  <h2 style="font-weight: normal;">Explorations of Execution-Driven and Trace-Based Sampled Simulation</h2>
+  <h5 style="font-weight: normal;"><strong>Vighnesh Iyer</strong>, Bora Nikolic</h5>
+
+  <h4>ATHLETE Update<br />
+  Monday, August 19th, 2024</h4>
+</section>
+
+<section>
+  <section class="center">
+    <h1>TidalSim Recap</h1>
+    <ul>
+      <li class="fragment">Sampled simulation <strong>using RTL simulation</strong>
+        <ul>
+          <li>Short sampling units with functional uArch warmup (a la SMARTs)</li>
+          <li>Representative sampling (a la Simpoints)</li>
+        </ul>
+      </li>
+      <li class="fragment">Custom uArch <strong>(RTL) state injection</strong>
+        <ul>
+          <li>L1 i/d cache functional warmup model to RTL state injection</li>
+          <li>Can extend to any long-lived functional unit</li>
+        </ul>
+      </li>
+      <li class="fragment">Enables <strong>high throughput and accurate</strong> simulation of long workloads
+        <ul>
+          <li>Avoid FPGA iteration latency when doing uArch exploration</li>
+          <li>Enables direct iteration on the RTL (not a model)</li>
+        </ul>
+      </li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Why RTL-Level Sampled Simulation?</h2>
+    <div class="container" style="grid-template-columns: 1.4fr 1fr;">
+      <div class="fragment">
+        <img class="image" src="./figs/dynamic/tidalsim/why_rtl.svg" />
+      </div>
+      <div>
+        <ul class="smallish">
+          <li class="fragment">In any sampled simulation flow we see time modeling, sampling, and warmup errors</li>
+          <li class="fragment">Direct use of RTL <strong>avoids modeling errors</strong> from uArch models
+            <ul>
+              <li class="fragment">No need to correlate performance model and RTL</li>
+              <li class="fragment">Let the RTL serve as the source of truth</li>
+            </ul>
+          </li>
+          <li class="fragment">Produce RTL-level collateral
+            <ul>
+              <li>Leverage for applications in verification and power modeling</li>
+            </ul>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Sampled Simulation Overview</h2>
+
+    <p class="center fragment">Don't run the full workload in detailed simulation</p>
+    <p class="center fragment smallish">Run the workload in <em>ISA simulation</em> and pick <em>samples</em> to run in uArch simulation</p>
+
+    <div class="fragment center">
+      <img class="image no-margin" width="60%" src="./figs/multi-level-sim/sampled_simulation0.png" />
+    </div>
+
+    <p class="fragment center">The full workload is represented by a selection of <em>sampling units</em>.</p>
+
+    <ol class="smallish">
+      <li class="fragment"><strong>Sampling unit length</strong>: 10k instructions</li>
+      <li class="fragment"><strong>Warmup models</strong>: L1 i/d cache</li>
+      <li class="fragment"><strong>Clustering and extrapolation</strong>: </li>
+      <!--How can we estimate errors when extrapolating from sampling units?</li>--> <!-- error bounding via CLT or other heuristics -->
+    </ol>
+  </section>
+
+  <section data-visibility="hidden">
+    <h2>Functional Warmup</h2>
+
+    <p class="fragment center">The state from a sampling unit checkpoint is only <em>architectural</em> state. The <em>microarchitectural</em> state of the uArch simulator starts at the reset state!</p>
+
+    <div class="fragment center">
+      <img width="50%" class="image" src="./figs/multi-level-sim/sampled_simulation.png" />
+    </div>
+
+    <ul>
+      <li class="fragment">We need to seed long-lived uArch state at the beginning of each sampling unit</li>
+      <li class="fragment">This process is called <em>functional warmup</em></li>
+    </ul>
+  </section>
+
+  <section style="text-align: center;">
+    <h2>Overview of the TidalSim Flow</h2>
+    <img class="image" src="./figs/dynamic/tidalsim/overview.svg" />
+  </section>
+
+  <section>
+    <h2>Functional Warmup Flow</h2>
+    <div class="center">
+      <img class="image no-margin" src="./figs/dynamic/tidalsim/full_flow_detail.svg" />
+    </div>
+
+    <ul class="small">
+      <li class="fragment">uarch-agnostic cache checkpoints as memory timestamp record (MTR) checkpoints</li>
+      <li class="fragment">MTR checkpoints {{ rightarrow }} cache state with cache parameters and DRAM contents</li>
+      <li class="fragment">RTL simulation harness injects cache state into L1d tag+data arrays via 2d reg forcing</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>IPC Trace Reconstruction - wikisort</h2>
+
+    <p class="center smallish">wikisort benchmark from embench, $N = 10000$, $C = 18$, $n_{\text{detailed}} = 2000$</p>
+
+    <div class="fragment center">
+      <img class="image no-margin" src="./figs/multi-level-sim/05_2024/wikisort.svg" />
+      <figcaption class="fragment">$MAPE_{IPC} = 12.3\% \rightarrow 4.5\%$</figcaption>
+    </div>
+  </section>
+
+  <section>
+    <h2>IPC Trace Reconstruction - huffbench</h2>
+
+    <p class="center smallish">huffbench benchmark from embench, $N = 10000$, $C = 18$, $n_{\text{detailed}} = 2000$</p>
+
+    <div class="fragment center">
+      <img class="image no-margin" src="./figs/multi-level-sim/05_2024/huffbench.svg" />
+      <figcaption class="fragment">L1d functional warmup prevents gross IPC underprediction in most cases. $MAPE_{IPC} = 6.6\% \rightarrow 4.1\%$</figcaption>
+    </div>
+  </section>
+</section>
+
+<!--<section>
+  <section class="center">
+    <h2>Functional Warmup of L1d Cache + Early Results</h2>
+  </section>
+
+  <section>
+    <h2>Caveats</h2>
+
+    <ul>
+      <li class="fragment">Currently all cache lines are marked as dirty, even if read-only</li>
+      <li class="fragment">There seems to be a lingering bug causing unaligned DRAM accesses from L1, still under investigation</li>
+      <li class="fragment">Injection harness is hardcoded for a specific Rocket L1 cache configuration</li>
+      <li class="fragment">Cannot perform L2 injection or handle multiple cores</li>
+    </ul>
+  </section>
+</section>-->
+
+<section>
+  <section class="center">
+    <h1>WIP: Detailed Error Analysis</h1>
+  </section>
+
+  <section>
+    <h2>Questions We Want to Answer</h2>
+
+    <ul>
+      <li class="fragment">How good would RTL sampled simulation be if we had perfect warmup?</li>
+      <li class="fragment">What is the breakdown of sampling vs detailed/functional warmup related errors?</li>
+      <li class="fragment">Can we predict the error of sampled simulation before running it?</li>
+    </ul>
+
+    <p class="fragment center"><strong>Let's build a methodology for answering these questions</strong></p>
+  </section>
+
+  <!--<section>
+    <h2>Sources of IPC Error</h2>
+
+    <ul>
+      <li class="fragment">Embedding error
+        <ul>
+          <li class="fragment">Error caused by representing one interval by a mix of sampled intervals</li>
+          <li class="fragment">Without sampling, there is no embedding error</li>
+        </ul>
+      </li>
+      <li class="fragment">Functional warmup errors
+        <ul>
+          <li class="fragment">Error that wouldn't be present had the functional warmup of specific long-lived state was perfect (matched the full RTL simulation)</li>
+          <li class="fragment">Each additional long-lived block that's warmed-up has the effect of:
+            <ol>
+              <li>Reducing error attributed to detailed warmup</li>
+              <li>Adding (usually a smaller) error attributed to functional warmup</li>
+            </ol>
+          </li>
+        </ul>
+      </li>
+      <li class="fragment">Detailed warmup error
+        <ol class="small">
+          <li>Bias caused by starting IPC measurement for an interval only after detailed warmup is complete</li>
+          <li>Error caused by difference of uArch state vs full RTL simulation (coupled to functional warmup)</li>
+        </ol>
+      </li>
+      <li class="fragment">Time modeling error
+
+      </li>
+      <li class="fragment">External model latent state errors
+
+      </li>
+    </ul>
+  </section>-->
+
+  <!--<section>
+    <h2>Error Analysis Methodology</h2>
+
+    <ul>
+      <li class="fragment">Simplifying assumptions
+        <ul>
+          <li class="fragment">Single-threaded workloads without time-related behaviors or I/O {{ rightarrow }} <strong>No time modeling error</strong></li>
+          <li class="fragment">External model latent state (DRAM MC model) contributes marginally to error {{ rightarrow }} <strong>No latent state errors</strong></li>
+          <li class="fragment">No sampling, every interval is simulated {{ rightarrow }} <strong>No embedding errors</strong></li>
+        </ul>
+      <li class="fragment">Remaining error sources
+        <ul>
+          <li class="fragment">Functional warmup mismatches versus the golden RTL simulation + breakdown of per-block warmup errors</li>
+          <li class="fragment">Detailed warmup errors from interval offset measurement bias</li>
+          <li class="fragment">Error from the impact of functional warmup error on detailed warmup error</li>
+        </ul>
+      </li>
+      <li class="fragment">How can we isolate each of these error sources?</li>
+    </ul>
+  </section>-->
+
+  <section>
+    <h2>Eliminating Sampling Errors</h2>
+
+    <div class="center">
+      <img class="fragment image no-margin" src="./figs/dynamic/tidalsim-error/pure_injection.svg" width="80%" />
+    </div>
+
+    <!--<ul class="smallish">
+      <li class="fragment">If we only inject every interval's architectural state into RTL simulation, then we get a worst case per-interval error</li>
+      <li class="fragment">This error doesn't contain any offset measurement bias</li>
+      <li class="fragment">On its own, this error is the <em>maximum</em> error possible per interval
+        <ul>
+          <li>Each extra thing we do (functional warmup, detailed warmup, warmup offset selection) serves to <em>reduce</em> this baseline error</li>
+          <li>The remaining error can be attributed to deficiencies in functional or detailed warmup + embedding error</li>
+        </ul>
+      </li>
+    </ul>-->
+    <ul>
+      <li class="fragment">Let's inject only arch state into RTL sim and simulate <em>each</em> interval</li>
+      <li class="fragment">This is the <em>worst case / maximum error</em> for that interval</li>
+      <li class="fragment">We can measure the <em>error reduction</em> of each thing we do (functional / detailed warmup)</li>
+      <li class="fragment">The remaining error can be <em>attributed to sampling</em></li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Evaluating Detailed Warmup Errors</h2>
+
+    <div class="center">
+      <img class="fragment image" src="./figs/dynamic/tidalsim-error/detailed_warmup.svg" width="80%" />
+    </div>
+
+    <ul>
+      <li class="fragment">Let's begin by seeing the impact of <em>only detailed warmup</em></li>
+      <li class="fragment">We can play with the <em>offset of injection</em> to evaluate its role too</li>
+      <!--<li class="fragment">We can first measure the impact of detailed warmup wrt the number of instructions and the offset (measurement bias)</li>
+      <li class="fragment">The <em>error differences</em> seen here are the errors mitigated by detailed warmup alone</li>-->
+    </ul>
+  </section>
+
+  <section>
+    <h2>Evaluating Functional Warmup Errors</h2>
+
+    <img class="fragment image" src="./figs/dynamic/tidalsim-error/functional_warmup.svg" width="100%" />
+
+    <ul>
+      <li class="fragment">Add functional warmup (using a model or a perfect oracle) to the mix</li>
+      <!--<li class="fragment">We can use a similar technique to measure the impact of functional warmup</li>
+      <li class="fragment">The final error model would also contain a term that describes the combined error reduction of functional and detailed warmup</li>-->
+    </ul>
+    <p class="center fragment"><strong>WIP: This methodology enables error analysis of sampling and warmup.</strong></p>
+  </section>
+
+  <section class="center">
+    <h2>Backup Slides</h2>
+  </section>
+
+  <section>
+    <h2>Evaluation - Detailed Warmup Alone</h2>
+
+    <p class="center small">For a given workload interval and a interval length $N$ (e.g. $N = 10000$) and <em>without</em> functional warmup, we can compute this table. <small>(each cell is IPC error wrt the full RTL simulation)</small></p>
+
+    <table class="detailed_warmup_table">
+      <thead>
+      <tr>
+        <th></th>
+        <th></th>
+        <th colspan="6">Detailed warmup instructions ($ n_{\text{warmup}} $)</th>
+      </tr>
+      <tr style="text-align: center;">
+        <th></th>
+        <th></th>
+        <th>0</th>
+        <th>100</th>
+        <th>500</th>
+        <th>1000</th>
+        <th>2000</th>
+        <th>5000</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr class="fragment">
+        <!-- style="writing-mode:sideways-lr; text-orientation: sideways;" -->
+        <th rowspan="6" style="vertical-align: middle;">Detailed warmup offset ($ n_{\text{offset}} $)</th>
+        <th>0</th>
+        <td class="bg-red">Worst case</td>
+        <td style="font-size: 80%">Offset error ↑<br />Warmup error ↓</td>
+        <td style="font-size: 80%">Offset error 2↑<br />Warmup error 2↓</td>
+        <td style="font-size: 80%">Offset error 3↑<br />Warmup error 3↓</td>
+        <td style="font-size: 80%">Offset error 4↑<br />Warmup error 4↓</td>
+        <td>Maximum offset error</td>
+      </tr>
+      <tr class="fragment">
+        <th>-100</th>
+        <td class="bg-grey">Invalid</td>
+        <td class="bg-yellow">No offset error</td>
+        <td>''</td>
+        <td>''</td>
+        <td>''</td>
+        <td>''</td>
+      </tr>
+      <tr class="fragment">
+        <th>-500</th>
+        <td class="bg-grey"></td>
+        <td class="bg-grey"></td>
+        <td class="bg-yellow">No offset error</td>
+        <td>''</td>
+        <td>''</td>
+        <td>''</td>
+      </tr>
+      <tr class="fragment">
+        <th>-1000</th>
+        <td class="bg-grey"></td>
+        <td class="bg-grey"></td>
+        <td class="bg-grey"></td>
+        <td class="bg-yellow">No offset error</td>
+        <td>''</td>
+        <td>''</td>
+      </tr>
+      <tr class="fragment">
+        <th>-2000</th>
+        <td class="bg-grey"></td>
+        <td class="bg-grey"></td>
+        <td class="bg-grey"></td>
+        <td class="bg-grey"></td>
+        <td class="bg-yellow">No offset error</td>
+        <td>''</td>
+      </tr>
+      <tr class="fragment">
+        <th>-5000</th>
+        <td class="bg-grey"></td>
+        <td class="bg-grey"></td>
+        <td class="bg-grey"></td>
+        <td class="bg-grey"></td>
+        <td class="bg-grey"></td>
+        <td class="bg-green">No offset error, best case</td>
+      </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2>Detailed Warmup Error Model</h2>
+
+    <p class="fragment">Given the data in the table for every interval and for different interval lengths $N$, fit the following model:</p>
+
+    <div class="fragment">
+    \[\begin{aligned}
+      \left(\frac{1}{\text{error}}\right) &amp;= f(N, n_{\text{warmup}}, n_{\text{offset}}) \\
+      &amp;= \frac{1}{1 + e^{-(n_{\text{warmup}}/N - \mu) / s}} + \alpha \frac{n_{\text{warmup}} - n_{\text{offset}}}{N} + \beta N
+    \end{aligned} \]
+    </div>
+
+    <ul>
+      <li class="fragment">Logistic term to model error reduction from warmup</li>
+      <li class="fragment">Linear term to model error reduction from offset elimination</li>
+      <li class="fragment">Linear term to model relationship of interval length to IPC error</li>
+      <li class="fragment">There might also be a term that mixes $n_{\text{warmup}}$ and $n_{\text{offset}}$ (TBD)</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Extending the Error Model</h2>
+
+    <ul>
+      <li class="fragment">Consider building more tables with different functional warmup types (L1i, L1d, L2, BP, combinations) and fidelity (perfect vs model)</li>
+      <li class="fragment">Still an open question: how can we mix the functional warmup type/fidelity into the error model?</li>
+      <li class="fragment">Given a particular sampled simulation configuration ($N$, $n_{\text{warmup}}$, $n_{\text{offset}}$, functional warmup type + fidelity) for a given workload
+        <ul>
+          <li>The remaining error from the table cell is <em>attributable to inaccurate warmup</em> (functional + detailed)</li>
+          <li>Any additional error seen in <em>actual</em> sampled simulation is <em>attributable to embedding</em></li>
+        </ul>
+      </li>
+    </ul>
+  </section>
+</section>
+
+
+<section>
+  <h2>Conclusion</h2>
+
+  <div class="container" style="grid-template-columns: 1fr 1.5fr;">
+    <img class="image" width="100%" src="./figs/dynamic/tidalsim/overview.svg" />
+    <!--<img class="image" width="100%" src="./figs/dynamic/tidalsim/full_flow_detail.svg" />-->
+    <img class="image" width="100%" src="./figs/multi-level-sim/05_2024/wikisort.svg" />
+  </div>
+
+  <div class="center">
+  </div>
+
+  <ul class="smallish">
+    <!--<li class="fragment">We want to enable rapid RTL iteration with performance evaluation and generation of RTL-level collateral</li>-->
+    <li class="fragment">We need fast, low-startup-latency RTL-level simulation</li>
+    <li class="fragment">We propose a simulation methodology based on sampled RTL simulation
+      <ul>
+        <li>Small intervals + functional warmup with RTL simulation</li>
+      </ul>
+    </li>
+    <li class="fragment">Everything is open source
+      <ul><li><a href="https://github.com/euphoric-hardware/tidalsim">TidalSim (github.com/euphoric-hardware/tidalsim)</a> <small>Forks of spike, chipyard, testchipip + top-level runner</small></li></ul>
+    </li>
+  </ul>
+</section>
+
+<section>
+  <section class="center">
+    <h1>Extra Slides</h1>
+  </section>
+
+  <section>
+    <h2>Existing Sampling Techniques</h2>
+
+    <div class="container" style="grid-template-columns: 1fr 1fr;">
+    <div>
+    <h3 class="center fragment">SimPoint</h3>
+    <div class="fragment image no-padding" style="display:grid; align-content: center; justify-items:center; grid-template-columns:1fr 1fr;">
+      <img class="no-margin" style="display:grid;" src="./figs/multi-level-sim/simpoint-gzip_phases.gif" />
+      <img class="no-margin" style="display:grid;" src="./figs/multi-level-sim/simpoint-gcc_phases.gif" />
+    </div>
+    <ul class="small">
+      <li class="fragment">Workloads can be split into <strong style="text-decoration:underline;">phases</strong> that exhibit similar μArch behavior</li>
+      <li class="fragment">SimPoint-style representative sampling
+        <ul class="fragment">
+          <li>Compute an embedding for each program interval (e.g. blocks of 100M instructions)</li>
+          <li>Cluster interval embeddings using k-means</li>
+          <li>Choose representative intervals from each cluster as <em>sampling units</em></li>
+        </ul>
+      </li>
+    </ul>
+    </div>
+    <div>
+      <h3 class="center fragment">SMARTS</h3>
+      <img class="fragment image no-margin no-padding" src="./figs/quals/smarts.png" />
+      <ul class="small">
+        <li class="fragment">If we sample from a population, we can estimate the population mean</li>
+        <!--<li class="fragment">Rigorous statistical sampling enables computation of confidence bounds
+          <ul class="fragment">
+            <li>Use random sampling on a full execution trace to derive a population sample</li>
+            <li>Central limit theorem provides confidence bounds</li>
+          </ul>
+        </li>-->
+        <li class="fragment">SMARTS-style random sampling
+          <ul class="fragment">
+            <li>Pick a large number of samples to take before program execution</li>
+            <li>If the sample variance is too high after simulation, then collect more sampling units</li>
+            <li>Use CLT to derive a confidence bound for the aggregate performance metric</li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+    </div>
+
+    <p class="center fragment"><strong>Our proposal</strong>: Combine SimPoint-style representative sampling with SMARTS-style small intervals</p>
+  </section>
+
+  <section>
+    <h2>Implementation Details For TidalSim</h2>
+    <div class="container" style="grid-template-columns: 1.2fr 1fr;">
+    <div>
+    <ul class="smallish">
+      <li class="fragment">Basic block identification
+        <ul><li>BB identification from spike commit log or from static ELF analysis</li></ul>
+      </li>
+      <li class="fragment">Basic block embedding of intervals</li>
+      <li class="fragment">Clustering and checkpointing
+        <ul>
+          <li>k-means, PCA-based n-clusters</li>
+          <li>spike-based checkpoints</li>
+        </ul>
+      </li>
+      <li class="fragment">RTL simulation and performance metric extraction
+        <ul><li>Custom force-based RTL state injection, out-of-band IPC measurement</li></ul>
+      </li>
+      <li class="fragment">Extrapolation
+        <ul><li>Estimate IPC of each interval based on its embedding and distances to RTL-simulated intervals</li></ul>
+      </li>
+    </ul>
+    </div>
+    <div style="display:grid; align-content: center;">
+      <img class="image no-margin" src="./figs/dynamic/tidalsim/overview.svg" />
+    </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Memory Timestamp Record</h2>
+    <div class="center">
+      <img class="image" src="./figs/dynamic/tidalsim/mtr_flow.svg" />
+    </div>
+
+    <ul class="small">
+      <li class="fragment">Construct MTR table from a memory trace, save MTR tables at checkpoint times</li>
+      <li class="fragment">Given a cache with n sets, group block addresses by set index</li>
+      <li class="fragment">Given a cache with k ways, pick the k most recently accessed addresses from each set</li>
+      <li class="fragment">Knowing every resident cache line, fetch the data from the DRAM dump</li>
+    </ul>
+  </section>
+
+</section>
+
+{% endblock %}
