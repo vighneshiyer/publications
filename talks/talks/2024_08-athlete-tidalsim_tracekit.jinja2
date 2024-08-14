@@ -134,9 +134,9 @@ import 'highlight.js/styles/tokyo-night-dark.css'
     <p class="fragment center">The full workload is represented by a selection of <em>sampling units</em>.</p>
 
     <ol class="smallish">
-      <li class="fragment"><strong>Sampling unit length</strong>: 10k instructions</li>
-      <li class="fragment"><strong>Warmup models</strong>: L1 i/d cache</li>
-      <li class="fragment"><strong>Clustering and extrapolation</strong>: </li>
+      <li class="fragment"><strong>Sampling unit length</strong>: tradeoff runtime and resolution</li>
+      <li class="fragment"><strong>Warmup models</strong>: which uArch units to initialize</li>
+      <li class="fragment"><strong>Clustering and extrapolation</strong>: how sampling units should be selected and used for prediction</li>
       <!--How can we estimate errors when extrapolating from sampling units?</li>--> <!-- error bounding via CLT or other heuristics -->
     </ol>
   </section>
@@ -167,11 +167,18 @@ import 'highlight.js/styles/tokyo-night-dark.css'
       <img class="image no-margin" src="./figs/dynamic/tidalsim/full_flow_detail.svg" />
     </div>
 
-    <ul class="small">
+    <ol>
+      <li class="fragment">Full run of the binary on spike + sampling unit embedding + clustering</li>
+      <li class="fragment">Re-run spike to capture arch checkpoints at the start of sampling units</li>
+      <li class="fragment">Reconstruct L1d cache state for each arch checkpoint</li>
+      <li class="fragment">Inject sampling units into RTL sim and extrapolate</li>
+    </ol>
+
+    <!--<ul class="small">
       <li class="fragment">uarch-agnostic cache checkpoints as memory timestamp record (MTR) checkpoints</li>
       <li class="fragment">MTR checkpoints {{ rightarrow }} cache state with cache parameters and DRAM contents</li>
       <li class="fragment">RTL simulation harness injects cache state into L1d tag+data arrays via 2d reg forcing</li>
-    </ul>
+    </ul>-->
   </section>
 
   <section>
@@ -197,22 +204,63 @@ import 'highlight.js/styles/tokyo-night-dark.css'
   </section>
 </section>
 
-<!--<section>
+<section>
   <section class="center">
-    <h2>Functional Warmup of L1d Cache + Early Results</h2>
+    <h1>Multithreaded Workload Sampling</h1>
   </section>
 
   <section>
-    <h2>Caveats</h2>
+    <h2>Multithreaded Workloads</h2>
 
     <ul>
-      <li class="fragment">Currently all cache lines are marked as dirty, even if read-only</li>
-      <li class="fragment">There seems to be a lingering bug causing unaligned DRAM accesses from L1, still under investigation</li>
-      <li class="fragment">Injection harness is hardcoded for a specific Rocket L1 cache configuration</li>
-      <li class="fragment">Cannot perform L2 injection or handle multiple cores</li>
+      <li class="fragment">HPC (NAS, ScaLAPACK, MPI (Intel/SPEC), Eigen, Cinebench, zstd)
+        <ul>
+          <li class="fragment">Compute/memory BW heavy</li>
+          <li class="fragment">Frequent inter-thread communication</li>
+          <li class="fragment">Native use of OS threads</li>
+          <li class="fragment">Insensitive to OS scheduling, stable thread contexts</li>
+        </ul>
+      </li>
+      <li class="fragment">Datacenter (nginx, Postgres, Redis, Gitlab)
+        <ul>
+          <li class="fragment">IO heavy</li>
+          <li class="fragment">Task-level parallelism, low ILP</li>
+          <li class="fragment">OS threads used for blocking IO (network, disk, database)</li>
+          <li class="fragment">High concurrency, userspace threading (green threads), frequent context switches</li>
+        </ul>
+      </li>
     </ul>
   </section>
-</section>-->
+
+  <section>
+    <h2 style="font-size:1.9rem;">Time Modeling in Sampled Simulation</h2>
+
+    <ul class="smallish">
+      <li class="fragment">Prior work runs uArch simulators in "syscall emulation" mode when evaluating workloads (e.g. SPEC), not modeling any OS-application interactions</li>
+      <li class="fragment">Real workloads contain many interactions between processes and the OS which are sensitive to the modeling of time</li>
+    </ul>
+
+    <div class="center fragment">
+      <img width="60%" src="./figs/dynamic/tidalsim/timer_interrupts.svg" />
+    </div>
+
+    <p class="center fragment">Consider timer interrupts: naive functional simulators will just advance one timestep per commited instruction, not matching RTL!</p>
+  </section>
+
+  <!--<section>
+    <h2>TidalSim to Model Time Accurately</h2>
+
+    <div class="center fragment">
+      <img width="80%" src="./figs/dynamic/tidalsim/timer_interrupts.svg" />
+    </div>
+
+    <ul class="smallish">
+      <li class="fragment">We propose bouncing between functional and RTL simulation, where performance metrics from RTL sim impacts time advancement in functional sim</p>
+      <li class="fragment">To avoid simulating every interval in RTL sim, we leverage interval embeddings to estimate IPC on the fly</li>
+    </ul>
+    Insert image of bouncing between simulators and using interval embeddings to estimate actual time advancement
+  </section>-->
+</section>
 
 <section>
   <section class="center">
