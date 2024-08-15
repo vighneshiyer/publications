@@ -353,15 +353,51 @@ record       instr         tid        record details
     </pre></code>
 
     <ul>
-      <li>Application-thread oriented traces</li>
-      <li>Captures
+      <li class="fragment">Application-thread-oriented traces</li>
+      <li class="fragment">Captures all userspace fetches, memory accesses, syscalls, control transfers</li>
     </ul>
   </section>
 
   <section>
     <h2>Published Memtraces</h2>
+
+    <ul>
+      <li class="fragment">Google has published <a href="https://dynamorio.org/google_workload_traces.html">traces for 4 workloads</a></li>
+      <li class="fragment">Some information is stripped / degraded
+        <ul>
+          <li class="fragment">Instruction encodings / source binary / inst dependencies</li>
+          <li class="fragment">Syscalls and syscall numbers</li>
+          <li class="fragment">Timestamps (limited availability and accuracy)</li>
+        </ul>
+      <li class="fragment">Some information is unavailable due to limitations in DynamoRIO
+        <ul>
+          <li class="fragment">IO activity and when earliest thread resumption is possible</li>
+          <li class="fragment">Kernel space activity</li>
+          <li class="fragment">Inter-thread dependencies / communication</li>
+        </ul>
+      </li>
+    </ul>
+    <!--
     Show the memtraces we have access to. Not including the internal ones at Google.
     What info is missing? Inst encodings, exact syscall reasons, IO activity
+    -->
+  </section>
+
+  <section>
+    <h2>Trace-Driven Sampling Investigation</h2>
+
+    <p>We wish to answer some questions</p>
+
+    <ul>
+      <li class="fragment">What embedding strategy (core-oriented vs SoC-level) works well for Google traces?</li>
+      <li class="fragment">How do we extract meaningful metrics that we can predict from the trace?
+        <ul>
+          <li class="fragment">IPC is iffy due to timestamp granularity (10s of us)</li>
+          <li class="fragment">Cache/BP statistics from PMU are unavailable, but reconstructible to some degree</li>
+        </ul>
+      </li>
+      <li class="fragment">How stable are the chosen simpoints under varying scheduling behaviors?</li>
+    </ul>
   </section>
 </section>
 
