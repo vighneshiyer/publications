@@ -14,43 +14,6 @@
 
 {# Custom styles and JS for a particular talk #}
 {% block custom_head %}
-<style>
-table.detailed_warmup_table {
-  width: 100%;
-  font-size: 60%;
-  border-collapse: separate;
-  tr > th {
-    text-align:center;
-    border: none;
-  }
-  tr > td {
-      border: 1px solid white;
-  }
-  tr:last-child > td {
-      border-bottom: 1px solid white !important;
-  }
-  tbody tr td {
-      width: 16.6666%;
-      height: 2rem;
-      text-align: center;
-      vertical-align: middle;
-  }
-  tbody tr th {
-      vertical-align: middle;
-  }
-}
-table.comparison_table {
-  width: 100%;
-  font-size: 60%;
-  border-collapse: separate !important;
-  thead > tr > th:first-child {
-    border-right: 2px solid #222222;
-  }
-  tbody > tr > td:first-child {
-    border-right: 2px solid #222222;
-  }
-}
-</style>
 {% endblock %}
 
 {% block theme %}
@@ -254,15 +217,21 @@ import 'highlight.js/styles/tokyo-night-dark.css'
     </ul>-->
 
     <ul>
-      <li class="fragment">Focus on specialized ways of selecting sampling units
+      <li class="fragment">Specialized ways of selecting sampling units
         <ul class="fragment">
           <li>TaskPoint<sup>[1]</sup>: task regions in task-based programming models</li>
-          <li>BarrierPoint<sup>[2]</sup>: barriers</li>
-          <li>LoopPoint<sup>[3]</sup>: loops</li>
+          <li>BarrierPoint<sup>[2]</sup>: synchronization barriers</li>
+          <li>LoopPoint<sup>[3]</sup>: loop-based simulation markers</li>
+          <li>Aim to accurately embed behaviors seen in HPC-like workloads</li>
         </ul>
       </li>
-      <li class="fragment">Workloads were mostly HPC oriented: clean </li>
-      <li class="fragment">Accurate time modeling requires live sampling (see COTSON from HP Labs)</li>
+      <li class="fragment">Time-modeling for throughput oriented applications
+        <ul>
+          <li>COTSON<sup>[4]</sup>: model timers and IO devices alongside a functional simulation</li>
+          <li>SimFlex<sup>[5]</sup>: random sampling of throughput-oriented workloads with a timing model</li>
+        </ul>
+      </li>
+      <li class="fragment">No modern work attempting to analyze the viability of sampling for modern cloud workloads</li>
     </ul>
 
     <div class="verysmall fragment">
@@ -270,26 +239,59 @@ import 'highlight.js/styles/tokyo-night-dark.css'
       [1]: T. Grass, et. al. TaskPoint: Sampled simulation of task-based programs. 2016 ISPASS<br />
       [2]: T. E. Carlson, et. al., BarrierPoint: Sampled simulation of multi-threaded applications. 2014 ISPASS<br />
       [3]: A. Sabu, et. al., LoopPoint: Checkpoint-driven Sampled Simulation for Multi-threaded Applications. 2022 HPCA<br />
-      [4]: E. Argollo, et. al. COTSon: infrastructure for full system simulation. SIGOPS 2009
+      [4]: E. Argollo, et. al. COTSon: infrastructure for full system simulation. SIGOPS 2009<br />
+      [5]: T. F. Wenisch, et. al. SimFlex: Statistical Sampling of Computer System Simulation. IEEE Micro 2006
       </p>
     </div>
   </section>
 
   <section>
     <h2>Trace-Oriented Sampling</h2>
+
+    <div class="center fragment">
+      <img width="60%" src="./figs/dynamic/tracekit/trace_oriented_sampling.svg" />
+    </div>
+
+    <ul>
+      <li class="fragment">Remove execution-driven simulation from the picture</li>
+      <li class="fragment">Evaluate sampling error alone from the embedding strategy</li>
+      <li class="fragment">Compare representative vs random sampling</li>
+    </ul>
+    <!--
     Before trying to do live sampling with time modeling, let's figure out what sampling methodology is required to extrapolate performance (not considering injection related errors).
     Trace-oriented sampling methodology
     How we attempt to evaluate sampling errors alone
 
     Put a picture here - a long trace with trace statistics every X time, embed every trace slice, do clustering and extrapolation and figure out the sampling error
     This gives us the most optimistic picture, but only can evaluate sampling errors
+    -->
   </section>
 
   <section>
     <h2>Multithreaded Embeddings</h2>
 
+    <div class="center fragment">
+      <img width="80%" src="./figs/dynamic/tracekit/multithreaded_sampling.svg" />
+    </div>
+
+    <ul>
+      <li class="fragment">Aggregated embedding
+        <ul>
+          <li class="fragment">Capture SoC-level effects (cache pollution, inter-thread communication)</li>
+          <li class="fragment">Higher dimensionality, clustering might suffer</li>
+        </ul>
+      </li>
+      <li class="fragment">Per-core embedding
+        <ul>
+          <li class="fragment">Doesn't capture interactions between cores</li>
+        </ul>
+      </li>
+    </ul>
+
+    <!--
     Diagram of multicore activity and app threads being multiplexed onto each core.
     Do we want to do a single-core oriented embedding and extrapolation, or do we need to account for thread interaction (cache pollution and sharing effects)? To what degree do we need a "SoC-level embedding"?
+    -->
   </section>
 </section>
 
@@ -301,15 +303,59 @@ import 'highlight.js/styles/tokyo-night-dark.css'
   <section>
     <h2>Tracing Technologies</h2>
 
-    DynamoRIO
-    Abstraction over low-level tracing APIs (Intel PIN, Intel PT, ARM equivalent)
-    Dynamic instrumentation, extract PC/branch/memory traces (with substantial application perturbation)
+    <ul>
+      <li class="fragment"><a href="https://dynamorio.org/">DynamoRIO</a>
+        <ul>
+          <li class="fragment">Abstraction over low-level tracing APIs (e.g. Intel PIN / PT)</li>
+          <li class="fragment">Dynamic binary instrumentation tool</li>
+          <li class="fragment">Offline analysis of (PC + memory access) traces</li>
+        </ul>
+      </li>
+      <li class="fragment">DynamioRIO is used to trace server applications running in sandboxed setups with artificial traffic injection</li>
+      <li class="fragment">Large (~10-30x) application perturbation with full tracing enabled</li>
+    </ul>
+    <!--Abstraction over low-level tracing APIs (Intel PIN, Intel PT, ARM equivalent)
+    Dynamic instrumentation, extract PC/branch/memory traces (with substantial application perturbation)-->
   </section>
 
   <section>
     <h2>DynamoRIO Traces</h2>
+    <!--
     Attach picture of trace view with ifetch, branches, markers, and so forth
     App-thread oriented traces, have to be reconstructed into core-oriented traces
+    -->
+
+    <pre class="fragment" style="font-size: 0.4rem;"><code class="language-text" data-trim data-noescape>
+$ bin64/drrun -t drmemtrace -tool view -indir drmemtrace.*.dir -sim_refs 20
+Output format:
+record       instr         tid        record details
+------------------------------------------------------------
+           1           0:     3256418 marker: version 6
+           2           0:     3256418 marker: filetype 0x240
+           3           0:     3256418 marker: cache line size 64
+           4           0:     3256418 marker: chunk instruction count 1024
+           5           0:     3256418 marker: page size 4096
+           6           0:     3256418 marker: timestamp 13312410768080478
+           7           0:     3256418 marker: tid 3256418 on core 7
+           8           1:     3256418 ifetch       3 byte(s) @ 0x00007fc205a61940 48 89 e7             mov    %rsp, %rdi
+           9           2:     3256418 ifetch       5 byte(s) @ 0x00007fc205a61943 e8 b8 0c 00 00       call   $0x00007fc205a62600
+          10           2:     3256418 write        8 byte(s) @ 0x00007fff9a9e3528 by PC 0x00007fc205a61943
+          11           3:     3256418 ifetch       1 byte(s) @ 0x00007fc205a62600 55                   push   %rbp
+          12           3:     3256418 write        8 byte(s) @ 0x00007fff9a9e3520 by PC 0x00007fc205a62600
+          13           4:     3256418 ifetch       3 byte(s) @ 0x00007fc205a62601 48 89 e5             mov    %rsp, %rbp
+          14           5:     3256418 ifetch       2 byte(s) @ 0x00007fc205a62604 41 57                push   %r15
+          15           5:     3256418 write        8 byte(s) @ 0x00007fff9a9e3518 by PC 0x00007fc205a62604
+          16           6:     3256418 ifetch       2 byte(s) @ 0x00007fc205a62606 41 56                push   %r14
+          17           6:     3256418 write        8 byte(s) @ 0x00007fff9a9e3510 by PC 0x00007fc205a62606
+          18           7:     3256418 ifetch       2 byte(s) @ 0x00007fc205a62608 41 55                push   %r13
+          19           7:     3256418 write        8 byte(s) @ 0x00007fff9a9e3508 by PC 0x00007fc205a62608
+          20           8:     3256418 ifetch       2 byte(s) @ 0x00007fc205a6260a 41 54                push   %r12
+    </pre></code>
+
+    <ul>
+      <li>Application-thread oriented traces</li>
+      <li>Captures
+    </ul>
   </section>
 
   <section>
@@ -333,16 +379,19 @@ import 'highlight.js/styles/tokyo-night-dark.css'
     Later flow for live sampled simulation with time feedback
   </section>
 
+  <section>
     - Analysis framework
     - Diagram of how it integrates
     - Diagram of the scheduler
     - Diagram of how to unify it with TidalSim execution driven flow
     - Plans for evaluating trace-driven vs execution-driven simulation sampling and validity
-</section>
 
-<section>
-  <section class="center">
-    <h1>Experiments in Progress</h1>
+  </section>
+
+  <section>
+    <h2>Experiments</h2>
+
+    Results: to be released soon. Uncovered lots of weirdnesses already. Initial indication is that BBVs and core-level embedding might be sufficient.
   </section>
 </section>
 

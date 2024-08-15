@@ -13,7 +13,7 @@
 // Tokyonight colors
 // https://github.com/enkia/tokyo-night-vscode-theme
 $darkMode: false !default;
- 
+
 // all of these are overridden by conditional below
 $tn_red: black;
 $tn_orange: black;
@@ -229,9 +229,9 @@ $overlayElementFgColor: 0, 0, 0;
     //  margin-left: -1em}
 
     //li {counter-increment: li}
-    code {
-      background: color.adjust($tn_fg, $lightness: +10%);
-    }
+    //code {
+    //  background: color.adjust($tn_fg, $lightness: +10%);
+    //}
 }
 
 .reveal{
