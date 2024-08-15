@@ -231,7 +231,7 @@ import 'highlight.js/styles/tokyo-night-dark.css'
       </li>
     </ul>
 
-    <p class="fragment center">Accurate modeling of time is essential</p>
+    <p class="fragment center">Accurate modeling of time is essential for datacenter workloads</p>
   </section>
 
   <section>
@@ -248,47 +248,101 @@ import 'highlight.js/styles/tokyo-night-dark.css'
   <section>
     <h2>Prior Work in Multithreaded Sampling</h2>
 
-    <ul class="smallish">
+    <!--<ul>
       <li class="fragment">Prior work runs uArch simulators in "syscall emulation" mode when evaluating workloads (e.g. SPEC), not modeling any OS-application interactions</li>
       <li class="fragment">Real workloads contain many interactions between processes and the OS which are sensitive to the modeling of time</li>
+    </ul>-->
+
+    <ul>
+      <li class="fragment">Focus on specialized ways of selecting sampling units
+        <ul class="fragment">
+          <li>TaskPoint<sup>[1]</sup>: task regions in task-based programming models</li>
+          <li>BarrierPoint<sup>[2]</sup>: barriers</li>
+          <li>LoopPoint<sup>[3]</sup>: loops</li>
+        </ul>
+      </li>
+      <li class="fragment">Workloads were mostly HPC oriented: clean </li>
+      <li class="fragment">Accurate time modeling requires live sampling (see COTSON from HP Labs)</li>
     </ul>
-    Mostly considers HPC style workloads.
-    Intervals bounded by task regions (Taskpoint), loops (LoopPoint), or barriers (BarrierPoint)
-    Accurate time modeling requires live sampling (see COTSON from HP Labs)
-  </section>
 
-  <section>
-    Before trying to do live sampling with time modeling, let's figure out what sampling methodology is required to extrapolate performance (not considering injection related errors).
-  </section>
-
-  <section>
-    Trace-oriented sampling evaluation
-  </section>
-
-  <!--<section>
-    <h2>TidalSim to Model Time Accurately</h2>
-
-    <div class="center fragment">
-      <img width="80%" src="./figs/dynamic/tidalsim/timer_interrupts.svg" />
+    <div class="verysmall fragment">
+      <p class="footnote">
+      [1]: T. Grass, et. al. TaskPoint: Sampled simulation of task-based programs. 2016 ISPASS<br />
+      [2]: T. E. Carlson, et. al., BarrierPoint: Sampled simulation of multi-threaded applications. 2014 ISPASS<br />
+      [3]: A. Sabu, et. al., LoopPoint: Checkpoint-driven Sampled Simulation for Multi-threaded Applications. 2022 HPCA<br />
+      [4]: E. Argollo, et. al. COTSon: infrastructure for full system simulation. SIGOPS 2009
+      </p>
     </div>
+  </section>
 
-    <ul class="smallish">
-      <li class="fragment">We propose bouncing between functional and RTL simulation, where performance metrics from RTL sim impacts time advancement in functional sim</p>
-      <li class="fragment">To avoid simulating every interval in RTL sim, we leverage interval embeddings to estimate IPC on the fly</li>
-    </ul>
-    Insert image of bouncing between simulators and using interval embeddings to estimate actual time advancement
-  </section>-->
+  <section>
+    <h2>Trace-Oriented Sampling</h2>
+    Before trying to do live sampling with time modeling, let's figure out what sampling methodology is required to extrapolate performance (not considering injection related errors).
+    Trace-oriented sampling methodology
+    How we attempt to evaluate sampling errors alone
+
+    Put a picture here - a long trace with trace statistics every X time, embed every trace slice, do clustering and extrapolation and figure out the sampling error
+    This gives us the most optimistic picture, but only can evaluate sampling errors
+  </section>
+
+  <section>
+    <h2>Multithreaded Embeddings</h2>
+
+    Diagram of multicore activity and app threads being multiplexed onto each core.
+    Do we want to do a single-core oriented embedding and extrapolation, or do we need to account for thread interaction (cache pollution and sharing effects)? To what degree do we need a "SoC-level embedding"?
+  </section>
 </section>
 
 <section>
   <section class="center">
     <h1>Tracing @ Google</h1>
   </section>
+
+  <section>
+    <h2>Tracing Technologies</h2>
+
+    DynamoRIO
+    Abstraction over low-level tracing APIs (Intel PIN, Intel PT, ARM equivalent)
+    Dynamic instrumentation, extract PC/branch/memory traces (with substantial application perturbation)
+  </section>
+
+  <section>
+    <h2>DynamoRIO Traces</h2>
+    Attach picture of trace view with ifetch, branches, markers, and so forth
+    App-thread oriented traces, have to be reconstructed into core-oriented traces
+  </section>
+
+  <section>
+    <h2>Published Memtraces</h2>
+    Show the memtraces we have access to. Not including the internal ones at Google.
+    What info is missing? Inst encodings, exact syscall reasons, IO activity
+  </section>
 </section>
 
 <section>
   <section class="center">
     <h1>The TraceKit Framework</h1>
+  </section>
+
+  <section>
+    <h2>Unified Trace Analysis Framework</h2>
+    Unifying trace analysis for trace-oriented and execution-driven simulation flows.
+    Abstraction over ISAs too.
+    Diagram of TraceKit ingesting DynamoRIO traces with a scheduler onto a core-oriented model + direct ingestion of spike/RTL sim/FireSim traces
+    Analysis passes are also included
+    Later flow for live sampled simulation with time feedback
+  </section>
+
+    - Analysis framework
+    - Diagram of how it integrates
+    - Diagram of the scheduler
+    - Diagram of how to unify it with TidalSim execution driven flow
+    - Plans for evaluating trace-driven vs execution-driven simulation sampling and validity
+</section>
+
+<section>
+  <section class="center">
+    <h1>Experiments in Progress</h1>
   </section>
 </section>
 
