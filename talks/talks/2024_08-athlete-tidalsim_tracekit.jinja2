@@ -407,45 +407,98 @@ record       instr         tid        record details
   </section>
 
   <section>
-    <h2>Unified Trace Analysis Framework</h2>
+    <h2>TraceKit Overview</h2>
+
+    <div class="center fragment">
+      <img width="100%" src="./figs/dynamic/tracekit/tracekit_overview.svg" />
+    </div>
+
+    <ul>
+      <li class="fragment">Unify trace-level analysis for DR and Berkeley simulation flows</li>
+      <li class="fragment">Lightweight abstraction over ISAs (x86, ARM, RISC-V)</li>
+      <li class="fragment">Evolving this framework for live sampled simulation using RTL sim</li>
+    </ul>
+    <!--
     Unifying trace analysis for trace-oriented and execution-driven simulation flows.
     Abstraction over ISAs too.
     Diagram of TraceKit ingesting DynamoRIO traces with a scheduler onto a core-oriented model + direct ingestion of spike/RTL sim/FireSim traces
     Analysis passes are also included
     Later flow for live sampled simulation with time feedback
+    -->
   </section>
 
   <section>
+    <h2>The "Scheduler"</h2>
+
+    <div class="center">
+      <img width="80%" src="./figs/dynamic/tracekit/scheduler_overview.svg" />
+    </div>
+
+    <ul>
+      <li class="fragment">To cope with differences in the number of modeled cores vs cores used in the captured trace</li>
+      <li class="fragment">Can force more aggressive thread interleaving and idle time hole-filling with scheduler-driven preemption and mounting</li>
+    </ul>
+
+    <!--
     - Analysis framework
     - Diagram of how it integrates
     - Diagram of the scheduler
     - Diagram of how to unify it with TidalSim execution driven flow
     - Plans for evaluating trace-driven vs execution-driven simulation sampling and validity
+    -->
+  </section>
 
+  <section>
+    <h2>Limitations</h2>
+
+    <ul>
+      <li class="fragment">Traces are fixed! uArch changes can't be incorporated without recapturing.</li>
+      <li class="fragment">uArch changes that impact time-dependent behavior can't be modeled</li>
+    </ul>
+
+    <p class="center fragment">However, we can evaluate sampling techniques (assuming perfect detailed simulation)</p>
   </section>
 
   <section>
     <h2>Experiments</h2>
 
-    Results: to be released soon. Uncovered lots of weirdnesses already. Initial indication is that BBVs and core-level embedding might be sufficient.
+    <ul>
+      <li class="fragment">Investigating different embedding strategies
+        <ul>
+          <li class="fragment">Basic block vectors</li>
+          <li class="fragment">Instruction mix: loads, stores, control, arith, integer, fp</li>
+          <li class="fragment">ILP: in varying window sizes (32, 64, ...)</li>
+          <li class="fragment">Register traffic: avg input operands, register consumption, register dependency chains</li>
+          <li class="fragment">Working set: number of unique 32B/4K blocks touched in an interval</li>
+          <li class="fragment">Data stream strides: measure of spatial locality in temporal memory accesses</li>
+          <li class="fragment">Branch predictability: use an upper-limit branch prediction algorithm</li>
+        </ul>
+      </li>
+      <li class="fragment">Implementation of trace analysis framework over published and internal Google DR traces</li>
+      <li class="fragment">Comparing accuracy of trace-based scheduler vs execution-driven scheduler changes</li>
+      <li class="fragment">Results are pending publication</li>
+    </ul>
+    <!--Results: to be released soon. Uncovered lots of weirdnesses already. Initial indication is that BBVs and core-level embedding might be sufficient.-->
   </section>
 </section>
 
 <section>
   <h2>Conclusion</h2>
 
-  <div class="container" style="grid-template-columns: 1fr 1.5fr;">
+  <div class="container" style="grid-template-columns: 1fr 2fr;">
     <img class="image" width="100%" src="./figs/dynamic/tidalsim/overview.svg" />
     <!--<img class="image" width="100%" src="./figs/dynamic/tidalsim/full_flow_detail.svg" />-->
-    <img class="image" width="100%" src="./figs/multi-level-sim/05_2024/wikisort.svg" />
+    <img class="image" width="100%" src="./figs/dynamic/tracekit/tracekit_overview.svg" />
   </div>
 
   <div class="center">
   </div>
 
   <ul class="smallish">
-    <!--<li class="fragment">We want to enable rapid RTL iteration with performance evaluation and generation of RTL-level collateral</li>-->
-    <li class="fragment">We need fast, low-startup-latency RTL-level simulation</li>
+    <li class="fragment">Tidalsim provides fast, accurate, low-latency RTL-sim-based sampled simulation</li>
+    <li class="fragment">Ongoing work to leverage Google workload traces for sampling investigation</li>
+    <li class="fragment">TraceKit is a unified trace analysis framework that will be merged with Tidalsim for a multicore live sampling flow</li>
+    <!--<li class="fragment">We need fast, low-startup-latency RTL-level simulation</li>
     <li class="fragment">We propose a simulation methodology based on sampled RTL simulation
       <ul>
         <li>Small intervals + functional warmup with RTL simulation</li>
@@ -454,6 +507,7 @@ record       instr         tid        record details
     <li class="fragment">Everything is open source
       <ul><li><a href="https://github.com/euphoric-hardware/tidalsim">TidalSim (github.com/euphoric-hardware/tidalsim)</a> <small>Forks of spike, chipyard, testchipip + top-level runner</small></li></ul>
     </li>
+    -->
   </ul>
 </section>
 
