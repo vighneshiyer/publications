@@ -483,6 +483,40 @@ record       instr         tid        record details
 </section>
 
 <section>
+  <section class="center">
+    <h2>Questions</h2>
+  </section>
+
+  <section>
+    <h2>Things I'd Like to Know</h2>
+
+    <ul>
+      <li class="fragment">What type of performance models are used (trace-driven vs execution-based)?
+        <ul>
+          <li>What approaches to sampling are used?</li>
+          <li>Trace-based sampling</li>
+          <li>Multithreaded sampling</li>
+        </ul>
+      </li>
+      <li class="fragment">Post-silicon tracing
+        <ul>
+          <li>Virtual memory handling / ASLR</li>
+          <li>Context switches / OS activity</li>
+          <li>BW requirements per hardware thread</li>
+          <li>External devices</li>
+          <li>DMAs / Timers</li>
+          <li>HW events in trace / time resolution</li>
+          <li>Dynamic on/off</li>
+          <li>Any SW instrumentation required? How much analysis is done host-side vs on-chip?</li>
+        </ul>
+      </li>
+      <li class="fragment">Boundary IO capture</li>
+      <li class="fragment">How to model time-dependent behavior given a fixed trace?</li>
+    </ul>
+  </section>
+</section>
+
+<section>
   <h2>Conclusion</h2>
 
   <div class="container" style="grid-template-columns: 1fr 2fr;">
