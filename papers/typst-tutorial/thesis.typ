@@ -1,3 +1,6 @@
+// Functions are called with #
+//
+
 #set math.equation(numbering: "1.")
 
 #set page(
