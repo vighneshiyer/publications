@@ -23,6 +23,10 @@ I realized that analog circuit design wasn't in my blood. It is nice to start wi
 Some words about the inspiration behind this project and how it came to be.
 TBD.
 
+Isn't sampling done to death?
+People say this and just point to papers. But this is paper-brained nonsense.
+Sampling doesn't even exist today from my real-life perspective.
+
 #align(right)[
 _Vighnesh Iyer_
 ]
