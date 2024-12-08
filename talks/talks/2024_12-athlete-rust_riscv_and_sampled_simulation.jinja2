@@ -479,9 +479,9 @@ e.g. for the main execution loop, the transformation of a switch table based dec
       <li class="fragment"><strong>Key feature</strong>: user control over the compilation of an ADL</li>
       <li class="fragment">Separate the <em>execution semantics</em> of the ADL from <em>codegen optimizations</em>
         <ul>
-          <li class="fragment">Memory block element (scratchpad, cache bank, DRAM) {{ rightarrow }} implementation as a fixed length array, a resizable vector, as a paged hash table, ...)</li>
-          <li>"Halide for "</li>
-
+          <li class="fragment">Memory block element (scratchpad, cache bank, DRAM) {{ rightarrow }} implementation as a fixed length array, a resizable vector, as a paged hash table, ...</li>
+          <li class="fragment">Naive serial instruction decode, page table translations {{ rightarrow }} implementation with a cache + automatic flushing before state serialization</a>
+          <li class="fragment">"Halide for ISS generation"</li>
         </ul>
       </li>
     </ul>
@@ -500,6 +500,56 @@ Baremetal benchmarks
   - why baremetal?
   - base libraries (regex, mutexes, data structures) -> app-level libraries (http server) -> application ()
 -->
+
+  <section>
+    <h2>Why Baremetal?</h2>
+
+    <ul>
+      <li class="fragment">Easy to run in execution driven simulation (RTL simulation)</li>
+      <li class="fragment">Better likelihood of successful arch state transfer</li>
+      <li class="fragment">Focus on common-case userspace code</li>
+      <li class="fragment">But, baremetal programs of course cannot:
+        <ul>
+          <li class="fragment">Run kernel code and stress the privileged ISA</li>
+          <li class="fragment">Perform userspace/kernel interactions and witness cache pollution</li>
+          <li class="fragment">Witness preemptive multithreading</li>
+        </ul>
+      </li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Baremetal Rust Programs</h2>
+
+    <ul>
+      <li class="fragment">Leverage upstream <a href="https://github.com/rust-embedded/riscv">rust-embedded</a> support
+        <ul>
+          <li class="fragment"><code class="inline">riscv-rt</code>: <code class="inline">crt.S</code>, <code class="inline">panic!</code> handlers, interrupt handlers</li>
+          <li class="fragment">Pre-built hooks for SoC-specific handlers (e.g. using HTIF for host proxying of syscalls)</li>
+          <li class="fragment"><code class="inline">memory.x</code>: defines the accessible raw address space + program segment mapping</li>
+          <li class="fragment"><code class="inline">target = "riscv64gc-unknown-none-elf"</code>: that's all it takes to pull in a cross compiler!</li>
+          <li class="fragment">Include and use any <code class="inline">no_std</code> dependency with a custom allocator</li>
+          <li class="fragment">Build baremetal projects with <code class="inline">cargo build</code> like any other Rust project!</li>
+        </ul>
+      </li>
+      <li class="fragment"><a href="https://github.com/euphoric-hardware/baremetal-rust-riscv">Github</a>
+        <ul>
+          <li class="fragment">Implementation of target-side HTIF</li>
+          <li class="fragment">1:1 port of some benchmarks from <code class="inline">riscv-tests/benchmarks</code></li>
+          <li class="fragment"><strong>WIP</strong>: <em>semantic</em> port of <a href="https://github.com/embench/embench-iot">embench</a></li>
+          <li class="fragment">Very little code {{ rightarrow }} lots of value</li>
+        </ul>
+      </li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Leveraging <code class="inline">no_std</code> Crates</h2>
+
+    <ul>
+
+    </ul>
+  </section>
 </section>
 
 <section>
