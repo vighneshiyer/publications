@@ -406,27 +406,32 @@ ADL for ISS generation
     <h2>Existing Work</h2>
 
     <ul>
-      <li class="fragment"><strong>spike</strong> is considered a 'golden model', but it isn't a spec in itself
+      <li class="fragment"><strong><a href="https://github.com/riscv-software-src/riscv-isa-sim">spike</a></strong> is considered a 'golden model', but it isn't a spec in itself
         <ul>
           <li>Undefined behaviors are concretized</li>
         </ul>
       </li>
-      <li class="fragment"><strong>sail-riscv</strong> is the official 'formal model' for RISC-V
+      <li class="fragment"><strong><a href="https://github.com/riscv/sail-riscv">sail-riscv</a></strong> is the official 'formal model' for RISC-V
         <ul>
           <li class="fragment">Custom DSL (Sail) for specifying execution semantics</li>
           <li class="fragment">Primarily intended for formal methods (although ISS generators exist - <a href="https://docs.pydrofoil.org/en/latest/">Pydrofoil</a>)</li>
         </ul>
       </li>
-      <li class="fragment smallish">Others in the wild: <a href="https://arxiv.org/pdf/2402.09087">Vienna ADL</a>, <a href="https://codasip.com/products/codasip-studio/codal/">Codasip's CodAL</a>, <a href="https://github.com/riscv-software-src/riscv-unified-db">Qualcomm's riscv-unified-db</a>
+      <li class="fragment smallish">Others in-the-wild: <a href="https://arxiv.org/pdf/2403.09087">Vienna ADL</a>, <a href="https://codasip.com/products/codasip-studio/codal/">Codasip's CodAL</a>, <a href="https://github.com/riscv-software-src/riscv-unified-db">Qualcomm's riscv-unified-db</a>
         <ul>
           <li class="fragment">Each one creates a new DSL for describing state, encodings, and update rules</li>
         </ul>
       </li>
-      <li class="fragment"><strong>Instruction-Level Abstraction</strong> (<a href="https://dl.acm.org/doi/abs/10.1145/3282444">ILA</a>)
+      <li class="fragment"><strong><a href="https://bo-yuan-huang.gitbook.io/ilang">Instruction-Level Abstraction</a></strong> (ILA)
         <ul>
           <li class="fragment">C++ eDSL for describing state + update rules</li>
           <li class="fragment">C++ framework that describes allowable behaviors + bindings to a Verilog implementation</li>
           <li class="fragment">Designed for accelerator specification</li>
+        </ul>
+      </li>
+      <li class="fragment"><strong>ARM's <a href="https://developer.arm.com/Architectures/Architecture%20Specification%20Language">Architecture Specification Language</a></strong> (<a href="https://alastairreid.github.io/specification_languages/">explainer blog post</a>)
+        <ul>
+          <li>A custom DSL for encoding the formal semantics of the ARM ISA, used mostly for <a href="https://alastairreid.github.io/using-armarm/">bug hunting</a> against <a href="https://alastairreid.github.io/finding-bugs/">Verilog implementations</a></li>
         </ul>
       </li>
     </ul>
@@ -436,10 +441,10 @@ ADL for ISS generation
   <section>
     <h2>Leveraging Chisel</h2>
 
-    <p class="fragment center">ADLs don't need a new language! It's hardware after all.</p>
+    <p class="fragment center">ADLs don't need a new language! <strong>It's hardware after all.</strong></p>
 
     <ul>
-      <li class="fragment">Use Scala/Chisel to describe state, encodings, update rules</li>
+      <li class="fragment">Use Scala/Chisel <small>(with some augmentation)</small> for state, encoding, update rules</li>
       <li class="fragment">But an ADL doesn't merely describe a single-cycle processor
         <ul>
           <li class="fragment">Formalize the notion of SoC components (cores, interrupt controllers, IO devices, host tethers, etc.) and how they interact with each other</li>
@@ -467,14 +472,15 @@ e.g. for the main execution loop, the transformation of a switch table based dec
     <ul>
       <li class="fragment">If an ADL simply described a single-cycle SoC, then isn't RTL simulation sufficient?
         <ul>
-          <li class="fragment">Naively doing this will produce a lower performance ISS (see default C backend of sail)</li>
+          <li class="fragment">Naively doing this will produce a low throughput ISS (e.g. the default C backend of sail)</li>
+          <li class="fragment">Leveraging DBT gives better performance (e.g. <a href="https://docs.pydrofoil.org/en/latest/background_optimizations.html">Pydrofoil's use of PyPy</a>)</li>
         </ul>
       </li>
-      <li class="fragment"><strong>Key feature</strong>: user control over lowering of an ADL</li>
-      <li class="fragment">Separate the execution semantics of the ADL from codegen optimizations
+      <li class="fragment"><strong>Key feature</strong>: user control over the compilation of an ADL</li>
+      <li class="fragment">Separate the <em>execution semantics</em> of the ADL from <em>codegen optimizations</em>
         <ul>
-          <li>Memory block element (scratchpad, cache bank, DRAM) rom the execution semantics itself (implementation as a fixed length array, a resizable vector, as a paged hash table, ...)
-          <li>"Halide for "
+          <li class="fragment">Memory block element (scratchpad, cache bank, DRAM) {{ rightarrow }} implementation as a fixed length array, a resizable vector, as a paged hash table, ...)</li>
+          <li>"Halide for "</li>
 
         </ul>
       </li>
