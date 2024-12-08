@@ -271,20 +271,6 @@ crates.io
     <h2>An Experimental RISC-V Instruction Set Simulator (ISS)</h2>
   </section>
 
-  <section>
-    <h2>Why?</h2>
-
-    <ul>
-      <li class="fragment">Spike already exists. What's wrong?</li>
-      <li class="fragment">Deficiencies with spike
-        <ul>
-          <li class="fragment">Ad-hoc arch state checkpointing</li>
-          <li class="fragment">Non-unified testbench/IO models between spike and Chipyard/FireSim</li>
-          <li class="fragment">Hard to create custom tops</li>
-        </ul>
-      </li>
-    </ul>
-  </section>
 <!--
 ISS (purely experimental)
   - DTS as primary input
@@ -292,11 +278,101 @@ ISS (purely experimental)
   - typeclass derivation for state serdes
   - multiple tops
 -->
+
+  <section>
+    <h2>Why?</h2>
+
+    <ul>
+      <li class="fragment">Spike already exists. What's wrong?
+        <ul>
+          <li class="fragment">The 'golden model' of RISC-V</li>
+          <li class="fragment">Extensive set of ISA extensions implemented</li>
+          <li class="fragment">Reasonably fast: 50+ MIPS <small>(much lower when tracing)</small></li>
+        </ul>
+      </li>
+      <li class="fragment">Deficiencies of spike
+        <ul>
+          <li class="fragment">Ad-hoc arch state checkpointing</li>
+          <li class="fragment">Non-unified testbench/IO models between spike and Chipyard/FireSim</li>
+          <li class="fragment">Hard to create custom tops (e.g. for live sampled simulation)</li>
+        </ul>
+      </li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Features</h2>
+
+    <p class="fragment">This is a <em>purely experimental</em> project</p>
+
+    <ul>
+      <li class="fragment">Support for RV64imfd so far (no privileged ISA)</li>
+      <li class="fragment">Exact diff testing with spike's commit log</li>
+      <li class="fragment">Can run RISC-V ISA tests for supported extensions cleanly</li>
+      <li class="fragment">Leverages <a href="https://github.com/riscv/riscv-opcodes">riscv-opcodes</a> for instruction encodings</li>
+    </ul>
+    <p class="fragment"><a href="https://github.com/euphoric-hardware/riscv-functional-sim">WIP on Github</a></p>
+  </section>
+
+  <section>
+    <h2>Simple State (De)Serialization</h2>
+
+    <ul>
+      <li class="fragment">The ISS is generated <em>after</em> the RTL generator is run</li>
+      <li class="fragment">All SoC state is contained within a single Rust <code class="inline">struct</code></li>
+      <li class="fragment">Typeclass derivation makes it easy to derive serdes on any struct</li>
+    </ul>
+
+    <pre class="fragment"><code class="language-rust" data-trim data-noescape>
+#[derive(Serialize)]
+pub struct Cpu {
+    pub regs: [u64; 32],
+    pub pc: u64,
+    pub csrs: Csrs
+}
+
+#[derive(Serialize)]
+pub struct System {
+  pub cpus: Vec&lt;Cpu&gt;,
+  bus: Bus
+}
+    </code></pre>
+    <p class="center fragment">Disentangling state and update rules seems obvious, but is not so in spike</p>
+  </section>
+
+  <section>
+    <h2>Codegen-Based ISS</h2>
+
+    <ul>
+      <li class="fragment">Swap out the opaque C++ macro system for direct Rust code generation
+        <ul>
+          <li class="fragment">Programatically read yaml files in riscv-opcodes and generate Rust strings for instruction decoding, immediate extraction, and the main switch table</li>
+          <li class="fragment">It's just code! No restrictions</li>
+          <li class="fragment">Can also <em>generate</em> code for CSRs with <em>semantic bitfields</em> <small>(this is done manually in spike)</small></li>
+        </ul>
+      </li>
+      <li class="fragment">The device tree from a Chipyard generator is <em>an input</em> into the ISS generation
+        <ul>
+          <li>The goal is <em>exact</em> SoC modeling</li>
+        </ul>
+      </li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>The Big Problem: Instruction Semantics</h2>
+
+    <p class="center fragment">How can anyone trust a new ISS is precisely emulating the RISC-V spec?</p>
+
+    <!--<ul class="fragment">
+      <li></li>
+    </ul>-->
+  </section>
 </section>
 
 <section>
   <section class="center">
-    <h2>Ideas Around Architectural Description Languages</h2>
+    <h2>Architectural Description Languages (ADLs)</h2>
   </section>
 <!--
 ADL for ISS generation
@@ -307,6 +383,24 @@ ADL for ISS generation
   - need to concretize uarch vagueness via automatic cosim hooks
   - leverage the same language used for both the ADL and HDL
 -->
+  <section>
+    <h2>ADLs Broadly</h2>
+    <ul>
+      <li class="fragment">Formal definition of arch state and update rules at the ISA-level</li>
+      <li class="fragment">Instruction and state encodings</li>
+      <li class="fragment">Execution semantics</li>
+      <li class="fragment">Methods to resolve ambiguities in a spec
+        <ul>
+
+        </ul>
+      </li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Existing Work</h2>
+
+  </section>
 </section>
 
 <section>
