@@ -40,6 +40,7 @@ $(eval $(call talk,2024_04-latte-the_next_paradigm_of_hw_design))
 $(eval $(call talk,2024_04-athlete-tidalsim_overview))
 $(eval $(call talk,2024_05-slice_summer-tidalsim))
 $(eval $(call talk,2024_08-athlete-tidalsim_tracekit))
+$(eval $(call talk,2024_12-athlete-rust_riscv_and_sampled_simulation))
 
 talks_output = $(addsuffix .html,$(talks))
 

@@ -184,6 +184,16 @@ $overlayElementFgColor: 0, 0, 0;
   suffix: ' ';
 }
 
+.reveal .slides code.inline {
+  font-size: 80%;
+  background: $tn_bg;
+  border-radius: 0.3rem;
+  padding: 0.1rem;
+  padding-left: 0.2rem;
+  padding-right: 0.2rem;
+  color: $tn_blue2;
+}
+
 .reveal .slides section,
 .reveal .slides section>section {
     // Use the picocss line height
