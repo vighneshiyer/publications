@@ -424,7 +424,9 @@ ADL for ISS generation
       </li>
       <li class="fragment"><strong>Instruction-Level Abstraction</strong> (<a href="https://dl.acm.org/doi/abs/10.1145/3282444">ILA</a>)
         <ul>
-          <li class="fragment">Leverages <em>SystemVerilog</em> for describing state/update rules
+          <li class="fragment">C++ eDSL for describing state + update rules</li>
+          <li class="fragment">C++ framework that describes allowable behaviors + bindings to a Verilog implementation</li>
+          <li class="fragment">Designed for accelerator specification</li>
         </ul>
       </li>
     </ul>
@@ -434,9 +436,22 @@ ADL for ISS generation
   <section>
     <h2>Leveraging Chisel</h2>
 
-    Not just a single-cycle processor!
+    <p class="fragment center">ADLs don't need a new language! It's hardware after all.</p>
+
+    <ul>
+      <li class="fragment">Use Scala/Chisel to describe state, encodings, update rules</li>
+      <li class="fragment">But an ADL doesn't merely describe a single-cycle processor
+        <ul>
+          <li class="fragment">Formalize the notion of SoC components (cores, interrupt controllers, IO devices, host tethers, etc.) and how they interact with each other</li>
+          <li class="fragment">Define exactly when architectural state advances</li>
+          <li class="fragment">Specify undefined behaviors and how they should be concretized for modeling a given implementation</li>
+        </ul>
+      </li>
+      <li class="fragment"><strong>WIP</strong>: A Chisel-based ADL embedded in Scala</li>
+    </ul>
+    <!--Not just a single-cycle processor!
     Need to wrap it!
-    ILA is kind of there
+    ILA is kind of there-->
   </section>
 
   <section>
@@ -448,6 +463,22 @@ e.g. for a memory block element (whether than be a scratchpad, DRAM, or otherwis
 e.g. for translation mappings (e.g. page table mappings) we can avoid having to specify a "TLB" explicitly in the ISS and instead generate it as a translation cache (which is a generic concept that can be applied to decode logic too)
 e.g. for the main execution loop, the transformation of a switch table based decode and dispatch can be automatically transformed into a threaded interpreter with its own VM and bytecode which can be hand guided by the ISS developer
     -->
+
+    <ul>
+      <li class="fragment">If an ADL simply described a single-cycle SoC, then isn't RTL simulation sufficient?
+        <ul>
+          <li class="fragment">Naively doing this will produce a lower performance ISS (see default C backend of sail)</li>
+        </ul>
+      </li>
+      <li class="fragment"><strong>Key feature</strong>: user control over lowering of an ADL</li>
+      <li class="fragment">Separate the execution semantics of the ADL from codegen optimizations
+        <ul>
+          <li>Memory block element (scratchpad, cache bank, DRAM) rom the execution semantics itself (implementation as a fixed length array, a resizable vector, as a paged hash table, ...)
+          <li>"Halide for "
+
+        </ul>
+      </li>
+    </ul>
   </section>
 </section>
 
