@@ -258,15 +258,32 @@ crates.io
       <li class="fragment">RISC-V is a first-class target with upstream baremetal support</li>
       <li class="fragment"><code class="inline">build.rs</code> for programmatic code generation</li>
       <li class="fragment">Stdlib that runs baremetal (using <code class="inline">alloc</code> and <code class="inline">collections</code>)</li>
-      <li class="fragment"><code class="inline">no_std</code></li>
-      <li class="fragment">The community package repo is full featured crates.io</code></li>
+      <li class="fragment">A comprehensive package library (crates.io)</li>
+      <li class="fragment">Large number of <code class="inline">no_std</code> crates that work baremetal</li>
     </ul>
+
+    <p class="center fragment"><strong>Heavily used libraries in the wild + baremetal = good</strong></p>
   </section>
 </section>
 
 <section>
   <section class="center">
     <h2>An Experimental RISC-V Instruction Set Simulator (ISS)</h2>
+  </section>
+
+  <section>
+    <h2>Why?</h2>
+
+    <ul>
+      <li class="fragment">Spike already exists. What's wrong?</li>
+      <li class="fragment">Deficiencies with spike
+        <ul>
+          <li class="fragment">Ad-hoc arch state checkpointing</li>
+          <li class="fragment">Non-unified testbench/IO models between spike and Chipyard/FireSim</li>
+          <li class="fragment">Hard to create custom tops</li>
+        </ul>
+      </li>
+    </ul>
   </section>
 <!--
 ISS (purely experimental)
