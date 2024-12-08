@@ -360,7 +360,7 @@ pub struct System {
   </section>
 
   <section>
-    <h2>The Big Problem: Instruction Semantics</h2>
+    <h2>The Big Problem: Instruction Execution Semantics</h2>
 
     <p class="center fragment">How can anyone trust a new ISS is precisely emulating the RISC-V spec?</p>
 
@@ -388,10 +388,15 @@ ADL for ISS generation
     <ul>
       <li class="fragment">Formal definition of arch state and update rules at the ISA-level</li>
       <li class="fragment">Instruction and state encodings</li>
-      <li class="fragment">Execution semantics</li>
+      <li class="fragment">Execution semantics
+        <ul>
+          <li>State update rules</li>
+        </ul>
+      </li>
       <li class="fragment">Methods to resolve ambiguities in a spec
         <ul>
-
+          <li class="fragment">At uArch defition time (e.g. handling of misaligned memory loads/stores, FP exceptions, unimplemented CSR access handling)</li>
+          <li class="fragment">At uArch runtime (e.g. interrupt handling)</li>
         </ul>
       </li>
     </ul>
@@ -400,6 +405,49 @@ ADL for ISS generation
   <section>
     <h2>Existing Work</h2>
 
+    <ul>
+      <li class="fragment"><strong>spike</strong> is considered a 'golden model', but it isn't a spec in itself
+        <ul>
+          <li>Undefined behaviors are concretized</li>
+        </ul>
+      </li>
+      <li class="fragment"><strong>sail-riscv</strong> is the official 'formal model' for RISC-V
+        <ul>
+          <li class="fragment">Custom DSL (Sail) for specifying execution semantics</li>
+          <li class="fragment">Primarily intended for formal methods (although ISS generators exist - <a href="https://docs.pydrofoil.org/en/latest/">Pydrofoil</a>)</li>
+        </ul>
+      </li>
+      <li class="fragment smallish">Others in the wild: <a href="https://arxiv.org/pdf/2402.09087">Vienna ADL</a>, <a href="https://codasip.com/products/codasip-studio/codal/">Codasip's CodAL</a>, <a href="https://github.com/riscv-software-src/riscv-unified-db">Qualcomm's riscv-unified-db</a>
+        <ul>
+          <li class="fragment">Each one creates a new DSL for describing state, encodings, and update rules</li>
+        </ul>
+      </li>
+      <li class="fragment"><strong>Instruction-Level Abstraction</strong> (<a href="https://dl.acm.org/doi/abs/10.1145/3282444">ILA</a>)
+        <ul>
+          <li class="fragment">Leverages <em>SystemVerilog</em> for describing state/update rules
+        </ul>
+      </li>
+    </ul>
+    <!--Some things are lacking-->
+  </section>
+
+  <section>
+    <h2>Leveraging Chisel</h2>
+
+    Not just a single-cycle processor!
+    Need to wrap it!
+    ILA is kind of there
+  </section>
+
+  <section>
+    <h2>Generating an ISS from an ADL</h2>
+
+    <!--
+Separation of concerns ala halide for generation of functional models from a specification description of an ISA
+e.g. for a memory block element (whether than be a scratchpad, DRAM, or otherwise) we can define codegen optimizations separately from the execution semantics itself (implementation as a fixed length array, a resizable vector, as a paged hash table, ...)
+e.g. for translation mappings (e.g. page table mappings) we can avoid having to specify a "TLB" explicitly in the ISS and instead generate it as a translation cache (which is a generic concept that can be applied to decode logic too)
+e.g. for the main execution loop, the transformation of a switch table based decode and dispatch can be automatically transformed into a threaded interpreter with its own VM and bytecode which can be hand guided by the ISS developer
+    -->
   </section>
 </section>
 
