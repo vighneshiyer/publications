@@ -360,9 +360,11 @@ pub struct System {
   </section>
 
   <section>
-    <h2>The Big Problem: Instruction Execution Semantics</h2>
+    <h2>Big Problems</h2>
 
     <p class="center fragment">How can anyone trust a new ISS is precisely emulating the RISC-V spec?</p>
+    <p class="center fragment">How can we make the ISS performant?</p>
+    <p class="center fragment">How can we exactly model an SoC generated from Chipyard? We can't build a point-design ISS.</p>
 
     <!--<ul class="fragment">
       <li></li>
@@ -498,7 +500,6 @@ Baremetal environment
 
 Baremetal benchmarks
   - why baremetal?
-  - base libraries (regex, mutexes, data structures) -> app-level libraries (http server) -> application ()
 -->
 
   <section>
@@ -547,16 +548,62 @@ Baremetal benchmarks
     <h2>Leveraging <code class="inline">no_std</code> Crates</h2>
 
     <ul>
-
+      <li class="fragment">There are many <code class="inline">no_std</code> crates on crates.io that are very popular
+        <ul>
+          <li><strong>Data structures</strong>: stdlib, hashbrown, btrees, bigint, petgraph, yada</li>
+          <li><strong>Strings</strong>: regex, nom</li>
+          <li><strong>(De)Serialization</strong>: serde, json, yaml, bincode</li>
+          <li><strong>Compilers/JIT</strong>: cranelift, wasmtime, revm-interpreter</li>
+          <li><strong>Hashing / crypto</strong>: hmac, aes, rsa, rustls</li>
+          <li><strong>Numerics</strong>: nalgebra, faer-rs, rust-num, ndarray</li>
+        </ul>
+      </li>
+      <li class="fragment">Unlike any other language / environment out there, these crates are easy to use baremetal out-of-the-box</li>
     </ul>
+
+    <p class="fragment center">The missing piece: <strong>stimulus</strong>!</p>
+
+    <ul>
+      <li class="fragment small">Caveat: some of these crates have their own benchmarks, which can be used</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Extracting Stimuli from Applications</h2>
+
+    <!--
+    - base libraries (regex, mutexes, data structures) -> app-level libraries (http server) -> application ()
+    -->
+
+    <ul>
+      <li class="fragment">Tiers of crates
+        <ul>
+          <li>Base libraries (e.g. data structures)</li>
+          <li>Application-level libraries (e.g. HTTP servers)</li>
+          <li>Deployed applications (e.g. ripgrep, Alacritty, Servo, Meilisearch)</li>
+        </ul>
+      </li>
+      <li class="fragment">Run real applications to derive library-level stimulus
+        <ul>
+          <li class="fragment">We can instrument any crate with function argument capturing</li>
+          <li class="fragment">Cargo always compiles from source {{ rightarrow }} adding patched versions of dependencies is easy</li>
+        </ul>
+      </li>
+    </ul>
+
+    <p class="center fragment">A path towards representative, high quality baremetal benchmarks</p>
+
   </section>
 </section>
 
 <section>
-  <section class="center">
-    <h2>Leveraging Rust-y RISC-V Infra for Sampled Simulation</h2>
+  <section>
+    <h2>Sampled Simulation</h2>
+
+    <!-- Show a figure here of all the parts put together -->
   </section>
-      <!--<li class="fragment">Live sampled simulation leveraging the Rust ISS + benchmarks</li>-->
+
+  <!--<li class="fragment">Live sampled simulation leveraging the Rust ISS + benchmarks</li>-->
 </section>
 
 <section>
