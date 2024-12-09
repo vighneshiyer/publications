@@ -1,0 +1,654 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="2.3670394in"
+   height="1.0658277in"
+   viewBox="0 0 60.122802 27.072024"
+   version="1.1"
+   id="svg1"
+   inkscape:version="1.4 (e7c3feb100, 2024-10-09)"
+   sodipodi:docname="test.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="mm"
+     showgrid="true"
+     inkscape:zoom="4"
+     inkscape:cx="130.25"
+     inkscape:cy="50"
+     inkscape:window-width="2048"
+     inkscape:window-height="1106"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="layer1">
+    <inkscape:grid
+       id="grid1"
+       units="mm"
+       originx="-3.9272021"
+       originy="-4.9499999"
+       spacingx="1"
+       spacingy="1"
+       empcolor="#0099e5"
+       empopacity="0.30196078"
+       color="#0099e5"
+       opacity="0.14901961"
+       empspacing="6"
+       enabled="true"
+       visible="true"
+       snapvisiblegridlinesonly="true"
+       dotted="false" />
+    <inkscape:page
+       x="0"
+       y="0"
+       width="60.122803"
+       height="27.072025"
+       id="page3"
+       margin="0"
+       bleed="0" />
+  </sodipodi:namedview>
+  <defs
+     id="defs1">
+    <marker
+       style="overflow:visible"
+       id="marker6"
+       refX="0"
+       refY="0"
+       orient="auto-start-reverse"
+       inkscape:stockid="Wide, heavy arrow"
+       markerWidth="1"
+       markerHeight="1"
+       viewBox="0 0 1 1"
+       inkscape:isstock="true"
+       inkscape:collect="always"
+       preserveAspectRatio="xMidYMid">
+      <path
+         style="fill:context-stroke;fill-rule:evenodd;stroke:none"
+         d="m 1,0 -3,3 h -2 l 3,-3 -3,-3 h 2 z"
+         id="path6" />
+    </marker>
+    <marker
+       style="overflow:visible"
+       id="ArrowWideHeavy"
+       refX="0"
+       refY="0"
+       orient="auto-start-reverse"
+       inkscape:stockid="Wide, heavy arrow"
+       markerWidth="1"
+       markerHeight="1"
+       viewBox="0 0 1 1"
+       inkscape:isstock="true"
+       inkscape:collect="always"
+       preserveAspectRatio="xMidYMid">
+      <path
+         style="fill:context-stroke;fill-rule:evenodd;stroke:none"
+         d="m 1,0 -3,3 h -2 l 3,-3 -3,-3 h 2 z"
+         id="path3" />
+    </marker>
+    <symbol
+       id="AigaSymbols.svg:DownArrow">
+      <title
+         id="title284">Down Arrow</title>
+      <path
+         d="M 36,63 14,41 V 26 L 30,42 V 10 H 42 V 42 L 58,26 v 15 z"
+         style="stroke:none"
+         id="path284" />
+    </symbol>
+    <marker
+       style="overflow:visible"
+       id="ArrowWideHeavy-8"
+       refX="0"
+       refY="0"
+       orient="auto-start-reverse"
+       inkscape:stockid="Wide, heavy arrow"
+       markerWidth="1"
+       markerHeight="1"
+       viewBox="0 0 1 1"
+       inkscape:isstock="true"
+       inkscape:collect="always"
+       preserveAspectRatio="xMidYMid">
+      <path
+         style="fill:context-stroke;fill-rule:evenodd;stroke:none"
+         d="m 1,0 -3,3 h -2 l 3,-3 -3,-3 h 2 z"
+         id="path3-6" />
+    </marker>
+    <marker
+       style="overflow:visible"
+       id="ArrowWideHeavy-4"
+       refX="0"
+       refY="0"
+       orient="auto-start-reverse"
+       inkscape:stockid="Wide, heavy arrow"
+       markerWidth="1"
+       markerHeight="1"
+       viewBox="0 0 1 1"
+       inkscape:isstock="true"
+       inkscape:collect="always"
+       preserveAspectRatio="xMidYMid">
+      <path
+         style="fill:context-stroke;fill-rule:evenodd;stroke:none"
+         d="m 1,0 -3,3 h -2 l 3,-3 -3,-3 h 2 z"
+         id="path3-7" />
+    </marker>
+    <marker
+       style="overflow:visible"
+       id="ArrowWideHeavy-83"
+       refX="0"
+       refY="0"
+       orient="auto-start-reverse"
+       inkscape:stockid="Wide, heavy arrow"
+       markerWidth="1"
+       markerHeight="1"
+       viewBox="0 0 1 1"
+       inkscape:isstock="true"
+       inkscape:collect="always"
+       preserveAspectRatio="xMidYMid">
+      <path
+         style="fill:context-stroke;fill-rule:evenodd;stroke:none"
+         d="m 1,0 -3,3 h -2 l 3,-3 -3,-3 h 2 z"
+         id="path3-0" />
+    </marker>
+    <marker
+       style="overflow:visible"
+       id="ArrowWideHeavy-83-9"
+       refX="0"
+       refY="0"
+       orient="auto-start-reverse"
+       inkscape:stockid="Wide, heavy arrow"
+       markerWidth="1"
+       markerHeight="1"
+       viewBox="0 0 1 1"
+       inkscape:isstock="true"
+       inkscape:collect="always"
+       preserveAspectRatio="xMidYMid">
+      <path
+         style="fill:context-stroke;fill-rule:evenodd;stroke:none"
+         d="m 1,0 -3,3 h -2 l 3,-3 -3,-3 h 2 z"
+         id="path3-0-7" />
+    </marker>
+    <marker
+       style="overflow:visible"
+       id="ArrowWideHeavy-4-4"
+       refX="0"
+       refY="0"
+       orient="auto-start-reverse"
+       inkscape:stockid="Wide, heavy arrow"
+       markerWidth="1"
+       markerHeight="1"
+       viewBox="0 0 1 1"
+       inkscape:isstock="true"
+       inkscape:collect="always"
+       preserveAspectRatio="xMidYMid">
+      <path
+         style="fill:context-stroke;fill-rule:evenodd;stroke:none"
+         d="m 1,0 -3,3 h -2 l 3,-3 -3,-3 h 2 z"
+         id="path3-7-9" />
+    </marker>
+    <marker
+       style="overflow:visible"
+       id="ArrowWideHeavy-4-9"
+       refX="0"
+       refY="0"
+       orient="auto-start-reverse"
+       inkscape:stockid="Wide, heavy arrow"
+       markerWidth="1"
+       markerHeight="1"
+       viewBox="0 0 1 1"
+       inkscape:isstock="true"
+       inkscape:collect="always"
+       preserveAspectRatio="xMidYMid">
+      <path
+         style="fill:context-stroke;fill-rule:evenodd;stroke:none"
+         d="m 1,0 -3,3 h -2 l 3,-3 -3,-3 h 2 z"
+         id="path3-7-6" />
+    </marker>
+    <marker
+       style="overflow:visible"
+       id="ArrowWideHeavy-83-9-7"
+       refX="0"
+       refY="0"
+       orient="auto-start-reverse"
+       inkscape:stockid="Wide, heavy arrow"
+       markerWidth="1"
+       markerHeight="1"
+       viewBox="0 0 1 1"
+       inkscape:isstock="true"
+       inkscape:collect="always"
+       preserveAspectRatio="xMidYMid">
+      <path
+         style="fill:context-stroke;fill-rule:evenodd;stroke:none"
+         d="m 1,0 -3,3 h -2 l 3,-3 -3,-3 h 2 z"
+         id="path3-0-7-3" />
+    </marker>
+    <marker
+       style="overflow:visible"
+       id="ArrowWideHeavy-83-9-5"
+       refX="0"
+       refY="0"
+       orient="auto-start-reverse"
+       inkscape:stockid="Wide, heavy arrow"
+       markerWidth="1"
+       markerHeight="1"
+       viewBox="0 0 1 1"
+       inkscape:isstock="true"
+       inkscape:collect="always"
+       preserveAspectRatio="xMidYMid">
+      <path
+         style="fill:context-stroke;fill-rule:evenodd;stroke:none"
+         d="m 1,0 -3,3 h -2 l 3,-3 -3,-3 h 2 z"
+         id="path3-0-7-6" />
+    </marker>
+    <marker
+       style="overflow:visible"
+       id="ArrowWideHeavy-83-9-6"
+       refX="0"
+       refY="0"
+       orient="auto-start-reverse"
+       inkscape:stockid="Wide, heavy arrow"
+       markerWidth="1"
+       markerHeight="1"
+       viewBox="0 0 1 1"
+       inkscape:isstock="true"
+       inkscape:collect="always"
+       preserveAspectRatio="xMidYMid">
+      <path
+         style="fill:context-stroke;fill-rule:evenodd;stroke:none"
+         d="m 1,0 -3,3 h -2 l 3,-3 -3,-3 h 2 z"
+         id="path3-0-7-4" />
+    </marker>
+  </defs>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     style="display:inline"
+     transform="translate(-3.927202,-4.9499998)">
+    <rect
+       style="fill:#f8f8f2;stroke:#222327;stroke-width:0.1;stroke-dasharray:none"
+       id="rect4"
+       width="17.900002"
+       height="2.8999999"
+       x="6.0499997"
+       y="5" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:1.76389px;font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:start;writing-mode:lr-tb;direction:ltr;white-space:pre-wrap;shape-inside:url(#rect4);display:inline;fill:#222327;fill-opacity:1;stroke:none;stroke-width:0.254"
+       x="8.8030519"
+       y="12.427548"
+       id="text1"
+       transform="translate(3.598089,0.51090098)"><tspan
+         x="6.0507812"
+         y="6.5948506"
+         id="tspan7">no_std crates<tspan
+   dx="0.82373905"
+   id="tspan6" /></tspan></text>
+    <rect
+       style="display:inline;fill:#f8f8f2;stroke:#222327;stroke-width:0.1;stroke-dasharray:none"
+       id="rect4-0"
+       width="17.9"
+       height="2.95"
+       x="6.0500002"
+       y="11.05" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:1.76389px;font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:start;writing-mode:lr-tb;direction:ltr;white-space:pre-wrap;shape-inside:url(#rect4-0);display:inline;fill:#222327;fill-opacity:1;stroke:none;stroke-width:0.254"
+       x="8.8030519"
+       y="12.427548"
+       id="text1-5"
+       transform="translate(1.9836207,0.37169554)"><tspan
+         x="6.0507812"
+         y="12.645632"
+         id="tspan8">Rust applications</tspan></text>
+    <rect
+       style="display:inline;fill:#f8f8f2;stroke:#222327;stroke-width:0.1;stroke-dasharray:none"
+       id="rect4-0-1"
+       width="17.9"
+       height="2.95"
+       x="26"
+       y="17" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:1.76389px;font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:start;writing-mode:lr-tb;direction:ltr;white-space:pre-wrap;shape-inside:url(#rect4-0-1);display:inline;fill:#222327;fill-opacity:1;stroke:none;stroke-width:0.254"
+       x="8.8030519"
+       y="12.427548"
+       id="text1-5-46"
+       transform="translate(5.6822748,0.48691598)"><tspan
+         x="26"
+         y="18.594851"
+         id="tspan9">Rust ISS</tspan></text>
+    <rect
+       style="display:inline;fill:#f8f8f2;stroke:#222327;stroke-width:0.0999996;stroke-dasharray:none"
+       id="rect4-0-1-9-96"
+       width="17.9"
+       height="2.8999999"
+       x="46.049999"
+       y="5.0500002" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:1.76389px;font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:start;writing-mode:lr-tb;direction:ltr;white-space:pre-wrap;shape-inside:url(#rect4-0-1-9-96);display:inline;fill:#222327;fill-opacity:1;stroke:none;stroke-width:0.254"
+       x="8.8030519"
+       y="12.427548"
+       id="text1-5-46-2-04"
+       transform="translate(1.3798487,0.5683176)"><tspan
+         x="46.050781"
+         y="6.6456318"
+         id="tspan10">Chipyard Generator</tspan></text>
+    <rect
+       style="display:inline;fill:#8be9fd;stroke:#222327;stroke-width:0.1;stroke-dasharray:none"
+       id="rect4-0-1-9-9"
+       width="17.950001"
+       height="9.8851805"
+       x="26"
+       y="22.086842" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:1.76389px;font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:start;writing-mode:lr-tb;direction:ltr;white-space:pre-wrap;shape-inside:url(#rect4-0-1-9-9);display:inline;fill:#222327;fill-opacity:1;stroke:none;stroke-width:0.254"
+       x="8.8030519"
+       y="12.427548"
+       id="text1-5-46-2-0"
+       transform="translate(4.730199,1.7946566)"><tspan
+         x="26"
+         y="23.680788"
+         id="tspan11">Sampled
+</tspan><tspan
+         x="26"
+         y="25.885651"
+         id="tspan12">Simulation
+</tspan><tspan
+         x="26"
+         y="28.090513"
+         id="tspan13">Flow</tspan></text>
+    <rect
+       style="display:inline;fill:#f8f8f2;stroke:#222327;stroke-width:0.0999997;stroke-dasharray:none"
+       id="rect4-0-1-9-9-6"
+       width="17.950003"
+       height="3.1888146"
+       x="46.049999"
+       y="25" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:1.76389px;font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:start;writing-mode:lr-tb;direction:ltr;white-space:pre-wrap;shape-inside:url(#rect4-0-1-9-9-6);display:inline;fill:#222327;fill-opacity:1;stroke:none;stroke-width:0.254"
+       x="8.8030519"
+       y="12.427548"
+       id="text1-5-46-2-0-5"
+       transform="translate(1.3798487,0.5683176)"><tspan
+         x="46.050781"
+         y="26.594851"
+         id="tspan14">TraceKit</tspan></text>
+    <rect
+       style="display:inline;fill:#f8f8f2;stroke:#222327;stroke-width:0.1;stroke-dasharray:none"
+       id="rect4-0-1-9-8"
+       width="17.899998"
+       height="2.95"
+       x="26.050003"
+       y="5" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:1.76389px;font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:start;writing-mode:lr-tb;direction:ltr;white-space:pre-wrap;shape-inside:url(#rect4-0-1-9-8);display:inline;fill:#222327;fill-opacity:1;stroke:none;stroke-width:0.254"
+       x="8.8030519"
+       y="12.427548"
+       id="text1-5-46-2-3"
+       transform="translate(2.3919613,0.42902477)"><tspan
+         x="26.050781"
+         y="6.5948506"
+         id="tspan15">SoC Config / DTS</tspan></text>
+    <rect
+       style="display:inline;fill:#f8f8f2;stroke:#222327;stroke-width:0.1;stroke-dasharray:0.4, 0.1;stroke-dashoffset:0"
+       id="rect4-0-1-6"
+       width="17.9"
+       height="2.95"
+       x="26"
+       y="11.05" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:1.76389px;font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:start;writing-mode:lr-tb;direction:ltr;white-space:pre-wrap;shape-inside:url(#rect4-0-1-6);display:inline;fill:#222327;fill-opacity:1;stroke:none;stroke-width:0.254"
+       x="8.8030519"
+       y="12.427548"
+       id="text1-5-46-4"
+       transform="translate(4.5932929,0.48780957)"><tspan
+         x="26"
+         y="12.645632"
+         id="tspan16">RISC-V ADL</tspan></text>
+    <rect
+       style="display:inline;fill:#f8f8f2;stroke:#222327;stroke-width:0.0999998;stroke-dasharray:none"
+       id="rect4-0-6-4-8"
+       width="17.9"
+       height="11.800001"
+       x="46.049999"
+       y="11.049999" />
+    <rect
+       style="display:inline;fill:#f8f8f2;stroke:#222327;stroke-width:0.1;stroke-dasharray:none"
+       id="rect4-0-6"
+       width="17.9"
+       height="2.95"
+       x="6.0499997"
+       y="17" />
+    <rect
+       style="display:inline;fill:#f8f8f2;stroke:#222327;stroke-width:0.1;stroke-dasharray:none"
+       id="rect4-0-6-4"
+       width="17.950001"
+       height="10.922027"
+       x="6"
+       y="21.049997" />
+    <rect
+       style="display:inline;fill:#f8f8f2;stroke:#222327;stroke-width:0.0999999;stroke-dasharray:none"
+       id="rect4-0-1-9"
+       width="15.900001"
+       height="2.9210193"
+       x="46.884682"
+       y="14.1" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:1.76389px;font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:start;writing-mode:lr-tb;direction:ltr;white-space:pre-wrap;shape-inside:url(#rect4-0-1-9);display:inline;fill:#222327;fill-opacity:1;stroke:none;stroke-width:0.254"
+       x="8.8030519"
+       y="12.427548"
+       id="text1-5-46-2"
+       transform="translate(4.8103778,0.47331921)"><tspan
+         x="46.884766"
+         y="15.69446"
+         id="tspan17">SoC RTL</tspan></text>
+    <rect
+       style="display:inline;fill:#f8f8f2;stroke:#222327;stroke-width:0.1;stroke-dasharray:none"
+       id="rect4-0-1-9-4"
+       width="15.95"
+       height="4.0000005"
+       x="47.024998"
+       y="18" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:1.41111px;font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:start;writing-mode:lr-tb;direction:ltr;white-space:pre-wrap;shape-inside:url(#rect4-0-1-9-4);display:inline;fill:#222327;fill-opacity:1;stroke:none;stroke-width:0.254"
+       x="8.8030519"
+       y="12.427548"
+       id="text1-5-46-2-7"
+       transform="translate(0.53310957,0.40309262)"><tspan
+         x="47.025391"
+         y="19.275879"
+         id="tspan18">Serializable Testbench/</tspan><tspan
+         x="47.025391"
+         y="21.039766"
+         id="tspan19">IO Models</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:1.76389px;font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:start;writing-mode:lr-tb;direction:ltr;white-space:pre-wrap;shape-inside:url(#rect4-0-6);display:inline;fill:#222327;fill-opacity:1;stroke:none;stroke-width:0.254"
+       x="8.8030519"
+       y="12.427548"
+       id="text1-5-4"
+       transform="translate(1.8760204,0.55670076)"><tspan
+         x="6.0507812"
+         y="18.594851"
+         id="tspan20">Realistic stimulus</tspan></text>
+    <rect
+       style="display:inline;fill:#98c379;stroke:#222327;stroke-width:0.0999998;stroke-dasharray:none"
+       id="rect4-0-6-6"
+       width="15.899999"
+       height="1.9000007"
+       x="7.0500016"
+       y="26.054628" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:1.02306px;font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:start;writing-mode:lr-tb;direction:ltr;white-space:pre-wrap;shape-inside:url(#rect4-0-6-6);display:inline;fill:#222327;fill-opacity:1;stroke:none;stroke-width:0.254"
+       x="8.8030519"
+       y="12.427548"
+       id="text1-5-4-9"
+       transform="translate(0.31718814,0.32877331)"><tspan
+         x="7.0507812"
+         y="26.979704"
+         id="tspan21">Rusty no_std µBenchmarks/apps</tspan></text>
+    <rect
+       style="display:inline;fill:#98c379;stroke:#222327;stroke-width:0.0999998;stroke-dasharray:none"
+       id="rect4-0-6-6-7"
+       width="15.899999"
+       height="1.9000007"
+       x="7.0500007"
+       y="29" />
+    <rect
+       style="display:inline;fill:#ffb86c;stroke:#222327;stroke-width:0.0999998;stroke-dasharray:none"
+       id="rect4-0-6-6-7-0"
+       width="15.899999"
+       height="1.9000007"
+       x="7.0500007"
+       y="23" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:1.05833px;font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:start;writing-mode:lr-tb;direction:ltr;white-space:pre-wrap;shape-inside:url(#rect4-0-6-6-7);display:inline;fill:#222327;fill-opacity:1;stroke:none;stroke-width:0.254"
+       x="8.8030519"
+       y="12.427548"
+       id="text1-5-4-9-5"
+       transform="translate(1.4161437,0.30741761)"><tspan
+         x="7.0507812"
+         y="29.956907"
+         id="tspan22">Embench/Geekbench ports</tspan></text>
+    <path
+       style="fill:none;fill-opacity:1;stroke:#222327;stroke-width:0.15;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#ArrowWideHeavy)"
+       d="m 15,7.9012917 10e-7,2.9493493"
+       id="path2" />
+    <path
+       style="display:inline;fill:none;fill-opacity:1;stroke:#222327;stroke-width:0.15;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#ArrowWideHeavy-4)"
+       d="m 35,7.902278 10e-7,2.949349"
+       id="path2-3" />
+    <path
+       style="display:inline;fill:none;fill-opacity:1;stroke:#222327;stroke-width:0.15;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#ArrowWideHeavy-4-4)"
+       d="m 55,8 10e-7,2.949349"
+       id="path2-3-2" />
+    <path
+       style="display:inline;fill:none;fill-opacity:1;stroke:#222327;stroke-width:0.15;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#ArrowWideHeavy-4-9)"
+       d="m 46.034962,6.5 -1.882203,1e-6"
+       id="path2-3-1" />
+    <path
+       style="display:inline;fill:none;fill-opacity:1;stroke:#222327;stroke-width:0.15;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#ArrowWideHeavy-83)"
+       d="m 34.95,14.060738 10e-7,2.787411"
+       id="path2-7" />
+    <path
+       style="display:inline;fill:none;fill-opacity:1;stroke:#222327;stroke-width:0.15;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#ArrowWideHeavy-83-9)"
+       d="M 34.950001,19.950001 34.950002,22"
+       id="path2-7-2" />
+    <path
+       style="display:inline;fill:none;fill-opacity:1;stroke:#222327;stroke-width:0.15;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#ArrowWideHeavy-83-9-6)"
+       d="m 46.039578,26.594407 -1.932189,0.02166"
+       id="path2-7-2-4" />
+    <path
+       style="display:inline;fill:none;fill-opacity:1;stroke:#222327;stroke-width:0.15;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#ArrowWideHeavy-83-9-5)"
+       d="m 46.053958,21.94016 -1.965344,0.831876"
+       id="path2-7-2-7" />
+    <path
+       style="display:inline;fill:none;fill-opacity:1;stroke:#222327;stroke-width:0.15;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#ArrowWideHeavy-83-9-7)"
+       d="m 23.999227,27.029433 1.847442,-1e-6"
+       id="path2-7-2-1" />
+    <path
+       style="display:inline;fill:none;fill-opacity:1;stroke:#222327;stroke-width:0.15;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#ArrowWideHeavy-8)"
+       d="M 14.999999,14 15,16.831995"
+       id="path2-8" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:1.41111px;font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#222327;fill-opacity:1;stroke:none;stroke-width:0.15;stroke-dasharray:none;stroke-opacity:1"
+       x="6.3272729"
+       y="22.460886"
+       id="text4"><tspan
+         sodipodi:role="line"
+         id="tspan4"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:1.41111px;font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#222327;fill-opacity:1;stroke:none;stroke-width:0.15"
+         x="6.3272729"
+         y="22.460886">Baremetal Benchmarks</tspan><tspan
+         sodipodi:role="line"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:1.41111px;font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#222327;fill-opacity:1;stroke:none;stroke-width:0.15"
+         x="6.3272729"
+         y="24.224773"
+         id="tspan5" /></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:1.41111px;font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;display:inline;fill:#222327;fill-opacity:1;stroke:none;stroke-width:0.15;stroke-dasharray:none;stroke-opacity:1"
+       x="46.693569"
+       y="12.836667"
+       id="text4-5"><tspan
+         sodipodi:role="line"
+         id="tspan4-4"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:1.41111px;font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#222327;fill-opacity:1;stroke:none;stroke-width:0.15"
+         x="46.693569"
+         y="12.836667">RTL Testbench</tspan><tspan
+         sodipodi:role="line"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:1.41111px;font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#222327;fill-opacity:1;stroke:none;stroke-width:0.15"
+         x="46.693569"
+         y="14.600554"
+         id="tspan5-92" /></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:1.05833px;font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;display:inline;fill:#222327;fill-opacity:1;stroke:none;stroke-width:0.15;stroke-dasharray:none;stroke-opacity:1"
+       x="8.1250648"
+       y="24.3564"
+       id="text4-6"><tspan
+         sodipodi:role="line"
+         id="tspan4-25"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:1.05833px;font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#222327;fill-opacity:1;stroke:none;stroke-width:0.15"
+         x="8.1250648"
+         y="24.3564">Rust baremetal environment</tspan><tspan
+         sodipodi:role="line"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:1.05833px;font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#222327;fill-opacity:1;stroke:none;stroke-width:0.15"
+         x="8.1250648"
+         y="25.679312"
+         id="tspan5-4" /></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:1.05833px;font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;white-space:pre;inline-size:5.66171;display:inline;fill:#e06c75;fill-opacity:1;stroke:none;stroke-width:0.15;stroke-dasharray:none;stroke-opacity:1"
+       x="15.952911"
+       y="9.6905708"
+       id="text4-8"
+       transform="translate(0.29242888,-0.64819192)"><tspan
+         x="15.952911"
+         y="9.6905708"
+         id="tspan23">Instrument </tspan><tspan
+         x="15.952911"
+         y="11.013483"
+         id="tspan24">and wrap
+</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:1.05833px;font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;white-space:pre;inline-size:5.66171;display:inline;fill:#e06c75;fill-opacity:1;stroke:none;stroke-width:0.15;stroke-dasharray:none;stroke-opacity:1"
+       x="15.952911"
+       y="9.6905708"
+       id="text4-8-1"
+       transform="translate(0.29242888,5.3998555)"><tspan
+         x="15.952911"
+         y="9.6905708"
+         id="tspan25">Run on x86 </tspan><tspan
+         x="15.952911"
+         y="11.013483"
+         id="tspan26">machine
+</tspan></text>
+    <path
+       style="fill:none;fill-opacity:1;stroke:#222327;stroke-width:0.15;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#marker6)"
+       d="M 6,6.4441369 C 2.6131703,12.87664 4.1734424,16.921008 5.9512606,20.860356"
+       id="path5"
+       sodipodi:nodetypes="cc" />
+  </g>
+</svg>

@@ -361,10 +361,11 @@ pub struct System {
 
   <section>
     <h2>Big Problems</h2>
-
-    <p class="center fragment">How can anyone trust a new ISS is precisely emulating the RISC-V spec?</p>
-    <p class="center fragment">How can we make the ISS performant?</p>
-    <p class="center fragment">How can we exactly model an SoC generated from Chipyard? We can't build a point-design ISS.</p>
+    <ol>
+      <li class="fragment">How can anyone trust a new ISS is precisely emulating the RISC-V spec?</li>
+      <li class="fragment">How can we make the ISS performant?</li>
+      <li class="fragment">How can we exactly model an SoC generated from Chipyard? We can't build a point-design ISS.</li>
+    </ol>
 
     <!--<ul class="fragment">
       <li></li>
@@ -597,42 +598,15 @@ Baremetal benchmarks
 </section>
 
 <section>
-  <section>
-    <h2>Sampled Simulation</h2>
+  <section class="center">
+    <h2>Conclusion</h2>
 
+    <img style="margin-bottom: 0;" class="image" src="./figs/multi-level-sim/overview.svg" width="100%"/>
     <!-- Show a figure here of all the parts put together -->
+    <!--<li class="fragment">Live sampled simulation leveraging the Rust ISS + benchmarks</li>-->
+    <p class="center fragment">All these components tie into a robust sampled simulation flow.</p>
   </section>
 
-  <!--<li class="fragment">Live sampled simulation leveraging the Rust ISS + benchmarks</li>-->
-</section>
-
-<section>
-  <h2>Conclusion</h2>
-
-  <div class="container" style="grid-template-columns: 1fr 2fr;">
-    <img class="image" width="100%" src="./figs/dynamic/tidalsim/overview.svg" />
-    <!--<img class="image" width="100%" src="./figs/dynamic/tidalsim/full_flow_detail.svg" />-->
-    <img class="image" width="100%" src="./figs/dynamic/tracekit/tracekit_overview.svg" />
-  </div>
-
-  <div class="center">
-  </div>
-
-  <ul class="smallish">
-    <li class="fragment">Tidalsim provides fast, accurate, low-latency RTL-sim-based sampled simulation</li>
-    <li class="fragment">Ongoing work to leverage Google workload traces for sampling investigation</li>
-    <li class="fragment">TraceKit is a unified trace analysis framework that will be merged with Tidalsim for a multicore live sampling flow</li>
-    <!--<li class="fragment">We need fast, low-startup-latency RTL-level simulation</li>
-    <li class="fragment">We propose a simulation methodology based on sampled RTL simulation
-      <ul>
-        <li>Small intervals + functional warmup with RTL simulation</li>
-      </ul>
-    </li>
-    <li class="fragment">Everything is open source
-      <ul><li><a href="https://github.com/euphoric-hardware/tidalsim">TidalSim (github.com/euphoric-hardware/tidalsim)</a> <small>Forks of spike, chipyard, testchipip + top-level runner</small></li></ul>
-    </li>
-    -->
-  </ul>
 </section>
 
 <section>
@@ -729,6 +703,34 @@ Baremetal benchmarks
     </ul>
   </section>
 
+  <section>
+    <h2>Overview</h2>
+
+    <div class="container" style="grid-template-columns: 1fr 2fr;">
+      <img class="image" width="100%" src="./figs/dynamic/tidalsim/overview.svg" />
+      <!--<img class="image" width="100%" src="./figs/dynamic/tidalsim/full_flow_detail.svg" />-->
+      <img class="image" width="100%" src="./figs/dynamic/tracekit/tracekit_overview.svg" />
+    </div>
+
+    <div class="center">
+    </div>
+
+    <ul class="smallish">
+      <li class="fragment">Tidalsim provides fast, accurate, low-latency RTL-sim-based sampled simulation</li>
+      <li class="fragment">Ongoing work to leverage Google workload traces for sampling investigation</li>
+      <li class="fragment">TraceKit is a unified trace analysis framework that will be merged with Tidalsim for a multicore live sampling flow</li>
+      <!--<li class="fragment">We need fast, low-startup-latency RTL-level simulation</li>
+      <li class="fragment">We propose a simulation methodology based on sampled RTL simulation
+        <ul>
+          <li>Small intervals + functional warmup with RTL simulation</li>
+        </ul>
+      </li>
+      <li class="fragment">Everything is open source
+        <ul><li><a href="https://github.com/euphoric-hardware/tidalsim">TidalSim (github.com/euphoric-hardware/tidalsim)</a> <small>Forks of spike, chipyard, testchipip + top-level runner</small></li></ul>
+      </li>
+      -->
+    </ul>
+  </section>
 </section>
 
 {% endblock %}
