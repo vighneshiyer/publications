@@ -1,0 +1,299 @@
+{% extends "templates/slice/slice.jinja2" %}
+
+{## Header ##}
+
+{% set poster_title = "Tidalsim: RTL Sampled Simulation + Rust-y RISC-V" %}
+{# ‘poster_subtitle’ is optional; use "" to hide it #}
+{% set poster_subtitle = "" %}
+{# Change ‘venue’ to a conference or workshop name if any #}
+{% set venue = "SLICE Winter 2025 Retreat" %}
+{# ‘webpage_title’ is displayed in the browser’s top bar #}
+{% set webpage_title = poster_title %}
+{# ‘project_url’ is used in the footer and for the logo #}
+{% set project_url = "https://github.com/euphoric-hardware" %}
+
+{# Publication info is hidden by default (.publication-info in CSS) #}
+{% set pub_datetime_iso = "2020-09-08" %}
+{% set pub_date = "September 8, 2020" %}
+
+{# Custom styles and JS for a particular poster #}
+{% block custom_head %}
+{% endblock %}
+
+{% block fonts %}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&family=Fira+Sans+Condensed:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
+{% endblock %}
+
+{% block authors %}
+  {# Put authors here, with one link per author. #}
+  <a property="author">Vighnesh Iyer</a>,
+  <a property="author">Joonho Whangbo</a>,
+  <a property="author">Safin Singh</a>,
+  <a property="author">Ansh Maroo</a>,
+  <a property="author">Connor Chang</a>,
+  <a property="author">Pramath Krishna</a>,
+  <a property="author">Borivoje Nikolić</a>
+{% endblock %}
+
+{% block affiliations %}
+  <a property="sourceOrganization">UC Berkeley</a>
+{% endblock %}
+
+{### Footer ##}
+
+{% block footer_left %}
+  <a href="{{ project_url }}">{{ project_url }}</a>
+{% endblock %}
+
+{% block footer_center %}
+    vighnesh.iyer@berkeley.edu
+{% endblock %}
+
+{% block footer_right %}
+  <span class="credits">
+    SLICE Retreat, Winter 2025
+  </span>
+{% endblock %}
+
+{% set rightarrow = "<strong>→</strong>" %}
+
+{### Contents ###}
+
+{# Contents are individual boxes (typically ‘article’s or ‘figure’s).  Each
+   ‘article’ contains a header and some contents. #}
+{% block contents %}
+<article>
+  <header><h3>Limtations of Existing Simulators</h3></header>
+  <table class="comparison_table">
+    <thead><tr>
+      <th style="text-align: left;">Simulator</th>
+      <th>Examples</th>
+      <th>Throughput</th>
+      <th>Latency</th>
+      <th>Fidelity</th>
+    </tr></thead>
+    <tbody>
+      <tr>
+        <td>JIT-ed Sim</td>
+        <td>KVM, qemu</td>
+        <td class="bg-green">1-3 GIPS</td>
+        <td class="bg-green">&lt;1 second</td>
+        <td class="bg-red">Basic blocks</td>
+      </tr>
+      <tr>
+        <td>Arch Sim</td>
+        <td>spike, dromajo</td>
+        <td class="bg-green">10-100+ MIPS</td>
+        <td class="bg-green">&lt;1 second</td>
+        <td class="bg-red">Inst-by-inst</td>
+      </tr>
+      <tr>
+        <td>μArch Perf Sim</td>
+        <td>gem5, Sniper, ZSim</td>
+        <td class="bg-orange">100+ KIPS</td>
+        <td class="bg-green">&lt;1 minute</td>
+        <td class="bg-orange">10-50+% error</td>
+      </tr>
+      <tr>
+        <td>Bespoke μArch Sim</td>
+        <td>Industry models</td>
+        <td class="bg-orange">100+ KIPS</td>
+        <td class="bg-green">&lt;1 minute</td>
+        <td class="bg-green">close (?)</td>
+      </tr>
+      <tr>
+        <td>RTL Simulators</td>
+        <td>Verilator, VCS</td>
+        <td class="bg-red">1-10 KIPS</td>
+        <td class="bg-orange">~minutes</td>
+        <td class="bg-green">cycle-exact</td>
+      </tr>
+      <tr>
+        <td>Emulator (FPGA)</td>
+        <td>FireSim</td>
+        <td class="bg-green">10-50 MIPS</td>
+        <td class="bg-red">2-6+ hours</td>
+        <td class="bg-green">cycle-exact</td>
+      </tr>
+      <tr>
+        <td>Emulator (ASIC)</td>
+        <td>Palladium</td>
+        <td class="bg-green">1-10 MIPS</td>
+        <td class="bg-orange">100MG/hour</td>
+        <td class="bg-green">cycle-exact</td>
+      </tr>
+      <tr>
+        <td>Sampled RTL Sim</td>
+        <td><strong>TidalSim</strong></td>
+        <td class="bg-green">10+ MIPS</td>
+        <td class="bg-green">&lt;1 minute</td>
+        <td class="bg-green">&lt;5% IPC error</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p class="center smallish">No existing simulator can deliver high throughput, low startup latency, high accuracy, and low cost</p>
+</article>
+
+<article>
+  <header><h3>The Vision for TidalSim</h3></header>
+  <img src="./figs/dynamic/tidalsim/uarch_iteration_flow_tidalsim.svg" />
+  <!--<figcaption class="small center">A fast, accurate, low latency, low cost simulation methodology that produces RTL-level collateral for performance and power estimation and verification on real workloads.</figcaption>-->
+</article>
+
+<article>
+  <header><h3>Sampled Simulation</h3></header>
+  <img class="center" style="width: 80%;" src="./figs/multi-level-sim/sampled_simulation.png" />
+
+  <ul>
+    <li>The workload is represented with <em>sampling units</em></li>
+    <li>Only run <em>sampling units</em> in detailed simulation
+    </li>
+  </ul>
+</article>
+
+<article>
+  <header><h3>Representative Sampling</h3></header>
+  <div style="display:grid; grid-template-columns: 1fr 1fr">
+    <img style="display:grid;" src="./figs/multi-level-sim/simpoint-gzip_phases.gif" />
+    <!--<img style="display:grid;" width="100%" src="./figs/multi-level-sim/sampled_simulation.png" />-->
+    <ul style="display:grid; font-size:90%; align-content: center;">
+      <li>A workload goes through <em style="text-decoration:underline;">phases</em> that exhibit similar μArch behavior</li>
+      <li>Pick snippets of each phase as <em>sampling units</em></li>
+      <!--<li>Only execute unique intervals in performance simulation! Extrapolate to a full trace.</li>-->
+    </ul>
+  </div>
+</article>
+
+<article>
+  <header><h3>Our Proposal</h3></header>
+  <ul>
+    <li class="fragment">Sampling with <strong>software RTL simulation</strong>
+      <ul>
+        <li>Short sampling units with functional uArch warmup</li>
+        <li>Representative sampling</li>
+      </ul>
+    </li>
+    <li class="fragment">Custom uArch (RTL) <strong>state injection</strong>
+      <ul>
+        <li>e.g. L1 cache warmup {{ rightarrow }} RTL state injection</li>
+      </ul>
+    </li>
+    <li class="fragment">High throughput, accurate, long workloads
+      <ul>
+        <li>Avoid FPGA latency during uArch iteration</li>
+        <li>Directly iterate on the RTL (not a model)</li>
+      </ul>
+    </li>
+  </ul>
+</article>
+
+
+<article style="display: none;">
+  <header><h3>RTL-Level Sampled Simulation</h3></header>
+  <div style="display: grid; grid-template-columns: 1fr 1.4fr">
+    <div style="display: grid; align-content: center; margin-right: 0.25rem;">
+      <ul>
+        <!--<li>Use <strong>RTL simulation</strong></li>-->
+        <li><strong>Eliminate</strong> modeling errors</li>
+        <li><strong>Eliminate</strong> need for model corrlation</li>
+        <li><strong>Enable</strong> RTL-first design methodology</li>
+      </ul>
+    </div>
+    <img style="display: grid;" src="./figs/dynamic/tidalsim/why_rtl.svg" />
+  </div>
+  <!--<ul>
+    <li>No performance model correlation error</li>
+    <li>Can derive accurate PPA numbers</li>
+    <li>Leverage waveforms from RTL simulation</li>
+  </ul>-->
+</article>
+
+<article>
+  <header><h3>Overview of Sampled Simulation Flow</h3></header>
+  <img class="fragment" src="./figs/dynamic/tidalsim/overview.svg"/>
+</article>
+
+<!--<article>
+  <header><h3>Execution Trace Clustering</h3></header>
+
+  <figure style="font-size:70%;">
+    <img class="fragment" src="./figs/multi-level-sim/aha-mont64_clustering.svg"/>
+    <figcaption>Heatmap of each cluster's centroid for aha-mont64 with 12 clusters and N = 1k</figcaption>
+  </figure>
+</article>-->
+
+<!--<article>
+  <header><h3>IPC Trace Reconstruction</h3></header>
+  <figure style="font-size:70%;">
+    <img class="fragment" src="./figs/multi-level-sim/aha-mont64_results.svg"/>
+    <figcaption>Reconstructed IPC trace of aha-mont64 with 12 clusters and N = 1k</figcaption>
+  </figure>
+
+  <figure style="font-size:70%;">
+    <img class="fragment" src="./figs/multi-level-sim/huffbench_results.svg"/>
+    <figcaption>Reconstructed IPC trace of huffbench with 18 clusters and N = 10k</figcaption>
+  </figure>
+</article>-->
+
+<article>
+  <header><h3>Functional Warmup Flow</h3></header>
+  <img src="./figs/dynamic/tidalsim/full_flow_detail.svg" />
+  <p class="center">Cache snapshots are captured along with arch checkpoints; L1d restored in RTL simulation</p>
+</article>
+
+<article>
+  <header><h3>IPC Trace Reconstruction - huffbench (Embench)</h3></header>
+  <!--<p class="center red">TODO TODO: One smallish example e.g. wikisort / huffbench</p>-->
+  <img src="./figs/multi-level-sim/05_2024/huffbench.svg"/>
+  <p class="center">\( \small{ N = 10000, \: C = 18, \: \text{MAPE}_{\text{\:IPC}} = 6.6\% \rightarrow 4.1\% } \)</p>
+</article>
+
+<article>
+  <header><h3>IPC Trace Reconstruction - wikisort (Embench)</h3></header>
+  <!--<p class="center red">TODO TODO: One large example e.g. CoreMark</p>-->
+  <img src="./figs/multi-level-sim/05_2024/wikisort.svg"/>
+  <p class="center">\( \small{ N = 10000, \: C = 18, \: \text{MAPE}_{\text{\:IPC}} = 12.3\% \rightarrow 4.5\% } \)</p>
+  <ul>
+    <!--<li>There are still intervals with uncorrected mismatch after L1d warmup</li>-->
+    <li><strong>WIP</strong>: L1i warmup, warmup model validation</li>
+  </ul>
+</article>
+
+<!--<article>
+  <header><h3>IPC Errors for Embench</h3></header>
+  <p class="center red">TODO TODO: Bar plot of embench errors with and without fn warmup + runtime speedups</p>
+  <figure width="50%" style="font-size:60%;">
+    <img class="fragment" width="50%" src="./figs/multi-level-sim/embench_ipc_error.svg"/>
+    <figcaption>Mean absolute IPC error</figcaption>
+  </figure>
+</article>-->
+
+
+<article>
+  <header><h3>Conclusion</h3></header>
+
+  <img src="./figs/multi-level-sim/overview.svg" width="95%"/>
+  <!-- Show a figure here of all the parts put together -->
+  <!--<li class="fragment">Live sampled simulation leveraging the Rust ISS + benchmarks</li>-->
+  <p class="center">All these components tie into a robust sampled simulation flow.</p>
+</article>
+
+<article>
+  <header><h3>Next Steps</h3></header>
+  <!--<ul>
+    <li>Automatic selection of interval length and warmup period</li>
+    <li>Integrating functional warmup models for caches</li>
+    <li>Feedback from RTL sim to ISA sim to model timing-critical events (interrupts, timers)</li>
+  </ul>-->
+  <ul>
+    <li>Streaming sampled simulation</li>
+    <li>Getting the flow working for Linux workloads</li>
+    <li>Better interval embeddings</li>
+    <li>Generating the injection testharness</li>
+  </ul>
+</article>
+
+{% endblock %}

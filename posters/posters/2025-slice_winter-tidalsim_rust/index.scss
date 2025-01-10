@@ -1,0 +1,65 @@
+@use 'templates/slice/slice.scss';// with ($style: "bordered");
+@use 'sass:color';
+
+@media print {
+    header > aside {
+        img {
+            max-width: 215px;
+        }
+    }
+}
+
+html {
+    font-size: 1.15rem
+}
+
+// https://brand.berkeley.edu/identity-and-visual-design/color
+$orange: #D9661F;
+$green: #B9D3B6;
+$red: color.adjust($orange, $hue: -10);
+
+.bg-green {
+    background: $green;
+}
+
+.bg-orange {
+    background: $orange;
+}
+
+.bg-red {
+    background: $red;
+}
+
+table.comparison_table {
+  width: 100%;
+  font-size: 60%;
+  border-collapse: collapse !important;
+  thead > tr > th:first-child {
+    border-right: 2px solid #222222;
+  }
+  tbody > tr > td:first-child {
+    border-right: 2px solid #222222;
+  }
+  tbody {
+    td {
+      padding: 0.2rem;
+    }
+  }
+}
+
+.smallish {
+  font-size: 1rem;
+}
+
+.red {
+  color: $red;
+}
+
+ul {
+  li {
+    ul {
+      font-size: 0.9rem;
+      margin-top: 0.25rem;
+    }
+  }
+}

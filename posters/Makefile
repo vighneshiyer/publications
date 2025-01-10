@@ -32,6 +32,7 @@ $(eval $(call poster,2023-slice_summer-distpcsr,slice))
 $(eval $(call poster,2024-slice_winter-tidalsim,slice))
 $(eval $(call poster,2024-slice_summer-tidalsim,slice))
 $(eval $(call poster,2024-slice_summer-next_paradigm,slice))
+$(eval $(call poster,2025-slice_winter-tidalsim_rust,slice))
 
 all: $(posters) posters/index.html
 
