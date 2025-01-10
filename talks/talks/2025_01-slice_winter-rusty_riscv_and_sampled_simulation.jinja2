@@ -1,0 +1,736 @@
+{% extends "base/base.jinja2" %}
+
+{# HTML title #}
+{% set webpage_title = "TidalSim and TraceKit" %}
+{# Short description #}
+{% set description = "" %}
+{# List of authors #}
+{% set author = "Vighnesh Iyer" %}
+{# Change ‘venue’ to a conference or workshop name if any #}
+{% set venue = "ATHLETE Update" %}
+{# Publication info (hidden by default) #}
+{% set pub_datetime_iso = "2024-08-12" %}
+{% set pub_date = "August 12, 2024" %}
+
+{# Custom styles and JS for a particular talk #}
+{% block custom_head %}
+{% endblock %}
+
+{% block theme %}
+import '/themes/tokyonight-light.scss'
+import 'highlight.js/styles/tokyo-night-dark.css'
+{% endblock %}
+
+{% set center = true %}
+
+{% set rightarrow = "<strong>→</strong>" %}
+
+{% block slides %}
+<section class="center">
+  <h2>RTL Sampled Simulation</h2>
+  <!--<h2 style="font-weight: normal;">Explorations of Execution-Driven and Trace-Based Sampled Simulation</h2>-->
+  <p style="font-weight: normal; font-size: 0.8rem;">Vighnesh Iyer, Bora Nikolic</p>
+  <h3>+</h3>
+  <h2>Rust-y RISC-V</h2>
+  <h4 style="font-weight: normal; font-size: 0.9rem;">An Experimental ISS + Baremetal Environment and Benchmark Methodology</h4>
+  <p style="font-weight: normal; font-size: 0.8rem;">Safin Singh, Ansh Maroo, Connor Chang, Pramath Krishna, Vighnesh Iyer, Joonho Whangbo</p>
+
+  <h4 style="font-weight: normal;">ATHLETE Quarterly Review<br />
+  Monday, December 9th, 2024</h4>
+</section>
+
+<section>
+  <section>
+    <h2>Overview</h2>
+    <ol>
+      <li class="fragment">RTL sampled simulation today and its problems</li>
+      <li class="fragment">What does Rust have to do with this?</li>
+      <li class="fragment">An experimental RISC-V instruction set simulator (ISS)</li>
+      <li class="fragment">Architectural description languages + ISS generation + RTL injection</li>
+      <li class="fragment">RISC-V Rust baremetal environment</li>
+      <li class="fragment">Baremetal benchmark generation strategy</li>
+      <li class="fragment">Live sampled simulation leveraging the Rust ISS + benchmarks</li>
+    </ol>
+  </section>
+</section>
+
+<section>
+  <section>
+    <h2>What Are We Trying to Solve?</h2>
+    <ul>
+      <li class="fragment">RTL-first design and evaluation methodology
+        <ul>
+          <li>Can't afford to build both performance models and implementations</li>
+          <li>Build high-level models/simulators and then pipe straight down to implementation<!-- <small>(no in-between)</small>--></li>
+          <li>Iterate directly on the RTL <small>(gives confidence wrt feasibility)</small></li>
+          <li>Extract collateral at the RTL abstraction <small>(e.g. waveforms, power traces)</small></li>
+        </ul>
+      </li>
+      <li class="fragment">RTL simulation techniques have unfavorable tradeoffs
+        <ul>
+          <li><strong>RTL simulation</strong>: fast startup, low throughput</li>
+          <li><strong>FPGA-based emulation</strong>: slow startup, high throughput</li>
+        </ul>
+      </li>
+    </ul>
+
+    <p class="center fragment">How can we run RTL simulation with fast startup and high throughput?</p>
+    <!--
+    - Direct iteration on RTL, no modeling
+    - Requires fast iteration time on long-ish workloads
+    - Get snippets of RTL-generated collateral for verification / power / etc
+    -->
+  </section>
+
+  <section>
+    <h2>Our Proposal</h2>
+    <ul>
+      <li class="fragment">Sampled simulation <strong>using software RTL simulation</strong>
+        <ul>
+          <li>Short sampling units with functional uArch warmup (a la SMARTs)</li>
+          <li>Representative sampling (a la Simpoints)</li>
+        </ul>
+      </li>
+      <li class="fragment">Custom uArch <strong>(RTL) state injection</strong>
+        <ul>
+          <li>L1 i/d cache functional warmup model to RTL state injection</li>
+          <li>Can extend to any long-lived functional unit</li>
+        </ul>
+      </li>
+      <li class="fragment">Enables <strong>high throughput and accurate</strong> simulation of long workloads
+        <ul>
+          <li>Avoid FPGA iteration latency when doing uArch exploration</li>
+          <li>Enables direct iteration on the RTL (not a model)</li>
+        </ul>
+      </li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Sampled Simulation</h2>
+
+    <p class="center fragment">Don't run the full workload in RTL simulation</p>
+    <p class="center fragment smallish">Use an <em>instruction set simulator</em> (ISS) and pick <em>samples</em> to run in RTL simulation</p>
+
+    <div class="fragment center">
+      <img class="image no-margin" width="60%" src="./figs/multi-level-sim/sampled_simulation0.png" />
+    </div>
+
+    <!-- TODO: replace this figure -->
+    <p class="fragment center">The full workload is represented by a selection of <em>sampling units</em>.</p>
+
+    <ol class="smallish">
+      <li class="fragment"><strong>Sampling unit length</strong>: trade off runtime vs resolution</li>
+      <!--<li class="fragment"><strong>Warmup models</strong>: which uArch units to initialize</li>-->
+      <li class="fragment"><strong>Sampling unit selection</strong>: how sampling units are selected (random vs embedding + clustering) and used for extrapolation</li>
+      <!--How can we estimate errors when extrapolating from sampling units?</li>--> <!-- error bounding via CLT or other heuristics -->
+    </ol>
+  </section>
+
+  <section>
+    <h2>Functional Warmup</h2>
+
+    <p class="fragment center">
+    A sampling unit is defined by an <em>architectural</em> checkpoint.
+    </p>
+    <p class="fragment center">
+    The <em>microarchitectural</em> state of the RTL simulation starts at the reset state!</p>
+    </p>
+
+    <!-- TODO: replace this figure -->
+    <div class="fragment center">
+      <img width="50%" class="image" src="./figs/multi-level-sim/sampled_simulation.png" />
+    </div>
+
+    <ul>
+      <li class="fragment"><strong>Solution</strong>: seed reconstructed uArch state for each sampling unit</li>
+      <li class="fragment">This process is called <strong>functional warmup</strong></li>
+    </ul>
+  </section>
+
+  <section style="text-align: center;">
+    <h2>RTL Sampled Simulation Flow</h2>
+    <!-- TODO: replace this figure -->
+    <img class="image" src="./figs/dynamic/tidalsim/overview.svg" />
+  </section>
+
+  <section>
+    <h2>Functional Warmup Flow</h2>
+    <div class="center">
+      <!-- TODO: replace this figure -->
+      <img class="image no-margin" src="./figs/dynamic/tidalsim/full_flow_detail.svg" />
+    </div>
+
+    <ol>
+      <li class="fragment">Full run of the binary on spike + sampling unit embedding + clustering</li>
+      <li class="fragment">Re-run spike to capture arch checkpoints at the start of sampling units</li>
+      <li class="fragment">Reconstruct L1d cache state for each arch checkpoint</li>
+      <li class="fragment">Inject sampling units into RTL sim and extrapolate</li>
+    </ol>
+  </section>
+
+  <section>
+    <h2>IPC Trace Reconstruction - wikisort</h2>
+
+    <p class="center smallish">wikisort benchmark from embench, $N = 10000$, $C = 18$, $n_{\text{detailed}} = 2000$</p>
+
+    <div class="fragment center">
+      <img class="image no-margin" src="./figs/multi-level-sim/05_2024/wikisort.svg" />
+      <figcaption class="fragment">$MAPE_{IPC} = 12.3\% \rightarrow 4.5\%$</figcaption>
+    </div>
+  </section>
+
+  <section>
+    <h2>IPC Trace Reconstruction - huffbench</h2>
+
+    <p class="center smallish">huffbench benchmark from embench, $N = 10000$, $C = 18$, $n_{\text{detailed}} = 2000$</p>
+
+    <div class="fragment center">
+      <img class="image no-margin" src="./figs/multi-level-sim/05_2024/huffbench.svg" />
+      <figcaption class="fragment">L1d functional warmup prevents gross IPC underprediction in most cases. $MAPE_{IPC} = 6.6\% \rightarrow 4.1\%$</figcaption>
+    </div>
+  </section>
+
+  <section>
+    <h2>Uninteresting Benchmarks</h2>
+
+    <div class="center">
+      <img class="image no-margin" src="./figs/multi-level-sim/05_2024/huffbench.svg" />
+    </div>
+
+    <ul>
+      <li class="fragment">It's just doing the same thing over and over again!</li>
+      <li class="fragment">Pretty much all baremetal benchmarks look like this</li>
+    </ul>
+
+    <p class="center fragment"><strong>Problem 1</strong>: Embench, Coremark, ... are not interesting enough.</p>
+  </section>
+
+  <section>
+    <h2>Ad-Hoc Sampled Simulation Methodology</h2>
+
+    <div class="center" style="margin-bottom: 1rem;">
+      <img class="image no-margin" src="./figs/multi-level-sim/coremark_results_truncated.svg" />
+      <figcaption class="fragment">IPC trace reconstruction of Coremark (3M instructions visible)</figcaption>
+    </div>
+
+    <ul>
+      <li class="fragment">Some benchmarks look way off, even with warmup</li>
+      <li class="fragment">Certainly a bug in arch state checkpointing, state injection, or uarch injection</li>
+    </ul>
+
+    <p class="center fragment"><strong>Problem 2</strong>: No systematic methodology for complete checkpointing and injection.</p>
+  </section>
+</section>
+
+<section>
+  <section class="center">
+    <h2>What Does Rust Have to do With Anything?</h2>
+  </section>
+
+<!--
+Rust
+  - concurrency, borrow checker
+  - speed similar to C/C++
+  - no runtime by default
+typeclass derivation
+build.rs, very flexible codegen
+cargo
+RISC-V is a first class compilation target with upstream baremetal support
+ADTs, easy printing!, via typeclass derivation
+great stdlib, data structures work in baremetal with no modification (only a baremetal allocator)
+no_std
+crates.io
+-->
+
+  <section>
+    <h2>What's so Great About Rust?</h2>
+    <ul>
+      <li class="fragment">Popular selling points
+        <ul>
+          <li class="fragment">Borrow checker {{ rightarrow }} safe multithreaded code + memory safety + no memory leaks</li>
+          <li class="fragment">Emitted asm quality similar to C/C++, zero-cost abstractions, quite fast</li>
+          <li class="fragment">No runtime, complete AOT compilation</li>
+          <li class="fragment">But these aren't important <strong>to us</strong></li>
+        </ul>
+      </li>
+      <li class="fragment">First-class algebraic data types (ADTs) with typeclass derivation</li>
+      <li class="fragment">RISC-V is a first-class target with upstream baremetal support</li>
+      <li class="fragment"><code class="inline">build.rs</code> for programmatic code generation</li>
+      <li class="fragment">Stdlib that runs baremetal (using <code class="inline">alloc</code> and <code class="inline">collections</code>)</li>
+      <li class="fragment">A comprehensive package library (crates.io)</li>
+      <li class="fragment">Large number of <code class="inline">no_std</code> crates that work baremetal</li>
+    </ul>
+
+    <p class="center fragment"><strong>Heavily used libraries in the wild + baremetal = good</strong></p>
+  </section>
+</section>
+
+<section>
+  <section class="center">
+    <h2>An Experimental RISC-V Instruction Set Simulator (ISS)</h2>
+  </section>
+
+<!--
+ISS (purely experimental)
+  - DTS as primary input
+  - codegen focused strategy (minimal runtime knobs)
+  - typeclass derivation for state serdes
+  - multiple tops
+-->
+
+  <section>
+    <h2>Why?</h2>
+
+    <ul>
+      <li class="fragment">Spike already exists. What's wrong?
+        <ul>
+          <li class="fragment">The 'golden model' of RISC-V</li>
+          <li class="fragment">Extensive set of ISA extensions implemented</li>
+          <li class="fragment">Reasonably fast: 50+ MIPS <small>(much lower when tracing)</small></li>
+        </ul>
+      </li>
+      <li class="fragment">Deficiencies of spike
+        <ul>
+          <li class="fragment">Ad-hoc arch state checkpointing</li>
+          <li class="fragment">Non-unified testbench/IO models between spike and Chipyard/FireSim</li>
+          <li class="fragment">Hard to create custom tops (e.g. for live sampled simulation)</li>
+        </ul>
+      </li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Features</h2>
+
+    <p class="fragment">This is a <em>purely experimental</em> project</p>
+
+    <ul>
+      <li class="fragment">Support for RV64imfd so far (no privileged ISA)</li>
+      <li class="fragment">Exact diff testing with spike's commit log</li>
+      <li class="fragment">Can run RISC-V ISA tests for supported extensions cleanly</li>
+      <li class="fragment">Leverages <a href="https://github.com/riscv/riscv-opcodes">riscv-opcodes</a> for instruction encodings</li>
+    </ul>
+    <p class="fragment"><a href="https://github.com/euphoric-hardware/riscv-functional-sim">WIP on Github</a></p>
+  </section>
+
+  <section>
+    <h2>Simple State (De)Serialization</h2>
+
+    <ul>
+      <li class="fragment">The ISS is generated <em>after</em> the RTL generator is run</li>
+      <li class="fragment">All SoC state is contained within a single Rust <code class="inline">struct</code></li>
+      <li class="fragment">Typeclass derivation makes it easy to derive serdes on any struct</li>
+    </ul>
+
+    <pre class="fragment"><code class="language-rust" data-trim data-noescape>
+#[derive(Serialize)]
+pub struct Cpu {
+    pub regs: [u64; 32],
+    pub pc: u64,
+    pub csrs: Csrs
+}
+
+#[derive(Serialize)]
+pub struct System {
+  pub cpus: Vec&lt;Cpu&gt;,
+  bus: Bus
+}
+    </code></pre>
+    <p class="center fragment">Disentangling state and update rules seems obvious, but is not so in spike</p>
+  </section>
+
+  <section>
+    <h2>Codegen-Based ISS</h2>
+
+    <ul>
+      <li class="fragment">Swap out the opaque C++ macro system for direct Rust code generation
+        <ul>
+          <li class="fragment">Programatically read yaml files in riscv-opcodes and generate Rust strings for instruction decoding, immediate extraction, and the main switch table</li>
+          <li class="fragment">It's just code! No restrictions</li>
+          <li class="fragment">Can also <em>generate</em> code for CSRs with <em>semantic bitfields</em> <small>(this is done manually in spike)</small></li>
+        </ul>
+      </li>
+      <li class="fragment">The device tree from a Chipyard generator is <em>an input</em> into the ISS generation
+        <ul>
+          <li>The goal is <em>exact</em> SoC modeling</li>
+        </ul>
+      </li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Big Problems</h2>
+    <ol>
+      <li class="fragment">How can anyone trust a new ISS is precisely emulating the RISC-V spec?</li>
+      <li class="fragment">How can we make the ISS performant?</li>
+      <li class="fragment">How can we exactly model an SoC generated from Chipyard? We can't build a point-design ISS.</li>
+    </ol>
+
+    <!--<ul class="fragment">
+      <li></li>
+    </ul>-->
+  </section>
+</section>
+
+<section>
+  <section class="center">
+    <h2>Architectural Description Languages (ADLs)</h2>
+  </section>
+<!--
+ADL for ISS generation
+  - leverage a HW DSL!
+  - discuss prior work too
+  - not merely a single cycle processor
+  - need to concretize arch vagueness
+  - need to concretize uarch vagueness via automatic cosim hooks
+  - leverage the same language used for both the ADL and HDL
+-->
+  <section>
+    <h2>ADLs Broadly</h2>
+    <ul>
+      <li class="fragment">Formal definition of arch state and update rules at the ISA-level</li>
+      <li class="fragment">Instruction and state encodings</li>
+      <li class="fragment">Execution semantics
+        <ul>
+          <li>State update rules</li>
+        </ul>
+      </li>
+      <li class="fragment">Methods to resolve ambiguities in a spec
+        <ul>
+          <li class="fragment">At uArch defition time (e.g. handling of misaligned memory loads/stores, FP exceptions, unimplemented CSR access handling)</li>
+          <li class="fragment">At uArch runtime (e.g. interrupt handling)</li>
+        </ul>
+      </li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Existing Work</h2>
+
+    <ul>
+      <li class="fragment"><strong><a href="https://github.com/riscv-software-src/riscv-isa-sim">spike</a></strong> is considered a 'golden model', but it isn't a spec in itself
+        <ul>
+          <li>Undefined behaviors are concretized</li>
+        </ul>
+      </li>
+      <li class="fragment"><strong><a href="https://github.com/riscv/sail-riscv">sail-riscv</a></strong> is the official 'formal model' for RISC-V
+        <ul>
+          <li class="fragment">Custom DSL (Sail) for specifying execution semantics</li>
+          <li class="fragment">Primarily intended for formal methods (although ISS generators exist - <a href="https://docs.pydrofoil.org/en/latest/">Pydrofoil</a>)</li>
+        </ul>
+      </li>
+      <li class="fragment smallish">Others in-the-wild: <a href="https://arxiv.org/pdf/2403.09087">Vienna ADL</a>, <a href="https://codasip.com/products/codasip-studio/codal/">Codasip's CodAL</a>, <a href="https://github.com/riscv-software-src/riscv-unified-db">Qualcomm's riscv-unified-db</a>
+        <ul>
+          <li class="fragment">Each one creates a new DSL for describing state, encodings, and update rules</li>
+        </ul>
+      </li>
+      <li class="fragment"><strong><a href="https://bo-yuan-huang.gitbook.io/ilang">Instruction-Level Abstraction</a></strong> (ILA)
+        <ul>
+          <li class="fragment">C++ eDSL for describing state + update rules</li>
+          <li class="fragment">C++ framework that describes allowable behaviors + bindings to a Verilog implementation</li>
+          <li class="fragment">Designed for accelerator specification</li>
+        </ul>
+      </li>
+      <li class="fragment"><strong>ARM's <a href="https://developer.arm.com/Architectures/Architecture%20Specification%20Language">Architecture Specification Language</a></strong> (<a href="https://alastairreid.github.io/specification_languages/">explainer blog post</a>)
+        <ul>
+          <li>A custom DSL for encoding the formal semantics of the ARM ISA, used mostly for <a href="https://alastairreid.github.io/using-armarm/">bug hunting</a> against <a href="https://alastairreid.github.io/finding-bugs/">Verilog implementations</a></li>
+        </ul>
+      </li>
+    </ul>
+    <!--Some things are lacking-->
+  </section>
+
+  <section>
+    <h2>Leveraging Chisel</h2>
+
+    <p class="fragment center">ADLs don't need a new language! <strong>It's hardware after all.</strong></p>
+
+    <ul>
+      <li class="fragment">Use Scala/Chisel <small>(with some augmentation)</small> for state, encoding, update rules</li>
+      <li class="fragment">But an ADL doesn't merely describe a single-cycle processor
+        <ul>
+          <li class="fragment">Formalize the notion of SoC components (cores, interrupt controllers, IO devices, host tethers, etc.) and how they interact with each other</li>
+          <li class="fragment">Define exactly when architectural state advances</li>
+          <li class="fragment">Specify undefined behaviors and how they should be concretized for modeling a given implementation</li>
+        </ul>
+      </li>
+      <li class="fragment"><strong>WIP</strong>: A Chisel-based ADL embedded in Scala</li>
+    </ul>
+    <!--Not just a single-cycle processor!
+    Need to wrap it!
+    ILA is kind of there-->
+  </section>
+
+  <section>
+    <h2>Generating an ISS from an ADL</h2>
+
+    <!--
+Separation of concerns ala halide for generation of functional models from a specification description of an ISA
+e.g. for a memory block element (whether than be a scratchpad, DRAM, or otherwise) we can define codegen optimizations separately from the execution semantics itself (implementation as a fixed length array, a resizable vector, as a paged hash table, ...)
+e.g. for translation mappings (e.g. page table mappings) we can avoid having to specify a "TLB" explicitly in the ISS and instead generate it as a translation cache (which is a generic concept that can be applied to decode logic too)
+e.g. for the main execution loop, the transformation of a switch table based decode and dispatch can be automatically transformed into a threaded interpreter with its own VM and bytecode which can be hand guided by the ISS developer
+    -->
+
+    <ul>
+      <li class="fragment">If an ADL simply described a single-cycle SoC, then isn't RTL simulation sufficient?
+        <ul>
+          <li class="fragment">Naively doing this will produce a low throughput ISS (e.g. the default C backend of sail)</li>
+          <li class="fragment">Leveraging DBT gives better performance (e.g. <a href="https://docs.pydrofoil.org/en/latest/background_optimizations.html">Pydrofoil's use of PyPy</a>)</li>
+        </ul>
+      </li>
+      <li class="fragment"><strong>Key feature</strong>: user control over the compilation of an ADL</li>
+      <li class="fragment">Separate the <em>execution semantics</em> of the ADL from <em>codegen optimizations</em>
+        <ul>
+          <li class="fragment">Memory block element (scratchpad, cache bank, DRAM) {{ rightarrow }} implementation as a fixed length array, a resizable vector, as a paged hash table, ...</li>
+          <li class="fragment">Naive serial instruction decode, page table translations {{ rightarrow }} implementation with a cache + automatic flushing before state serialization</a>
+          <li class="fragment">"Halide for ISS generation"</li>
+        </ul>
+      </li>
+    </ul>
+  </section>
+</section>
+
+<section>
+  <section class="center">
+    <h2>RISC-V Baremetal Environment + Benchmarks</h2>
+  </section>
+<!--
+Baremetal environment
+  - Discuss the normal stuff
+
+Baremetal benchmarks
+  - why baremetal?
+-->
+
+  <section>
+    <h2>Why Baremetal?</h2>
+
+    <ul>
+      <li class="fragment">Easy to run in execution driven simulation (RTL simulation)</li>
+      <li class="fragment">Better likelihood of successful arch state transfer</li>
+      <li class="fragment">Focus on common-case userspace code</li>
+      <li class="fragment">But, baremetal programs of course cannot:
+        <ul>
+          <li class="fragment">Run kernel code and stress the privileged ISA</li>
+          <li class="fragment">Perform userspace/kernel interactions and witness cache pollution</li>
+          <li class="fragment">Witness preemptive multithreading</li>
+        </ul>
+      </li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Baremetal Rust Programs</h2>
+
+    <ul>
+      <li class="fragment">Leverage upstream <a href="https://github.com/rust-embedded/riscv">rust-embedded</a> support
+        <ul>
+          <li class="fragment"><code class="inline">riscv-rt</code>: <code class="inline">crt.S</code>, <code class="inline">panic!</code> handlers, interrupt handlers</li>
+          <li class="fragment">Pre-built hooks for SoC-specific handlers (e.g. using HTIF for host proxying of syscalls)</li>
+          <li class="fragment"><code class="inline">memory.x</code>: defines the accessible raw address space + program segment mapping</li>
+          <li class="fragment"><code class="inline">target = "riscv64gc-unknown-none-elf"</code>: that's all it takes to pull in a cross compiler!</li>
+          <li class="fragment">Include and use any <code class="inline">no_std</code> dependency with a custom allocator</li>
+          <li class="fragment">Build baremetal projects with <code class="inline">cargo build</code> like any other Rust project!</li>
+        </ul>
+      </li>
+      <li class="fragment"><a href="https://github.com/euphoric-hardware/baremetal-rust-riscv">Github</a>
+        <ul>
+          <li class="fragment">Implementation of target-side HTIF</li>
+          <li class="fragment">1:1 port of some benchmarks from <code class="inline">riscv-tests/benchmarks</code></li>
+          <li class="fragment"><strong>WIP</strong>: <em>semantic</em> port of <a href="https://github.com/embench/embench-iot">embench</a></li>
+          <li class="fragment">Very little code {{ rightarrow }} lots of value</li>
+        </ul>
+      </li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Leveraging <code class="inline">no_std</code> Crates</h2>
+
+    <ul>
+      <li class="fragment">There are many <code class="inline">no_std</code> crates on crates.io that are very popular
+        <ul>
+          <li><strong>Data structures</strong>: stdlib, hashbrown, btrees, bigint, petgraph, yada</li>
+          <li><strong>Strings</strong>: regex, nom</li>
+          <li><strong>(De)Serialization</strong>: serde, json, yaml, bincode</li>
+          <li><strong>Compilers/JIT</strong>: cranelift, wasmtime, revm-interpreter</li>
+          <li><strong>Hashing / crypto</strong>: hmac, aes, rsa, rustls</li>
+          <li><strong>Numerics</strong>: nalgebra, faer-rs, rust-num, ndarray</li>
+        </ul>
+      </li>
+      <li class="fragment">Unlike any other language / environment out there, these crates are easy to use baremetal out-of-the-box</li>
+    </ul>
+
+    <p class="fragment center">The missing piece: <strong>stimulus</strong>!</p>
+
+    <ul>
+      <li class="fragment small">Caveat: some of these crates have their own benchmarks, which can be used</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Extracting Stimuli from Applications</h2>
+
+    <!--
+    - base libraries (regex, mutexes, data structures) -> app-level libraries (http server) -> application ()
+    -->
+
+    <ul>
+      <li class="fragment">Tiers of crates
+        <ul>
+          <li>Base libraries (e.g. data structures)</li>
+          <li>Application-level libraries (e.g. HTTP servers)</li>
+          <li>Deployed applications (e.g. ripgrep, Alacritty, Servo, Meilisearch)</li>
+        </ul>
+      </li>
+      <li class="fragment">Run real applications to derive library-level stimulus
+        <ul>
+          <li class="fragment">We can instrument any crate with function argument capturing</li>
+          <li class="fragment">Cargo always compiles from source {{ rightarrow }} adding patched versions of dependencies is easy</li>
+        </ul>
+      </li>
+    </ul>
+
+    <p class="center fragment">A path towards representative, high quality baremetal benchmarks</p>
+
+  </section>
+</section>
+
+<section>
+  <section class="center">
+    <h2>Conclusion</h2>
+
+    <img style="margin-bottom: 0;" class="image" src="./figs/multi-level-sim/overview.svg" width="100%"/>
+    <!-- Show a figure here of all the parts put together -->
+    <!--<li class="fragment">Live sampled simulation leveraging the Rust ISS + benchmarks</li>-->
+    <p class="center fragment">All these components tie into a robust sampled simulation flow.</p>
+  </section>
+
+</section>
+
+<section>
+  <section class="center">
+    <h1>Extra Slides</h1>
+  </section>
+
+  <section>
+    <h2>Existing Sampling Techniques</h2>
+
+    <div class="container" style="grid-template-columns: 1fr 1fr;">
+    <div>
+    <h3 class="center fragment">SimPoint</h3>
+    <div class="fragment image no-padding" style="display:grid; align-content: center; justify-items:center; grid-template-columns:1fr 1fr;">
+      <img class="no-margin" style="display:grid;" src="./figs/multi-level-sim/simpoint-gzip_phases.gif" />
+      <img class="no-margin" style="display:grid;" src="./figs/multi-level-sim/simpoint-gcc_phases.gif" />
+    </div>
+    <ul class="small">
+      <li class="fragment">Workloads can be split into <strong style="text-decoration:underline;">phases</strong> that exhibit similar μArch behavior</li>
+      <li class="fragment">SimPoint-style representative sampling
+        <ul class="fragment">
+          <li>Compute an embedding for each program interval (e.g. blocks of 100M instructions)</li>
+          <li>Cluster interval embeddings using k-means</li>
+          <li>Choose representative intervals from each cluster as <em>sampling units</em></li>
+        </ul>
+      </li>
+    </ul>
+    </div>
+    <div>
+      <h3 class="center fragment">SMARTS</h3>
+      <img class="fragment image no-margin no-padding" src="./figs/quals/smarts.png" />
+      <ul class="small">
+        <li class="fragment">If we sample from a population, we can estimate the population mean</li>
+        <!--<li class="fragment">Rigorous statistical sampling enables computation of confidence bounds
+          <ul class="fragment">
+            <li>Use random sampling on a full execution trace to derive a population sample</li>
+            <li>Central limit theorem provides confidence bounds</li>
+          </ul>
+        </li>-->
+        <li class="fragment">SMARTS-style random sampling
+          <ul class="fragment">
+            <li>Pick a large number of samples to take before program execution</li>
+            <li>If the sample variance is too high after simulation, then collect more sampling units</li>
+            <li>Use CLT to derive a confidence bound for the aggregate performance metric</li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+    </div>
+
+    <p class="center fragment"><strong>Our proposal</strong>: Combine SimPoint-style representative sampling with SMARTS-style small intervals</p>
+  </section>
+
+  <section>
+    <h2>Implementation Details For TidalSim</h2>
+    <div class="container" style="grid-template-columns: 1.2fr 1fr;">
+    <div>
+    <ul class="smallish">
+      <li class="fragment">Basic block identification
+        <ul><li>BB identification from spike commit log or from static ELF analysis</li></ul>
+      </li>
+      <li class="fragment">Basic block embedding of intervals</li>
+      <li class="fragment">Clustering and checkpointing
+        <ul>
+          <li>k-means, PCA-based n-clusters</li>
+          <li>spike-based checkpoints</li>
+        </ul>
+      </li>
+      <li class="fragment">RTL simulation and performance metric extraction
+        <ul><li>Custom force-based RTL state injection, out-of-band IPC measurement</li></ul>
+      </li>
+      <li class="fragment">Extrapolation
+        <ul><li>Estimate IPC of each interval based on its embedding and distances to RTL-simulated intervals</li></ul>
+      </li>
+    </ul>
+    </div>
+    <div style="display:grid; align-content: center;">
+      <img class="image no-margin" src="./figs/dynamic/tidalsim/overview.svg" />
+    </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Memory Timestamp Record</h2>
+    <div class="center">
+      <img class="image" src="./figs/dynamic/tidalsim/mtr_flow.svg" />
+    </div>
+
+    <ul class="small">
+      <li class="fragment">Construct MTR table from a memory trace, save MTR tables at checkpoint times</li>
+      <li class="fragment">Given a cache with n sets, group block addresses by set index</li>
+      <li class="fragment">Given a cache with k ways, pick the k most recently accessed addresses from each set</li>
+      <li class="fragment">Knowing every resident cache line, fetch the data from the DRAM dump</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Overview</h2>
+
+    <div class="container" style="grid-template-columns: 1fr 2fr;">
+      <img class="image" width="100%" src="./figs/dynamic/tidalsim/overview.svg" />
+      <!--<img class="image" width="100%" src="./figs/dynamic/tidalsim/full_flow_detail.svg" />-->
+      <img class="image" width="100%" src="./figs/dynamic/tracekit/tracekit_overview.svg" />
+    </div>
+
+    <div class="center">
+    </div>
+
+    <ul class="smallish">
+      <li class="fragment">Tidalsim provides fast, accurate, low-latency RTL-sim-based sampled simulation</li>
+      <li class="fragment">Ongoing work to leverage Google workload traces for sampling investigation</li>
+      <li class="fragment">TraceKit is a unified trace analysis framework that will be merged with Tidalsim for a multicore live sampling flow</li>
+      <!--<li class="fragment">We need fast, low-startup-latency RTL-level simulation</li>
+      <li class="fragment">We propose a simulation methodology based on sampled RTL simulation
+        <ul>
+          <li>Small intervals + functional warmup with RTL simulation</li>
+        </ul>
+      </li>
+      <li class="fragment">Everything is open source
+        <ul><li><a href="https://github.com/euphoric-hardware/tidalsim">TidalSim (github.com/euphoric-hardware/tidalsim)</a> <small>Forks of spike, chipyard, testchipip + top-level runner</small></li></ul>
+      </li>
+      -->
+    </ul>
+  </section>
+</section>
+
+{% endblock %}

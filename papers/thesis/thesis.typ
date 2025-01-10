@@ -1,18 +1,33 @@
-#import "@preview/tufte-memo:0.1.2": *
+// #import "@preview/tufte-memo:0.1.2": *
+// #show: template.with(
+//     title: [TidalSim: A Unified Microarchitectural Simulation Framework
+// To Identify and Leverage Unique Aspects of Workloads on Heterogeneous SoCs for Performance Estimation and Verification
+//     ],
+//     authors: (
+//         (
+//         name: "Vighnesh Iyer",
+//         role: "PhD Thesis",
+//         affiliation: "UC Berkeley",
+//         email: "vighnesh.iyer@berkeley.edu"
+//         ),
+//     )
+// )
+//
+#import "@preview/ilm:1.4.0": *
 
-#show: template.with(
-    title: [TidalSim: A Unified Microarchitectural Simulation Framework
-To Identify and Leverage Unique Aspects of Workloads on Heterogeneous SoCs for Performance Estimation and Verification
-    ],
-    authors: (
-        (
-        name: "Vighnesh Iyer",
-        role: "PhD Thesis",
-        affiliation: "UC Berkeley",
-        email: "vighnesh.iyer@berkeley.edu"
-        ),
-    )
+#set text(lang: "en")
+
+#show: ilm.with(
+  title: [Your Title],
+  author: "Max Mustermann",
+  date: datetime(year: 2024, month: 03, day: 19),
+  abstract: [#lorem(30)],
+  bibliography: bibliography("references.bib"),
+  figure-index: (enabled: true),
+  table-index: (enabled: true),
+  listing-index: (enabled: true)
 )
+
 
 = Preface
 
@@ -33,11 +48,17 @@ _Vighnesh Iyer_
 
 = Introduction and Background
 
-== Digital Systems Broadly
+== An Overview of Digital Systems
 
 === Abstractions
 
+=== How They are Built
+
 == Simulation of Digital Systems
+
+=== Simulation paradigms
+
+=== Simulation Abstractions
 
 == Sampled Simulation
 

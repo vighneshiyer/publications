@@ -41,6 +41,7 @@ $(eval $(call talk,2024_04-athlete-tidalsim_overview))
 $(eval $(call talk,2024_05-slice_summer-tidalsim))
 $(eval $(call talk,2024_08-athlete-tidalsim_tracekit))
 $(eval $(call talk,2024_12-athlete-rust_riscv_and_sampled_simulation))
+$(eval $(call talk,2025_01-slice_winter-rusty_riscv_and_sampled_simulation))
 
 talks_output = $(addsuffix .html,$(talks))
 
