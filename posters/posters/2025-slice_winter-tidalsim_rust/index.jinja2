@@ -181,7 +181,7 @@
         <li>e.g. L1 cache warmup {{ rightarrow }} RTL state injection</li>
       </ul>
     </li>
-    <li class="fragment">High throughput, accurate, long workloads
+    <li class="fragment">High-throughput, accurate, run long workloads
       <ul>
         <li>Avoid FPGA latency during uArch iteration</li>
         <li>Directly iterate on the RTL (not a model)</li>
@@ -238,20 +238,38 @@
   </figure>
 </article>-->
 
-<article>
+<article style="display: none;">
   <header><h3>Functional Warmup Flow</h3></header>
   <img src="./figs/dynamic/tidalsim/full_flow_detail.svg" />
-  <p class="center">Cache snapshots are captured along with arch checkpoints; L1d restored in RTL simulation</p>
+  <ul>
+    <li>Cache snapshots captured along with arch checkpoints</li>
+    <li>L1 state injected in RTL simulation</li>
+  </ul>
+  <!--<p class="center">Cache snapshots are captured along with arch checkpoints; L1d restored in RTL simulation</p>-->
 </article>
 
 <article>
-  <header><h3>IPC Trace Reconstruction - huffbench (Embench)</h3></header>
+  <header><h3>Issues with IPC Trace Reconstruction</h3></header>
   <!--<p class="center red">TODO TODO: One smallish example e.g. wikisort / huffbench</p>-->
-  <img src="./figs/multi-level-sim/05_2024/huffbench.svg"/>
-  <p class="center">\( \small{ N = 10000, \: C = 18, \: \text{MAPE}_{\text{\:IPC}} = 6.6\% \rightarrow 4.1\% } \)</p>
+  <figure>
+    <img src="./figs/multi-level-sim/05_2024/huffbench.svg"/>
+    <figcaption class="small">Embench (huffbench): \( \text{MAPE}_{\text{\:IPC}} = 4.1\% \)</figcaption>
+  </figure>
+
+  <p class="center"><strong>Problem 1</strong>: These benchmarks are too repetitive!</p>
+
+  <figure>
+    <img src="./figs/multi-level-sim/coremark_results_truncated.svg" />
+    <figcaption class="small">Coremark: \( \text{MAPE}_{\text{\:IPC}} > 100\%  \)</figcaption>
+  </figure>
+
+  <p class="center"><strong>Problem 2</strong>: Catastrophic errors from injection failure</p>
+
+  <p class="center">A systematic approach is needed to solve these problems.</p>
+  <!--<p class="center">\( \small{ N = 10000, \: C = 18, \: \text{MAPE}_{\text{\:IPC}} = 6.6\% \rightarrow 4.1\% } \)</p>-->
 </article>
 
-<article>
+<article style="display: none;">
   <header><h3>IPC Trace Reconstruction - wikisort (Embench)</h3></header>
   <!--<p class="center red">TODO TODO: One large example e.g. CoreMark</p>-->
   <img src="./figs/multi-level-sim/05_2024/wikisort.svg"/>
@@ -271,6 +289,75 @@
   </figure>
 </article>-->
 
+<article>
+  <header><h3>What Does Rust Have to do With Anything?</h3></header>
+  <ul>
+    <!--<li class="fragment">Popular selling points
+      <ul>
+        <li class="fragment">Borrow checker {{ rightarrow }} safe multithreaded code + no leaks</li>
+        <li class="fragment">Emitted asm quality similar to C/C++, zero-cost abstractions, quite fast</li>
+        <li class="fragment">No runtime, complete AOT compilation</li>
+        <li class="fragment">But these aren't important <strong>to us</strong></li>
+      </ul>
+    </li>-->
+    <li class="fragment">First-class algebraic data types + typeclass derivation</li>
+    <li class="fragment">RISC-V as first-class target + baremetal support</li>
+    <li class="fragment"><code class="inline">build.rs</code> for programmatic code generation</li>
+    <li class="fragment">Stdlib that runs baremetal (using <code class="inline">alloc</code>)</li>
+    <li class="fragment">A comprehensive package library (<a href="https://crates.io/">crates.io</a>)</li>
+    <li class="fragment">Large number of <code class="inline">no_std</code> crates that work baremetal</li>
+  </ul>
+
+  <p class="center fragment"><strong>Heavily used libraries in the wild + baremetal support</strong></p>
+</article>
+
+<article>
+  <header><h3>An Experimental RISC-V Instruction Set Simulator</h3></header>
+
+  <p class="center" style="text-decoration: underline;">Deficiencies of spike:</p>
+  <ul>
+    <li class="fragment">Ad-hoc arch state checkpointing</li>
+    <li class="fragment">Non-unified testbench/IO models between spike/Chipyard/FireSim</li>
+    <li class="fragment">Hard to create custom tops</li>
+  </ul>
+
+  <p class="center" style="text-decoration: underline;">Our prototype:</p>
+
+  <ul>
+    <li class="fragment">Support for RV64imfd (no privileged ISA)</li>
+    <li class="fragment">Exact diff testing with spike's commit log</li>
+    <li class="fragment">Can run RISC-V ISA tests for supported extensions</li>
+    <li class="fragment">Leverages <a href="https://github.com/riscv/riscv-opcodes">riscv-opcodes</a> for instruction encodings</li>
+  </ul>
+</article>
+
+<article>
+  <header><h3>State Snapshotting</h3></header>
+
+    <ul>
+      <li class="fragment">The ISS is generated <em>after</em> the RTL generator is run. The device tree <em>is an input</em>. Exact SoC modeling.</li>
+      <li class="fragment">All SoC state is contained within a single Rust <code class="inline">struct</code></li>
+      <li class="fragment">Typeclass derivation = easy to derive serdes</li>
+    </ul>
+
+    <pre class="fragment small"><code class="language-rust" data-trim data-noescape>#[derive(Serialize)]
+pub struct Cpu {
+    pub regs: [u64; 32],
+    pub pc: u64,
+    pub csrs: Csrs
+}
+
+#[derive(Serialize)]
+pub struct System {
+  pub cpus: Vec&lt;Cpu&gt;,
+  bus: Bus
+}</code></pre>
+</article>
+
+<article>
+  <header><h3>Codegen-Based ISS</h3></header>
+
+</article>
 
 <article>
   <header><h3>Conclusion</h3></header>
