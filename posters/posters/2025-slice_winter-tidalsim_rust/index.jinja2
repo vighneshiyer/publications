@@ -355,8 +355,41 @@ pub struct System {
 </article>
 
 <article>
-  <header><h3>Codegen-Based ISS</h3></header>
+  <header><h3>Rust Baremetal RISC-V Environment</h3></header>
 
+  <ul>
+    <li class="fragment">Leverage upstream <a href="https://github.com/rust-embedded/riscv">rust-embedded</a> support
+    <li class="fragment">Implementation of target-side HTIF</li>
+    <li class="fragment">1:1 port of some benchmarks from <code class="inline">riscv-tests/benchmarks</code></li>
+    <li class="fragment"><strong>WIP</strong>: <em>semantic</em> port of <a href="https://github.com/embench/embench-iot">embench</a></li>
+    <!--<li class="fragment">Very little code {{ rightarrow }} lots of value</li>-->
+  </ul>
+</article>
+
+<article>
+  <header><h3>WIP: Leveraging no_std Crates for Benchmarks</h3></header>
+
+  <p>Many <code class="inline">no_std</code> crates are heavily used:</p>
+
+  <ul>
+    <li><strong>Data structures</strong>: stdlib, hashbrown, btrees, petgraph</li>
+    <li><strong>Strings</strong>: regex, nom</li>
+    <li><strong>(De)Serialization</strong>: serde, json, yaml, bincode</li>
+    <li><strong>Compilers/JIT</strong>: cranelift, wasmtime, revm-interpreter</li>
+    <li><strong>Hashing / crypto</strong>: hmac, aes, rsa, rustls</li>
+    <li><strong>Numerics</strong>: nalgebra, faer-rs, rust-num, ndarray</li>
+  </ul>
+
+  <!--<p class="center fragment">Unlike any other language / environment out there, these crates are easy to use baremetal out-of-the-box</p>-->
+
+  <p class="fragment">Run real applications to derive library-level stimulus:</p>
+
+  <ul>
+    <li class="fragment">Instrument any crate with function argument capturing</li>
+    <li class="fragment">Cargo always compiles from source {{ rightarrow }} adding patched versions of dependencies is easy</li>
+  </ul>
+
+  <p class="center fragment">A path towards representative, high quality baremetal benchmarks</p>
 </article>
 
 <article>
@@ -365,10 +398,14 @@ pub struct System {
   <img src="./figs/multi-level-sim/overview.svg" width="95%"/>
   <!-- Show a figure here of all the parts put together -->
   <!--<li class="fragment">Live sampled simulation leveraging the Rust ISS + benchmarks</li>-->
-  <p class="center">All these components tie into a robust sampled simulation flow.</p>
+  <ul>
+    <li>Exact SoC ISS + testbench {{ rightarrow }} perfect arch + IO model + testbench state checkpointing</li>
+    <li>Rust-based baremetal benchmarks {{ rightarrow }} realistic workloads without an OS</li>
+    <li>These tools enable a robust sampled simulation flow</li>
+  </ul>
 </article>
 
-<article>
+<article style="display: none;">
   <header><h3>Next Steps</h3></header>
   <!--<ul>
     <li>Automatic selection of interval length and warmup period</li>
