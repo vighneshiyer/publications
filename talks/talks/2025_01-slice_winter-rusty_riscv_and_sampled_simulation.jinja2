@@ -116,7 +116,6 @@ import 'highlight.js/styles/tokyo-night-dark.css'
       <img class="image no-margin" width="60%" src="./figs/multi-level-sim/sampled_simulation0.svg" />
     </div>
 
-    <!-- TODO: replace this figure -->
     <p class="fragment center">The full workload is represented by a selection of <em>sampling units</em>.</p>
 
     <ol class="smallish">
@@ -137,9 +136,8 @@ import 'highlight.js/styles/tokyo-night-dark.css'
     The <em>microarchitectural</em> state of the RTL simulation starts at the reset state!</p>
     </p>
 
-    <!-- TODO: replace this figure -->
     <div class="fragment center">
-      <img width="50%" class="image" src="./figs/multi-level-sim/sampled_simulation.png" />
+      <img width="50%" class="image" src="./figs/multi-level-sim/sampled_simulation1.svg" />
     </div>
 
     <ul>
@@ -297,9 +295,9 @@ ISS (purely experimental)
           <li class="fragment">Reasonably fast: 50+ MIPS <small>(much slower when tracing)</small></li>
         </ul>
       </li>
+      <li class="fragment">Non-unified testbench/IO models between spike and Chipyard/FireSim makes injection tricky</li>
       <li class="fragment">Deficiencies of spike
         <ul>
-          <li class="fragment">Non-unified testbench/IO models between spike and Chipyard/FireSim</li>
           <li class="fragment">Hard to create custom tops (e.g. for live sampled simulation)</li>
           <li class="fragment">Ad-hoc arch state checkpointing</li>
         </ul>
@@ -313,7 +311,7 @@ ISS (purely experimental)
     <p class="fragment">This is a <em>purely experimental</em> project</p>
 
     <ul>
-      <li class="fragment">Support for <code class="inline">RV64imfd_Zicsr</code> (no privileged ISA)</li>
+      <li class="fragment">Support for <code class="inline">rv64imfd_Zicsr</code> (no privileged ISA)</li>
       <li class="fragment">Exact diff testing with spike's commit log</li>
       <li class="fragment">Runs RISC-V ISA tests (and more) for supported extensions cleanly</li>
       <li class="fragment">Leverages <a href="https://github.com/riscv/riscv-opcodes">riscv-opcodes</a> for instruction encodings</li>
