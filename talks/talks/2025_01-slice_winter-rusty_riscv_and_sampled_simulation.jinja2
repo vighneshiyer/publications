@@ -113,7 +113,7 @@ import 'highlight.js/styles/tokyo-night-dark.css'
     <p class="center fragment smallish">Use an <em>instruction set simulator</em> (ISS) and pick <em>samples</em> to run in RTL simulation</p>
 
     <div class="fragment center">
-      <img class="image no-margin" width="60%" src="./figs/multi-level-sim/sampled_simulation0.png" />
+      <img class="image no-margin" width="60%" src="./figs/multi-level-sim/sampled_simulation0.svg" />
     </div>
 
     <!-- TODO: replace this figure -->
@@ -151,9 +151,7 @@ import 'highlight.js/styles/tokyo-night-dark.css'
 
   <section style="text-align: center;">
     <h2>RTL Sampled Simulation Flow</h2>
-    <!-- TODO: replace this figure -->
-    <p class="center red">!!! Replace this figure!!!</p>
-    <img class="image" src="./figs/dynamic/tidalsim/overview.svg" />
+    <img class="image no-margin" src="./figs/multi-level-sim/sampled_simulation_flow.svg" width="100%"/>
   </section>
 
   <section data-visibility="hidden">
@@ -516,11 +514,7 @@ ADL for ISS generation
     <ul>
       <li class="fragment">Formal definition of arch state and update rules at the ISA-level</li>
       <li class="fragment">Instruction and state encodings</li>
-      <li class="fragment">Execution semantics
-        <ul>
-          <li>State update rules</li>
-        </ul>
-      </li>
+      <li class="fragment">Execution semantics</li>
       <li class="fragment">Methods to resolve ambiguities in a spec
         <ul>
           <li class="fragment">At uArch defition time (e.g. handling of misaligned memory loads/stores, FP exceptions, unimplemented CSR access handling)</li>
