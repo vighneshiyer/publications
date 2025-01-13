@@ -208,11 +208,11 @@ import 'highlight.js/styles/tokyo-night-dark.css'
       <li class="fragment">Pretty much all baremetal benchmarks look like this</li>
     </ul>
 
-    <p class="center fragment"><strong>Problem 1</strong>: Embench, Coremark, ... are not interesting enough.</p>
+    <p class="center fragment"><strong>Problem 1</strong>: Existing baremetal benchmarks (e.g. Embench, Coremark, etc.) are not interesting.</p>
   </section>
 
   <section>
-    <h2>Ad-Hoc Sampled Simulation Methodology</h2>
+    <h2>Ad-Hoc Checkpointing / Injection</h2>
 
     <div class="center" style="margin-bottom: 1rem;">
       <img class="image no-margin" src="./figs/multi-level-sim/coremark_results_truncated.svg" />
@@ -220,8 +220,8 @@ import 'highlight.js/styles/tokyo-night-dark.css'
     </div>
 
     <ul>
-      <li class="fragment">Some benchmarks look way off, even with warmup</li>
-      <li class="fragment">A bug in arch state checkpointing, state injection, or uarch injection</li>
+      <li class="fragment">Some workloads are way off, even with warmup</li>
+      <li class="fragment">A bug in checkpointing, arch / uArch state injection, sampling, or extrapolation</li>
     </ul>
 
     <p class="center fragment"><strong>Problem 2</strong>: No systematic methodology for complete checkpointing and injection.</p>
@@ -251,23 +251,27 @@ crates.io
   <section>
     <h2>What's so Great About Rust?</h2>
     <ul>
-      <li class="fragment">Popular selling points
+      <!--<li class="fragment">Popular selling points
         <ul>
           <li class="fragment">Borrow checker {{ rightarrow }} safe multithreaded code + memory safety + no memory leaks</li>
           <li class="fragment">Emitted asm quality similar to C/C++, zero-cost abstractions, quite fast</li>
           <li class="fragment">No runtime, complete AOT compilation</li>
           <li class="fragment">But these aren't important <strong>to us</strong></li>
         </ul>
-      </li>
+      </li>-->
       <li class="fragment">First-class algebraic data types (ADTs) with typeclass derivation</li>
-      <li class="fragment">RISC-V is a first-class target with upstream baremetal support</li>
       <li class="fragment"><code class="inline">build.rs</code> for programmatic code generation</li>
-      <li class="fragment">Stdlib that runs baremetal (using <code class="inline">alloc</code> and <code class="inline">collections</code>)</li>
       <li class="fragment">A comprehensive package library (crates.io)</li>
-      <li class="fragment">Large number of <code class="inline">no_std</code> crates that work baremetal</li>
+      <li class="fragment">RISC-V is a first-class target</li>
+      <li class="fragment">Baremetal support is good
+        <ul>
+          <li>Stdlib runs baremetal (using <code class="inline">alloc</code> and <code class="inline">collections</code>)</li>
+          <li>Large number of <code class="inline">no_std</code> crates</li>
+        </ul>
+      </li>
     </ul>
 
-    <p class="center fragment"><strong>Heavily used libraries in the wild + baremetal = good</strong></p>
+    <p class="center fragment"><strong>Heavily used libraries in the wild + baremetal support</strong></p>
   </section>
 </section>
 
@@ -291,15 +295,15 @@ ISS (purely experimental)
       <li class="fragment">Spike already exists. What's wrong?
         <ul>
           <li class="fragment">The 'golden model' of RISC-V</li>
-          <li class="fragment">Extensive set of ISA extensions implemented</li>
-          <li class="fragment">Reasonably fast: 50+ MIPS <small>(much lower when tracing)</small></li>
+          <li class="fragment">Extensive set of ISA extensions</li>
+          <li class="fragment">Reasonably fast: 50+ MIPS <small>(much slower when tracing)</small></li>
         </ul>
       </li>
       <li class="fragment">Deficiencies of spike
         <ul>
-          <li class="fragment">Ad-hoc arch state checkpointing</li>
           <li class="fragment">Non-unified testbench/IO models between spike and Chipyard/FireSim</li>
           <li class="fragment">Hard to create custom tops (e.g. for live sampled simulation)</li>
+          <li class="fragment">Ad-hoc arch state checkpointing</li>
         </ul>
       </li>
     </ul>
@@ -311,12 +315,32 @@ ISS (purely experimental)
     <p class="fragment">This is a <em>purely experimental</em> project</p>
 
     <ul>
-      <li class="fragment">Support for RV64imfd so far (no privileged ISA)</li>
+      <li class="fragment">Support for <code class="inline">RV64imfd_Zicsr</code> (no privileged ISA)</li>
       <li class="fragment">Exact diff testing with spike's commit log</li>
-      <li class="fragment">Can run RISC-V ISA tests for supported extensions cleanly</li>
+      <li class="fragment">Runs RISC-V ISA tests (and more) for supported extensions cleanly</li>
       <li class="fragment">Leverages <a href="https://github.com/riscv/riscv-opcodes">riscv-opcodes</a> for instruction encodings</li>
     </ul>
     <p class="fragment"><a href="https://github.com/euphoric-hardware/riscv-functional-sim">WIP on Github</a></p>
+  </section>
+
+  <section>
+    <h2>Codegen-Based ISS</h2>
+
+    <ul>
+      <li class="fragment">Swap out C++ macro system for direct Rust code generation
+        <ul>
+          <li class="fragment">Programatically read riscv-opcodes {{ rightarrow }} emit Rust for instruction decoding, immediate extraction, and switch table</li>
+          <li class="fragment">It's just code! No restrictions</li>
+          <li class="fragment">Can also <em>generate</em> code for CSRs with <em>semantic bitfields</em> <small>(this is done manually in spike)</small></li>
+        </ul>
+      </li>
+      <li class="fragment">Device tree from a Chipyard generator {{ rightarrow }} ISS generation
+        <ul>
+          <li class="fragment">The goal is <em>exact</em> SoC modeling</li>
+          <li class="fragment">Modeled and serializable state includes testbench components and IO models</li>
+        </ul>
+      </li>
+    </ul>
   </section>
 
   <section>
@@ -342,39 +366,17 @@ pub struct System {
   bus: Bus
 }
     </code></pre>
-    <p class="center fragment">Disentangling state and update rules seems obvious, but is not so in spike</p>
+    <p class="center fragment">Disentangling state and updates <em>seems obvious</em>, but is not easy with spike</p>
   </section>
 
-  <section>
-    <h2>Codegen-Based ISS</h2>
 
-    <ul>
-      <li class="fragment">Swap out the opaque C++ macro system for direct Rust code generation
-        <ul>
-          <li class="fragment">Programatically read yaml files in riscv-opcodes and generate Rust strings for instruction decoding, immediate extraction, and the main switch table</li>
-          <li class="fragment">It's just code! No restrictions</li>
-          <li class="fragment">Can also <em>generate</em> code for CSRs with <em>semantic bitfields</em> <small>(this is done manually in spike)</small></li>
-        </ul>
-      </li>
-      <li class="fragment">The device tree from a Chipyard generator is <em>an input</em> into the ISS generation
-        <ul>
-          <li>The goal is <em>exact</em> SoC modeling</li>
-        </ul>
-      </li>
-    </ul>
-  </section>
-
-  <section>
+  <section data-visibility="hidden">
     <h2>Big Problems</h2>
     <ol>
       <li class="fragment">How can anyone trust a new ISS is precisely emulating the RISC-V spec?</li>
       <li class="fragment">How can we make the ISS performant?</li>
       <li class="fragment">How can we exactly model an SoC generated from Chipyard? We can't build a point-design ISS.</li>
     </ol>
-
-    <!--<ul class="fragment">
-      <li></li>
-    </ul>-->
   </section>
 </section>
 
@@ -392,15 +394,15 @@ Baremetal benchmarks
 -->
 
   <section>
-    <h2>Why Baremetal?</h2>
+    <h2>Why Baremetal Software?</h2>
 
     <ul>
       <li class="fragment">Easy to run in execution driven simulation (RTL simulation)</li>
-      <li class="fragment">Better likelihood of successful arch state transfer</li>
+      <li class="fragment">Fewer edge cases for successful arch state checkpoint + inject</li>
       <li class="fragment">Focus on common-case userspace code</li>
-      <li class="fragment">But, baremetal programs of course cannot:
+      <li class="fragment">But, baremetal programs of course cannot
         <ul>
-          <li class="fragment">Run kernel code and stress the privileged ISA</li>
+          <li class="fragment">Run kernel code / syscalls and stress the privileged ISA</li>
           <li class="fragment">Perform userspace/kernel interactions and witness cache pollution</li>
           <li class="fragment">Witness preemptive multithreading</li>
         </ul>
@@ -409,14 +411,14 @@ Baremetal benchmarks
   </section>
 
   <section>
-    <h2>Baremetal Rust Programs</h2>
+    <h2>Baremetal Support in Rust</h2>
 
     <ul>
-      <li class="fragment">Leverage upstream <a href="https://github.com/rust-embedded/riscv">rust-embedded</a> support
+      <li class="fragment">Leverage upstream <a href="https://github.com/rust-embedded/riscv">rust-embedded/riscv</a> support
         <ul>
-          <li class="fragment"><code class="inline">riscv-rt</code>: <code class="inline">crt.S</code>, <code class="inline">panic!</code> handlers, interrupt handlers</li>
+          <!--<li class="fragment"><code class="inline">riscv-rt</code>: <code class="inline">crt.S</code>, <code class="inline">panic!</code> handlers, interrupt handlers</li>
           <li class="fragment">Pre-built hooks for SoC-specific handlers (e.g. using HTIF for host proxying of syscalls)</li>
-          <li class="fragment"><code class="inline">memory.x</code>: defines the accessible raw address space + program segment mapping</li>
+          <li class="fragment"><code class="inline">memory.x</code>: defines the accessible raw address space + program segment mapping</li>-->
           <li class="fragment"><code class="inline">target = "riscv64gc-unknown-none-elf"</code>: that's all it takes to pull in a cross compiler!</li>
           <li class="fragment">Include and use any <code class="inline">no_std</code> dependency with a custom allocator</li>
           <li class="fragment">Build baremetal projects with <code class="inline">cargo build</code> like any other Rust project!</li>
@@ -447,21 +449,21 @@ Baremetal benchmarks
           <li><strong>Numerics</strong>: nalgebra, faer-rs, rust-num, ndarray</li>
         </ul>
       </li>
-      <li class="fragment">Unlike any other language / environment out there, these crates are easy to use baremetal out-of-the-box</li>
+      <li class="fragment">Unlike other languages / environments, these crates are easy to use baremetal out-of-the-box</li>
     </ul>
 
-    <p class="fragment center">The missing piece: <strong>stimulus</strong>!</p>
+    <p class="fragment center">The missing piece: <strong>stimulus</strong></p>
 
-    <ul>
+    <!--<ul>
       <li class="fragment small">Caveat: some of these crates have their own benchmarks, which can be used</li>
-    </ul>
+    </ul>-->
   </section>
 
   <section>
     <h2>Extracting Stimuli from Applications</h2>
 
     <!--
-    - base libraries (regex, mutexes, data structures) -> app-level libraries (http server) -> application ()
+    - base libraries (regex, mutexes, data structures) -> app-level libraries (http server) -> application (KV cache)
     -->
 
     <ul>
@@ -469,7 +471,7 @@ Baremetal benchmarks
         <ul>
           <li>Base libraries (e.g. data structures)</li>
           <li>Application-level libraries (e.g. HTTP servers)</li>
-          <li>Deployed applications (e.g. ripgrep, Alacritty, Servo, Meilisearch)</li>
+          <li>Deployed applications (e.g. ripgrep, Alacritty, moka, Servo, Meilisearch)</li>
         </ul>
       </li>
       <li class="fragment">Run real applications to derive library-level stimulus
@@ -481,7 +483,6 @@ Baremetal benchmarks
     </ul>
 
     <p class="center fragment">A path towards representative, high quality baremetal benchmarks</p>
-
   </section>
 </section>
 
@@ -492,7 +493,8 @@ Baremetal benchmarks
     <img style="margin-bottom: 0;" class="image" src="./figs/multi-level-sim/overview.svg" width="100%"/>
     <!-- Show a figure here of all the parts put together -->
     <!--<li class="fragment">Live sampled simulation leveraging the Rust ISS + benchmarks</li>-->
-    <p class="center fragment">All these components tie into a robust sampled simulation flow.</p>
+
+    <p class="center fragment">All these components tie into a robust sampled simulation flow</p>
   </section>
 </section>
 
