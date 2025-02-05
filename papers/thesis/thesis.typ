@@ -13,15 +13,15 @@
 //     )
 // )
 //
-#import "@preview/ilm:1.4.0": *
+import "@preview/ilm:1.4.0": *
 
 #set text(lang: "en")
 
 #show: ilm.with(
-  title: [Your Title],
-  author: "Max Mustermann",
-  date: datetime(year: 2024, month: 03, day: 19),
-  abstract: [#lorem(30)],
+  title: [A Rigorous Evaluation and Implementation of Sampling in Microarchitecture Simulation],
+  author: "Vighnesh Iyer",
+  date: datetime(year: 2025, month: 05, day: 30),
+  abstract: [Coming soon.],
   bibliography: bibliography("references.bib"),
   figure-index: (enabled: true),
   table-index: (enabled: true),
@@ -31,8 +31,17 @@
 
 = Preface
 
-When I started my PhD I had no clue what I was actually interested in, and more importantly, what was worth doing.
-I suggested a completely stupid line of research when coming into grad school.
+When I started my PhD, I had no clue what I was actually interested in, and more importantly, what was worth doing.
+I had dabbled in various areas of computer science as an undergrad and I found something I was genuinely interested in when I took UC Berkeley's digital design course.
+My interest in the hardware side of computer science increased as I also
+Originally my interest was sitting at the edge of analog and digital circuits in the context of building large digital SoCs.
+
+I suggested a completely stupid line of research when I came into grad school.
+I thought that it would be a good idea to propose a concrete line of research in my statement of purpose s
+Of course, this backfired and instead turned off PIs who thought that this was my only specific interest, and if they weren't working on a similar idea, that I would not be interested.
+
+I began to
+My first inst
 I realized that analog circuit design wasn't in my blood. It is nice to start with some first principles, design a circuit, and size the transistors. But after that point, you do the layout, run some simulations, realize your idealized circuit models used for the first principles analysis were completely wrong, and then go crazy with parameter sweeping. I just couldn't get with the program - it was obvious I needed a change.
 
 Some words about the inspiration behind this project and how it came to be.
@@ -42,11 +51,21 @@ Isn't sampling done to death?
 People say this and just point to papers. But this is paper-brained nonsense.
 Sampling doesn't even exist today from my real-life perspective.
 
+Dan's blog post style thesis and Ryan's tutorial-style thesis.
+
 #align(right)[
 _Vighnesh Iyer_
 ]
 
-= Introduction and Background
+= Introduction
+
+Chip landscape overall
+Refer to the typical DAC / job talks
+Moore's Law, Dennard scaling, specialization, heterogeneous systems, more custom IPs
+But CPUs aren't stagnating! Show performance results of M series systems on Speedometer. Energy efficiency and absolute performance continue to improve as cores are designed with specialized features for target workloads (e.g. speculation features such as load address/value prediction, pointer preemptive prefetching, things that expose uarch side-channels actually are good!)
+Core microarchitecture iteration is still important! But performance benefits are hard to measure due to simulation bottlenecks.
+
+= Background
 
 == An Overview of Digital Systems
 
@@ -60,6 +79,10 @@ _Vighnesh Iyer_
 
 === Simulation Abstractions
 
+- https://jakob.engbloms.se/archives/2321 ( “Architectural Simulators Considered Harmful” – I would tend to agree)
+    - https://ieeexplore.ieee.org/document/7155440 (the paper itself)
+- https://jakob.engbloms.se/archives/2514 ( gem5 Full Speed Ahead (FSA))
+
 == Sampled Simulation
 
 - Background chapters
@@ -72,6 +95,8 @@ _Vighnesh Iyer_
     - Warmup models and various optimizations
     - Time-feedback from performance simulation to functional simulation
     - Prior work in multicore sampled simulation
+
+== Workloads and Their Evolution
 
 = Other Things
 
@@ -119,9 +144,18 @@ ChampSim: https://arxiv.org/pdf/2210.14324
 Then talk about exe sim
 https://nitish2112.github.io/post/event-driven-simulation/
 
+- https://www.sigarch.org/when-to-prototype-when-to-simulate/
+- https://pbzcnepu.net/isca/methodology.html
+-
+
 \section{Design for Injection (DFI) Methodology}
 
 Then about design for injection
 And then the full flow from dbt sim to ice emulation
 DBT sim -> ISA-level SoC sim -> execution-driven uArch / perf sim -> RTL sim -> Palladium-ish RTL sim -> ICE
+
+
+identify your thesis, gather minimal evidence to prove your point and no more
+leverage firesim to do trace driven sampling analysis first!!! then move to rtl injection after
+  - basically do oracle embedding analysis
 
