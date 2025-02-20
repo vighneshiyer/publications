@@ -13,12 +13,12 @@
 //     )
 // )
 //
-import "@preview/ilm:1.4.0": *
+#import "@preview/ilm:1.4.0": *
 
 #set text(lang: "en")
 
 #show: ilm.with(
-  title: [A Rigorous Evaluation and Implementation of Sampling in Microarchitecture Simulation],
+  title: [A Rigorous Evaluation and Implementation of Microarchitecture Simulation Sampling],
   author: "Vighnesh Iyer",
   date: datetime(year: 2025, month: 05, day: 30),
   abstract: [Coming soon.],
@@ -30,6 +30,8 @@ import "@preview/ilm:1.4.0": *
 
 
 = Preface
+
+Why go to grad school?
 
 When I started my PhD, I had no clue what I was actually interested in, and more importantly, what was worth doing.
 I had dabbled in various areas of computer science as an undergrad and I found something I was genuinely interested in when I took UC Berkeley's digital design course.
@@ -59,11 +61,42 @@ _Vighnesh Iyer_
 
 = Introduction
 
+== The Digital Hardware Landscape
+
+Digital hardware is ubiquitous.
+Everywhere we look, no matter the form factor, application, or
+Watches, phones, IoT devices, home appliances, urban infrastructure,
+we find digital systems
 Chip landscape overall
 Refer to the typical DAC / job talks
+
+== Software Trends
+
+Software drives the next generation hardware whether we like it or not. To some degree hardware advancements make software advancements / inefficiencies possible in the first place. So we must discuss the software first.
+Software stack complexity continues to grow with more abstractions, consider webapp side
+Programming productivity is king, more SW engineers vs HW ones
+Cloud and edge application stacks are actually converging with respect to compute characteristics (indirect dispatch, JITs, VMs, more isolation), with differences in scale
+
+== Digital Hardware Trends
+
 Moore's Law, Dennard scaling, specialization, heterogeneous systems, more custom IPs
 But CPUs aren't stagnating! Show performance results of M series systems on Speedometer. Energy efficiency and absolute performance continue to improve as cores are designed with specialized features for target workloads (e.g. speculation features such as load address/value prediction, pointer preemptive prefetching, things that expose uarch side-channels actually are good!)
 Core microarchitecture iteration is still important! But performance benefits are hard to measure due to simulation bottlenecks.
+
+
+
+- Digital hardware is everywhere, especially on your phone, laptop, desktop, and through the cloud (datacenters)
+- Scaling trends of microprocessors
+- Accelerators galore
+- But what do accelerators do for you? Consider your phone. What do you use it for? What role do these accelerators play?
+- Single-thread performance is still king
+- But it isn't scaling? Not true! Vertical integration gives continual benefits. Speedometer scores are the key. Energy efficiency of cores continues to improve. Cores themselves have become more heterogeneous.
+- But how does this work in practice? There is no vertical iteration loop prior to tape out? So, there is still a full silicon spin cycle + software development time to figure out optimizations. How does Apple do it? Why do others lag so far behind?
+
+
+== Motivation
+
+== Hypothesis
 
 = Background
 
@@ -77,11 +110,22 @@ Core microarchitecture iteration is still important! But performance benefits ar
 
 === Simulation paradigms
 
+- https://dl.gi.de/server/api/core/bitstreams/c54a18be-1546-4936-a2b4-8d53b946b884/content
+  - The image in 3.1 is ideal to reproduce
+  - X-axis: modeling abstraction from precise to abstract, y-axis: throughput
+  - Going from RTL to timing models to ISS to JIT
+
 === Simulation Abstractions
 
 - https://jakob.engbloms.se/archives/2321 ( “Architectural Simulators Considered Harmful” – I would tend to agree)
     - https://ieeexplore.ieee.org/document/7155440 (the paper itself)
 - https://jakob.engbloms.se/archives/2514 ( gem5 Full Speed Ahead (FSA))
+
+=== ML-Based Simulation
+
+- SimNet: https://www.osti.gov/servlets/purl/1889629
+- TAO: https://dl.acm.org/doi/abs/10.1145/3656012
+- Learning Generalizable Program and Architecture Representations for Performance Modeling: https://ieeexplore.ieee.org/abstract/document/10793149
 
 == Sampled Simulation
 
@@ -95,8 +139,40 @@ Core microarchitecture iteration is still important! But performance benefits ar
     - Warmup models and various optimizations
     - Time-feedback from performance simulation to functional simulation
     - Prior work in multicore sampled simulation
-
+- NPS: A Framework for Accurate Program Sampling Using Graph Neural Network: https://arxiv.org/abs/2304.08880
 == Workloads and Their Evolution
+
+= Microarchitecture Oracle Analysis of Program Sampling
+
+== TraceKit
+
+== Functional Warmup Evaluation
+
+= Sampled Simulation Leveraging RTL Simulation
+
+== Embedding
+
+== Functional Warmup Models
+
+== Microarchitecture State Injection
+
+== Simulator Architecture
+
+== Evaluation and Results
+
+= Robust Sampling of Real Workloads
+
+== What is Architectural State?
+
+== Improving the
+
+= Error Analysis of Sampled Simulation
+
+= TidalSim: A Live Sampling Flow
+
+== DSE Using TidalSim
+
+= Future Work
 
 = Other Things
 
@@ -122,7 +198,7 @@ ChampSim: https://arxiv.org/pdf/2210.14324
   https://arxiv.org/html/2408.05912v1 (Correct Wrong Path - an attempt to make Champsim aware of wrong path execution effects since those are hidden in a trace, unless explicitly instrumented)
 
 \subsection{Limitations of Trace-Driven Simulation}
-
+.
 - Disprove trace driven sim first
   - Start with a single-threaded baremetal application that has no IO interactions at all except DRAM
   - Consider how to model performance impacts of
