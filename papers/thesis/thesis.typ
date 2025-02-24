@@ -53,7 +53,7 @@ Isn't sampling done to death?
 People say this and just point to papers. But this is paper-brained nonsense.
 Sampling doesn't even exist today from my real-life perspective.
 
-Dan's blog post style thesis and Ryan's tutorial-style thesis.
+Dan's blog post style thesis and Ryan's tutorial-style thesis + my desire for a Socratic dialogue.
 
 #align(right)[
 _Vighnesh Iyer_
@@ -65,10 +65,35 @@ _Vighnesh Iyer_
 
 Digital hardware is ubiquitous.
 Everywhere we look, no matter the form factor, application, or
-Watches, phones, IoT devices, home appliances, urban infrastructure,
+Watches, phones, IoT devices, home appliances, urban infrastructure (traffic lights, trains), cars, robots, datacenters
 we find digital systems
 Chip landscape overall
 Refer to the typical DAC / job talks
+
+- Microprocessors dominate how we interact with digital electronics. Phones, tablets, laptops, watches, and servers in datacenters (the cloud).
+- How has microprocessors evolved over the past 50 years?
+- The very first unicore processors and operating systems
+- Moore's Law and Dennard Scaling
+- Dual core processors to counteract some poor scaling trends and improve real time performance
+- DVFS technologies for power savings and to deal with increasing process variation
+- Multicore processors continue to proliferate
+- Mixed perf/energy efficiency processors (big/little architecture)
+- The failure of the PARLAB vision (discuss the 7 dwarves as they seemed to provide opportunity for general purpose scaling machines, but it didn't pan out. they were mostly for HPC apps. when attempted to apply onto manycore systems and general applications like web browsers, they break down right away)
+- Dark silicon
+- Software engineers are dominant, we must align to what they want and accelerate their common stacks
+- Continued performance improvements of single thread performance. Process scaling and uarch improvements continue to compound every generation going from the Nehelem era to the failure of Bulldozer/Itanium and into the Zen era we see today.
+- The Apple breakthroughs on both the smartphone and laptop side (A14+ and M1+ series of chips)
+- True software optimized hardware, continued scaling of performance, Speedometer performance continues to improve every generation even as process improvements stagnate or come at an increasing cost
+- Accelerators are there, but are they the primary target of phone/tablets/laptops today? Even in the distant future? Probably not.
+- Use GPT to chart this outline and fill in any missing holes.
+- What does this portend?
+  - How does Apple do their co-design today? It is iterative over many generations of silicon. On-device tracing and trace-based simulation. Software optimizations done after the fact.
+  - Basically, the iteration loop is still very slow! True optimization of the end-to-end application with the microarchitecture is not possible, even with emulation machines.
+
+- https://dl.acm.org/doi/pdf/10.1145/3649329.3663515
+  - Invited: The Magnificent Seven Challenges and Opportunities in Domain-Specific Accelerator Design for Autonomous Systems
+
+> In the first quarter of this century, computing hardware design- ers were faced with both the limitations of technology scaling for performance [1 ], and the ensuing conflagration of on-chip power density [2]. Fortunately, the challenges of the Dark Silicon era [ 3] have transitioned into a prosperous period of specialized accelera- tor design [ 4 , 5 ]. Emerging enabling technology and tools for agile and democratized hardware design are powering an exciting land
 
 == Software Trends
 
