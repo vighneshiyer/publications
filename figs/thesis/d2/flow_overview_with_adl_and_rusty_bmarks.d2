@@ -1,0 +1,49 @@
+#direction: right
+
+crates: no_std crates
+rust_apps: Rust applications
+stim: Realistic stimulus
+
+baremetal_bmarks {
+    direction: down
+    label: Baremetal benchmarks
+    env: Rust baremetal environment
+    apps: Rusty no_std µBenchmarks / apps
+    ports: Embench / Geekbench ports
+}
+crates -> rust_apps: Instrument and wrap
+rust_apps -> stim: Run on x86 machine
+stim -> baremetal_bmarks
+crates -> baremetal_bmarks
+
+chipyard: Chipyard Generator
+soc: SoC Config / DTS
+chipyard -> soc
+adl {
+  label: RISC-V ADL
+  style.stroke-dash: 5
+}
+soc -> adl
+iss: Rust ISS
+adl -> iss
+
+tb {
+    label: RTL testbench
+    rtl: SoC RTL
+    models: Serializable Testbench/IO Models
+}
+chipyard -> tb
+
+tracekit: TraceKit
+
+flow: Sampled Simulation Flow {
+    style.double-border: true
+    style.font-size: 24
+    #style.fill: "slateblue"
+    style.3d: true
+}
+
+iss -> flow
+baremetal_bmarks -> flow
+tracekit -> flow
+tb -> flow
