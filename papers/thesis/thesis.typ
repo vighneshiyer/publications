@@ -18,7 +18,7 @@
 #set text(lang: "en")
 
 #show: ilm.with(
-  title: [A Rigorous Evaluation and Implementation of Microarchitecture Simulation Sampling],
+  title: [A Rigorous Evaluation and Implementation of Sampled Microarchitecture Simulation],
   author: "Vighnesh Iyer",
   date: datetime(year: 2025, month: 05, day: 30),
   abstract: [Coming soon.],
@@ -28,41 +28,77 @@
   listing-index: (enabled: true)
 )
 
-
 = Preface
 
 The topic of this thesis is quite out of left field to be honest.
+
+// undergraduate experience
+== Undergrad Time
 
 When I began my undergraduate education at UC Berkeley in 2013, I knew I wanted to broadly learn about topics in the field of electrical engineering and computer science, but did not have any speciality in mind.
 I took the usual EECS curriculum which covered topics up and down the stack: analog/RF circuits, digital circuits, VLSI, computer architecture, operating systems, embedded systems, DSP, optimization, software engineering, and AI/ML.
 I also thought I should supplement the engineering-oriented classes with some more "theoretical" ones so I took a bunch of random statistics classes before realizing I'm not cut out for that.
 
-when I took Berkeley's introduction to digital circuits and logic course (EECS 151).
-After taking a bunch of the usual CS classes, it was clear that this was the area I should pursue: computer architecture and further down the stack.
+It wasn't until I took Berkeley's introduction to digital circuits and logic course (EECS 151) that I found something I was genuinely interested in.
+At the same time, I also found the analog and RF circuits courses interesting, so I decided to pursue research in computer architecture and further down the stack.
 
-My interest in the hardware side of computer science increased as I also
-Originally my interest was sitting at the edge of analog and digital circuits in the context of building large digital SoCs.
+// chip bringup
+== Undergrad Research
+
+Near the end of my undergrad career, I got involved in some "research", which was really just helping grad students with a chip bringup.
+Honestly, I didn't even help that much, and instead I was quite an annoyance, asking lots of questions, and making slow progress.
+I owe a large debt to the senior grad students who patiently explained the hardware and software components of the chip they built.
+
+Eventually, I was able to lead the bringup of SERDES links on the chip!
+The goal was for the SoC's RISC-V cores to access external DRAM (hosted on a FPGA devboard) via these SERDES links.
+This was designed to be much faster than using our slow parallel bus from the chip to the FPGA.
+This would bring this academic SoC's performance closer to that of a real SoC which would have an integrated DDR controller and PHY.
+
+As usual, things don't work out as you would like.
+While the SERDES links managed to stay up and synchronized for a few seconds, eventually the clock skew calibration would drift out of phase (there was no CDR on the chip's RX) and the BER would explode.
+However, we were able to run some quick tests during the time the link stayed alive, and that was sufficient to get a number.
+People outside this field would be surprised and disappointed about how much academic chip research is like this.
+
+// power modeling (this was a bit too random to mention here)
+
+// teaching eecs151
+== Undergrad Teaching
+
+I also taught
+
+// motivation for grad school
+== Applying to Grad School
 
 Why go to grad school?
+Originally my interest was sitting at the edge of analog and digital circuits in the context of building large digital SoCs.
 
-When I started my PhD, I had no clue what I was actually interested in, and more importantly, what was worth doing.
-Power modeling,
-I had dabbled in various areas of computer science as an undergrad and I found something I was genuinely interested in when I took UC Berkeley's digital design course.
+// dumb SoP interests and admissions
 
 I suggested a completely stupid line of research when I came into grad school.
 I thought that it would be a good idea to propose a concrete line of research in my statement of purpose s
 Of course, this backfired and instead turned off PIs who thought that this was my only specific interest, and if they weren't working on a similar idea, that I would not be interested.
 
-I began to
-My first inst
+// starting with analog circuits and INC prelim
+
 I realized that analog circuit design wasn't in my blood. It is nice to start with some first principles, design a circuit, and size the transistors. But after that point, you do the layout, run some simulations, realize your idealized circuit models used for the first principles analysis were completely wrong, and then go crazy with parameter sweeping. I just couldn't get with the program - it was obvious I needed a change.
+
+// working through early stage research projects in my PhD
+
+When I started my PhD, I had no clue what I was actually interested in, and more importantly, what was worth doing.
+Power modeling, fault injection, RTL design, specification mining, verification, fuzzing, stimulus generation, sudden shift to sampled simulation due to higher potential impact and an uncrowded area.
+
+// eventually coming to simulation as the king of tools
 
 Some words about the inspiration behind this project and how it came to be.
 TBD.
 
+// the reality of microarchitecture simulation sampling today and the work that remains to be done
+
 Isn't sampling done to death?
 People say this and just point to papers. But this is paper-brained nonsense.
 Sampling doesn't even exist today from my real-life perspective.
+
+// inspiration behind the organization and writing of this thesis
 
 Dan's blog post style thesis and Ryan's tutorial-style thesis + my desire for a Socratic dialogue.
 
@@ -282,6 +318,32 @@ The steps of the flow are:
 == Evaluation and Results
 
 = A Novel Baremetal Benchmark Construction Methodology
+
+== Existing Benchmarks
+
+Embench
+Mibench
+SPEC
+...
+
+- https://github.com/tum-ei-eda/muriscv-nn?tab=readme-ov-file
+
+```
+for a chipyard environment, I got it to build by editing their CMake/toolchain_GCC.cmake to use
+
+# Path to your RISC-V GCC compiler
+message(RISCV_ARCH="${RISCV_ARCH}")
+message(RISCV="$ENV{RISCV}")
+set(RISCV_GCC_PREFIX "$ENV{RISCV}" CACHE PATH "Install location of GCC RISC-V toolchain.")
+set(RISCV_GCC_BASENAME "riscv64-unknown-elf" CACHE STRING "Base name of the toolchain executables.")
+set(TC_PREFIX "${RISCV_GCC_PREFIX}/bin/${RISCV_GCC_BASENAME}-")
+
+and then run
+
+mkdir build
+cmake .. -DRISCV_ARCH=rv64gcv -DRISCV_ABI=lp64d -DUSE_VEXT=1
+make
+```
 
 == Baremetal RISC-V
 
