@@ -42,6 +42,22 @@ I also thought I should supplement the engineering-oriented classes with some mo
 It wasn't until I took Berkeley's introduction to digital circuits and logic course (EECS 151) that I found something I was genuinely interested in.
 At the same time, I also found the analog and RF circuits courses interesting, so I decided to pursue research in computer architecture and further down the stack.
 
+// teaching eecs151
+== Undergrad Teaching
+
+While I was an undergrad, I was a TA for Berkeley's digital circuits course (EECS151) a few times.
+This was one of the best experiences I had during my time at Berkeley.
+
+Certainly, teaching a subject is the best way to learn it.
+The first time I was a TA, I made many mistakes when explaining concepts to students or helping them on homework.
+Teaching made me realize just how little I understood the material after having just taken the same class the prior semester.
+Only after teaching for a while, do you have enough understanding to write new materials for the course.
+
+There is something very valuable about teaching the same material over and over again: you realize quickly that a 'curriculum' is never actually done.
+Students pick up on the smallest mistakes in the textbook, labs, homeworks, and projects.
+They get annoyed quickly when some script fails to run or if the lab fails to hold their interest.
+The lesson I learned: contemporary computer architecture and digital design education is still far away from how good it could be.
+
 // chip bringup
 == Undergrad Research
 
@@ -54,51 +70,79 @@ The goal was for the SoC's RISC-V cores to access external DRAM (hosted on a FPG
 This was designed to be much faster than using our slow parallel bus from the chip to the FPGA.
 This would bring this academic SoC's performance closer to that of a real SoC which would have an integrated DDR controller and PHY.
 
-As usual, things don't work out as you would like.
+As usual, things usually don't work out as you would like.
 While the SERDES links managed to stay up and synchronized for a few seconds, eventually the clock skew calibration would drift out of phase (there was no CDR on the chip's RX) and the BER would explode.
 However, we were able to run some quick tests during the time the link stayed alive, and that was sufficient to get a number.
-People outside this field would be surprised and disappointed about how much academic chip research is like this.
+People outside this field would be surprised and disappointed upon seeing that academic chips _barely_ work.
 
 // power modeling (this was a bit too random to mention here)
 
-// teaching eecs151
-== Undergrad Teaching
+== Motivation for Grad School
 
-I also taught
+So, why even bother going to grad school?
+When I was about done with my undergraduate education, I had plenty of opportunities to jump into any random SWE job in the Bay.
+But, I felt I _knew nothing_ about what I just learned.
+Sure, I had gone through the motions: taking a bunch of classes, building a few projects, and doing well on exams, but none of this gave me enough grounding to pursue independent research like I wanted to.
 
-// motivation for grad school
+My motivation for going to graduate school was to gain an encyclopedic understanding of computer architecture and all its adjacent fields.
+Unlike the common conception of graduate school as a place where you become an ultra-specialized researcher who knows little outside their speciality, the environment at Berkeley is quite different.
+Our lab is a place where, through building real systems, you inevitably end up learning about every part of the stack.
+It is this ability to constantly build things from scratch without any preconceived objectives (i.e. publish a paper) that grants you encyclopedic knowledge.
+
 == Applying to Grad School
 
-Why go to grad school?
-Originally my interest was sitting at the edge of analog and digital circuits in the context of building large digital SoCs.
+When I sat down to write my application, my high-level interest was sitting at the edge of analog and digital circuits in the context of building large digital SoCs.
+I decided to write my statement of purpose (SoP) in an unorthodox way.
+I planned to propose a concrete line of research based on my interests in my SoP, with the idea that a professor would really appreciate it if I knew exactly what I wanted to build.
+Specifically, since I was interested in asynchronous circuits and timing closure at the time, I proposed to investigate some problems in the design methodology, physical design, automated timing analysis, and circuit design aspects of globally-asynchronous, locally-synchronous (GALS)
 
-// dumb SoP interests and admissions
-
-I suggested a completely stupid line of research when I came into grad school.
-I thought that it would be a good idea to propose a concrete line of research in my statement of purpose s
 Of course, this backfired and instead turned off PIs who thought that this was my only specific interest, and if they weren't working on a similar idea, that I would not be interested.
+Even still, I was lucky enough to have several offers from PIs in areas outside GALS implementation techniques 😆.
 
 // starting with analog circuits and INC prelim
-
-I realized that analog circuit design wasn't in my blood. It is nice to start with some first principles, design a circuit, and size the transistors. But after that point, you do the layout, run some simulations, realize your idealized circuit models used for the first principles analysis were completely wrong, and then go crazy with parameter sweeping. I just couldn't get with the program - it was obvious I needed a change.
-
-// working through early stage research projects in my PhD
+== The First Two Years
 
 When I started my PhD, I had no clue what I was actually interested in, and more importantly, what was worth doing.
-Power modeling, fault injection, RTL design, specification mining, verification, fuzzing, stimulus generation, sudden shift to sampled simulation due to higher potential impact and an uncrowded area.
+Whatever interest I had claimed in my SoP was from the topics I was reading at the time.
+Since I had some interest in analog and RF circuits too, I decided to take classes in that area and prepare for the integrated circuits preliminary exam.
+
+Soon, I realized that analog circuit design wasn't in my blood.
+It is nice to start with some first principles (i.e. equation-based transistor models that humans can understand), pick a topology, and size the transistors.
+But after that point, you do the layout, run some parasitic-extracted simulations, realize your idealized circuit models used for the first principles analysis were completely wrong, and then go crazy with parameter sweeping.
+I just couldn't get with the program: this didn't feel like systematic engineering, but rather felt like trying random things until something worked.
+
+It was obvious I should change my primary field away from integrated circuits, but I still needed to take the prelim exam.
+The first time, I failed the exam, and rightly so; my skills in analog design were poor, and my interest was fading.
+After passing the prelim exam (on my second attempt), I decided to move up the stack and work on projects in computer architecture.
+
+// working through early stage research projects in my PhD
+== Learning More Things
+
+After that point, I explored a bunch of areas within computer architecture, and learned new things every time I started from scratch.
+None of my explorations and projects ended in anything grand, because I didn't have any unifying vision in mind: I was exploring subjects that came to my or my advisor's attention.
+I played some role in a bunch of projects:
+
+- Power macromodeling
+- RTL implementation and verification for Gemmini
+- Fault injection
+- RTL design of various blocks
+- Specification mining
+- Verification projects - fuzzing, RISC-V stimulus generation, monadic testbenches, coverage instrumentation libraries
 
 // eventually coming to simulation as the king of tools
+// the reality of microarchitecture simulation sampling today and the work that remains to be done
+== Simulation is King
 
 Some words about the inspiration behind this project and how it came to be.
-TBD.
+sudden shift to sampled simulation due to higher potential impact and an uncrowded area.
 
-// the reality of microarchitecture simulation sampling today and the work that remains to be done
 
 Isn't sampling done to death?
 People say this and just point to papers. But this is paper-brained nonsense.
 Sampling doesn't even exist today from my real-life perspective.
 
 // inspiration behind the organization and writing of this thesis
+== Inspiration for This Thesis
 
 Dan's blog post style thesis and Ryan's tutorial-style thesis + my desire for a Socratic dialogue.
 
