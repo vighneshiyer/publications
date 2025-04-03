@@ -120,26 +120,46 @@ After passing the prelim exam (on my second attempt), I decided to move up the s
 
 After that point, I explored a bunch of areas within computer architecture, and learned new things every time I started from scratch.
 None of my explorations and projects ended in anything grand, because I didn't have any unifying vision in mind: I was exploring subjects that came to my or my advisor's attention.
-I played some role in a bunch of projects:
+I played some role in a bunch of projects including:
 
-- Power macromodeling
-- RTL implementation and verification for Gemmini
-- Fault injection
+- Power macromodeling for random RTL blocks
+- RTL and verification for a systolic GEMM accelerator (Gemmini)
+- Fault injection (soft error model) and AVF estimation
 - RTL design of various blocks
-- Specification mining
-- Verification projects - fuzzing, RISC-V stimulus generation, monadic testbenches, coverage instrumentation libraries
+- Specification mining for RTL bug localization
+- Hardware verification projects including fuzzing, RISC-V stimulus generation, monadic testbench API, coverage instrumentation libraries
+
+Ultimately, these were all disconnected efforts and there wasn't a way to unify them into some grand vision.
+But, every project was valuable: I learned something about each piece of the stack, and every project got me closer to my goal of encyclopedic knowledge.
 
 // eventually coming to simulation as the king of tools
 // the reality of microarchitecture simulation sampling today and the work that remains to be done
 == Simulation is King
 
-Some words about the inspiration behind this project and how it came to be.
-sudden shift to sampled simulation due to higher potential impact and an uncrowded area.
+When I reflected on the random things I did in the past, one thing became clear: all computer architecture work relies on _a few fundamental techniques_.
+They include, a language that enables modeling or implementation of hardware, representative workloads that the hardware is designed to execute efficiently, and a simulation framework to estimate performance (and other VLSI metrics) of the hardware you are designing.
 
+Of these, the place where I could make the largest impact, as a single student, was _simulation methodology_.
+In particular, the workhorse of our hardware design methodology is RTL simulation, and it is frequently the bottleneck when it comes to iterating on a hardware design.
+If we can improve the throughput and latency of the RTL simulator, while preserving its fidelity, it would be a general-purpose win for hardware designers.
+
+== Sampled Simulation
+
+// Some words about the inspiration behind this project and how it came to be.
+//sudden shift to sampled simulation due to higher potential impact and an uncrowded area.
+
+In this thesis, I will describe the creation and evaluation of a framework for sampled simulation of RTL.
+But none of the ideas in this thesis are _"original"_ per se.
+Rather, sampling in the context of hardware simulation has a long history going back to the early 2000s.
+
+There have been countless papers published about sampled hardware simulation (I would estimate upwards of 200 papers at "top-tier" conferences, many of which I will summarize in this thesis).
+When I would express interest in working on sampling, people would often comment: "Isn't sampling already done to death?".
+Of course, this just means many papers have been published, but it says nothing about
 
 Isn't sampling done to death?
 People say this and just point to papers. But this is paper-brained nonsense.
 Sampling doesn't even exist today from my real-life perspective.
+That combined with interest from industry, made me realize that this fields isn't truly explored to its conclusion. And even after I worked on this topic, there are infinite avenues open to continued exploration. Not a hot area anymore though.
 
 // inspiration behind the organization and writing of this thesis
 == Inspiration for This Thesis
@@ -185,6 +205,9 @@ Refer to the typical DAC / job talks
   - Invited: The Magnificent Seven Challenges and Opportunities in Domain-Specific Accelerator Design for Autonomous Systems
 
 > In the first quarter of this century, computing hardware design- ers were faced with both the limitations of technology scaling for performance [1 ], and the ensuing conflagration of on-chip power density [2]. Fortunately, the challenges of the Dark Silicon era [ 3] have transitioned into a prosperous period of specialized accelera- tor design [ 4 , 5 ]. Emerging enabling technology and tools for agile and democratized hardware design are powering an exciting land
+
+- List of Android SoCs: https://docs.google.com/spreadsheets/d/1ZvQonnQ5Yl4QmURVmj7BH4CW8aEloMqbDnWSaBGAxh4/edit?gid=0#gid=0
+  - Very interesting and useful enumeration of the core configurations in various Qualcomm, Mediatek, Samsung, Google SoCs
 
 == Software Trends
 
