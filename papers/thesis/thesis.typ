@@ -21,7 +21,7 @@
   title: [A Rigorous Evaluation and Implementation of Sampled Microarchitecture Simulation],
   author: "Vighnesh Iyer",
   date: datetime(year: 2025, month: 05, day: 30),
-  abstract: [Coming soon.],
+  abstract: [To be replaced with the standard title page.],
   bibliography: bibliography("bib.yml"),
   figure-index: (enabled: true),
   table-index: (enabled: true),
@@ -136,12 +136,12 @@ But, every project was valuable: I learned something about each piece of the sta
 // the reality of microarchitecture simulation sampling today and the work that remains to be done
 == Simulation is King
 
-When I reflected on the random things I did in the past, one thing became clear: all computer architecture work relies on _a few fundamental techniques_.
-They include, a language that enables modeling or implementation of hardware, representative workloads that the hardware is designed to execute efficiently, and a simulation framework to estimate performance (and other VLSI metrics) of the hardware you are designing.
+When I reflected on the random things I did in the past, one thing became clear: all computer architecture work relies on _a few fundamental tools_.
+They include, a language for modeling or implementation of hardware, representative workloads that the hardware is designed to execute efficiently, and a simulation framework to estimate performance (and other VLSI metrics) of the hardware you are designing.
 
-Of these, the place where I could make the largest impact, as a single student, was _simulation methodology_.
-In particular, the workhorse of our hardware design methodology is RTL simulation, and it is frequently the bottleneck when it comes to iterating on a hardware design.
-If we can improve the throughput and latency of the RTL simulator, while preserving its fidelity, it would be a general-purpose win for hardware designers.
+Of these, the place where I could make an impact, as a single student, was _simulation methodology_.
+In particular, the workhorse of the hardware design loop is _RTL simulation_ and it is frequently the bottleneck when it comes to iterating on a design.
+If we can improve the throughput and latency of RTL simulation, while preserving its fidelity, it would be a boon for hardware designers.
 
 == Sampled Simulation
 
@@ -149,36 +149,79 @@ If we can improve the throughput and latency of the RTL simulator, while preserv
 //sudden shift to sampled simulation due to higher potential impact and an uncrowded area.
 
 In this thesis, I will describe the creation and evaluation of a framework for sampled simulation of RTL.
-But none of the ideas in this thesis are _"original"_ per se.
+But none of the ideas in this thesis are _"original"_ or _"novel"_ per se.
 Rather, sampling in the context of hardware simulation has a long history going back to the early 2000s.
 
 There have been countless papers published about sampled hardware simulation (I would estimate upwards of 200 papers at "top-tier" conferences, many of which I will summarize in this thesis).
 When I would express interest in working on sampling, people would often comment: "Isn't sampling already done to death?".
-Of course, this just means many papers have been published, but it says nothing about
+Of course, this just means many papers have been published, but it says nothing about how usable sampling is, how thoroughly it has been studied, or how we can deal with sampling systematically for an entire SoC.
 
-Isn't sampling done to death?
-People say this and just point to papers. But this is paper-brained nonsense.
-Sampling doesn't even exist today from my real-life perspective.
-That combined with interest from industry, made me realize that this fields isn't truly explored to its conclusion. And even after I worked on this topic, there are infinite avenues open to continued exploration. Not a hot area anymore though.
+There is a lot more work to do beyond the tools and methodologies described in this thesis; research in sampled hardware simulation is not even remotely close to done.
+Taking the ideas here and extending them systematically to sampled simulation of rack-scale systems would enable pre-silicon agile design in a way that is not possible today.
+
+// Isn't sampling done to death?
+// People say this and just point to papers. But this is paper-brained nonsense.
+// Sampling doesn't even exist today from my real-life perspective.
+// That combined with interest from industry, made me realize that this fields isn't truly explored to its conclusion. And even after I worked on this topic, there are infinite avenues open to continued exploration. Not a hot area anymore though.
 
 // inspiration behind the organization and writing of this thesis
-== Inspiration for This Thesis
+== Writing Style
 
-Dan's blog post style thesis and Ryan's tutorial-style thesis + my desire for a Socratic dialogue.
+Finally, this thesis is written in a style inspired by two other theses.
+I took direction from #link("https://www2.eecs.berkeley.edu/Pubs/TechRpts/2023/EECS-2023-275.html")[Dan Fritchman's thesis], which was written in a way that an early stage graduate student could grasp and extend.
+I also appreciate #link("https://www2.eecs.berkeley.edu/Pubs/TechRpts/2023/EECS-2023-56.pdf")[Ryan Kaveh's] advice to write my thesis as if it were a tutorial to understand the history and theory of the specific line of work I explored.
 
 #align(right)[
 _Vighnesh Iyer_
 ]
 
+= Acknowledgements
+
+TBD.
+
 = Introduction
 
-== The Digital Hardware Landscape
+// == The Digital Hardware Landscape
+// Chip landscape overall
 
 Digital hardware is ubiquitous.
-Everywhere we look, no matter the form factor, application, or
-Watches, phones, IoT devices, home appliances, urban infrastructure (traffic lights, trains), cars, robots, datacenters
-we find digital systems
-Chip landscape overall
+
+Everywhere we look, no matter the form factor or application, nearly every system on our planet is driven by digital hardware.
+This includes consumer electronics (watches, phones, laptops), IoT devices, home appliances, urban infrastructure, cars, manufacturing, and datacenters.
+Underpinning the proliferation of digital hardware is the core component of any digital system: the _general-purpose microprocessor_.
+How has that core component
+
+== Scaling Trends
+
+=== Moore's Law
+
+=== Dennard Scaling
+
+=== Dark Silicon
+
+=== Proliferation of Accelerators
+
+- Start with the basics
+- The flow of sampled simulation, including what is required in a full system, contrast fixed with live sampling and why one might be required
+- Then actually begin with workloads and benchmark construction, make everything work with riscv and then discuss the rust benchmarking strategy and potential complications
+- Then begin with trying to understand embeddings with traces alone, starting with clustering studies using data from spike and qemu, then move to rtl simulation and finally firesim when it becomes necessary, and when using real rtl we can evaluate perf metric prediction while assuming perfect sampling methodology and attribute errors due to sampling and extrapolation vs warmup issues, also related to time sync
+- What is the impact of time sync? Compare time dependent behavior we see in spike or qemu vs what we see in rtl sim or firesim
+- Then discuss the tidalsim project itself, how it works, some results, leave out results that require very good checkpointing, discuss functional warmup models and get l1i/d working
+- then get Linux working too
+- Next is to do parameter exploration, this is just monkey stuff but it gives a lot of quantitative data
+- Then let's do the error analysis studies and quantify errors and their sources
+- Finally wrap things up somehow with some case studies about latency of evaluation of some core level parameter deltas using rtl sim, firesim, perf models and tidalsim
+- Need to present a full story and assign parts of the thesis to every step within the flow
+
+- Moore's law, dennard scaling, dark silicon, the typical plot of perf over time, accelerators on dies, reemergence of mass integration like MCM and wafer scale packaging, but even with all this, ml accelerators, the vast majority of power consumption and time per application is spent on the general purpose cores, then show geekerwan scaling on spec for apple cores, also show speedometer here, also talk about p and e cores
+- The parallelism panic at the parlab days
+
+- Scaling driven by technology, microarchitecture, compilers, and software
+- Now people claim that specialization is the key to continued scaling
+- But none of the code you run every day actually uses specialized accelerators, besides a few like video decoding
+- Look at what matters, practical performance scaling and more features happens because of improvements in general purpose compute with respect to energy efficiency and raw perf
+- See the apple scaling curves from geekerwan
+
 Refer to the typical DAC / job talks
 
 - Microprocessors dominate how we interact with digital electronics. Phones, tablets, laptops, watches, and servers in datacenters (the cloud).
@@ -201,6 +244,8 @@ Refer to the typical DAC / job talks
   - How does Apple do their co-design today? It is iterative over many generations of silicon. On-device tracing and trace-based simulation. Software optimizations done after the fact.
   - Basically, the iteration loop is still very slow! True optimization of the end-to-end application with the microarchitecture is not possible, even with emulation machines.
 
+- Moore's law was not in principle just about integrated circuit scaling or cost, but rather about scaling and cost of an entire system, and those continue to scale! Bandwidth, board and package level integration, io Integration, memory integration, radio integration, more advanced cooling like in nvl72, scaling itself has not ended, specialiation is less valuable than thought, workload specialization of general purpose cores to enable software development productivity is the real key
+
 - https://dl.acm.org/doi/pdf/10.1145/3649329.3663515
   - Invited: The Magnificent Seven Challenges and Opportunities in Domain-Specific Accelerator Design for Autonomous Systems
 
@@ -208,6 +253,7 @@ Refer to the typical DAC / job talks
 
 - List of Android SoCs: https://docs.google.com/spreadsheets/d/1ZvQonnQ5Yl4QmURVmj7BH4CW8aEloMqbDnWSaBGAxh4/edit?gid=0#gid=0
   - Very interesting and useful enumeration of the core configurations in various Qualcomm, Mediatek, Samsung, Google SoCs
+  - https://www.reddit.com/r/hardware/comments/1jqfxjn/list_of_android_socs/ (very cool, need to credit this guy)
 
 == Software Trends
 
@@ -333,7 +379,10 @@ Furthermore, if we can develop binary-agnostic interval embeddings, it will allo
     - Time-feedback from performance simulation to functional simulation
     - Prior work in multicore sampled simulation
 - NPS: A Framework for Accurate Program Sampling Using Graph Neural Network: https://arxiv.org/abs/2304.08880
+
 == Workloads and Their Evolution
+
+Mu riscv nn
 
 = Microarchitecture Oracle Analysis of Program Sampling
 
