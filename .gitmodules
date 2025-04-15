@@ -3,3 +3,6 @@
 	url = git@github.com:borisveytsman/acmart
 	branch = primary
 	ignore = dirty
+[submodule "papers/thesis/ilm"]
+	path = papers/thesis/ilm
+	url = git@github.com:vighneshiyer/ilm.git

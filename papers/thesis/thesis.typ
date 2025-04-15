@@ -1,32 +1,48 @@
-// #import "@preview/tufte-memo:0.1.2": *
-// #show: template.with(
-//     title: [TidalSim: A Unified Microarchitectural Simulation Framework
-// To Identify and Leverage Unique Aspects of Workloads on Heterogeneous SoCs for Performance Estimation and Verification
-//     ],
-//     authors: (
-//         (
-//         name: "Vighnesh Iyer",
-//         role: "PhD Thesis",
-//         affiliation: "UC Berkeley",
-//         email: "vighnesh.iyer@berkeley.edu"
-//         ),
-//     )
-// )
-//
-#import "@preview/ilm:1.4.0": *
-
+#import "ilm/lib.typ": ilm
+#import "@preview/muchpdf:0.1.1": muchpdf
+#set page("us-letter")
 #set text(lang: "en")
 
+#set page(margin: 0%)
+
+#muchpdf(read("static_pages/thesis.pdf", encoding: none), fit: "stretch")
+
+#set page(margin: auto)
 #show: ilm.with(
   title: [A Rigorous Evaluation and Implementation of Sampled Microarchitecture Simulation],
   author: "Vighnesh Iyer",
   date: datetime(year: 2025, month: 05, day: 30),
-  abstract: [To be replaced with the standard title page.],
+  abstract: none,
   bibliography: bibliography("bib.yml"),
   figure-index: (enabled: true),
   table-index: (enabled: true),
-  listing-index: (enabled: true)
+  listing-index: (enabled: true),
+  paper-size: "us-letter"
 )
+
+/*
+*
+* https://grad.berkeley.edu/academic-progress/dissertation/#background
+*
+* The proper organization and page order for your manuscript is as follows:
+
+    Title Page
+    Copyright page or a blank page
+    Abstract
+    Optional preliminary pages such as:
+        Dedication page
+        Table of contents
+        List of figures, list of tables, list of symbols
+        Preface or introduction
+        Acknowledgments
+        Curriculum Vitae
+    Main text
+    References
+    Bibliography
+    Appendices
+
+Please do not include an approval/signature page.
+*/
 
 = Preface
 
@@ -36,6 +52,8 @@ The topic of this thesis is quite out of left field to be honest.
 == Undergrad Time
 
 When I began my undergraduate education at UC Berkeley in 2013, I knew I wanted to broadly learn about topics in the field of electrical engineering and computer science, but did not have any speciality in mind.
+Early on, I was very happy to work on web development :)
+
 I took the usual EECS curriculum which covered topics up and down the stack: analog/RF circuits, digital circuits, VLSI, computer architecture, operating systems, embedded systems, DSP, optimization, software engineering, and AI/ML.
 I also thought I should supplement the engineering-oriented classes with some more "theoretical" ones so I took a bunch of random statistics classes before realizing I'm not cut out for that.
 
