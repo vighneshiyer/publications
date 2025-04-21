@@ -231,6 +231,17 @@ How have the typical mobile and datacenter SoCs and SiPs evolved over the past s
 
 == Scaling Trends
 
+- First figure: https://www.semiconductors.org/despite-short-term-cyclical-downturn-global-semiconductor-markets-long-term-outlook-is-strong/
+  - Semiconductor sales over time = high importance
+- https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=10589682&tag=1 (transistors per processor over time, energy efficiency over time, vertical connection 3D density over time, technology evolution chart)
+  - I need to pull these 4 figures from this link
+  - From this article: https://spectrum.ieee.org/trillion-transistor-gpu
+- Excellent transistor count over time graphic: https://interludeone.com/posts/2021-04-21-chips/chips.html
+- Use the figures from my qual too for per-transistor cost over process growing slowly
+  - Also use some of the Kurnal / HighYield die shot breakdowns for evidence of growing integration
+- https://spectrum.ieee.org/hot-chips
+  - Should mention this in the scaling section
+
 === Moore's Law
 
 === Dennard Scaling
