@@ -657,8 +657,9 @@ The steps of the flow are:
 
 == Existing Benchmarks
 
-Embench
-Mibench
+- Embench
+- Mibench
+- Use bring up bench and riscv mu nn as benchmarks
 SPEC
 ...
 
@@ -680,6 +681,11 @@ mkdir build
 cmake .. -DRISCV_ARCH=rv64gcv -DRISCV_ABI=lp64d -DUSE_VEXT=1
 make
 ```
+
+The evaluation gap:
+- big gap between microbenchmarks and real applications
+- trace collection from silicon and replay on trace-driven sim can work, but it requires a long iteration cycle, which isn't ideal
+- proposed solution: use the speed of sampled simulation with the fidelity of RTL to run real apps in the RTL iteration loop / during performance modeling
 
 == Baremetal RISC-V
 
