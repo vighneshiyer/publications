@@ -1,0 +1,85 @@
+{% extends "base/base.jinja2" %}
+
+{# HTML title #}
+{% set webpage_title = "Natural vs Engineered Systems and Other Topics" %}
+{# Short description #}
+{% set description = "" %}
+{# List of authors #}
+{% set author = "Vighnesh Iyer" %}
+{# Change ‘venue’ to a conference or workshop name if any #}
+{% set venue = "Group Meeting" %}
+{# Publication info (hidden by default) #}
+{% set pub_datetime_iso = "2025-04-26" %}
+{% set pub_date = "April 26, 2025" %}
+
+{# Custom styles and JS for a particular talk #}
+{% block custom_head %}
+{% endblock %}
+
+{% block theme %}
+import '/themes/tokyonight-light.scss'
+import 'highlight.js/styles/tokyo-night-dark.css'
+{% endblock %}
+
+{% set center = true %}
+
+{% set rightarrow = "<strong>→</strong>" %}
+
+{% block slides %}
+<section class="center">
+  <h2>Natural vs Engineered Systems</h2>
+  <h2>When is ML Powerful?</h2>
+  <h2>ML for Chip Design</h2>
+  <p style="font-weight: normal; font-size: 0.8rem;">Vighnesh Iyer</p>
+
+  <h4 style="font-weight: normal;">Group Meeting<br />
+  Friday, May 2nd, 2025</h4>
+</section>
+
+<section>
+  <section class="center">
+    <h2>Natural vs Engineered Systems</h2>
+    <p>My attempt at understanding the difference between <em>science</em> and <em>engineering</em> and how their worlds are bridged.</p>
+  </section>
+
+  <section>
+    <h2 style="margin: 0">Natural Systems</h2>
+
+    <div class="container" style="grid-template-columns: 1fr 1fr;">
+      <div><img class="image" width="80%" src="./figs/natural_vs_engineered_systems/natural_systems.svg" /></div>
+      <div>
+        <ul>
+          <li class="fragment">A natural system is defined by a set of axioms</li>
+          <li class="fragment">We can't know them, but we can build approximate models for them</li>
+          <li class="fragment">Or if we assume we some of them precisely, they will be incomplete</li>
+          <li class="fragment">A natural system produces truth</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2 style="margin: 0">Natural Systems</h2>
+
+    <div class="container" style="grid-template-columns: 1fr 1fr;">
+      <div><img class="image" width="80%" src="./figs/natural_vs_engineered_systems/natural_systems.svg" /></div>
+      <div>
+        <ul>
+          <li class="fragment">Our physical world</li>
+          <li class="fragment">Concepts in pure mathematics
+            <ul>
+              <li>Number theory</li>
+              <li>First-order logic, proof theory</li>
+              <li>Peano arithmetic</li>
+              <li>Lambda calculus</li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+  </section>
+</section>
+
+
+{% endblock %}

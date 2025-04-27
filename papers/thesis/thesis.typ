@@ -35,6 +35,8 @@ Abstract should be numbered from 1, 2, 3, ...
 Preliminary pages should be numbered from i, ii, iii, iv, ...
 The main body should be numbered from 1, 2, 3 (yes, start again from 1)
 
+Margins must be 1 in for every page
+
 The title and abstract page must be formatted exactly as they specify.
 Title:
 Abstract: https://grad.berkeley.edu/wp-content/uploads/Abstract.pdf
