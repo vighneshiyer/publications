@@ -1,6 +1,0 @@
-*.aux
-*.bcf
-*.log
-*.run.xml
-*.toc
-!thesis.pdf

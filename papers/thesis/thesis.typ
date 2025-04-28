@@ -1,9 +1,18 @@
 #import "ilm/lib.typ": ilm
-#set page("us-letter")
-#set text(lang: "en")
+
+#set page(
+  paper: "us-letter",
+  margin: 1in
+)
+
+#set text(
+  font: "libertinus serif",
+  size: 12pt,
+  lang: "en"
+)
 
 #let title = "A Rigorous Evaluation and Implementation of Sampled Microarchitecture Simulation"
-#let author = "Vighnesh Iyer"
+#let author = "Vighnesh Mohan Iyer"
 
 /*
 https://grad.berkeley.edu/academic-progress/dissertation/#background
@@ -35,18 +44,102 @@ Abstract should be numbered from 1, 2, 3, ...
 Preliminary pages should be numbered from i, ii, iii, iv, ...
 The main body should be numbered from 1, 2, 3 (yes, start again from 1)
 
-Margins must be 1 in for every page
+Margins must be 1 in for every page.
+Single spacing.
 
 The title and abstract page must be formatted exactly as they specify.
-Title:
+Title: https://grad.berkeley.edu/wp-content/uploads/title-page.pdf
 Abstract: https://grad.berkeley.edu/wp-content/uploads/Abstract.pdf
 */
-#page([
 
+#let spacing = 0.7em
+#let big_spacing = 3em
+
+// Title page (no page number)
+#page([
+  #align(center)[
+    #block(width: 70%)[
+      #title
+      #v(spacing)
+      By
+      #v(spacing)
+      #author
+      #v(big_spacing)
+      A dissertation submitted in partial satisfaction of the
+      #v(spacing)
+      requirements for the degree of
+      #v(spacing)
+      Doctor of Philosophy
+      #v(spacing)
+      in
+      #v(spacing)
+      Engineering --- Electrical Engineering and Computer Sciences
+      #v(spacing)
+      in the
+      #v(spacing)
+      Graduate Division
+      #v(spacing)
+      of the
+      #v(spacing)
+      University of California, Berkeley
+      #v(big_spacing)
+      Committee in charge:
+      #v(spacing)
+      #set par(spacing: 0.6em)
+      Professor Borivoje Nikolic, Chair \
+      Professor Sophia Shao \
+      Professor Koushik Sen \
+      Professor Rajeev Jain
+      #v(big_spacing)
+      Summer 2025
+    ]
+  ]
 ])
 
-#pagebreak()
+// Copyright page (no page number)
+#page([
+  #align(center)[
+    #block(width: 100%)[
+      #title
+      #v(big_spacing)
+      #set par(spacing: 0.6em)
+      Copyright 2025 \
+      by \
+      #author
+    ]
+  ]
+])
 
+// Abstract (numbered from 1)
+#counter(page).update(1)
+#set page(numbering: "1")
+#page([
+  #align(center)[
+    Abstract
+    #v(spacing)
+    #title
+    #v(spacing)
+    by
+    #v(spacing)
+    #author
+    #v(spacing)
+    Doctor of Philosophy in Engineering --- Electrical Engineering and Computer Sciences
+    #v(spacing)
+    University of California, Berkeley
+    #v(spacing)
+    Professor Borivoje Nikolic, Chair
+  ]
+  #v(spacing + 1em)
+  I will put an abstract here once I finish up.
+
+  #lorem(200)
+])
+
+// Begin main text (numbered from 1)
+
+// Table of contents (begin numbering of preliminary pages from i)
+#counter(page).update(1)
+#set page(numbering: "i")
 #show: ilm.with(
   title: [#title],
   author: author,
@@ -57,10 +150,11 @@ Abstract: https://grad.berkeley.edu/wp-content/uploads/Abstract.pdf
   table-index: (enabled: true),
   listing-index: (enabled: true),
   paper-size: "us-letter",
-  display-cover-page: false
+  display-cover-page: false,
+  table-of-contents: outline()
 )
 
-
+// Preface
 = Preface
 
 The topic of this thesis is quite out of left field to be honest.
@@ -213,6 +307,7 @@ I also appreciate #link("https://www2.eecs.berkeley.edu/Pubs/TechRpts/2023/EECS-
 _Vighnesh Iyer_
 ]
 
+// Acknowledgements
 = Acknowledgements
 
 TBD.
@@ -489,6 +584,7 @@ Core microarchitecture iteration is still important! But performance benefits ar
 - But it isn't scaling? Not true! Vertical integration gives continual benefits. Speedometer scores are the key. Energy efficiency of cores continues to improve. Cores themselves have become more heterogeneous.
 - But how does this work in practice? There is no vertical iteration loop prior to tape out? So, there is still a full silicon spin cycle + software development time to figure out optimizations. How does Apple do it? Why do others lag so far behind?
 
+The chip block diagrams do *not* indicate any kind of *pervasive specialization* that the "golden age" position paper may have posited, but rather reflect adapting general purpose processing engines for different amounts of exploitable parallelism for different workloads. Only a handful of exceptions exist and those are arguably not even 'accelerators' since they have no application-visible programming model (e.g. video codecs, fixed function ISP pipelines).
 
 == Motivation
 
