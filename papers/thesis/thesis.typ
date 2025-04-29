@@ -146,21 +146,22 @@ Abstract: https://grad.berkeley.edu/wp-content/uploads/Abstract.pdf
   date: datetime(year: 2025, month: 05, day: 30),
   abstract: none,
   bibliography: bibliography("bib.yml"),
-  figure-index: (enabled: true),
-  table-index: (enabled: true),
-  listing-index: (enabled: true),
+  figure-index: (enabled: false),
+  table-index: (enabled: false),
+  listing-index: (enabled: false),
   paper-size: "us-letter",
   display-cover-page: false,
-  table-of-contents: outline()
+  table-of-contents: outline(title: [Table of Contents], depth: 2)
 )
 
 // Preface
-= Preface
+#set page(numbering: "i")
+#heading([Preface], numbering: none)
 
 The topic of this thesis is quite out of left field to be honest.
 
 // undergraduate experience
-== Undergrad Time
+#heading([Undergrad Time], depth: 2, numbering: none)
 
 When I began my undergraduate education at UC Berkeley in 2013, I knew I wanted to broadly learn about topics in the field of electrical engineering and computer science, but did not have any speciality in mind.
 Early on, I was very eager to work in web development.
@@ -175,7 +176,7 @@ It wasn't until I took Berkeley's introduction to digital circuits and logic cou
 At the same time, I also found the analog and RF circuits courses interesting, so I decided to pursue research in computer architecture and further down the stack.
 
 // teaching eecs151
-== Undergrad Teaching
+#heading([Undergrad Teaching], depth: 2, numbering: none)
 
 While I was an undergrad, I was a TA for Berkeley's digital circuits course (EECS151) a few times.
 This was one of the best experiences I had during my time at Berkeley.
@@ -191,7 +192,7 @@ They get annoyed quickly when some script fails to run or if the lab fails to ho
 The lesson I learned: contemporary computer architecture and digital design education is still far away from how good it could be.
 
 // chip bringup
-== Undergrad Research
+#heading([Undergrad Research], depth: 2, numbering: none)
 
 Near the end of my undergrad career, I got involved in some "research", which was really just helping grad students with a chip bringup.
 Honestly, I didn't even help that much, and instead I was quite an annoyance, asking lots of questions, and making slow progress.
@@ -209,7 +210,7 @@ People outside this field would be surprised and disappointed upon seeing that a
 
 // power modeling (this was a bit too random to mention here)
 
-== Motivation for Grad School
+#heading([Motivation for Graduate School], depth: 2, numbering: none)
 
 So, why even bother going to grad school?
 When I was about done with my undergraduate education, I had plenty of opportunities to jump into any random SWE job in the Bay.
@@ -221,7 +222,7 @@ Unlike the common conception of graduate school as a place where you become an u
 Our lab is a place where, through building real systems, you inevitably end up learning about every part of the stack.
 It is this ability to constantly build things from scratch without any preconceived objectives (i.e. publish a paper) that grants you encyclopedic knowledge.
 
-== Applying to Grad School
+#heading([Applying to Graduate School], depth: 2, numbering: none)
 
 When I sat down to write my application, my high-level interest was sitting at the edge of analog and digital circuits in the context of building large digital SoCs.
 I decided to write my statement of purpose (SoP) in an unorthodox way.
@@ -232,7 +233,7 @@ Of course, this backfired and instead turned off PIs who thought that this was m
 Even still, I was lucky enough to have several offers from PIs in areas outside GALS implementation techniques 😆.
 
 // starting with analog circuits and INC prelim
-== The First Two Years
+#heading([The First Two Years], depth: 2, numbering: none)
 
 When I started my PhD, I had no clue what I was actually interested in, and more importantly, what was worth doing.
 Whatever interest I had claimed in my SoP was from the topics I was reading at the time.
@@ -248,7 +249,7 @@ The first time, I failed the exam, and rightly so; my skills in analog design we
 After passing the prelim exam (on my second attempt), I decided to move up the stack and work on projects in computer architecture.
 
 // working through early stage research projects in my PhD
-== Learning More Things
+#heading([Learning More Things], depth: 2, numbering: none)
 
 After that point, I explored a bunch of areas within computer architecture, and learned new things every time I started from scratch.
 None of my explorations and projects ended in anything grand, because I didn't have any unifying vision in mind: I was exploring subjects that came to my or my advisor's attention.
@@ -266,7 +267,7 @@ But, every project was valuable: I learned something about each piece of the sta
 
 // eventually coming to simulation as the king of tools
 // the reality of microarchitecture simulation sampling today and the work that remains to be done
-== Simulation is King
+#heading([Simulation is King], depth: 2, numbering: none)
 
 When I reflected on the random things I did in the past, one thing became clear: all computer architecture work relies on _a few fundamental tools_.
 They include, a language for modeling or implementation of hardware, representative workloads that the hardware is designed to execute efficiently, and a simulation framework to estimate performance (and other VLSI metrics) of the hardware you are designing.
@@ -275,8 +276,7 @@ Of these, the place where I could make an impact, as a single student, was _simu
 In particular, the workhorse of the hardware design loop is _RTL simulation_ and it is frequently the bottleneck when it comes to iterating on a design.
 If we can improve the throughput and latency of RTL simulation, while preserving its fidelity, it would be a boon for hardware designers.
 
-== Sampled Simulation
-
+#heading([Sampled Simulation], depth: 2, numbering: none)
 // Some words about the inspiration behind this project and how it came to be.
 //sudden shift to sampled simulation due to higher potential impact and an uncrowded area.
 
@@ -297,7 +297,7 @@ Taking the ideas here and extending them systematically to sampled simulation of
 // That combined with interest from industry, made me realize that this fields isn't truly explored to its conclusion. And even after I worked on this topic, there are infinite avenues open to continued exploration. Not a hot area anymore though.
 
 // inspiration behind the organization and writing of this thesis
-== Writing Style
+#heading([Writing Style], depth: 2, numbering: none)
 
 Finally, this thesis is written in a style inspired by two other theses.
 I took direction from #link("https://www2.eecs.berkeley.edu/Pubs/TechRpts/2023/EECS-2023-275.html")[Dan Fritchman's thesis], which was written in a way that an early stage graduate student could grasp and extend.
@@ -308,10 +308,12 @@ _Vighnesh Iyer_
 ]
 
 // Acknowledgements
-= Acknowledgements
+#heading([Acknowledgements], depth: 1, numbering: none)
 
 TBD.
 
+#set page(numbering: "1")
+#counter(page).update(1)
 = Introduction
 
 // == The Digital Hardware Landscape
