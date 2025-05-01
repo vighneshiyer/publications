@@ -4,22 +4,32 @@
 What are the main things I want to say?
 
 - Performance, efficiency, and power density improvements for all digital integrated circuits have come through technology scaling trends, improved integration, and improved microarchitectures
-- Those trends have stalled out due to the limitations of technology scaling
+- Those trends have stalled out due to the limitations of technology scaling (end of Dennard scaling, dark silicon). But manycore architectures failed to materialize too.
+- Modern SoCs are more 'heterogenenous' (proliferation of accelerators, the supposed "golden age")
+  - The truth is more subtle. The continued uarch gains haven't come from 'extreme heterogeneity' but rather from specialization / tuning / optimization of general purpose computing architectures
+  - We have created heterogeneity, not via the "sea of accelerators", but rather from 'specializing' general-purpose architectures for different parts of the perf/area density/power curve (e.g. CPU P/E core variants, DSP engines with new datatypes, NPUs with the ability to exploit massive DLP and high arithmetic intensity, SIMT engines) - continue to exploit Amdahl's law on various axes of parallelism (DLP, MLP, speculation / ILP)
+- At the same time, the chip design cycle hasn't gotten any faster. Still dominated by the waterfall methodology, the microarchitectural tweaks from one generation to the other are determined years in advance of the design. There is no RTL-level performance feedback in the design loop.
+  - The limitation comes from the slow iteration process of RTL design and evaluation.
+- From these two points, I will present the hypothesis:
+  -
+- Point out the problems with this hypothesis up-front, right here. Be brutal. But continue anyways. Big problems
+  - Trace-driven models that are 'good enough' exist in industry to guide performance optimization / new uArch features
+  - Sampled RTL simulation assumes that verification has done its job, but that is often the bottleneck
 */
-
-// == The Digital Hardware Landscape
-// Chip landscape overall
 
 Digital integrated circuits are ubiquitous.
 
 Everywhere we look, no matter the form factor or application, nearly every system on our planet is driven by digital hardware.
 This includes consumer electronics (watches, phones, laptops), IoT devices, home appliances, urban infrastructure, cars, manufacturing, and datacenters, among many other applications.
 Underpinning the proliferation of digital hardware is the core component of any digital system: the _general-purpose microprocessor_.
-Although the general-purpose processor (GPP) has seen reduced interest recently,
+We will focus on the digital chips that consume the vast majority of compute cycles on the planet and have the largest user-facing impact: mobile, laptop, desktop, and datacenter SoCs.
+//Although the general-purpose processor (GPP) has seen reduced interest recently,
 
 How have the typical mobile and datacenter SoCs and SiPs evolved over the past several decades?
 
-== Scaling Trends
+== Trends of Digital Systems
+
+=== Scaling Trends
 
 - First figure: https://www.semiconductors.org/despite-short-term-cyclical-downturn-global-semiconductor-markets-long-term-outlook-is-strong/
   - Semiconductor sales over time = high importance
@@ -40,20 +50,11 @@ How have the typical mobile and datacenter SoCs and SiPs evolved over the past s
 
 === Proliferation of Accelerators
 
+
+gpp has well defined arch state, almost always von-Neumann architectures, simulation and optimnization is crucial
+
 == Agile Hardware Design
 
-//- Start with the basics
-//- The flow of sampled simulation, including what is required in a full system, contrast fixed with live sampling and why one might be required
-//- Then actually begin with workloads and benchmark construction, make everything work with riscv and then discuss the rust benchmarking strategy and potential complications
-//- Then begin with trying to understand embeddings with traces alone, starting with clustering studies using data from spike and qemu, then move to rtl simulation and finally firesim when it becomes necessary, and when using real rtl we can evaluate perf metric prediction while assuming perfect sampling methodology and attribute errors due to sampling and extrapolation vs warmup issues, also related to time sync
-//- What is the impact of time sync? Compare time dependent behavior we see in spike or qemu vs what we see in rtl sim or firesim
-//- Then discuss the tidalsim project itself, how it works, some results, leave out results that require very good checkpointing, discuss functional warmup models and get l1i/d working
-//- then get Linux working too
-//- Next is to do parameter exploration, this is just monkey stuff but it gives a lot of quantitative data
-//- Then let's do the error analysis studies and quantify errors and their sources
-//- Finally wrap things up somehow with some case studies about latency of evaluation of some core level parameter deltas using rtl sim, firesim, perf models and tidalsim
-//- Need to present a full story and assign parts of the thesis to every step within the flow
-//
 //- Moore's law, dennard scaling, dark silicon, the typical plot of perf over time, accelerators on dies, reemergence of mass integration like MCM and wafer scale packaging, but even with all this, ml accelerators, the vast majority of power consumption and time per application is spent on the general purpose cores, then show geekerwan scaling on spec for apple cores, also show speedometer here, also talk about p and e cores
 //- The parallelism panic at the parlab days
 //

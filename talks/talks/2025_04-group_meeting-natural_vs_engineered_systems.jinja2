@@ -122,20 +122,47 @@ import 'highlight.js/styles/tokyo-night-dark.css'
           <li class="fragment">Do we fully understand the physical natural system?
             <ul><li><strong>No</strong>: <a href="https://en.wikipedia.org/wiki/Cosmological_constant_problem#Cosmological_constant_problem">Cosmological constant problem</a></li></ul>
           </li>
-
         </ul>
       </div>
     </div>
   </section>
 
   <section>
-    <h2>Engineered Systems</h2>
+    <h2 style="margin: 0">Engineered Systems</h2>
+    <div class="container" style="grid-template-columns: 0.3fr 1fr;">
+      <div><img class="image" width="100%" src="./figs/natural_vs_engineered_systems/engineered_systems.svg" /></div>
+      <div>
+        <ul>
+          <li class="fragment">The design of physical primitives is the core of <em>applied science</em></li>
+          <li class="fragment">The physical manifestation of an engineered system is the point where abstractions are broken</li>
+          <li class="fragment">Engineered systems are perfectly simulatable with respect to their abstractions
+            <ul>
+              <li>Unlike natural systems, everything about an engineered system is known and complete</li>
+            </ul>
+          </li>
+          <li class="fragment">Engineering research fits into these boxes
+            <ul>
+              <li>Study the implementation tradeoffs of a specification / task</li>
+              <li>Create new abstractions / models</li>
+              <li>Improve the design methodology and algorithms</li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div>
   </section>
 
   <section>
-    <h2>The Missing Middle</h2>
+    <h2 style="margin: 0;">The Missing Middle</h2>
 
-    What is biology?
+    <!-- What is biology? -->
+    <div class="container" style="grid-template-columns: 1fr 1fr 0.5fr; margin: 0;">
+      <div><img class="image" width="100%" src="./figs/natural_vs_engineered_systems/natural_systems.svg" /></div>
+      <div style="font-size: 2rem"><strong>???</strong></div>
+      <div><img class="image" width="100%" src="./figs/natural_vs_engineered_systems/engineered_systems.svg" /></div>
+    </div>
+
+    <p class="fragment center smallish" style="margin: 0;"><strong>Consider</strong>: biological systems, linguistics, artificial neural networks, symbolic AI</p>
   </section>
 
   <section>
@@ -143,8 +170,27 @@ import 'highlight.js/styles/tokyo-night-dark.css'
   </section>
 </section>
 
+<section>
+ML is powerful when it can break engineered abstractions and can mimic naturally evolved systems
+It isn't powerful when it is forced into a box defined by prior engineering efforts (e.g. surrogate functions, fixed abstractions)
 
-<!-- In principle, ML for placement would be way better wrt runtime and QoR vs algorithmic / manual heuristic techniques -->
-<!-- The major caveat to the bitter lesson. -->
+The MNIST lesson
+Compare Semantic segmentation using all 3 systems
+Evolved antennas
+The major caveat to the bitter lesson - feasibility matters. Fuzziness vs exactness matters. Engineered vs natural systems matter.
+FSD vs traditional approaches
+the rendering example
+  - will the input and output of the ML model be engineered systems (rendering engine, formal geometry, camera trajectory) or will it be a series of images and give me some voxel maps and camera position?
+ML in the loop, out of the loop, and end-to-end (i.e. generative)
+Language models vs classical linguistics / NLP
+
+ML for Surrogate Functions for Engineered Algorithms - QoR prediction / one-shot synthesis
+Out of distribution issues (natural systems don't suffer from this) (evolved engineered systems trying to mimic engineered ones will fail this - fail to generalize, which isn't a problem for natural or purely engineered systems)
+ML for RTL simulation
+Why did AlphaChip fail? In principle, ML for placement would be way better wrt runtime and QoR vs algorithmic / manual heuristic techniques
+End to end ML - The Altman Plan
+LLMs for RTL engineering
+The AI scientist - high potential for drug discovery (mechanical search), low potential for true discovery (not so mechanical)
+</section>
 
 {% endblock %}

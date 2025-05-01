@@ -1,0 +1,37 @@
+sys: {
+  label: An Engineered System
+  prim: {
+    label: Building blocks / Primitives / Models
+  }
+  eng: {
+    label: Engineering
+    abs: {
+      label: Abstraction / Model
+    }
+    design: {
+      label: Design
+    }
+    alg: {
+      label: Algorithms
+    }
+    abs -> design: used to build
+    design -> alg: consumed by
+  }
+
+  dot: {
+    label: ⋮ (abstraction stack)
+    style.font-size: 20
+  }
+
+  sys: {
+    label: System
+  }
+  phys: {
+    label: Physical manifestation
+  }
+  sys -> phys: realization / manufacturing
+  dot -> sys: used to build
+  eng -> dot
+  prim -> eng
+  phys -> prim: refines
+}
