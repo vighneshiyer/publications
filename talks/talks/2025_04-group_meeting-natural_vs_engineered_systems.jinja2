@@ -167,25 +167,90 @@ import 'highlight.js/styles/tokyo-night-dark.css'
 
   <section>
     <h2>Evolved Systems</h2>
+    <div class="container" style="grid-template-columns: 0.8fr 1fr 1.3fr 0.5fr; margin: 0;">
+      <div><img class="image" width="100%" src="./figs/natural_vs_engineered_systems/natural_systems.svg" /></div>
+      <div class="fragment"><img class="image" style="margin: 0;" width="100%" src="./figs/natural_vs_engineered_systems/evolved_natural_systems.svg" />
+        <p class="center small">e.g. molecules, DNA, cells, linguistics</p>
+        </div>
+      <div class="fragment"><img class="image" style="margin: 0;" width="100%" src="./figs/natural_vs_engineered_systems/evolved_engineered_systems.svg" />
+        <p class="center small">e.g. ANNs, animal husbandry</p>
+      </div>
+      <div><img class="image" width="100%" src="./figs/natural_vs_engineered_systems/engineered_systems.svg" /></div>
+    </div>
   </section>
 </section>
 
 <section>
-ML is powerful when it can break engineered abstractions and can mimic naturally evolved systems
-It isn't powerful when it is forced into a box defined by prior engineering efforts (e.g. surrogate functions, fixed abstractions)
+  <section class="center">
+    <h2>When is ML Powerful?</h2>
+  </section>
 
-The MNIST lesson
-Compare Semantic segmentation using all 3 systems
-Evolved antennas
-The major caveat to the bitter lesson - feasibility matters. Fuzziness vs exactness matters. Engineered vs natural systems matter.
-FSD vs traditional approaches
-the rendering example
-  - will the input and output of the ML model be engineered systems (rendering engine, formal geometry, camera trajectory) or will it be a series of images and give me some voxel maps and camera position?
-ML in the loop, out of the loop, and end-to-end (i.e. generative)
-Language models vs classical linguistics / NLP
+  <section>
+    <h2>When is ML Powerful?</h2>
+    <div class="container" style="grid-template-columns: 0.8fr 1fr 1.3fr 0.5fr; margin: 0;">
+      <div><img class="image" width="100%" src="./figs/natural_vs_engineered_systems/natural_systems.svg" /></div>
+      <div><img class="image" style="margin: 0;" width="100%" src="./figs/natural_vs_engineered_systems/evolved_natural_systems.svg" />
+        </div>
+      <div><img class="image" style="margin: 0;" width="100%" src="./figs/natural_vs_engineered_systems/evolved_engineered_systems.svg" />
+      </div>
+      <div><img class="image" width="100%" src="./figs/natural_vs_engineered_systems/engineered_systems.svg" /></div>
+    </div>
+    <ol class="smallish">
+      <li class="fragment">An evolved engineered system <em>mimicking</em> a natural system (i.e. generative)</li>
+      <li class="fragment">An evolved engineered system <em>acting within</em> an engineered system (i.e. in/around-the-loop)</li>
+    </ol>
+  </section>
+
+  <section>
+    <h2>When is ML Powerful?</h2>
+
+    <p class="center fragment">ML is powerful when it can wholesale break engineered abstractions to mimic naturally evolved systems</p>
+
+    <p class="center fragment">ML is weak when it is forced into a box defined by prior engineering efforts (e.g. surrogate functions, fixed abstractions)</p>
+
+    <p class="center fragment">ML is powerful when the problem is fuzzy and the solution can be too</p>
+
+    <p class="center fragment">ML is weak when the problem is well defined and it is trying to replicate an engineered algorithm</p>
+  </section>
+
+  <section>
+    <h2>Ways to Use ML</h2>
+
+    <ul>
+      <li class="fragment"><strong>In-the-loop</strong> with an engineered algorithm
+        <ul>
+          <li>ML for deciding moves wtihin simulated annealing</li>
+          <li>ML for choosing branching variables within CDCL (SAT solvers)</li>
+          <li>In general, ML for <em>heuristics</em> and <em>learned behaviors</em></li>
+        </ul>
+      </li>
+      <li class="fragment"><strong>Around-the-loop</strong> with an engineered algorithm
+        <ul>
+          <li>ML for tuning hyperparameters of simulated annealing</li>
+          <li>Synopsys DSO.ai - hyperparameter tuning around CAD algorithms</li>
+          <li>In general, ML for <em>embedding</em> and <em>regression</em></li>
+        </ul>
+      </li>
+      <li class="fragment"><strong>Generative</strong>
+    </ul>
+  </section>
+</section>
+
+<section>
+
+- Ways to use ML: ML in the loop, out of the loop, and end-to-end (i.e. generative)
+- The major caveat to the bitter lesson - feasibility matters. Fuzziness vs exactness matters. Engineered vs natural systems matter.
+- Out of distribution issues (natural systems don't suffer from this) (evolved engineered systems trying to mimic engineered ones will fail this - fail to generalize, which isn't a problem for natural or purely engineered systems)
+- The big examples:
+  - The MNIST lesson
+  - Compare Semantic segmentation using all 3 systems
+  - Evolved antennas
+  - FSD vs traditional approaches
+  - The rendering example
+    - will the input and output of the ML model be engineered systems (rendering engine, formal geometry, camera trajectory) or will it be a series of images and give me some voxel maps and camera position?
+  - Language models vs classical linguistics / NLP
 
 ML for Surrogate Functions for Engineered Algorithms - QoR prediction / one-shot synthesis
-Out of distribution issues (natural systems don't suffer from this) (evolved engineered systems trying to mimic engineered ones will fail this - fail to generalize, which isn't a problem for natural or purely engineered systems)
 ML for RTL simulation
 Why did AlphaChip fail? In principle, ML for placement would be way better wrt runtime and QoR vs algorithmic / manual heuristic techniques
 End to end ML - The Altman Plan
