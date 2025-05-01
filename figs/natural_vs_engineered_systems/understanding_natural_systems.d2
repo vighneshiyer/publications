@@ -1,0 +1,40 @@
+system: {
+  label: "The Scientific Method"
+  model: {
+    label: Theories / Models
+  }
+  pred: {
+    label: Deductions / Predictions
+  }
+  exp: {
+    label: Experiments / Discovery / Search
+  }
+  out: {
+    label: Observations / Outcomes
+  }
+  model -> pred: {
+    label: Make
+    style.font-size: 20
+  }
+  pred -> exp: {
+    label: Motivate
+    style.font-size: 20
+  }
+  exp -> out: {
+    label: Produce
+    style.font-size: 20
+  }
+  out -> model: {
+    label: Refine / Refute
+    style.font-size: 20
+  }
+}
+
+eng: {
+  label: Engineering
+}
+
+system.model -> eng {
+  label: Inform / Ground
+  style.font-size: 20
+}
