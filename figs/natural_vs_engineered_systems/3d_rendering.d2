@@ -1,0 +1,38 @@
+direction: right
+og: {
+  label: Rendering Pipe
+  scenes: Scene
+  geo: Geometry
+  camera: Camera Trajectory
+  render: Classical Renderer
+  out: Video (Training Data)
+  scenes -> render
+  geo -> render
+  camera -> render
+  render -> out
+}
+
+ann: {
+  label: Evolved Engineered System (Preserving Abstractions)
+  scenes: Scene
+  geo: Geometry
+  camera: Camera Trajectory
+  render: ANN Renderer
+  out: Frames
+  scenes -> render
+  geo -> render
+  camera -> render
+  render -> out
+}
+
+evo: {
+  label: Evolved Engineered System (End to End)
+  frames: Frames
+  box: ML Box {
+    slam: SLAM
+    slam.shape: cloud
+  }
+  map: Voxel Map
+  frames -> box
+  box -> map
+}

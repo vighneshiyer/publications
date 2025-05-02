@@ -292,12 +292,42 @@ import 'highlight.js/styles/tokyo-night-dark.css'
 
     <div><img class="image" width="100%" src="./figs/natural_vs_engineered_systems/mnist_example.svg" /></div>
 
-    <p class="center fragment">Do you see the parallels to how ML is often "used" in EDA CAD?</p>
+    <p class="center fragment">Do you see the parallels with how ML is often "used" in EDA CAD?</p>
+  </section>
+
+  <section>
+    <h2>Example - 3D Rendering</h2>
+
+    <div class="container" style="grid-template-columns: 1fr 1fr;">
+      <div><img class="image" width="100%" src="./figs/natural_vs_engineered_systems/3d_rendering.svg" /></div>
+      <div>
+        <ul>
+          <li class="fragment">What's the point of replicating an engineered algorithm?
+            <ul><li>The abstractions are unchanged! ML is weak!</li></ul>
+          </li>
+          <li class="fragment">Training on data produced by an algorithm that encapsulates the entire problem isn't useful</li>
+          <li class="fragment">Instead, step back and train end-to-end models that learn novel representations of the input</li>
+        </ul>
+      </div>
+    </div>
+
+  </section>
+
+  <section>
+    <h2>More Examples</h2>
+
+    <ul>
+      <li class="fragment">Speech synthesis</li>
+      <li class="fragment">Language models (+ linguistics)</li>
+      <li class="fragment">Evolved antennas / RF circuits / silicon photonics / MEMS</li>
+      <li class="fragment">The evolution of Tesla FSD
+        <ul><li>From hand written state machines and control rules to a fully learned control blob</li></ul>
+      </li>
+    </ul>
   </section>
 </section>
 
-<section>
-
+<!--
 - https://www.nature.com/articles/s41586-024-08032-5
 > AlphaChip was one of the first RL methods deployed to solve a real-world engineering problem, and its publication triggered an explosion of work on AI for chip design2,3,4,5,6,7,8,9,10,11,12,13,14,15,16. Nevertheless, as described in Sutton’s The Bitter Lesson17, there is often reluctance to accept the application of machine learning to new areas, and ultimately this has led to some confusion around our work, which we address below.
 
@@ -306,9 +336,43 @@ ML for Surrogate Functions for Engineered Algorithms - QoR prediction / one-shot
   - you can't do better than the engineered algorithm! all you can do is approximate it. what are you doing?
 ML for RTL simulation
 Why did AlphaChip fail? In principle, ML for placement would be way better wrt runtime and QoR vs algorithmic / manual heuristic techniques
+The problem of AlphaChip was that it wasn't actually AlphaChip. It was Alpha-"MacroPlacement". It wasn't ambitious enough! Try to one-shot everything (down to the geometry fed into the photomask manufacturing machine)!
 End to end ML - The Altman Plan
 LLMs for RTL engineering
 The AI scientist - high potential for drug discovery (mechanical search), low potential for true discovery (not so mechanical)
-</section>
+-->
 
+<section>
+  <section class="center">
+    <h2>ML for Chip Design</h2>
+    <p>Applying the lessons from other domains</p>
+  </section>
+
+  <section>
+    <h2>ML Surrogate Models for Engineered Algorithms</h2>
+
+    <ul>
+      <li class="fragment">Examples
+        <ul>
+          <li>What is the PPA of some bit of RTL?</li>
+          <li>
+        </ul>
+      </li>
+      <li class="fragment">This is the most common type of ML for EDA CAD in academia
+        <ul>
+          <li class="fragment">The data comes from an existing CAD algorithm</li>
+          <li class="fragment">No new abstractions are learned</li>
+          <li class="fragment">The out-of-distribution generalization is poor</li>
+        </ul>
+      </li>
+      <li class="fragment">Why do people do this?
+        <ul>
+          <li class="fragment">The CAD algorithm is too slow!</li>
+          <li class="fragment">But how does this solve anything (algorithm-time moves to training-time)?
+          <li class="fragment">Is there a better way? (e.g. ML in the loop)</li>
+        </ul>
+      </li>
+    </ul>
+  </section>
+</section>
 {% endblock %}
