@@ -1,0 +1,27 @@
+direction: right
+trad: {
+  label: Traditional Flow
+  rtl: Synchronous Digital RTL
+  stdcells: Gate-level Netlist
+  geo: Desired Geometry (placement, CTS, routing)
+  opc: OPC
+  chip: Chip
+  rtl -> stdcells: synthesis
+  stdcells -> geo: pnr
+  geo -> opc
+  opc -> chip: fabrication
+}
+
+alt: {
+  label: The Altman Gamble
+  rtl: Synchronous Digital RTL
+  magic: Magic ML {
+    style.font-size: 24
+  }
+  photo: Photomask
+  chip: Chip
+  rtl -> magic
+  magic -> photo: one-shot
+  photo -> chip: fabrication
+  chip -> magic: RL
+}

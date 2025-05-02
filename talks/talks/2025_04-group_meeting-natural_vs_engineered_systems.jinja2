@@ -328,17 +328,14 @@ import 'highlight.js/styles/tokyo-night-dark.css'
 </section>
 
 <!--
-- https://www.nature.com/articles/s41586-024-08032-5
-> AlphaChip was one of the first RL methods deployed to solve a real-world engineering problem, and its publication triggered an explosion of work on AI for chip design2,3,4,5,6,7,8,9,10,11,12,13,14,15,16. Nevertheless, as described in Sutton’s The Bitter Lesson17, there is often reluctance to accept the application of machine learning to new areas, and ultimately this has led to some confusion around our work, which we address below.
-
-
 ML for Surrogate Functions for Engineered Algorithms - QoR prediction / one-shot synthesis
   - you can't do better than the engineered algorithm! all you can do is approximate it. what are you doing?
-ML for RTL simulation
-Why did AlphaChip fail? In principle, ML for placement would be way better wrt runtime and QoR vs algorithmic / manual heuristic techniques
-The problem of AlphaChip was that it wasn't actually AlphaChip. It was Alpha-"MacroPlacement". It wasn't ambitious enough! Try to one-shot everything (down to the geometry fed into the photomask manufacturing machine)!
+- ML for RTL simulation
+- Why did AlphaChip fail? In principle, ML for placement would be way better wrt runtime and QoR vs algorithmic / manual heuristic techniques
+  - The problem of AlphaChip was that it wasn't actually AlphaChip. It was Alpha-"HardMacroPlacement". It wasn't ambitious enough! Try to one-shot everything (down to the geometry fed into the photomask manufacturing machine)!
 End to end ML - The Altman Plan
-LLMs for RTL engineering
+- LLMs for RTL engineering
+  - ML should focus on methodology and in-the-loop algorithm enhancements
 The AI scientist - high potential for drug discovery (mechanical search), low potential for true discovery (not so mechanical)
 -->
 
@@ -354,8 +351,8 @@ The AI scientist - high potential for drug discovery (mechanical search), low po
     <ul>
       <li class="fragment">Examples
         <ul>
-          <li>What is the PPA of some bit of RTL?</li>
-          <li>
+          <li>What is the PPA of some block of RTL?</li>
+          <li>What is the max IR drop of this PDN?</li>
         </ul>
       </li>
       <li class="fragment">This is the most common type of ML for EDA CAD in academia
@@ -363,6 +360,7 @@ The AI scientist - high potential for drug discovery (mechanical search), low po
           <li class="fragment">The data comes from an existing CAD algorithm</li>
           <li class="fragment">No new abstractions are learned</li>
           <li class="fragment">The out-of-distribution generalization is poor</li>
+          <li class="fragment">These techniques can't ultimately improve QoR</li>
         </ul>
       </li>
       <li class="fragment">Why do people do this?
@@ -373,6 +371,89 @@ The AI scientist - high potential for drug discovery (mechanical search), low po
         </ul>
       </li>
     </ul>
+  </section>
+
+  <section>
+    <h2>ML for RTL Simulation</h2>
+
+    <div class="container" style="grid-template-columns: 1fr 1fr;">
+      <div><img class="image" width="100%" src="./figs/natural_vs_engineered_systems/ml_for_rtl_sim.svg" /></div>
+      <div>
+        <ul>
+          <li class="fragment">Single-shot, data flywheel, constant time! So cool!</li>
+          <li class="fragment">In principle, there is no reason you can't "one-shot" simulation
+            <ul><li>Many ML architectures are universal function approximators</li></ul>
+          </li>
+          <li class="fragment">This is 'generative' AI, applied to an engineered system
+            <ul><li>An engineered system which requires exact solutions</li></ul>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <p class="center fragment">This is just an illustrative <em>joke</em></p>
+  </section>
+
+  <section>
+    <h2>Ahh AlphaChip</h2>
+
+    <blockquote>
+      <p>AlphaChip was one of the first RL methods deployed to solve a real-world engineering problem, and its publication triggered an explosion of work on AI for chip design.</p>
+      <p>Nevertheless, as described in Sutton’s The Bitter Lesson, there is often reluctance to accept the application of machine learning to new areas, and ultimately this has led to some confusion around our work</p>
+      <p>- From <a href="https://www.nature.com/articles/s41586-024-08032-5">the addendum</a></p>
+    </blockquote>
+  </section>
+
+  <section>
+    <h2>Why Didn't It Pan Out?</h2>
+
+    <ul>
+      <li class="fragment">Competing against classical algorithms based on force-directed placement and simulated annealing</li>
+      <li class="fragment">In principle, why couldn't it outperform human engineered algorithms? Nothing intrinsic about RL would prevent it from doing so.</li>
+      <li class="fragment">Inherent limitations in their approach
+        <ul>
+          <li>No simultaneous placement of soft and hard macros</li>
+          <li>No mixed-placement of standard cells directly with hard macros</li>
+          <li>Coarse placement grid for hard macros</li>
+          <li>Formulate macro placement as a game vs an optimization problem</li>
+          <li>Rewards only available at the end of a trajectory</li>
+        </ul>
+      </li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>The Big Mistake</h2>
+
+    <p class="fragment center">The biggest mistake of them all is that they didn't build <strong>AlphaChip</strong>!</p>
+
+    <p class="fragment center">They built <strong>Alpha-HardMacroPlacement</strong></p>
+
+    <ul>
+      <li class="fragment">No new learned abstractions</li>
+      <li class="fragment">No learned novel representations of the input data</li>
+      <li class="fragment">Not even an attempt to put ML in/around the loop of force-directed mixed-placement</li>
+    </ul>
+
+    <p class="fragment center">The solution is to <strong>go bigger</strong>. They weren't ambitious enough.</p>
+  </section>
+
+  <section>
+    <h2>Altman's Plan? E2E Circuits?</h2>
+
+    <div class="center fragment"><img class="image" style="margin: 0;" width="30%" src="./figs/natural_vs_engineered_systems/altman.png" /></div>
+    <div class="center fragment"><img class="image" width="100%" src="./figs/natural_vs_engineered_systems/e2e_circuits.svg" /></div>
+
+    <ul>
+      <li class="fragment">No pcells, no stdcells, no synthesis, no routing rules, no DRC, no LVS</li>
+      <li class="fragment">Learn a new abstraction stack from scratch
+        <ul><li>specification → photomask → silicon → training data</li></ul>
+      </li>
+    </ul>
+  </section>
+
+  <section>
+  don't do this in academia, please collect your VC money and do it outside
   </section>
 </section>
 {% endblock %}

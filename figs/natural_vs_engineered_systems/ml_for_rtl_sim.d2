@@ -1,0 +1,20 @@
+direction: right
+dataset: {
+  label: Data Pipeline
+  rtl: Hand-written + Synthetic RTL
+  stim: Testbench
+  sim: RTL Simulator
+  wave: Waveforms
+  rtl -> sim -> wave
+  stim -> sim
+}
+
+ml_magic: {
+  label: ML for RTL Simulation
+  rtl: RTL with Graph Embedding
+  stim: Stimulus Embedding
+  ml: ML Model\n(magic)
+  wave: Output (waveform, SAIF, ...)
+  rtl -> ml -> wave
+  stim -> ml
+}
