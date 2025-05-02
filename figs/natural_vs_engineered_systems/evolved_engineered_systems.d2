@@ -6,6 +6,9 @@ sys: {
   inp: {
     label: System input
   }
+  evo: {
+    label: Evolution algorithm
+  }
   abs: {
     label: Vague fuzzy learned abstraction
     shape: cloud
@@ -16,4 +19,5 @@ sys: {
   arch -> abs
   inp -> abs
   abs -> out
+  evo -> abs
 }

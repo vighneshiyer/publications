@@ -185,6 +185,20 @@ import 'highlight.js/styles/tokyo-night-dark.css'
     <h2>When is ML Powerful?</h2>
   </section>
 
+<!--
+- Ways to use ML: ML in the loop, out of the loop, and end-to-end (i.e. generative)
+- The major caveat to the bitter lesson - feasibility matters. Fuzziness vs exactness matters. Engineered vs natural systems matter.
+- Out of distribution issues (natural systems don't suffer from this) (evolved engineered systems trying to mimic engineered ones will fail this - fail to generalize, which isn't a problem for natural or purely engineered systems)
+- The big examples:
+  - The MNIST lesson
+  - Compare Semantic segmentation using all 3 systems
+  - Evolved antennas
+  - FSD vs traditional approaches
+  - The rendering example
+    - will the input and output of the ML model be engineered systems (rendering engine, formal geometry, camera trajectory) or will it be a series of images and give me some voxel maps and camera position?
+  - Language models vs classical linguistics / NLP
+-->
+
   <section>
     <h2>When is ML Powerful?</h2>
     <div class="container" style="grid-template-columns: 0.8fr 1fr 1.3fr 0.5fr; margin: 0;">
@@ -231,26 +245,65 @@ import 'highlight.js/styles/tokyo-night-dark.css'
           <li>In general, ML for <em>embedding</em> and <em>regression</em></li>
         </ul>
       </li>
-      <li class="fragment"><strong>Generative</strong>
+      <li class="fragment"><strong>"Generative"</strong> / <strong>"End to End"</strong>
+        <ul>
+          <li>ML goes from input to output, bypassing human engineered abstractions</li>
+          <!--Most ML for chip design "research" is actually generative, and is therefore not suitable. since we are talking about an engineered system-->
+        </ul>
+      </li>
     </ul>
+  </section>
+
+  <section>
+    <h2>The "Bitter Lesson"</h2>
+
+    <blockquote class="smallish">
+<p>The biggest lesson that can be read from 70 years of AI research is that general methods that leverage computation are ultimately the most effective, and by a large margin.</p>
+
+<p>We want AI agents that can discover like we can, not which contain what we have discovered. Building in our discoveries only makes it harder to see how the discovering process can be done.</p>
+
+      <p style="text-align: start;">- Rich Sutton's <a href="https://www.cs.utexas.edu/~eunsol/courses/data/bitter_lesson.pdf">"The Bitter Lesson"</a></p>
+    </blockquote>
+  </section>
+
+  <section>
+    <h2>Caveats of the "Bitter Lesson"</h2>
+
+    <ul>
+      <li class="fragment"><strong>Hypothesis</strong>: More data + compute + search + general techniques = better <em>end to end</em> performance</li>
+      <li class="fragment">The "Bitter Lesson" applies to mimicking natural systems
+        <ul><li>Not to mimicking engineered systems</li></ul>
+      </li>
+      <li class="fragment">Deep ML works best for <em>fuzzy solution spaces</em> where errors are tolerable</li>
+      <li class="fragment">Out-of-distribution <em>generalization</em> is still hard</li>
+    </ul>
+
+    <blockquote class="small fragment">
+    <p style="margin: 0;">What do we do with the problems that are too hard to solve with the limited compute that we have? Lie down for 80 years and wait for compute to catch up? Or solve a smaller problem using specialized tricks?</p>
+
+    <p>The bitter lesson is nothing of the sort, there is plenty of space for thinking hard, and there always will be.</p>
+
+    <p style="margin: 0">- <a href="https://news.ycombinator.com/item?id=43451742">Anon</a></p>
+    </blockquote>
+  </section>
+
+  <section>
+    <h2>Example - MNIST / Semantic Segmentation</h2>
+
+    <div><img class="image" width="100%" src="./figs/natural_vs_engineered_systems/mnist_example.svg" /></div>
+
+    <p class="center fragment">Do you see the parallels to how ML is often "used" in EDA CAD?</p>
   </section>
 </section>
 
 <section>
 
-- Ways to use ML: ML in the loop, out of the loop, and end-to-end (i.e. generative)
-- The major caveat to the bitter lesson - feasibility matters. Fuzziness vs exactness matters. Engineered vs natural systems matter.
-- Out of distribution issues (natural systems don't suffer from this) (evolved engineered systems trying to mimic engineered ones will fail this - fail to generalize, which isn't a problem for natural or purely engineered systems)
-- The big examples:
-  - The MNIST lesson
-  - Compare Semantic segmentation using all 3 systems
-  - Evolved antennas
-  - FSD vs traditional approaches
-  - The rendering example
-    - will the input and output of the ML model be engineered systems (rendering engine, formal geometry, camera trajectory) or will it be a series of images and give me some voxel maps and camera position?
-  - Language models vs classical linguistics / NLP
+- https://www.nature.com/articles/s41586-024-08032-5
+> AlphaChip was one of the first RL methods deployed to solve a real-world engineering problem, and its publication triggered an explosion of work on AI for chip design2,3,4,5,6,7,8,9,10,11,12,13,14,15,16. Nevertheless, as described in Sutton’s The Bitter Lesson17, there is often reluctance to accept the application of machine learning to new areas, and ultimately this has led to some confusion around our work, which we address below.
+
 
 ML for Surrogate Functions for Engineered Algorithms - QoR prediction / one-shot synthesis
+  - you can't do better than the engineered algorithm! all you can do is approximate it. what are you doing?
 ML for RTL simulation
 Why did AlphaChip fail? In principle, ML for placement would be way better wrt runtime and QoR vs algorithmic / manual heuristic techniques
 End to end ML - The Altman Plan

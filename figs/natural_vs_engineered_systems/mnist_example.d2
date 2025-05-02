@@ -1,0 +1,54 @@
+direction: right
+nat: {
+  label: Evolved Natural System
+  i: Eye (Retina)
+  e: Visual Cortex (edges / shapes)
+  s: Ventral Stream (groups of edges)
+  h: Prefrontal cortex (cognition / language)
+  d: Digit
+  i -> e: Optic nerve
+  e -> s
+  s -> h
+  h -> d
+  e.shape: cloud
+  s.shape: cloud
+  h.shape: cloud
+}
+
+eng: {
+  label: Engineered System
+  i: Image
+  e: Edge Detection
+  s: Line Segmentation
+  h: Heuristic Matching
+  d: Digit
+  i -> e
+  e -> s
+  s -> h
+  h -> d
+}
+
+eng_abs: {
+  label: Evolved Engineered System (Preserving Abstractions)
+  i: Image
+  e: ANN for Edge Detection
+  s: ANN for Line Segmentation
+  h: ANN for Heuristic Matching
+  d: Digit
+  i -> e
+  e -> s
+  s -> h
+  h -> d
+}
+
+eng_e2e: {
+  label: Evolved Engineered System (End to End)
+  i: Image
+  c: Convs + FC layers
+  d: Digit
+  i -> c
+  c -> d
+  c.shape: cloud
+  near: bottom-center
+  direction: right
+}
