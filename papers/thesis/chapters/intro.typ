@@ -109,17 +109,22 @@ Every discussion on the scaling trends of semiconductors begins with a discussio
 #quote(attribution: [Gordon Moore @moores-law], block: true)[
   Reduced cost is one of the big attractions of integrated electronics, and the cost advantage continues to increase as the technology evolves toward the production of larger and larger circuit functions on a single semiconductor substrate.
   For simple circuits, the cost per component is nearly inversely proportional to the number of components, the result of the equivalent piece of semiconductor in the equivalent package containing more components.
+
+  ...
+
+The complexity for minimum component costs has increased at a rate of roughly a _factor of two per year_.
+Certainly over the short term this rate can be expected to continue, if not to increase.
 ]
 
 #figure(
-  caption: [Something to say],
+  caption: [Two figures from Moore's paper @moores-law which illustrate the scaling trends Moore expected to continue],
   grid(
     columns: (1fr, 1fr),
     rows: (2in),
     gutter: 0.1in,
     align: center + horizon,
-    image("../figs/intro/sia-semi-outlook.png"),
-    image("../figs/intro/sia-semi-outlook.png"),
+    image("../figs/intro/moores_law-cost_curves.png"),
+    image("../figs/intro/moores_law-component_trend.png"),
   )
 )
 

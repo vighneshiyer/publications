@@ -96,10 +96,11 @@ Abstract: https://grad.berkeley.edu/wp-content/uploads/Abstract.pdf
   #block(
     fill: luma(240),
     inset: 16pt,
-    radius: 4pt,
+    radius: 0pt,
+    stroke: (y: 0.5pt + luma(200)),
     [
       #text(10pt, it.body)
-      #v(-12pt)
+      #v(-8pt)
       #align(right + bottom)[
         #text(10pt, [--- #it.attribution])
       ]
