@@ -64,7 +64,7 @@ Abstract: https://grad.berkeley.edu/wp-content/uploads/Abstract.pdf
   author: author,
   date: datetime(year: 2025, month: 05, day: 30),
   abstract: none,
-  bibliography: bibliography("bib.yml"),
+  bibliography: bibliography("bib.yml", style: "ieee"),
   figure-index: (enabled: false),
   table-index: (enabled: false),
   listing-index: (enabled: false),
@@ -82,10 +82,38 @@ Abstract: https://grad.berkeley.edu/wp-content/uploads/Abstract.pdf
 #set page(numbering: "1")
 #counter(page).update(1)
 
+// Custom show rule to reduce caption font size (10pt) from main font size (12pt)
+#show figure.caption: it => [
+  #context(text(10pt, [
+    Figure
+    #it.counter.display(it.numbering):
+    #it.body
+  ]))
+]
+
+// Custom show rule for blockquotes
+#show quote.where(block: true): it => [
+  #block(
+    fill: luma(240),
+    inset: 16pt,
+    radius: 4pt,
+    [
+      #text(10pt, it.body)
+      #v(-12pt)
+      #align(right + bottom)[
+        #text(10pt, [--- #it.attribution])
+      ]
+    ]
+  )
+]
+
+// The default IEEE citation style doesn't group adjacent citations (e.g. [3], [4] into [3, 4])
+#set cite(style: "karger")
+
 #include("chapters/intro.typ")
 #include("chapters/background.typ")
-#include("chapters/trace_analysis.typ")
 #include("chapters/tidalsim_prototype.typ")
+#include("chapters/trace_analysis.typ")
 #include("chapters/benchmarks.typ")
 #include("chapters/linux_sampling.typ")
 #include("chapters/future_work.typ")

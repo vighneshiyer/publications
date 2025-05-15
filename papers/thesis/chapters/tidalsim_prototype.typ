@@ -40,4 +40,11 @@ The steps of the flow are:
   caption: [An overview of the steps involved in the TidalSim flow.]
 )
 
+three types of BBVs
+pros and cons
+  - aslr handling (pie binaries)
+  - number of passes
+  - accuracy
+  - tradeoff analysis in embedding space
+
 == Error Analysis

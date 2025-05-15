@@ -56,3 +56,9 @@ The evaluation gap:
 - proposed solution: use the speed of sampled simulation with the fidelity of RTL to run real apps in the RTL iteration loop / during performance modeling
 
 == Sampled Simulation Broadly and the Structure of this Thesis
+
+tradeoff between short intervals and long ones
+tradeoff between random / systematic sampling and representative sampling
+tradeoff between variable length intervals vs fixed ones
+tradeoff between time feedback and time-unaware execution
+tradeoff between different types of embeddings

@@ -11,25 +11,123 @@ What are the main things I want to say?
 - At the same time, the chip design cycle hasn't gotten any faster. Still dominated by the waterfall methodology, the microarchitectural tweaks from one generation to the other are determined years in advance of the design. There is no RTL-level performance feedback in the design loop.
   - The limitation comes from the slow iteration process of RTL design and evaluation.
 - From these two points, I will present the hypothesis:
-  -
+- The premises:
+  - The vast majority of performance improvements in computing from computer architecture have and will come from the specialization and optimization of general purpose von-Neumann architectures.
+    - These architectures are designed to target different methods of exploiting intrinsic parallelism in a workload (ILP, MLP, DLP) with their own performance vs area and power efficiency tradeoffs.
+  - Agile design is important to improve beyond the 5 year design cycle that needs to be coupled closer with new workload characteristics
+- The hypothesis:
+  - We need to build a tool that can simulate a general purpose microarchitecture with low startup latency and high throughput, while being able to reveal and localize slight performance deltas
+  - We need to build workloads that can behave like full applications
+  - We need to understand the accuracy and speedup tradeoffs of the tool we build
 - Point out the problems with this hypothesis up-front, right here. Be brutal. But continue anyways. Big problems
   - Trace-driven models that are 'good enough' exist in industry to guide performance optimization / new uArch features
   - Sampled RTL simulation assumes that verification has done its job, but that is often the bottleneck
 */
 
-Digital integrated circuits are ubiquitous.
+/* Random notes
+- Moore's law, dennard scaling, dark silicon, the typical plot of perf over time, accelerators on dies, reemergence of mass integration like MCM and wafer scale packaging, but even with all this, ml accelerators, the vast majority of power consumption and time per application is spent on the general purpose cores, then show geekerwan scaling on spec for apple cores, also show speedometer here, also talk about p and e cores
+- The parallelism panic at the parlab days
 
-Everywhere we look, no matter the form factor or application, nearly every system on our planet is driven by digital hardware.
-This includes consumer electronics (watches, phones, laptops), IoT devices, home appliances, urban infrastructure, cars, manufacturing, and datacenters, among many other applications.
-Underpinning the proliferation of digital hardware is the core component of any digital system: the _general-purpose microprocessor_.
-We will focus on the digital chips that consume the vast majority of compute cycles on the planet and have the largest user-facing impact: mobile, laptop, desktop, and datacenter SoCs.
-//Although the general-purpose processor (GPP) has seen reduced interest recently,
+- Scaling driven by technology, microarchitecture, compilers, and software
+- Now people claim that specialization is the key to continued scaling
+- But none of the code you run every day actually uses specialized accelerators, besides a few like video decoding
+- Look at what matters, practical performance scaling and more features happens because of improvements in general purpose compute with respect to energy efficiency and raw perf
+- See the apple scaling curves from geekerwan
 
-How have the typical mobile and datacenter SoCs and SiPs evolved over the past several decades?
+Refer to the typical DAC / job talks
 
-== Trends of Digital Systems
+- Microprocessors dominate how we interact with digital electronics. Phones, tablets, laptops, watches, and servers in datacenters (the cloud).
+- How has microprocessors evolved over the past 50 years?
+- The very first unicore processors and operating systems
+- Moore's Law and Dennard Scaling
+- Dual core processors to counteract some poor scaling trends and improve real time performance
+- DVFS technologies for power savings and to deal with increasing process variation
+- Multicore processors continue to proliferate
+- Mixed perf/energy efficiency processors (big/little architecture)
+- The failure of the PARLAB vision (discuss the 7 dwarves as they seemed to provide opportunity for general purpose scaling machines, but it didn't pan out. they were mostly for HPC apps. when attempted to apply onto manycore systems and general applications like web browsers, they break down right away)
+- Dark silicon
+- Software engineers are dominant, we must align to what they want and accelerate their common stacks
+- Continued performance improvements of single thread performance. Process scaling and uarch improvements continue to compound every generation going from the Nehelem era to the failure of Bulldozer/Itanium and into the Zen era we see today.
+- The Apple breakthroughs on both the smartphone and laptop side (A14+ and M1+ series of chips)
+- True software optimized hardware, continued scaling of performance, Speedometer performance continues to improve every generation even as process improvements stagnate or come at an increasing cost
+- Accelerators are there, but are they the primary target of phone/tablets/laptops today? Even in the distant future? Probably not.
+- Use GPT to chart this outline and fill in any missing holes.
+- What does this portend?
+  - How does Apple do their co-design today? It is iterative over many generations of silicon. On-device tracing and trace-based simulation. Software optimizations done after the fact.
+  - Basically, the iteration loop is still very slow! True optimization of the end-to-end application with the microarchitecture is not possible, even with emulation machines.
 
-=== Scaling Trends
+- Moore's law was not in principle just about integrated circuit scaling or cost, but rather about scaling and cost of an entire system, and those continue to scale! Bandwidth, board and package level integration, io Integration, memory integration, radio integration, more advanced cooling like in nvl72, scaling itself has not ended, specialiation is less valuable than thought, workload specialization of general purpose cores to enable software development productivity is the real key
+
+> In the first quarter of this century, computing hardware design- ers were faced with both the limitations of technology scaling for performance [1 ], and the ensuing conflagration of on-chip power density [2]. Fortunately, the challenges of the Dark Silicon era [ 3] have transitioned into a prosperous period of specialized accelera- tor design [ 4 , 5 ]. Emerging enabling technology and tools for agile and democratized hardware design are powering an exciting land
+
+- List of Android SoCs: https://docs.google.com/spreadsheets/d/1ZvQonnQ5Yl4QmURVmj7BH4CW8aEloMqbDnWSaBGAxh4/edit?gid=0#gid=0
+  - Very interesting and useful enumeration of the core configurations in various Qualcomm, Mediatek, Samsung, Google SoCs
+  - https://www.reddit.com/r/hardware/comments/1jqfxjn/list_of_android_socs/ (very cool, need to credit this guy)
+
+== The Enduring Reign of General-Purpose Compute
+*/
+
+Digital integrated circuits, and semiconductors in general, are ubiquitous.
+Everywhere we look, no matter the form factor or usecase, nearly every system on our planet is enabled or has been influenced by digital hardware.
+Among other applications, this proliferation encompasses consumer electronics, IoT devices, home appliances, urban infrastructure, cars, factories, and datacenters.
+
+#grid(
+  columns: (1.2fr, 1fr),
+  rows: (3in),
+  gutter: 0.1in,
+  align: center + horizon,
+  grid.cell([
+    #figure(
+      image("../figs/intro/sia-semi-outlook.png"),
+      caption: [Data from the Semiconductor Industry Association supports the strong and consistent proliferation of digital SoCs for increasingly many applications #cite(<sia-semi-outlook>)]
+    )<fig:sia-semi-outlook>
+  ]),
+  grid.cell([
+    #figure(
+      image("../figs/intro/sia-march25.png"),
+      caption: [Recent data from March 2025 shows the wildly cyclical nature of the semiconductor industry, even as long-term growth is consistent #cite(<sia-march25>)]
+    )<fig:sia-march25>
+  ])
+)
+
+The proliferation of digital systems is predicted to continue unabated (@fig:sia-semi-outlook and @fig:sia-march25) which motivates research into the improvement of their design methodology.
+In this thesis, we will focus on the digital chips that execute the vast majority of compute cycles on the planet and have the largest user-facing impact: the chips powering _mobile, laptop, desktop, and datacenter_ devices.
+
+// Underpinning the proliferation of digital hardware is the core component of any digital system: the _general-purpose microprocessor_.
+// How have the typical mobile and datacenter SoCs and SiPs evolved over the past several decades?
+
+== Scaling Trends of Digital Systems
+
+Over time, digital chips have gone from small single-core microprocessors to today's massive heterogeneous multi-core systems-on-chip (SoC) which contain a multitude of different compute units.
+Let's begin by analyzing what enabled digital systems to scale in size and complexity, what those scaling trends will be going into the future, and what that implies for the future of digital hardware design.
+This will motivate the subject of this thesis, which is a simulation methodology specialized for the design of the computing elements of modern SoCs.
+
+=== Moore's Law
+
+Every discussion on the scaling trends of semiconductors begins with a discussion of "Moore's Law", which was coined by Carver Mead @moores-law-mead @moores-law-past-present-future based on a paper published by Gordon Moore in 1965 titled: _"Cramming more components onto integrated circuits"_ @moores-law.
+
+#quote(attribution: [Gordon Moore @moores-law], block: true)[
+  Reduced cost is one of the big attractions of integrated electronics, and the cost advantage continues to increase as the technology evolves toward the production of larger and larger circuit functions on a single semiconductor substrate.
+  For simple circuits, the cost per component is nearly inversely proportional to the number of components, the result of the equivalent piece of semiconductor in the equivalent package containing more components.
+]
+
+#figure(
+  caption: [Something to say],
+  grid(
+    columns: (1fr, 1fr),
+    rows: (2in),
+    gutter: 0.1in,
+    align: center + horizon,
+    image("../figs/intro/sia-semi-outlook.png"),
+    image("../figs/intro/sia-semi-outlook.png"),
+  )
+)
+
+Mead turned this observation into a 'law' which became in-part a self-fulling prophecy about the scaling of semiconductors. #cite(<moores-law-mead>)
+2 interpretations of what Moore wrote
+3 types of scaling of costs per transistor (purely process driven), transistor (compute/memory) area density (driven by innovation in process and stdcell design / CAD), and power density (energy efficiency) (driven by process and increasingly architecture - multiple core variants, different parallelism exploitation architectures)
+
+=== Notes
 
 - First figure: https://www.semiconductors.org/despite-short-term-cyclical-downturn-global-semiconductor-markets-long-term-outlook-is-strong/
   - Semiconductor sales over time = high importance
@@ -39,68 +137,35 @@ How have the typical mobile and datacenter SoCs and SiPs evolved over the past s
 - Excellent transistor count over time graphic: https://interludeone.com/posts/2021-04-21-chips/chips.html
 - Use the figures from my qual too for per-transistor cost over process growing slowly
   - Also use some of the Kurnal / HighYield die shot breakdowns for evidence of growing integration
+  - https://www.reddit.com/r/hardware/comments/1kdrmoq/high_yield_the_definitive_intel_arrow_lake/ (HighYield Arrow Lake die shot breakdown)
 - https://spectrum.ieee.org/hot-chips
   - Should mention this in the scaling section
 
-=== Moore's Law
-
 === Dennard Scaling
 
+=== The Manycore Hypothesis
+
 === Dark Silicon
+
+=== Heterogeneity of Compute Architectures
 
 === Proliferation of Accelerators
 
 
 gpp has well defined arch state, almost always von-Neumann architectures, simulation and optimnization is crucial
+- https://github.com/hollance/neural-engine/blob/master/docs/ane-vs-gpu.md
+  - Annotated die photo of Apple A12 showing area dominance of general purpose compute
+
+- Tpu evolution diagram, it's all about specialized general purpose architectures to balance system balance, arithmetic intensity, and intrinsic parallelism, how best to extract that parallelism
+- The common misconception of the golden age: the sea of accelerators
 
 == Agile Hardware Design
 
-//- Moore's law, dennard scaling, dark silicon, the typical plot of perf over time, accelerators on dies, reemergence of mass integration like MCM and wafer scale packaging, but even with all this, ml accelerators, the vast majority of power consumption and time per application is spent on the general purpose cores, then show geekerwan scaling on spec for apple cores, also show speedometer here, also talk about p and e cores
-//- The parallelism panic at the parlab days
-//
-//- Scaling driven by technology, microarchitecture, compilers, and software
-//- Now people claim that specialization is the key to continued scaling
-//- But none of the code you run every day actually uses specialized accelerators, besides a few like video decoding
-//- Look at what matters, practical performance scaling and more features happens because of improvements in general purpose compute with respect to energy efficiency and raw perf
-//- See the apple scaling curves from geekerwan
-//
-//Refer to the typical DAC / job talks
-//
-//- Microprocessors dominate how we interact with digital electronics. Phones, tablets, laptops, watches, and servers in datacenters (the cloud).
-//- How has microprocessors evolved over the past 50 years?
-//- The very first unicore processors and operating systems
-//- Moore's Law and Dennard Scaling
-//- Dual core processors to counteract some poor scaling trends and improve real time performance
-//- DVFS technologies for power savings and to deal with increasing process variation
-//- Multicore processors continue to proliferate
-//- Mixed perf/energy efficiency processors (big/little architecture)
-//- The failure of the PARLAB vision (discuss the 7 dwarves as they seemed to provide opportunity for general purpose scaling machines, but it didn't pan out. they were mostly for HPC apps. when attempted to apply onto manycore systems and general applications like web browsers, they break down right away)
-//- Dark silicon
-//- Software engineers are dominant, we must align to what they want and accelerate their common stacks
-//- Continued performance improvements of single thread performance. Process scaling and uarch improvements continue to compound every generation going from the Nehelem era to the failure of Bulldozer/Itanium and into the Zen era we see today.
-//- The Apple breakthroughs on both the smartphone and laptop side (A14+ and M1+ series of chips)
-//- True software optimized hardware, continued scaling of performance, Speedometer performance continues to improve every generation even as process improvements stagnate or come at an increasing cost
-//- Accelerators are there, but are they the primary target of phone/tablets/laptops today? Even in the distant future? Probably not.
-//- Use GPT to chart this outline and fill in any missing holes.
-//- What does this portend?
-//  - How does Apple do their co-design today? It is iterative over many generations of silicon. On-device tracing and trace-based simulation. Software optimizations done after the fact.
-//  - Basically, the iteration loop is still very slow! True optimization of the end-to-end application with the microarchitecture is not possible, even with emulation machines.
-//
-//- Moore's law was not in principle just about integrated circuit scaling or cost, but rather about scaling and cost of an entire system, and those continue to scale! Bandwidth, board and package level integration, io Integration, memory integration, radio integration, more advanced cooling like in nvl72, scaling itself has not ended, specialiation is less valuable than thought, workload specialization of general purpose cores to enable software development productivity is the real key
-//
-//- https://dl.acm.org/doi/pdf/10.1145/3649329.3663515
-//  - Invited: The Magnificent Seven Challenges and Opportunities in Domain-Specific Accelerator Design for Autonomous Systems
-//
-//> In the first quarter of this century, computing hardware design- ers were faced with both the limitations of technology scaling for performance [1 ], and the ensuing conflagration of on-chip power density [2]. Fortunately, the challenges of the Dark Silicon era [ 3] have transitioned into a prosperous period of specialized accelera- tor design [ 4 , 5 ]. Emerging enabling technology and tools for agile and democratized hardware design are powering an exciting land
-//
-//- List of Android SoCs: https://docs.google.com/spreadsheets/d/1ZvQonnQ5Yl4QmURVmj7BH4CW8aEloMqbDnWSaBGAxh4/edit?gid=0#gid=0
-//  - Very interesting and useful enumeration of the core configurations in various Qualcomm, Mediatek, Samsung, Google SoCs
-//  - https://www.reddit.com/r/hardware/comments/1jqfxjn/list_of_android_socs/ (very cool, need to credit this guy)
+=== RTL-First Design and Evaluation
 
-//#set page(paper: "us-letter", margin: (x: 1in, y: 1in))
-//#set text(font: "Linux Libertine", size: 11pt)
+- Immediate PPA
+- Reference all the qual slides I prepared in the past
 
-//= The Enduring Reign of General-Purpose Compute
 
 == Introduction: The Microprocessor's Ubiquitous Grasp
 
@@ -280,9 +345,13 @@ Core microarchitecture iteration is still important! But performance benefits ar
 
 The chip block diagrams do *not* indicate any kind of *pervasive specialization* that the "golden age" position paper may have posited, but rather reflect adapting general purpose processing engines for different amounts of exploitable parallelism for different workloads. Only a handful of exceptions exist and those are arguably not even 'accelerators' since they have no application-visible programming model (e.g. video codecs, fixed function ISP pipelines).
 
+Heterogeneity with respect to general purpose architectures! Not related to the 'sea of accelerators', but rather limited by dark silicon. 'accelerator level parallelism' is another dubious concept.
+
 == Motivation
 
 == Hypothesis
+
+We want to combine short intervals with functional warmup and rtl simulation to demonstrate it is possible to do rtl first agile performance evaluation and iteration without the need for slow rtl simulations or performance models (that need another round of correlation and error analysis) or fpgas which are expensive, have long startup latency, and are difficult to provision
 
 \subsection{Our Proposal}
 
