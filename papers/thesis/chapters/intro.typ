@@ -104,20 +104,21 @@ This will motivate the subject of this thesis, which is a simulation methodology
 
 === Moore's Law
 
-Every discussion on the scaling trends of semiconductors begins with a discussion of "Moore's Law", which was coined by Carver Mead @moores-law-mead @moores-law-past-present-future based on a paper published by Gordon Moore in 1965 titled: _"Cramming more components onto integrated circuits"_ @moores-law.
+Every discussion of the scaling trends of integrated circuits begins with a discussion of #link("https://en.wikipedia.org/wiki/Moore%27s_law")["Moore's Law"] which is based on a paper published by Gordon Moore in 1965 titled: _"Cramming more components onto integrated circuits"_ @moores-law.
+Moore makes a few key statements about _cost_ and _integration density_ scaling:
 
 #quote(attribution: [Gordon Moore @moores-law], block: true)[
   Reduced cost is one of the big attractions of integrated electronics, and the cost advantage continues to increase as the technology evolves toward the production of larger and larger circuit functions on a single semiconductor substrate.
   For simple circuits, the cost per component is nearly inversely proportional to the number of components, the result of the equivalent piece of semiconductor in the equivalent package containing more components.
 
-  ...
+*⋮*
 
 The complexity for minimum component costs has increased at a rate of roughly a _factor of two per year_.
 Certainly over the short term this rate can be expected to continue, if not to increase.
 ]
 
 #figure(
-  caption: [Two figures from Moore's paper @moores-law which illustrate the scaling trends Moore expected to continue],
+  caption: [Two figures from Moore's paper @moores-law which illustrate the _two_ scaling trends Moore expected to continue],
   grid(
     columns: (1fr, 1fr),
     rows: (2in),
@@ -126,16 +127,33 @@ Certainly over the short term this rate can be expected to continue, if not to i
     image("../figs/intro/moores_law-cost_curves.png"),
     image("../figs/intro/moores_law-component_trend.png"),
   )
-)
+)<fig:moores-paper>
 
-Mead turned this observation into a 'law' which became in-part a self-fulling prophecy about the scaling of semiconductors. #cite(<moores-law-mead>)
-2 interpretations of what Moore wrote
-3 types of scaling of costs per transistor (purely process driven), transistor (compute/memory) area density (driven by innovation in process and stdcell design / CAD), and power density (energy efficiency) (driven by process and increasingly architecture - multiple core variants, different parallelism exploitation architectures)
+// Mead turned this observation into a 'law' which became in-part a self-fulling prophecy about the scaling of semiconductors. #cite(<moores-law-mead>)
+
+At the IEDM conference in 1975, Moore published an update titled: _"Progress in digital integrated electronics"_ @moores-law-1975, where he predicted the continued doubling of integration density per year until 1980, followed by a slower doubling trend every two years.
+In 1975, Carver Mead took the data from @fig:moores-paper and coined "Moore's Law" @moores-law-mead @moores-law-past-present-future.
+
+// 3 types of scaling:
+//    - costs per transistor (purely process driven)
+//    - transistor (compute/memory) area density (driven by innovation in process and stdcell design / CAD)
+//    - power density (energy efficiency) (driven by process and increasingly architecture - multiple core variants, different parallelism exploitation architectures)
+//      - discuss this in the Dennard scaling section
+
+1. _Integration density scaling_:
+2. _Cost per component scaling_:
+
+
+=== Is Moore's Law Still Alive?
+
+- transistor density increasing via wikichip SRAM density charts, but slowing down and time to doubling is growing fast
+- density scaling wrt 'components' continues unabated, taller and taller SRAM stacks, ...
+  - Moore's Law today has slowed down, but it still quite alive. Scaling integration continues with 2.5d and 3d integration (advanced packaging, foveros), memory stacking and on-package integration (see hbm and mobile SoCs), backside power delivery, larger and larger reticle sizes, continued transistor scaling (albeit slowed down as the contacted gate pitch has not moved much lately). New types of packaging becoming more used (panel scale packaging, wafer scale chips). Co-packaged optics with 3d stacking to scale past shoreline bandwidth limitations. microfluidics and forced air cooling
+
+What about the cost aspect? Show the cost graphs. This is a problem indeed, cost isn't continuing to scale even as integration density improves.
 
 === Notes
 
-- First figure: https://www.semiconductors.org/despite-short-term-cyclical-downturn-global-semiconductor-markets-long-term-outlook-is-strong/
-  - Semiconductor sales over time = high importance
 - https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=10589682&tag=1 (transistors per processor over time, energy efficiency over time, vertical connection 3D density over time, technology evolution chart)
   - I need to pull these 4 figures from this link
   - From this article: https://spectrum.ieee.org/trillion-transistor-gpu

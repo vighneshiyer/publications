@@ -1,3 +1,5 @@
+# Intro
+
 moores-law:
   type: article
   title: Cramming more components onto integrated circuits (Reprinted from Electronics, volume 38, number 8, April 19, 1965, pp.114 ff.)
@@ -5,6 +7,21 @@ moores-law:
   serial-number:
     doi: "10.1109/N-SSC.2006.4785860"
   page-range: 33-35
+  date: 2006
+  parent:
+    type: periodical
+    title: IEEE Solid-State Circuits Society Newsletter
+    volume: 11
+    issue: 3
+    publisher: IEEE
+
+moores-law-1975:
+  type: article
+  title: "Progress in digital integrated electronics [Technical literaiture, Copyright 1975 IEEE. Reprinted, with permission. Technical Digest. International Electron Devices Meeting, IEEE, 1975, pp. 11-13.]"
+  author: [Gordon E. Moore]
+  serial-number:
+    doi: "10.1109/N-SSC.2006.4804410"
+  page-range: 36-37
   date: 2006
   parent:
     type: periodical
@@ -55,3 +72,5 @@ sia-semi-outlook:
   parent:
     type: blog
     title: Semiconductor Industry Association
+
+
