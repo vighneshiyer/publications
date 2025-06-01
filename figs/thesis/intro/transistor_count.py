@@ -2,7 +2,7 @@ from dataclasses import dataclass
 import polars as pl
 
 product_type: pl.Enum = pl.Enum(
-    ["Desktop CPU", "Server CPU", "Mobile CPU", "Laptop CPU", "Discrete GPU"]
+    ["Mobile CPU", "Laptop CPU", "Desktop CPU", "Server CPU", "Discrete GPU"]
 )
 
 
@@ -13,6 +13,7 @@ class Product:
     product_type: str
     transistor_count: int
     manufacturer: str
+    show: bool = False
 
 
 product_list: list[Product] = [
@@ -24,11 +25,12 @@ product_list: list[Product] = [
     #     manufacturer="Garrett AiResearch",
     # ),
     Product(
-        name="Intel 4004 (4-bit, 16-pin)",
+        name="Intel 4004",
         year=1971,
         product_type="Desktop CPU",
         transistor_count=2250,
         manufacturer="Intel",
+        show=True,
     ),
     Product(
         name="TMX 1795 (8-bit, 24-pin)",
@@ -150,11 +152,12 @@ product_list: list[Product] = [
         manufacturer="Motorola",
     ),
     Product(
-        name="Intel 8086 (16-bit, 40-pin)",
+        name="Intel 8086",
         year=1978,
         product_type="Desktop CPU",
         transistor_count=29000,
         manufacturer="Intel",
+        show=True,
     ),
     Product(
         name="Zilog Z8000 (16-bit)",
