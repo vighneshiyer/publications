@@ -97,9 +97,9 @@ Abstract: https://grad.berkeley.edu/wp-content/uploads/Abstract.pdf
     fill: luma(240),
     inset: 16pt,
     radius: 0pt,
-    stroke: (y: 0.5pt + luma(200)),
+    stroke: (left: 3pt + luma(100)),
     [
-      #text(10pt, it.body)
+      #text(12pt, it.body)
       #v(-8pt)
       #align(right + bottom)[
         #text(10pt, [--- #it.attribution])

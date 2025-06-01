@@ -55,6 +55,31 @@ moores-law-past-present-future:
     issue: 6
     publisher: IEEE
 
+moores-law-death:
+  type: article
+  title: "The Death of Moore’s Law: What it means and what might fill the gap going forward"
+  author: ["Audrey Woods"]
+  url: "https://cap.csail.mit.edu/death-moores-law-what-it-means-and-what-might-fill-gap-going-forward"
+  parent:
+    type: blog
+    title: MIT CSAIL Alliances
+
+moores-law-slowing-down:
+  type: article
+  title: "Is Moore’s Law Slowing Down? What’s Next?"
+  author: ["Lieven Eeckhout"]
+  serial-number:
+    doi: "10.1109/MM.2017.3211123"
+  page-range: 4-5
+  date: 2017
+  url: "https://doi.ieeecomputersociety.org/10.1109/MM.2017.3211123"
+  parent:
+    type: periodical
+    title: IEEE Micro
+    volume: 37
+    issue: 4
+    publisher: IEEE Computer Society
+
 sia-march25:
   type: article
   title: Global Semiconductor Sales Increase 18.8% in Q1 2025 Compared to Q1 2024; March 2025 Sales up 1.8% Month-to-Month

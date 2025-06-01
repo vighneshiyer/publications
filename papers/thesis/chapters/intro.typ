@@ -1,3 +1,5 @@
+#import "../ilm/lib.typ": callout
+
 = Introduction
 
 /*
@@ -90,8 +92,8 @@ Among other applications, this proliferation encompasses consumer electronics, I
   ])
 )
 
-The proliferation of digital systems is predicted to continue unabated (@fig:sia-semi-outlook and @fig:sia-march25) which motivates research into the improvement of their design methodology.
-In this thesis, we will focus on the digital chips that execute the vast majority of compute cycles on the planet and have the largest user-facing impact: the chips powering _mobile, laptop, desktop, and datacenter_ devices.
+The proliferation of digital systems is expected to continue unabated (as seen in @fig:sia-semi-outlook and @fig:sia-march25), which motivates research into the improvement of their design methodology.
+In this thesis, we will focus on accelerating the simulation of digital chips that execute the vast majority of compute cycles on the planet and have the largest user-facing impact: the chips powering _mobile_, _laptop_, _desktop_, and _datacenter_ systems.
 
 // Underpinning the proliferation of digital hardware is the core component of any digital system: the _general-purpose microprocessor_.
 // How have the typical mobile and datacenter SoCs and SiPs evolved over the past several decades?
@@ -99,17 +101,17 @@ In this thesis, we will focus on the digital chips that execute the vast majorit
 == Scaling Trends of Digital Systems
 
 Over time, digital chips have gone from small single-core microprocessors to today's massive heterogeneous multi-core systems-on-chip (SoC) which contain a multitude of different compute units.
-Let's begin by analyzing what enabled digital systems to scale in size and complexity, what those scaling trends will be going into the future, and what that implies for the future of digital hardware design.
-This will motivate the subject of this thesis, which is a simulation methodology specialized for the design of the computing elements of modern SoCs.
+We will begin by analyzing the technology and architecture trends that enabled digital systems to scale in size and complexity, what those scaling trends are projected to be looking to the future, and what that implies for the future of digital hardware design.
+This will motivate the subject of this thesis, which is a simulation methodology for the design of the general-purpose computing architectures of modern SoCs.
 
 === Moore's Law
 
-Every discussion of the scaling trends of integrated circuits begins with a discussion of #link("https://en.wikipedia.org/wiki/Moore%27s_law")["Moore's Law"] which is based on a paper published by Gordon Moore in 1965 titled: _"Cramming more components onto integrated circuits"_ @moores-law.
-Moore makes a few key statements about _cost_ and _integration density_ scaling:
+Every discussion of the scaling of integrated circuits inevitably begins with a discussion of #link("https://en.wikipedia.org/wiki/Moore%27s_law")["Moore's Law"] which was based on a paper published by Gordon Moore in 1965 titled: _"Cramming more components onto integrated circuits"_ @moores-law.
+In the paper, Moore makes a few statements about _cost_ and _integration density_ scaling:
 
 #quote(attribution: [Gordon Moore @moores-law], block: true)[
-  Reduced cost is one of the big attractions of integrated electronics, and the cost advantage continues to increase as the technology evolves toward the production of larger and larger circuit functions on a single semiconductor substrate.
-  For simple circuits, the cost per component is nearly inversely proportional to the number of components, the result of the equivalent piece of semiconductor in the equivalent package containing more components.
+Reduced cost is one of the big attractions of integrated electronics, and the cost advantage continues to increase as the technology evolves toward the production of larger and larger circuit functions on a single semiconductor substrate.
+For simple circuits, the cost per component is nearly inversely proportional to the number of components, the result of the equivalent piece of semiconductor in the equivalent package containing more components.
 
 *⋮*
 
@@ -118,7 +120,8 @@ Certainly over the short term this rate can be expected to continue, if not to i
 ]
 
 #figure(
-  caption: [Two figures from Moore's paper @moores-law which illustrate the _two_ scaling trends Moore expected to continue],
+  caption: [Two figures from Moore's paper @moores-law which illustrate 1) the reduction in minimum per-transistor costs at increasing integration densities and 2) the exponential increase in total integration complexity over the past decade
+  _two_ scaling trends Moore expected to continue],
   grid(
     columns: (1fr, 1fr),
     rows: (2in),
@@ -131,26 +134,59 @@ Certainly over the short term this rate can be expected to continue, if not to i
 
 // Mead turned this observation into a 'law' which became in-part a self-fulling prophecy about the scaling of semiconductors. #cite(<moores-law-mead>)
 
-At the IEDM conference in 1975, Moore published an update titled: _"Progress in digital integrated electronics"_ @moores-law-1975, where he predicted the continued doubling of integration density per year until 1980, followed by a slower doubling trend every two years.
-In 1975, Carver Mead took the data from @fig:moores-paper and coined "Moore's Law" @moores-law-mead @moores-law-past-present-future.
+At the 1975 IEDM conference, Moore published an update titled _"Progress in digital integrated electronics"_ @moores-law-1975 where he predicted the density scaling and per-transistor cost trends would continue.
+Around the same time, Carver Mead took the data from Moore's papers and coined the term "Moore's Law" @moores-law-mead @moores-law-past-present-future.
+// , where he predicted the continued doubling of integration density per year until 1980, followed by a slower doubling every two years.
+
+#callout[
+  #text(size: 13pt, weight: 600)[The original formulation of Moore's Law]
+
+  - The transistor density _at minimum cost per transistor_ for an integrated circuit will _double every year_
+  - This trend will taper off around 1980, after which transistor density will _double every two years_
+  - There will be a further tapering in the future when further density scaling becomes physically infeasible as transistor gate lengths approach atomic scales
+]
+
+=== Is Moore's Law Still Alive?
+
+// For one, transistor density at minimum cost per transistor has stopped
+// - Cost per most dense transistor
+// - Total integration density of a semiconductor die / package
+// A corollary is that the cost per transistor in increasingly scaled technologies would continue to go down as transistors shrank and yields improved.
+
+It has been frequently declared that the original formulation of "Moore's Law" died in the mid-2010s #cite(<moores-law-death>) #cite(<moores-law-slowing-down>).
+However, it is more useful to piece apart three _particular_ aspects of Moore's Law and examine them separately.
+
+1. _Total integration complexity scaling_: the maximum number of components that are integrated in a complete digital system, deployed as "one unified product" (e.g. a single die, package, or board/wafer-level system)
+2. _Integration density scaling_: the maximum number of components (i.e. transistors) that can be integrated per _mm#super[2]_ of silicon area
+3. _Cost per component scaling_: the cost per transistor (for logic and/or SRAMs) in increasingly advanced (i.e. scaled down) fabrication technologies
 
 // 3 types of scaling:
 //    - costs per transistor (purely process driven)
 //    - transistor (compute/memory) area density (driven by innovation in process and stdcell design / CAD)
 //    - power density (energy efficiency) (driven by process and increasingly architecture - multiple core variants, different parallelism exploitation architectures)
 //      - discuss this in the Dennard scaling section
+// max integration limits via better packaging solutions: Dojo (panel-level packaging, TSMC Intergated FanOut System on Wafer), GB200 / Ultra (massive CoWoS), Cerebras WSE (monolithic wafer-scale intergration)
+// max integration limits via technology: backside power, TSVs, 3D stacking, microfludic cooling, continued transistor scaling and smaller track stdcell libraries
 
-1. _Integration density scaling_:
-2. _Cost per component scaling_:
+#heading("Total Integration Complexity Scaling", level: 4) #lorem(50)
+
+// First present the total integration scaling picture
+// https://en.wikipedia.org/wiki/Transistor_count (scrape data from here and plot it myself)
+//    - https://interludeone.com/posts/2021-04-21-chips/chips.html (he did a nice split by chip designer)
+//    - https://mlsysbook.ai/contents/core/hw_acceleration/hw_acceleration.html#multi-chip-ai-acceleration (transistor count scaling figure, also contains the latest Cerebras WSE-3)
+// I think I should take the Spectrum transistor projection from TSMC and create my own plot too
 
 
-=== Is Moore's Law Still Alive?
+
+// Now show two projections
+// https://spectrum.ieee.org/trillion-transistor-gpu (3D vertical connection density scaling + total number of transistor scaling projections)
 
 - transistor density increasing via wikichip SRAM density charts, but slowing down and time to doubling is growing fast
 - density scaling wrt 'components' continues unabated, taller and taller SRAM stacks, ...
   - Moore's Law today has slowed down, but it still quite alive. Scaling integration continues with 2.5d and 3d integration (advanced packaging, foveros), memory stacking and on-package integration (see hbm and mobile SoCs), backside power delivery, larger and larger reticle sizes, continued transistor scaling (albeit slowed down as the contacted gate pitch has not moved much lately). New types of packaging becoming more used (panel scale packaging, wafer scale chips). Co-packaged optics with 3d stacking to scale past shoreline bandwidth limitations. microfluidics and forced air cooling
 
 What about the cost aspect? Show the cost graphs. This is a problem indeed, cost isn't continuing to scale even as integration density improves.
+- https://cap.csail.mit.edu/death-moores-law-what-it-means-and-what-might-fill-gap-going-forward
 
 === Notes
 
@@ -174,6 +210,10 @@ What about the cost aspect? Show the cost graphs. This is a problem indeed, cost
 
 === Proliferation of Accelerators
 
+=== Software Scaling
+
+- https://en.wikipedia.org/wiki/Wirth%27s_law
+- A Plea for Lean Software: https://cr.yp.to/bib/1995/wirth.pdf
 
 gpp has well defined arch state, almost always von-Neumann architectures, simulation and optimnization is crucial
 - https://github.com/hollance/neural-engine/blob/master/docs/ane-vs-gpu.md
@@ -311,6 +351,62 @@ Apple's custom ARM-based cores (e.g., Firestorm, Icestorm, Blizzard, Avalanche, 
 
     [Insert Plot: Speedometer Score Scaling (Score vs. Year/Generation for Apple devices)]
 
+- Collect numbers for devices that seem comparable on SPEC Geekerwan curves.
+  - https://tech.yahoo.com/phones/articles/just-benchmarked-snapdragon-8-elite-043000603.html
+    - Snapdragon 8 Elite, Chrome, Oryon high-perf core - 33.2 (much higher peak power)
+    - Galaxy S24 Ultra, Chrome, Snapdragon 8 Gen 3, Cortex X4 - 16.3
+    - iPhone 16 Pro, Safari, A18 Pro - 28.1 (much lower peak power)
+    - iPhone 16 Pro Max, Safari, A18 Pro - 27.8
+  - https://www.notebookcheck.net/Oppo-Find-X8-Pro-smartphone-review-Attack-on-the-iPhone-with-innovative-battery-technology.924091.0.html
+    - Oppo Find X8 Pro, Chrome, Dimensity 9400, Cortex X925 - 16.3 (quite low!)
+    - iPhone 16 Pro Max, Safari, A18 Pro - 33.5 (very very high, as expected)
+    - Lots of good results are here from all kinds of phones! Try to look here. The results have error margins and are more reliable than the yahoo results.
+    I think the main point is that on the SPEC curves some devices seem just marginally worse/better than iPhones, but on this benchmark we see huge differences.
+
+- https://www.reddit.com/r/hardware/comments/1g9ff4o/qualcomm_snapdragon_8_elite_single_thread/
+
+> Metric 	D9400 	8 Elite 	A18 Pro
+> Geekbench 6 ST 	2901 	3261 	3568
+> Clock speed 	3.63 GHz 	4.32 GHz 	4.04 GHz
+> Power consumption 	7.9W 	7.6W 	6.6W
+> P-core Area 	3.2 mm² 	2.2 mm² 	2.9 mm²
+> Performance-per-clock 	799 	770 	883
+> Performance-per-watt 	367 	429 	540
+> Performance-per-area 	906 	1482 	1230
+>
+> PPC : Apple > Mediatek > Qualcomm.
+> PPW : Apple > Qualcomm > Mediatek.
+> PPA : Qualcomm > Apple > Mediatek.
+>
+> Notes :
+>
+> • Mediatek P-core area includes the private L2 cache.
+> • SME block area not included for Apple P-core.
+
+- SD 8 Elite vs 8 Gen 3: https://www.reddit.com/r/samsung/comments/1i89vnm/snapdragon_8_elite_vs_gen_3_vs_gen_2_the_real/
+  - 8 Elite gives up a lot of top-end power for top-end performance, even if it does indeed come out on top
+  - 8 Elite vs A18 Pro specs: https://nanoreview.net/en/soc-compare/qualcomm-snapdragon-8-gen-4-vs-apple-a18-pro
+
+- Big.Little diagrams: https://forums.anandtech.com/threads/mediatek-soc-thread.2614945/
+  - https://hothardware.com/reviews/arm-tcs-2023-cortex-x4-immortalis-g720
+  - https://hothardware.com/photo-gallery/article/3312?image=big_arm-tcs23-cpu-efficiency-curve.jpg&tag=popup
+  - Combine with latest Geekerwan SPEC curves
+- A17 Pro Geekerwan curves: https://www.youtube.com/watch?v=iSCTlB1dhO0
+- Snapdragon 8 Elite Geekerwan curves: https://www.youtube.com/watch?v=GkJCWncZbJc
+- Speedometer 3.0 scores: https://www.techpowerup.com/forums/threads/post-your-speedometer-3-0-score.320241/
+- https://www.reddit.com/r/hardware/comments/1gvo28c/latest_arm_cpu_cores_compared_performanceperarea/
+
+> Latest ARM CPU cores compared: Performance-Per-Area and Performance-Per-Clock
+>
+> Core 	INT 	INT% 	FP 	FP% 	P 	Area 	Clock 	PPA 	PPC
+> A18-P 	10.7 	120% 	16.0 	114% 	117% 	3.1 mm² 	4.04 GHz 	36.56 	28.96
+> A18-E 	3.3 	37% 	5.0 	35% 	36% 	0.8 mm² 	2.2 GHz 	45.00 	16.36
+> Oryon-L 	8.9 	100% 	14.0 	100% 	100% 	2.1 mm² 	4.32 GHz 	47.61 	23.14
+> Oryon-M 	5.2 	58% 	8.0 	57% 	58% 	0.85 mm² 	3.53 GHz 	68.23 	16.43
+> X925 	8.8 	99% 	13.9 	99% 	99% 	2.8 mm² 	3.63 GHz 	35.35 	27.27
+> X4 	7.4 	83% 	10.0 	71% 	77% 	1.4 mm² 	3.3 GHz 	55.0 	23.33
+> A720 	3.6 	40% 	5.7 	40% 	40% 	0.8 mm² 	2.4 GHz 	50.0 	16.66
+
 *P-cores and E-cores:* Apple masterfully implements the heterogeneous P-core / E-core strategy. Their E-cores themselves are often as fast as competitors' previous-generation P-cores, while their P-cores push the boundaries of performance. This combination delivers both exceptional peak speed and remarkable battery life. However, the foundation of the user experience rests on the sheer capability of those P-cores.
 
 Apple's success stems from a combination of factors: massive investment in CPU microarchitecture design, tight hardware-software co-design facilitated by controlling the entire ecosystem (hardware, OS, key applications), and a relentless focus on optimizing for real-world workloads rather than just synthetic benchmarks. Their chips *do* contain accelerators (GPU, NPU, video engines, etc.), but the dramatic performance advantage felt by users is largely attributable to the raw power and efficiency of their general-purpose CPU cores. They demonstrated that "true software-optimized hardware" primarily meant building incredibly capable CPUs to run the software users care about most.
@@ -369,6 +465,16 @@ Core microarchitecture iteration is still important! But performance benefits ar
 The chip block diagrams do *not* indicate any kind of *pervasive specialization* that the "golden age" position paper may have posited, but rather reflect adapting general purpose processing engines for different amounts of exploitable parallelism for different workloads. Only a handful of exceptions exist and those are arguably not even 'accelerators' since they have no application-visible programming model (e.g. video codecs, fixed function ISP pipelines).
 
 Heterogeneity with respect to general purpose architectures! Not related to the 'sea of accelerators', but rather limited by dark silicon. 'accelerator level parallelism' is another dubious concept.
+
+10 years after the 'golden age' Turing talk was given, do we really see the kind of 'specialization' that was hypothesized?
+Rather, we see specialization and optimization of general purpose architectures that can exploit common computing motifs increasingly well through better programming models, APIs, and compilers (e.g. autovectorization). We also see specialization of GPPs to optimize for common software workloads (web browsers, layout rendering, javascript JIT, and so forth).
+Some still argue that in the future, we will indeed see the 'sea of accelerators' and pervasive accelerators on a die, and that those will account for the majority of computing performance gains and compute cycles spent on an SoC, but there isn't a good reason to believe this.
+Limits encountered via Moore's Law and Dennard scaling don't point to increased random kernel accelerators, but rather continued improvement of general purpose architectures to max out Amdahl's Law (both with respect to data parallelism, MLP, ILP, and system balance tradeoffs).
+
+The SPEC perf vs power curves don't tell the whole story.
+There is also application level specialization - see Speedometer scores which use the P core at max sustained throughput.
+There is also the leakage power and core area tradeoff vs performance and dynamic power.
+All these complicating factors require careful uArch design.
 
 == Motivation
 

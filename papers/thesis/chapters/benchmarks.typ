@@ -27,6 +27,11 @@ cmake .. -DRISCV_ARCH=rv64gcv -DRISCV_ABI=lp64d -DUSE_VEXT=1
 make
 ```
 
+- https://www.computer.org/csdl/magazine/co/2025/05/10970203/260SofoD9a8 (Embench IOT 2.0 and DSP 1.0: Modern Embedded Computing Benchmarks)
+  - https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=10970203
+  - https://github.com/embench/embench-dsp/tree/rc1/src/fir_f32_taps256_n1
+  - https://github.com/embench/embench-iot/tree/master (only 2/4 of the new 2.0 benchmarks are here)
+
 == Baremetal RISC-V
 
 == Baremetal Rust
