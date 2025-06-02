@@ -244,11 +244,12 @@ product_list: list[Product] = [
         manufacturer="Intel",
     ),
     Product(
-        name="ARM 1 (32-bit; no cache)",
+        name="ARM 1",
         year=1985,
         product_type="Mobile CPU",
         transistor_count=25000,
         manufacturer="Acorn",
+        show=True,
     ),
     Product(
         name="Novix NC4016 (16-bit)",
@@ -356,11 +357,12 @@ product_list: list[Product] = [
         manufacturer="Acorn",
     ),
     Product(
-        name="POWER1 (9-chip module, 72 kB of cache)",
+        name="POWER1",
         year=1990,
         product_type="Server CPU",
         transistor_count=6900000,
         manufacturer="IBM",
+        show=True,
     ),
     Product(
         name="Motorola 68040 (32-bit, 8 KB caches)",
@@ -412,11 +414,12 @@ product_list: list[Product] = [
         manufacturer="Hitachi",
     ),
     Product(
-        name="Pentium (32-bit, 16 KB of caches)",
+        name="Pentium",
         year=1993,
         product_type="Desktop CPU",
         transistor_count=3100000,
         manufacturer="Intel",
+        show=True,
     ),
     Product(
         name="POWER2 (8-chip module, 288 kB of cache)",
@@ -468,11 +471,12 @@ product_list: list[Product] = [
         manufacturer="Apple, IBM, Motorola",
     ),
     Product(
-        name="Alpha 21164 EV5 (64-bit, 112 kB cache)",
+        name="Alpha 21164 EV5",
         year=1995,
         product_type="Server CPU",
         transistor_count=9300000,
         manufacturer="DEC",
+        show=False,
     ),
     Product(
         name="SA-110 (32-bit, 32 KB of caches)",
@@ -503,11 +507,12 @@ product_list: list[Product] = [
         manufacturer="DEC",
     ),
     Product(
-        name="AMD K5 (32-bit, caches)",
+        name="AMD K5",
         year=1996,
         product_type="Desktop CPU",
         transistor_count=4300000,
         manufacturer="AMD",
+        show=True,
     ),
     Product(
         name="Pentium II Klamath (32-bit, 64-bit SIMD, caches)",
@@ -622,11 +627,12 @@ product_list: list[Product] = [
         manufacturer="Intel",
     ),
     Product(
-        name="Pentium 4 Willamette (32-bit, large cache)",
+        name="Pentium 4 Willamette",
         year=2000,
         product_type="Desktop CPU",
         transistor_count=42000000,
         manufacturer="Intel",
+        show=True,
     ),
     Product(
         name="SPARC64 V (64-bit, large cache)",
@@ -839,11 +845,12 @@ product_list: list[Product] = [
         manufacturer="Intel",
     ),
     Product(
-        name="Core i7 (quad-core 64-bit, SIMD, large caches)",
+        name="Core i7",
         year=2008,
         product_type="Desktop CPU",
         transistor_count=731000000,
         manufacturer="Intel",
+        show=True,
     ),
     Product(
         name="AMD K10 quad-core 6M L3 (64-bit, SIMD, large caches)",
@@ -1518,11 +1525,12 @@ product_list: list[Product] = [
         manufacturer="Apple",
     ),
     Product(
-        name="Apple M1 (octa-core 64-bit ARM64 SoC, SIMD, caches)",
+        name="Apple M1",
         year=2020,
         product_type="Laptop CPU",
         transistor_count=16000000000,
         manufacturer="Apple",
+        show=True,
     ),
     Product(
         name="HiSilicon Kirin 9000",
@@ -2696,6 +2704,7 @@ product_list: list[Product] = [
         product_type="Discrete GPU",
         transistor_count=21100000000,
         manufacturer="Nvidia",
+        show=True,
     ),
     Product(
         name="TU102 Turing",
@@ -2850,6 +2859,7 @@ product_list: list[Product] = [
         product_type="Discrete GPU",
         transistor_count=80000000000,
         manufacturer="Nvidia",
+        show=True,
     ),
     Product(
         name="AD102 Ada Lovelace",
@@ -2920,6 +2930,7 @@ product_list: list[Product] = [
         product_type="Discrete GPU",
         transistor_count=208000000000,
         manufacturer="Nvidia",
+        show=True,
     ),  # Takes value before (MCM)
     Product(
         name="GB202 Blackwell (RTX 5090)",
