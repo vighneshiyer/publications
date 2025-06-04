@@ -2,7 +2,14 @@ from dataclasses import dataclass
 import polars as pl
 
 product_type: pl.Enum = pl.Enum(
-    ["Mobile CPU", "Laptop CPU", "Desktop CPU", "Server CPU", "Discrete GPU"]
+    [
+        "Mobile CPU",
+        "Laptop CPU",
+        "Desktop CPU",
+        "Server CPU",
+        "Discrete GPU",
+        "AI Accelerator",
+    ]
 )
 
 
@@ -14,6 +21,8 @@ class Product:
     transistor_count: int
     manufacturer: str
     show: bool = False
+    dx: int = 0
+    dy: int = 25
 
 
 product_list: list[Product] = [
@@ -31,6 +40,8 @@ product_list: list[Product] = [
         transistor_count=2250,
         manufacturer="Intel",
         show=True,
+        dx=10,
+        dy=20,
     ),
     Product(
         name="TMX 1795 (8-bit, 24-pin)",
@@ -250,6 +261,7 @@ product_list: list[Product] = [
         transistor_count=25000,
         manufacturer="Acorn",
         show=True,
+        dy=45,
     ),
     Product(
         name="Novix NC4016 (16-bit)",
@@ -363,6 +375,7 @@ product_list: list[Product] = [
         transistor_count=6900000,
         manufacturer="IBM",
         show=True,
+        dx=-3,
     ),
     Product(
         name="Motorola 68040 (32-bit, 8 KB caches)",
@@ -420,6 +433,7 @@ product_list: list[Product] = [
         transistor_count=3100000,
         manufacturer="Intel",
         show=True,
+        dx=-5,
     ),
     Product(
         name="POWER2 (8-chip module, 288 kB of cache)",
@@ -507,7 +521,7 @@ product_list: list[Product] = [
         manufacturer="DEC",
     ),
     Product(
-        name="AMD K5",
+        name="K5",  # "AMD K5",
         year=1996,
         product_type="Desktop CPU",
         transistor_count=4300000,
@@ -726,11 +740,12 @@ product_list: list[Product] = [
         manufacturer="Fujitsu",
     ),
     Product(
-        name="Itanium 2 (64-bit;9 MB cache)",
+        name="Itanium 2",  # (64-bit;9 MB cache)",
         year=2004,
         product_type="Server CPU",
         transistor_count=592000000,
         manufacturer="Intel",
+        show=True,
     ),
     Product(
         name="Pentium 4 Prescott-2M (32-bit, large cache)",
@@ -1126,11 +1141,12 @@ product_list: list[Product] = [
         manufacturer="Intel",
     ),
     Product(
-        name='Apple A9 (dual-core 64/32-bit ARM64 "mobile SoC", SIMD, caches)',
+        name="A9",  #'Apple A9 (dual-core 64/32-bit ARM64 "mobile SoC", SIMD, caches)',
         year=2015,
         product_type="Mobile CPU",
         transistor_count=2000000000,
         manufacturer="Apple",
+        show=False,
     ),  # Row 1 of 2 for Apple A9
     Product(
         name='Apple A9 (dual-core 64/32-bit ARM64 "mobile SoC", SIMD, caches)',
@@ -1525,7 +1541,7 @@ product_list: list[Product] = [
         manufacturer="Apple",
     ),
     Product(
-        name="Apple M1",
+        name="M1",  # "Apple M1",
         year=2020,
         product_type="Laptop CPU",
         transistor_count=16000000000,
@@ -1694,11 +1710,12 @@ product_list: list[Product] = [
         manufacturer="Apple",
     ),
     Product(
-        name="Apple M3 Max (16-core 64-bit ARM64 SoC, SIMD, caches)",
+        name="M3 Max",  # (16-core 64-bit ARM64 SoC, SIMD, caches)",
         year=2023,
         product_type="Laptop CPU",
         transistor_count=92000000000,
         manufacturer="Apple",
+        show=True,
     ),
     Product(
         name="Apple A17",
@@ -1743,11 +1760,21 @@ product_list: list[Product] = [
         manufacturer="AMD",
     ),
     Product(
-        name="AMD Instinct MI300A (multi-chip module, 24 cores, 128 GB GPU memory + 256 MB (LLC/L3) cache)",
+        name="MI300A",  # "AMD Instinct MI300A",  # (multi-chip module, 24 cores, 128 GB GPU memory + 256 MB (LLC/L3) cache)",
         year=2023,
-        product_type="Server CPU",
+        product_type="Discrete GPU",
         transistor_count=146000000000,
         manufacturer="AMD",
+        show=False,
+    ),
+    Product(
+        name="M3 Ultra",
+        year=2025,
+        product_type="Desktop CPU",
+        transistor_count=184_000_000_000,
+        manufacturer="Apple",
+        show=True,
+        dx=30,
     ),
     # GPUs
     #
@@ -2699,7 +2726,7 @@ product_list: list[Product] = [
         manufacturer="AMD",
     ),
     Product(
-        name="GV100 Volta",
+        name="GV100",  # Volta",
         year=2017,
         product_type="Discrete GPU",
         transistor_count=21100000000,
@@ -2854,12 +2881,12 @@ product_list: list[Product] = [
         manufacturer="AMD",
     ),  # Takes the first value before (MCM)
     Product(
-        name="GH100 Hopper",
+        name="GH100",  # Hopper",
         year=2022,
         product_type="Discrete GPU",
         transistor_count=80000000000,
         manufacturer="Nvidia",
-        show=True,
+        show=False,
     ),
     Product(
         name="AD102 Ada Lovelace",
@@ -2925,12 +2952,14 @@ product_list: list[Product] = [
         manufacturer="AMD",
     ),  # Takes value before (MCM)
     Product(
-        name="GB200 Grace Blackwell",
+        name="GB200",  # Grace Blackwell",
         year=2024,
         product_type="Discrete GPU",
         transistor_count=208000000000,
         manufacturer="Nvidia",
         show=True,
+        dy=17,
+        dx=10,
     ),  # Takes value before (MCM)
     Product(
         name="GB202 Blackwell (RTX 5090)",
@@ -2938,5 +2967,110 @@ product_list: list[Product] = [
         product_type="Discrete GPU",
         transistor_count=92200000000,
         manufacturer="Nvidia",
+    ),
+    Product(
+        name="Cell Broadband Engine",
+        year=2006,
+        product_type="Discrete GPU",
+        transistor_count=250_000_000,
+        manufacturer="IBM, Sony",
+    ),
+    Product(
+        name="TPUv3",
+        year=2018,
+        product_type="AI Accelerator",
+        transistor_count=10_000_000_000,  # https://people.csail.mit.edu/suvinay/pubs/2023.tpu.isca.pdf
+        manufacturer="Google",
+    ),
+    Product(
+        name="TPUv4",
+        year=2021,
+        product_type="AI Accelerator",
+        transistor_count=22_000_000_000,  # https://people.csail.mit.edu/suvinay/pubs/2023.tpu.isca.pdf
+        manufacturer="Google",
+        show=True,
+        dx=0,
+        dy=30,
+    ),  # other TPUs don't have publically available transistor counts
+    Product(
+        name="WSE-1",
+        year=2019,
+        product_type="AI Accelerator",
+        transistor_count=1_200_000_000_000,
+        manufacturer="Cerebras",
+        show=True,
+    ),
+    Product(
+        name="WSE-2",
+        year=2020,
+        product_type="AI Accelerator",
+        transistor_count=2_600_000_000_000,
+        manufacturer="Cerebras",
+        show=True,
+    ),
+    Product(
+        name="WSE-3",
+        year=2024,
+        product_type="AI Accelerator",
+        transistor_count=4_000_000_000_000,
+        manufacturer="Cerebras",
+        show=True,
+    ),
+    Product(
+        name="Dojo D1 Tile",
+        year=2023,
+        product_type="AI Accelerator",
+        transistor_count=1_250_000_000_000,  # 50B transistors per D1 chip, 25 chips per tile
+        manufacturer="Tesla",
+        show=True,
+        dx=6,
+    ),
+    Product(
+        name="GC200 IPU",
+        year=2020,
+        product_type="AI Accelerator",
+        transistor_count=59_000_000_000,
+        manufacturer="Graphcore",
+        show=False,
+    ),
+    Product(
+        name="TSP v1",
+        year=2020,
+        product_type="AI Accelerator",
+        transistor_count=26_800_000_000,
+        manufacturer="Groq",
+        show=False,
+    ),
+    Product(
+        name="SN40L",
+        year=2023,
+        product_type="AI Accelerator",
+        transistor_count=102_000_000_000,
+        manufacturer="SambaNova",
+        show=False,
+    ),
+    Product(
+        name="Trainium v2",
+        year=2023,
+        product_type="AI Accelerator",
+        transistor_count=58_000_000_000,
+        manufacturer="Amazon",
+        show=False,
+    ),
+    Product(
+        name="Graviton v4",
+        year=2023,
+        product_type="Server CPU",
+        transistor_count=73_000_000_000,
+        manufacturer="Amazon",
+        show=False,
+    ),
+    Product(
+        name="Corsair C8",
+        year=2023,
+        product_type="AI Accelerator",
+        transistor_count=130_000_000_000,
+        manufacturer="D-Matrix",
+        show=False,
     ),
 ]

@@ -1,5 +1,27 @@
 # Intro
 
+## Semiconductor industry trends
+
+sia-march25:
+  type: article
+  title: Global Semiconductor Sales Increase 18.8% in Q1 2025 Compared to Q1 2024; March 2025 Sales up 1.8% Month-to-Month
+  date: 2025-05-05
+  url: "https://www.semiconductors.org/global-semiconductor-sales-increase-18-8-in-q1-2025-compared-to-q1-2024-march-2025-sales-up-1-8-month-to-month/"
+  parent:
+    type: blog
+    title: Semiconductor Industry Association
+
+sia-semi-outlook:
+  type: article
+  title: Despite Short-Term Cyclical Downturn, Global Semiconductor Market’s Long-Term Outlook is Strong
+  date: 2023-02-08
+  url: "https://www.semiconductors.org/despite-short-term-cyclical-downturn-global-semiconductor-markets-long-term-outlook-is-strong/"
+  parent:
+    type: blog
+    title: Semiconductor Industry Association
+
+## Moore's Law and associated articles
+
 moores-law:
   type: article
   title: Cramming more components onto integrated circuits (Reprinted from Electronics, volume 38, number 8, April 19, 1965, pp.114 ff.)
@@ -80,22 +102,10 @@ moores-law-slowing-down:
     issue: 4
     publisher: IEEE Computer Society
 
-sia-march25:
-  type: article
-  title: Global Semiconductor Sales Increase 18.8% in Q1 2025 Compared to Q1 2024; March 2025 Sales up 1.8% Month-to-Month
-  date: 2025-05-05
-  url: "https://www.semiconductors.org/global-semiconductor-sales-increase-18-8-in-q1-2025-compared-to-q1-2024-march-2025-sales-up-1-8-month-to-month/"
-  parent:
-    type: blog
-    title: Semiconductor Industry Association
-
-sia-semi-outlook:
-  type: article
-  title: Despite Short-Term Cyclical Downturn, Global Semiconductor Market’s Long-Term Outlook is Strong
-  date: 2023-02-08
-  url: "https://www.semiconductors.org/despite-short-term-cyclical-downturn-global-semiconductor-markets-long-term-outlook-is-strong/"
-  parent:
-    type: blog
-    title: Semiconductor Industry Association
-
-
+transistor-count-wikipedia:
+  type: web
+  title: Transistor count
+  url:
+    value: https://en.wikipedia.org/wiki/Transistor_count
+    date: 2025-06-03
+  date: 2025-06-03

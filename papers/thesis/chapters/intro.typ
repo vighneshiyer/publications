@@ -80,13 +80,13 @@ Among other applications, this proliferation encompasses consumer electronics, I
   align: center + horizon,
   grid.cell([
     #figure(
-      image("../figs/intro/sia-semi-outlook.png"),
+      image("../figs/intro/sia-semi-outlook.png", height: 2in),
       caption: [Data from the Semiconductor Industry Association supports the strong and consistent proliferation of digital SoCs for increasingly many applications #cite(<sia-semi-outlook>)]
     )<fig:sia-semi-outlook>
   ]),
   grid.cell([
     #figure(
-      image("../figs/intro/sia-march25.png"),
+      image("../figs/intro/sia-march25.png", height: 2in),
       caption: [Recent data from March 2025 shows the wildly cyclical nature of the semiconductor industry, even as long-term growth is consistent #cite(<sia-march25>)]
     )<fig:sia-march25>
   ])
@@ -120,8 +120,8 @@ Certainly over the short term this rate can be expected to continue, if not to i
 ]
 
 #figure(
-  caption: [Two figures from Moore's paper @moores-law which illustrate 1) the reduction in minimum per-transistor costs at increasing integration densities and 2) the exponential increase in total integration complexity over the past decade
-  _two_ scaling trends Moore expected to continue],
+  //_two_ scaling trends Moore expected to continue],
+  caption: [Two figures from Moore's paper @moores-law which illustrate 1) the reduction in minimum per-transistor costs at increasing integration densities and 2) the exponential increase in total integration complexity over the past decade.],
   grid(
     columns: (1fr, 1fr),
     rows: (2in),
@@ -137,6 +137,8 @@ Certainly over the short term this rate can be expected to continue, if not to i
 At the 1975 IEDM conference, Moore published an update titled _"Progress in digital integrated electronics"_ @moores-law-1975 where he predicted the density scaling and per-transistor cost trends would continue.
 Around the same time, Carver Mead took the data from Moore's papers and coined the term "Moore's Law" @moores-law-mead @moores-law-past-present-future.
 // , where he predicted the continued doubling of integration density per year until 1980, followed by a slower doubling every two years.
+
+#pagebreak()
 
 #callout[
   #text(size: 13pt, weight: 600)[The original formulation of Moore's Law]
@@ -156,7 +158,7 @@ Around the same time, Carver Mead took the data from Moore's papers and coined t
 It has been frequently declared that the original formulation of "Moore's Law" died in the mid-2010s #cite(<moores-law-death>) #cite(<moores-law-slowing-down>).
 However, it is more useful to piece apart three _particular_ aspects of Moore's Law and examine them separately.
 
-1. _Total integration complexity scaling_: the maximum number of components that are integrated in a complete digital system, deployed as "one unified product" (e.g. a single die, package, or board/wafer-level system)
+1. _Total integration complexity scaling_: the maximum number of components that are integrated in a complete digital system, deployed and programmed as "one unified system"
 2. _Integration density scaling_: the maximum number of components (i.e. transistors) that can be integrated per _mm#super[2]_ of silicon area
 3. _Cost per component scaling_: the cost per transistor (for logic and/or SRAMs) in increasingly advanced (i.e. scaled down) fabrication technologies
 
@@ -168,15 +170,21 @@ However, it is more useful to piece apart three _particular_ aspects of Moore's 
 // max integration limits via better packaging solutions: Dojo (panel-level packaging, TSMC Intergated FanOut System on Wafer), GB200 / Ultra (massive CoWoS), Cerebras WSE (monolithic wafer-scale intergration)
 // max integration limits via technology: backside power, TSVs, 3D stacking, microfludic cooling, continued transistor scaling and smaller track stdcell libraries
 
-#heading("Total Integration Complexity Scaling", level: 4) #lorem(50)
+#figure(
+  image("../figs/intro/integration_complexity_over_time.svg"),
+  caption: [Data from @transistor-count-wikipedia reproduced on a scatterplot with products segmented by type which demonstrates the sustained exponential trend of increasing total integration complexity.],
+)<fig:integration-complexity-over-time>
+
+#heading("Total Integration Complexity Scaling", level: 4) We can visualize the scaling trends of _unified_ digital systems (i.e. a single die, package, or board/wafer-level system that has relatively uniform bandwidth and latency across the entire system) in @fig:integration-complexity-over-time.
+
+The trend of exponential increases in
+Especially at the upper end, technologies, both with respect to process and package engineering, continue to push out the barriers to continued large-scale integration.
 
 // First present the total integration scaling picture
 // https://en.wikipedia.org/wiki/Transistor_count (scrape data from here and plot it myself)
 //    - https://interludeone.com/posts/2021-04-21-chips/chips.html (he did a nice split by chip designer)
 //    - https://mlsysbook.ai/contents/core/hw_acceleration/hw_acceleration.html#multi-chip-ai-acceleration (transistor count scaling figure, also contains the latest Cerebras WSE-3)
-// I think I should take the Spectrum transistor projection from TSMC and create my own plot too
-
-
+// I think I should take the Spectrum transistor projection from TSMC and create my own plot too. OK I did this.
 
 // Now show two projections
 // https://spectrum.ieee.org/trillion-transistor-gpu (3D vertical connection density scaling + total number of transistor scaling projections)
