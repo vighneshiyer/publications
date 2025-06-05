@@ -98,11 +98,19 @@ In this thesis, we will focus on accelerating the simulation of digital chips th
 // Underpinning the proliferation of digital hardware is the core component of any digital system: the _general-purpose microprocessor_.
 // How have the typical mobile and datacenter SoCs and SiPs evolved over the past several decades?
 
+// Microprocessors are the invisible engines of modern life. From the smartphones in our pockets and the tablets we browse on, to the laptops powering our work and the watches tracking our steps, these intricate slivers of silicon dictate our interaction with the digital world. Even the seemingly ethereal "cloud" is built upon vast datacenters packed with servers, each driven by powerful microprocessors. Understanding the evolution of these devices over the past half-century is crucial to understanding the trajectory of technology and predicting its future.
+
+*TODO*: need to add a summarization paragraph for all the intro chapter contents
+
+
 == Scaling Trends of Digital Systems
 
 Over time, digital chips have gone from small single-core microprocessors to today's massive heterogeneous multi-core systems-on-chip (SoC) which contain a multitude of different compute units.
-We will begin by analyzing the technology and architecture trends that enabled digital systems to scale in size and complexity, what those scaling trends are projected to be looking to the future, and what that implies for the future of digital hardware design.
+We will begin by analyzing the technology and architecture trends that enabled digital systems to scale in size and complexity, driven by Moore's Law and Dennard Scaling.
+, what those scaling trends are projected to be looking to the future, and what that implies for the future of digital hardware design.
 This will motivate the subject of this thesis, which is a simulation methodology for the design of the general-purpose computing architectures of modern SoCs.
+
+This document explores that journey, focusing on the interplay between technological advancements, architectural innovation, and the ever-present demands of software. We will examine the golden age of scaling defined by Moore's Law and Dennard Scaling, the challenges that arose as these trends faltered, the proposed solutions like massive parallelism and hardware acceleration, and ultimately argue that despite the allure of specialization, the continued improvement of general-purpose processing remains the most critical driver of performance and user experience for the vast majority of applications we use every day.
 
 === Moore's Law
 
@@ -159,8 +167,8 @@ It has been frequently declared that the original formulation of "Moore's Law" d
 However, it is more useful to piece apart three _particular_ aspects of Moore's Law and examine them separately.
 
 1. _Total integration complexity scaling_: the maximum number of components that are integrated in a complete digital system, deployed and programmed as "one unified system"
-2. _Integration density scaling_: the maximum number of components (i.e. transistors) that can be integrated per _mm#super[2]_ of silicon area
-3. _Cost per component scaling_: the cost per transistor (for logic and/or SRAMs) in increasingly advanced (i.e. scaled down) fabrication technologies
+2. _Integration density scaling_: the maximum number of transistors that can be fabricated per _mm#super[2]_ of silicon area
+3. _Cost per component scaling_: the cost per transistor (for logic and/or SRAMs) in increasingly scaled down fabrication technologies
 
 // 3 types of scaling:
 //    - costs per transistor (purely process driven)
@@ -169,6 +177,12 @@ However, it is more useful to piece apart three _particular_ aspects of Moore's 
 //      - discuss this in the Dennard scaling section
 // max integration limits via better packaging solutions: Dojo (panel-level packaging, TSMC Intergated FanOut System on Wafer), GB200 / Ultra (massive CoWoS), Cerebras WSE (monolithic wafer-scale intergration)
 // max integration limits via technology: backside power, TSVs, 3D stacking, microfludic cooling, continued transistor scaling and smaller track stdcell libraries
+
+// First present the total integration scaling picture
+// https://en.wikipedia.org/wiki/Transistor_count (scrape data from here and plot it myself)
+//    - https://interludeone.com/posts/2021-04-21-chips/chips.html (he did a nice split by chip designer)
+//    - https://mlsysbook.ai/contents/core/hw_acceleration/hw_acceleration.html#multi-chip-ai-acceleration (transistor count scaling figure, also contains the latest Cerebras WSE-3)
+// I just made my own plot since these existing ones weren't good enough.
 
 #figure(
   image("../figs/intro/integration_complexity_over_time.svg"),
@@ -180,55 +194,85 @@ However, it is more useful to piece apart three _particular_ aspects of Moore's 
 The trend of exponential increases in
 Especially at the upper end, technologies, both with respect to process and package engineering, continue to push out the barriers to continued large-scale integration.
 
-// First present the total integration scaling picture
-// https://en.wikipedia.org/wiki/Transistor_count (scrape data from here and plot it myself)
-//    - https://interludeone.com/posts/2021-04-21-chips/chips.html (he did a nice split by chip designer)
-//    - https://mlsysbook.ai/contents/core/hw_acceleration/hw_acceleration.html#multi-chip-ai-acceleration (transistor count scaling figure, also contains the latest Cerebras WSE-3)
-// I think I should take the Spectrum transistor projection from TSMC and create my own plot too. OK I did this.
+- Talk about TSMC diagram + attach other diagram
+  - https://www.tomshardware.com/tech-industry/manufacturing/tsmc-charts-a-course-to-trillion-transistor-chips-eyes-monolithic-chips-with-200-billion-transistors-built-on-1nm-node
+- https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=10589682&tag=1 (transistors per processor over time, energy efficiency over time, vertical connection 3D density over time, technology evolution chart)
+  - I need to pull these 4 figures from this link (3D vertical connection density scaling + total number of transistors scaling projections from TSMC)
+  - From this article: https://spectrum.ieee.org/trillion-transistor-gpu
 
-// Now show two projections
-// https://spectrum.ieee.org/trillion-transistor-gpu (3D vertical connection density scaling + total number of transistor scaling projections)
+- https://spectrum.ieee.org/stco-system-technology-cooptimization
+  - Keeping Moore’s Law Going Is Getting Complicated
+  - Lots of good data on continued transistor scaling with new transistor structures, 3D integration, backside power delivery
+  - Nice transistor scaling diagrams from imec (x2) - probably attach both of these
 
-- transistor density increasing via wikichip SRAM density charts, but slowing down and time to doubling is growing fast
+- Moore's Law today has slowed down, but it still quite alive. Scaling integration continues with 2.5d and 3d integration (advanced packaging, foveros), memory stacking and on-package integration (see hbm and mobile SoCs), backside power delivery, larger and larger reticle sizes, continued transistor scaling (albeit slowed down as the contacted gate pitch has not moved much lately). New types of packaging becoming more used (panel scale packaging, wafer scale chips). Co-packaged optics with 3d stacking to scale past shoreline bandwidth limitations. microfluidics and forced air cooling
+- Add the GPT notes
+  - https://chatgpt.com/share/68407a7c-f178-8004-aced-f8f2b200b3cb
+
+#heading("Integration Density Scaling", level: 4) Yes this also is continuing through technology improvements, but is certainly slowing down with respect to both logic and SRAM densities.
+
 - density scaling wrt 'components' continues unabated, taller and taller SRAM stacks, ...
-  - Moore's Law today has slowed down, but it still quite alive. Scaling integration continues with 2.5d and 3d integration (advanced packaging, foveros), memory stacking and on-package integration (see hbm and mobile SoCs), backside power delivery, larger and larger reticle sizes, continued transistor scaling (albeit slowed down as the contacted gate pitch has not moved much lately). New types of packaging becoming more used (panel scale packaging, wafer scale chips). Co-packaged optics with 3d stacking to scale past shoreline bandwidth limitations. microfluidics and forced air cooling
+- transistor density increasing via wikichip SRAM density charts, but slowing down and time to doubling is growing fast
+- https://fuse.wikichip.org/news/7375/tsmc-n3-and-challenges-ahead/ (wikichip diagrams of SRAM and logic density scaling over time)
+- https://www.semiconductor-digest.com/moores-law-indeed-stopped-at-28nm/ (some wikichip diagrams here too about scaling) (I should recreate the wikichip scaling diagrams)
+- Great diagram on page 21 of IDRS 2022 https://irds.ieee.org/images/files/pdf/2022/2022IRDS_MM.pdf
+
+#heading("Cost-per-Component Scaling", level: 4) OK this has already been finished for a long time. Costs stopped going down per transistor as we scale to advanced packaging and sub-7nm nodes.
 
 What about the cost aspect? Show the cost graphs. This is a problem indeed, cost isn't continuing to scale even as integration density improves.
-- https://cap.csail.mit.edu/death-moores-law-what-it-means-and-what-might-fill-gap-going-forward
 
-=== Notes
-
-- https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=10589682&tag=1 (transistors per processor over time, energy efficiency over time, vertical connection 3D density over time, technology evolution chart)
-  - I need to pull these 4 figures from this link
-  - From this article: https://spectrum.ieee.org/trillion-transistor-gpu
-- Excellent transistor count over time graphic: https://interludeone.com/posts/2021-04-21-chips/chips.html
+- https://semiwiki.com/semiconductor-services/308018-the-rising-tide-of-semiconductor-cost/ (cost graph from Marvell 2020 investor day)
+- https://semianalysis.com/2022/07/24/the-dark-side-of-the-semiconductor/ (another wafer cost graph from SemiAnalysis)
+- https://www.tomshardware.com/tech-industry/manufacturing/chips-arent-getting-cheaper-the-cost-per-transistor-stopped-dropping-a-decade-ago-at-28nm (another graph showing cost per transistor is flattening off after 28nm)
 - Use the figures from my qual too for per-transistor cost over process growing slowly
   - Also use some of the Kurnal / HighYield die shot breakdowns for evidence of growing integration
   - https://www.reddit.com/r/hardware/comments/1kdrmoq/high_yield_the_definitive_intel_arrow_lake/ (HighYield Arrow Lake die shot breakdown)
-- https://spectrum.ieee.org/hot-chips
-  - Should mention this in the scaling section
 
 === Dennard Scaling
 
-=== The Manycore Hypothesis
+- https://github.com/karlrupp/microprocessor-trend-data
+  - The classical picture we need to put here
+- https://spectrum.ieee.org/hot-chips
+  - Mention this in the Dennard scaling section, not the Moore's law one. Thermal limits continue to limit total complexity scaling, but technologies are emerging that will counteract this in the near-term.
+  - Frore Systems (MEMS based cooling airjet)
+  - https://www.nature.com/articles/s41586-020-2666-1 (Co-designing electronics with microfluidics for more sustainable cooling)
+  - https://www.mdpi.com/2072-666X/9/6/287 ( 3D Integrated Circuit Cooling with Microfluidics )
 
 === Dark Silicon
 
-=== Heterogeneity of Compute Architectures
+=== The Manycore Hypothesis and Failure
+
+PARLAB days, Itanium
+
+== Digital Systems Today and in the Future
+
+=== Heterogeneous Compute Architectures
+
+- Specialized cores
+- DSPs, VLIWs, GPUs, NPUs
+- Geekerwan evidence
+  - M4 pro/max: https://www.bilibili.com/video/BV1y1DoYKEui/
+  - Snapdragon X elite: https://www.bilibili.com/video/BV1jJSzYTEbr/
+  - O1 / 8Elite: https://www.bilibili.com/video/BV18sJHz5ENR/?spm_id_from=333.788.recommend_more_video.-1&vd_source=d3b77c56a4df4b3dd9c25c5c51184d5b (there is a very good scaling curve diagram here which shows the 3 core variant design in action)
 
 === Proliferation of Accelerators
 
-=== Software Scaling
+- https://www.guru3d.com/story/intel-lunar-lake-processor-architecture-die-and-pch-annotated/ (Lunar Lake die shot with heterogeneity)
+- The golden age of Patterson and Hennessy (https://www.doc.ic.ac.uk/~wl/teachlocal/arch/papers/cacm19golden-age.pdf)
+  - Common misinterpretation: the "sea of accelerators" myth: https://accelerator.eecs.harvard.edu/isca14tutorial/isca2014-tutorial-aladdin.pdf
+  // - The common misconception of the golden age: the sea of accelerators
+  - The actual message: specialization of general purpose architectures for domains + more optimized design cycles through agile design + heterogeneous GPP architectures designed for different balance points and types of parallelism that can be extracted for the workload - there is nothing here about non-Von-Neumann architectures in fact
+- Tpu evolution diagram, it's all about specialized general purpose architectures to balance system balance, arithmetic intensity, and intrinsic parallelism, how best to extract that parallelism
+  - Even in ML chips that are growing in volume today, the architectures have become more generalized and often resemble a specialised manycore MIMD machine (Cerebras, Tenstorrent, TPU - a little different than those as of v4 at least). Some exceptions exist like SambaNova.
+
+=== Software Trends
 
 - https://en.wikipedia.org/wiki/Wirth%27s_law
 - A Plea for Lean Software: https://cr.yp.to/bib/1995/wirth.pdf
+  - "software scaling" lol
 
-gpp has well defined arch state, almost always von-Neumann architectures, simulation and optimnization is crucial
 - https://github.com/hollance/neural-engine/blob/master/docs/ane-vs-gpu.md
   - Annotated die photo of Apple A12 showing area dominance of general purpose compute
-
-- Tpu evolution diagram, it's all about specialized general purpose architectures to balance system balance, arithmetic intensity, and intrinsic parallelism, how best to extract that parallelism
-- The common misconception of the golden age: the sea of accelerators
 
 == Agile Hardware Design
 
@@ -237,12 +281,12 @@ gpp has well defined arch state, almost always von-Neumann architectures, simula
 - Immediate PPA
 - Reference all the qual slides I prepared in the past
 
+== Conclusion
 
-== Introduction: The Microprocessor's Ubiquitous Grasp
-
-Microprocessors are the invisible engines of modern life. From the smartphones in our pockets and the tablets we browse on, to the laptops powering our work and the watches tracking our steps, these intricate slivers of silicon dictate our interaction with the digital world. Even the seemingly ethereal "cloud" is built upon vast datacenters packed with servers, each driven by powerful microprocessors. Understanding the evolution of these devices over the past half-century is crucial to understanding the trajectory of technology and predicting its future.
-
-How did we get here? From humble beginnings to the complex Systems-on-Chip (SoCs) of today, the journey has been one of relentless scaling, punctuated by fundamental shifts in design philosophy driven by the very laws of physics that initially enabled explosive growth. This document explores that journey, focusing on the interplay between technological advancements, architectural innovation, and the ever-present demands of software. We will examine the golden age of scaling defined by Moore's Law and Dennard Scaling, the challenges that arose as these trends faltered, the proposed solutions like massive parallelism and hardware acceleration, and ultimately argue that despite the allure of specialization, the continued improvement of general-purpose processing remains the most critical driver of performance and user experience for the vast majority of applications we use every day.
+- https://vighneshiyer.github.io/2024_01-quals-tidalsim.html#/2/10/5
+- Summarize all the facts / premises and their respective conclusions
+- Draw the ultimate conclusion that to enable the next-gen HW designs, we need to innovate on the simulation methodology front (among other things)
+- gpp has well defined arch state, almost always von-Neumann architectures, simulation and optimnization is crucial
 
 == The Golden Age: Moore's Law and Dennard Scaling
 
