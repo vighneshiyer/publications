@@ -2969,6 +2969,13 @@ product_list: list[Product] = [
         manufacturer="Nvidia",
     ),
     Product(
+        name="MI355X",
+        year=2025,
+        product_type="Discrete GPU",
+        transistor_count=185_000_000_000,
+        manufacturer="AMD",
+    ),
+    Product(
         name="Cell Broadband Engine",
         year=2006,
         product_type="Discrete GPU",

@@ -1,0 +1,49 @@
+direction: down
+
+input: {
+  label: ⓵\nWorkloads\n(RISC-V ELFs)
+}
+
+fsim: {
+  label: Functional Simulation\n(e.g. spike)
+}
+
+trace: {
+  label: Commit Trace
+}
+
+segmentation: {
+  label: ⓶\nSegmentation\n(setting the granularity of sampling)
+}
+
+sampling: {
+  label: ⓷\nSampling
+  rep: {
+    label: Representative
+    # models: {
+    #   label: Interval Embeddings
+    # }
+  }
+  rand: {
+    label: Random
+  }
+}
+
+ckpt: {
+  label: Checkpoints
+  arch: {
+    label: Architectural Checkpoints
+    style.multiple: true
+  }
+  uarch: {
+    label: uArch Checkpoints\n()
+    style.multiple: true
+  }
+}
+
+input -> fsim
+fsim -> trace
+trace -> segmentation
+segmentation -> sampling
+sampling -> ckpt
+# time feedback
