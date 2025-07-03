@@ -26,6 +26,16 @@ What are the main things I want to say?
   - Sampled RTL simulation assumes that verification has done its job, but that is often the bottleneck
 */
 
+/*
+- Digital hardware is everywhere, especially on your phone, laptop, desktop, and through the cloud (datacenters)
+- Scaling trends of microprocessors
+- Accelerators galore
+- But what do accelerators do for you? Consider your phone. What do you use it for? What role do these accelerators play?
+- Single-thread performance is still king
+- But it isn't scaling? Not true! Vertical integration gives continual benefits. Speedometer scores are the key. Energy efficiency of cores continues to improve. Cores themselves have become more heterogeneous.
+- But how does this work in practice? There is no vertical iteration loop prior to tape out? So, there is still a full silicon spin cycle + software development time to figure out optimizations. How does Apple do it? Why do others lag so far behind?
+*/
+
 /* Random notes
 - Moore's law, dennard scaling, dark silicon, the typical plot of perf over time, accelerators on dies, reemergence of mass integration like MCM and wafer scale packaging, but even with all this, ml accelerators, the vast majority of power consumption and time per application is spent on the general purpose cores, then show geekerwan scaling on spec for apple cores, also show speedometer here, also talk about p and e cores
 - The parallelism panic at the parlab days
@@ -385,6 +395,26 @@ These trends marked a move away from homogenous multicore designs towards comple
 > X4 	7.4 	83% 	10.0 	71% 	77% 	1.4 mm² 	3.3 GHz 	55.0 	23.33
 > A720 	3.6 	40% 	5.7 	40% 	40% 	0.8 mm² 	2.4 GHz 	50.0 	16.66
 
+*Geekerwan Scaling Curves:* Independent analysis, such as the detailed benchmark comparisons by Geekerwan, graphically illustrates this leap. Plots tracking SPECint (a standard benchmark for integer CPU performance) show Apple's A-series and M-series cores achieving dramatic year-over-year gains, establishing a significant lead over competitors, sometimes even when built on an older process node. This points towards massive investments in microarchitecture.
+
+    [Insert Plot: Geekerwan Apple CPU Scaling (SPECint vs. Year/Generation)]
+
+*Speedometer Benchmark:* Crucially, this performance translates to real-world applications. The Speedometer benchmark, which measures web application responsiveness (a task dominated by JavaScript execution and browser rendering on the CPU), shows consistent, significant generational improvements on Apple devices, correlating strongly with their CPU advancements. This directly impacts the user's perception of speed in one of the most common computing tasks.
+
+    [Insert Plot: Speedometer Score Scaling (Score vs. Year/Generation for Apple devices)]
+
+The SPEC perf vs power curves don't tell the whole story.
+There is also application level specialization - see Speedometer scores which use the P core at max sustained throughput.
+There is also the leakage power and core area tradeoff vs performance and dynamic power.
+All these complicating factors require careful uArch design.
+
+*P-cores and E-cores:* Apple masterfully implements the heterogeneous P-core / E-core strategy. Their E-cores themselves are often as fast as competitors' previous-generation P-cores, while their P-cores push the boundaries of performance. This combination delivers both exceptional peak speed and remarkable battery life. However, the foundation of the user experience rests on the sheer capability of those P-cores.
+
+Apple's success stems from a combination of factors: massive investment in CPU microarchitecture design, tight hardware-software co-design facilitated by controlling the entire ecosystem (hardware, OS, key applications), and a relentless focus on optimizing for real-world workloads rather than just synthetic benchmarks. Their chips *do* contain accelerators (GPU, NPU, video engines, etc.), but the dramatic performance advantage felt by users is largely attributable to the raw power and efficiency of their general-purpose CPU cores. They demonstrated that "true software-optimized hardware" primarily meant building incredibly capable CPUs to run the software users care about most.
+
+But CPUs aren't stagnating! Show performance results of M series systems on Speedometer. Energy efficiency and absolute performance continue to improve as cores are designed with specialized features for target workloads (e.g. speculation features such as load address/value prediction, pointer preemptive prefetching, things that expose uarch side-channels actually are good!)
+Core microarchitecture iteration is still important! But performance benefits are hard to measure due to simulation bottlenecks.
+
 === Proliferation of Accelerators
 
 - https://www.guru3d.com/story/intel-lunar-lake-processor-architecture-die-and-pch-annotated/ (Lunar Lake die shot with heterogeneity)
@@ -394,6 +424,15 @@ These trends marked a move away from homogenous multicore designs towards comple
   - The actual message: specialization of general purpose architectures for domains + more optimized design cycles through agile design + heterogeneous GPP architectures designed for different balance points and types of parallelism that can be extracted for the workload - there is nothing here about non-Von-Neumann architectures in fact
 - Tpu evolution diagram, it's all about specialized general purpose architectures to balance system balance, arithmetic intensity, and intrinsic parallelism, how best to extract that parallelism
   - Even in ML chips that are growing in volume today, the architectures have become more generalized and often resemble a specialised manycore MIMD machine (Cerebras, Tenstorrent, TPU - a little different than those as of v4 at least). Some exceptions exist like SambaNova.
+
+10 years after the 'golden age' Turing talk was given, do we really see the kind of 'specialization' that was hypothesized?
+Rather, we see specialization and optimization of general purpose architectures that can exploit common computing motifs increasingly well through better programming models, APIs, and compilers (e.g. autovectorization). We also see specialization of GPPs to optimize for common software workloads (web browsers, layout rendering, javascript JIT, and so forth).
+Some still argue that in the future, we will indeed see the 'sea of accelerators' and pervasive accelerators on a die, and that those will account for the majority of computing performance gains and compute cycles spent on an SoC, but there isn't a good reason to believe this.
+Limits encountered via Moore's Law and Dennard scaling don't point to increased random kernel accelerators, but rather continued improvement of general purpose architectures to max out Amdahl's Law (both with respect to data parallelism, MLP, ILP, and system balance tradeoffs).
+
+The chip block diagrams do *not* indicate any kind of *pervasive specialization* that the "golden age" position paper may have posited, but rather reflect adapting general purpose processing engines for different amounts of exploitable parallelism for different workloads. Only a handful of exceptions exist and those are arguably not even 'accelerators' since they have no application-visible programming model (e.g. video codecs, fixed function ISP pipelines).
+
+Heterogeneity with respect to general purpose architectures! Not related to the 'sea of accelerators', but rather limited by dark silicon. 'accelerator level parallelism' is another dubious concept.
 
 === Software Trends
 
@@ -406,6 +445,11 @@ These trends marked a move away from homogenous multicore designs towards comple
 - Software dominates - the number of software engineers vastly outnumbers the number of hardware ones. You can't force new low-level programming models or radically new architectures on users (the users of hardware are software developers).
   - The consequence is that software must have a stable substrate to iterate on
   - And that substrate (hardware) must adapt to software needs (indirect threading, JITed code, ..., see Quinnell's talk)
+
+Software drives the next generation hardware whether we like it or not. To some degree hardware advancements make software advancements / inefficiencies possible in the first place. So we must discuss the software first.
+Software stack complexity continues to grow with more abstractions, consider webapp side
+Programming productivity is king, more SW engineers vs HW ones
+Cloud and edge application stacks are actually converging with respect to compute characteristics (indirect dispatch, JITs, VMs, more isolation), with differences in scale
 
 === Retrospective on SoC Evolution
 
@@ -426,6 +470,19 @@ For these tasks, the vast majority of the execution time and, crucially, energy 
 Furthermore, the software development ecosystem remains overwhelmingly centered around general-purpose CPUs. Developers write code in C++, Java, Python, Swift, JavaScript, etc., targeting standard CPU instruction sets. Compilers, debuggers, profilers, libraries, and frameworks are all built around this model. Getting developers to effectively target a diverse and constantly changing landscape of specialized accelerators is a massive challenge. It requires new tools, new programming models, and significant effort to rewrite or adapt existing codebases.
 
 While accelerators like video decoders, ISPs, and increasingly NPUs have found their niche because they address high-value, computationally expensive, and relatively stable functions, they are not the primary drivers of the overall *snappiness* and responsiveness that users perceive. That feeling of performance comes largely from the speed and efficiency of the general-purpose cores executing the main application logic, the operating system, and the user interface code. Practical performance scaling and the ability to add more complex software features still hinge critically on improvements in general-purpose compute, both in raw speed and, increasingly, energy efficiency.
+
+=== Redefining "Scaling": The System is the Computer
+
+Perhaps the notion that "Moore's Law is dead" or "scaling has ended" is based on too narrow a definition, focusing solely on transistor density or single-core frequency. If we consider Moore's original insight more broadly – as concerning the scaling of *capability* and *cost* of an entire computing *system* – then scaling is far from over. We are witnessing a shift towards system-level integration and innovation:
+
+*   *Bandwidth Scaling:* Memory bandwidth continues to increase dramatically through technologies like DDR5, LPDDR5X, and High Bandwidth Memory (HBM) stacked directly on packages. Interconnect bandwidth (PCIe Gen 5/6, NVLink, Infinity Fabric) allows faster communication between components.
+*   *Board and Package Level Integration:* Advanced packaging techniques like Multi-Chip Modules (MCMs), chiplets (e.g., AMD's CPU/IO dies, Intel's Foveros), 2.5D interposers, and 3D stacking allow integrating diverse components (CPU, GPU, memory, I/O) much more tightly than traditional PCBs allowed, reducing latency and power consumption. Wafer-scale packaging pushes this further.
+*   *I/O Integration:* More peripheral functions are integrated directly onto the SoC or processor package, including Thunderbolt/USB4 controllers, Wi-Fi and Bluetooth radios, and network interfaces, reducing system complexity and cost.
+*   *Memory Integration:* Integrating memory controllers directly onto the CPU die has been standard practice for years. Stacking DRAM directly on top of logic (HBM) or integrating it into the package brings memory even closer.
+*   *Radio Integration:* Complex cellular modems, Wi-Fi, and Bluetooth radios are now routinely integrated into the main SoC package or co-packaged closely.
+*   *Advanced Cooling:* As power density remains a challenge, system-level solutions like liquid cooling (even in dense server racks like Nvidia's NVL72 Grace-Hopper system) allow for higher-performing components within manageable thermal envelopes.
+
+From this perspective, scaling continues robustly. The system *as a whole* becomes more capable, more integrated, and often more cost-effective per unit of performance or capability.
 
 ==== The Continued Importance of General Purpose Compute
 
@@ -454,28 +511,9 @@ This relentless, compounding improvement is evident when tracking CPU performanc
 - Immediate PPA
 - Reference all the qual slides I prepared in the past
 
-== Premises and Conclusion
+- But how does this work in practice? There is no vertical iteration loop prior to tape out? So, there is still a full silicon spin cycle + software development time to figure out optimizations. How does Apple do it? Why do others lag so far behind?
 
-- https://vighneshiyer.github.io/2024_01-quals-tidalsim.html#/2/10/5
-- Summarize all the facts / premises and their respective conclusions
-- Draw the ultimate conclusion that to enable the next-gen HW designs, we need to innovate on the simulation methodology front (among other things)
-- gpp has well defined arch state, almost always von-Neumann architectures, simulation and optimnization is crucial
-
-
-*Geekerwan Scaling Curves:* Independent analysis, such as the detailed benchmark comparisons by Geekerwan, graphically illustrates this leap. Plots tracking SPECint (a standard benchmark for integer CPU performance) show Apple's A-series and M-series cores achieving dramatic year-over-year gains, establishing a significant lead over competitors, sometimes even when built on an older process node. This points towards massive investments in microarchitecture.
-
-    [Insert Plot: Geekerwan Apple CPU Scaling (SPECint vs. Year/Generation)]
-
-*Speedometer Benchmark:* Crucially, this performance translates to real-world applications. The Speedometer benchmark, which measures web application responsiveness (a task dominated by JavaScript execution and browser rendering on the CPU), shows consistent, significant generational improvements on Apple devices, correlating strongly with their CPU advancements. This directly impacts the user's perception of speed in one of the most common computing tasks.
-
-    [Insert Plot: Speedometer Score Scaling (Score vs. Year/Generation for Apple devices)]
-
-
-*P-cores and E-cores:* Apple masterfully implements the heterogeneous P-core / E-core strategy. Their E-cores themselves are often as fast as competitors' previous-generation P-cores, while their P-cores push the boundaries of performance. This combination delivers both exceptional peak speed and remarkable battery life. However, the foundation of the user experience rests on the sheer capability of those P-cores.
-
-Apple's success stems from a combination of factors: massive investment in CPU microarchitecture design, tight hardware-software co-design facilitated by controlling the entire ecosystem (hardware, OS, key applications), and a relentless focus on optimizing for real-world workloads rather than just synthetic benchmarks. Their chips *do* contain accelerators (GPU, NPU, video engines, etc.), but the dramatic performance advantage felt by users is largely attributable to the raw power and efficiency of their general-purpose CPU cores. They demonstrated that "true software-optimized hardware" primarily meant building incredibly capable CPUs to run the software users care about most.
-
-== The Nature of Modern Co-Design and Future Outlook
+=== The Nature of Modern Co-Design and Future Outlook
 
 How does a company like Apple achieve this level of hardware-software integration and performance? It's not magic, but rather a long, iterative process built over many generations of silicon.
 
@@ -490,52 +528,13 @@ The evidence strongly suggests that continued investment in general-purpose CPU 
 
 The focus needs to be on making the common case fast and efficient. This means building better P-cores and E-cores, improving cache hierarchies, enhancing branch prediction, and working closely with compiler and OS developers. The primary target for optimization should be the software stacks that developers actually use and the applications users actually run.
 
-== Redefining "Scaling": The System is the Computer
+== Premises and Conclusion
 
-Perhaps the notion that "Moore's Law is dead" or "scaling has ended" is based on too narrow a definition, focusing solely on transistor density or single-core frequency. If we consider Moore's original insight more broadly – as concerning the scaling of *capability* and *cost* of an entire computing *system* – then scaling is far from over. We are witnessing a shift towards system-level integration and innovation:
+// *Conclusion:* Specialization through accelerators has its place, but its value proposition for mainstream computing may be less universal than often claimed. The history of computing, particularly the recent trajectory exemplified by Apple Silicon, suggests that relentless innovation in general-purpose CPU cores (both performance and efficiency variants) remains the bedrock of user experience. The most valuable form of "specialization" might be the workload specialization *of general-purpose cores* – designing cores and cache systems that are particularly adept at running the common software stacks (web browsers, productivity apps, common runtimes) efficiently. Enabling software developer productivity on these general-purpose platforms remains the key to unlocking new features and capabilities. The future of computing likely lies in continued strong general-purpose performance, smart heterogeneity (P/E cores), targeted acceleration for high-value tasks, and massive system-level integration – a broader definition of scaling that is very much alive and well.
 
-*   *Bandwidth Scaling:* Memory bandwidth continues to increase dramatically through technologies like DDR5, LPDDR5X, and High Bandwidth Memory (HBM) stacked directly on packages. Interconnect bandwidth (PCIe Gen 5/6, NVLink, Infinity Fabric) allows faster communication between components.
-*   *Board and Package Level Integration:* Advanced packaging techniques like Multi-Chip Modules (MCMs), chiplets (e.g., AMD's CPU/IO dies, Intel's Foveros), 2.5D interposers, and 3D stacking allow integrating diverse components (CPU, GPU, memory, I/O) much more tightly than traditional PCBs allowed, reducing latency and power consumption. Wafer-scale packaging pushes this further.
-*   *I/O Integration:* More peripheral functions are integrated directly onto the SoC or processor package, including Thunderbolt/USB4 controllers, Wi-Fi and Bluetooth radios, and network interfaces, reducing system complexity and cost.
-*   *Memory Integration:* Integrating memory controllers directly onto the CPU die has been standard practice for years. Stacking DRAM directly on top of logic (HBM) or integrating it into the package brings memory even closer.
-*   *Radio Integration:* Complex cellular modems, Wi-Fi, and Bluetooth radios are now routinely integrated into the main SoC package or co-packaged closely.
-*   *Advanced Cooling:* As power density remains a challenge, system-level solutions like liquid cooling (even in dense server racks like Nvidia's NVL72 Grace-Hopper system) allow for higher-performing components within manageable thermal envelopes.
+- https://vighneshiyer.github.io/2024_01-quals-tidalsim.html#/2/10/5
+- Summarize all the facts / premises and their respective conclusions
+- Draw the ultimate conclusion that to enable the next-gen HW designs, we need to innovate on the simulation methodology front (among other things)
+- gpp has well defined arch state, almost always von-Neumann architectures, simulation and optimnization is crucial
 
-From this perspective, scaling continues robustly. The system *as a whole* becomes more capable, more integrated, and often more cost-effective per unit of performance or capability.
 
-*Conclusion:* Specialization through accelerators has its place, but its value proposition for mainstream computing may be less universal than often claimed. The history of computing, particularly the recent trajectory exemplified by Apple Silicon, suggests that relentless innovation in general-purpose CPU cores (both performance and efficiency variants) remains the bedrock of user experience. The most valuable form of "specialization" might be the workload specialization *of general-purpose cores* – designing cores and cache systems that are particularly adept at running the common software stacks (web browsers, productivity apps, common runtimes) efficiently. Enabling software developer productivity on these general-purpose platforms remains the key to unlocking new features and capabilities. The future of computing likely lies in continued strong general-purpose performance, smart heterogeneity (P/E cores), targeted acceleration for high-value tasks, and massive system-level integration – a broader definition of scaling that is very much alive and well.
-
-== Software Trends
-
-Software drives the next generation hardware whether we like it or not. To some degree hardware advancements make software advancements / inefficiencies possible in the first place. So we must discuss the software first.
-Software stack complexity continues to grow with more abstractions, consider webapp side
-Programming productivity is king, more SW engineers vs HW ones
-Cloud and edge application stacks are actually converging with respect to compute characteristics (indirect dispatch, JITs, VMs, more isolation), with differences in scale
-
-== Digital Hardware Trends
-
-Moore's Law, Dennard scaling, specialization, heterogeneous systems, more custom IPs
-But CPUs aren't stagnating! Show performance results of M series systems on Speedometer. Energy efficiency and absolute performance continue to improve as cores are designed with specialized features for target workloads (e.g. speculation features such as load address/value prediction, pointer preemptive prefetching, things that expose uarch side-channels actually are good!)
-Core microarchitecture iteration is still important! But performance benefits are hard to measure due to simulation bottlenecks.
-
-- Digital hardware is everywhere, especially on your phone, laptop, desktop, and through the cloud (datacenters)
-- Scaling trends of microprocessors
-- Accelerators galore
-- But what do accelerators do for you? Consider your phone. What do you use it for? What role do these accelerators play?
-- Single-thread performance is still king
-- But it isn't scaling? Not true! Vertical integration gives continual benefits. Speedometer scores are the key. Energy efficiency of cores continues to improve. Cores themselves have become more heterogeneous.
-- But how does this work in practice? There is no vertical iteration loop prior to tape out? So, there is still a full silicon spin cycle + software development time to figure out optimizations. How does Apple do it? Why do others lag so far behind?
-
-The chip block diagrams do *not* indicate any kind of *pervasive specialization* that the "golden age" position paper may have posited, but rather reflect adapting general purpose processing engines for different amounts of exploitable parallelism for different workloads. Only a handful of exceptions exist and those are arguably not even 'accelerators' since they have no application-visible programming model (e.g. video codecs, fixed function ISP pipelines).
-
-Heterogeneity with respect to general purpose architectures! Not related to the 'sea of accelerators', but rather limited by dark silicon. 'accelerator level parallelism' is another dubious concept.
-
-10 years after the 'golden age' Turing talk was given, do we really see the kind of 'specialization' that was hypothesized?
-Rather, we see specialization and optimization of general purpose architectures that can exploit common computing motifs increasingly well through better programming models, APIs, and compilers (e.g. autovectorization). We also see specialization of GPPs to optimize for common software workloads (web browsers, layout rendering, javascript JIT, and so forth).
-Some still argue that in the future, we will indeed see the 'sea of accelerators' and pervasive accelerators on a die, and that those will account for the majority of computing performance gains and compute cycles spent on an SoC, but there isn't a good reason to believe this.
-Limits encountered via Moore's Law and Dennard scaling don't point to increased random kernel accelerators, but rather continued improvement of general purpose architectures to max out Amdahl's Law (both with respect to data parallelism, MLP, ILP, and system balance tradeoffs).
-
-The SPEC perf vs power curves don't tell the whole story.
-There is also application level specialization - see Speedometer scores which use the P core at max sustained throughput.
-There is also the leakage power and core area tradeoff vs performance and dynamic power.
-All these complicating factors require careful uArch design.
