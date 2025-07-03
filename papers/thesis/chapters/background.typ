@@ -16,6 +16,14 @@
 
 == An Overview of Digital Systems
 
+In this section, we will focus on von-Neumann computer architectures.
+We will not discuss their design and verification aspects, but will focus on simulation and performance modeling.
+
+What is a von-Neumann architecture? Instruction/data memories + processor + external memory.
+This following analysis can also apply to non-Von-Neumann architectures such as Harvard architectures, vector machines, SIMT processors, and even dataflow/spatial architectures (although it is harder to adapt the simulation techniques we describe to these exotic architectures).
+
+On the simulation section, focus on von-Neumann computer architectures - talk about various types and point out that besides a few exceptions like ILP pipelines and video decoders, we basically only have von-Neumann architectures today. What defines them? What are they? Talk about others like dataflow / spatial computing or neuromorphic computing or analog computing or processing-in-memory too but only briefly as to dismiss them as not relevant in the vast majority of cases. For von-Neumann systems explain how CPUs, GPUs / SIMT cores, NPUs / TPU, DSP cores, VLIW cores slot into the von-Neumann paradigm. Consider whether architectural state advances in lockstep and is interruptible and resumable vs not and what that means for accurate architectural modeling. Finally discuss the differences between arch and uarch states and logic.
+
 === Abstractions
 
 === How They are Built

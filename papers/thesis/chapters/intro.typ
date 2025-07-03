@@ -434,6 +434,21 @@ The chip block diagrams do *not* indicate any kind of *pervasive specialization*
 
 Heterogeneity with respect to general purpose architectures! Not related to the 'sea of accelerators', but rather limited by dark silicon. 'accelerator level parallelism' is another dubious concept.
 
+- The golden age supposedly
+- Does that mean a sea of accelerators?
+- Software evolves too quickly to burn in kernels in silicon
+- Software motifs are consistent, the opportunities for parallelism, ilp, MLP, dlp, tlp, are all quite consistent regardless of the workload
+- And then efficiency of this also sucks compared to efficient general purpose engines
+- Software needs productivity, so hardware must adapt, see speedometer, specialization of general purpose engines, see this with ame and neural engine, see this with the tpu evolution too, see this with the arm isa specialized for JavaScript execution like fp stuff and also indirect threading, see Quinnell slides
+
+- There are several notions of the "age of specialization"
+1. Accelerators that are not generally user application programmable but are rather fixed function pipelines commonly associated with IOs (video codecs, audio pipelines, isp camera pipelines)
+2. Accelerators that expose an explicit programming ISA or API (NPU, GPU, Apple's neural engine, DSP cores)
+3. Specializations of general purpose computing architectures that are designed to optimally execute user applications
+
+- Which ones can be exploited generally by user programs to exploit their intrinsic parallelism extraction opportunities? I argue that nearly all application level benefits come from the 3rd type. There is no "sea of accelerators" as is commonly assumed in the academic literature even as dennard scaling ended decades ago. While there is room to improve the cross architecture application mapping and communication schemes, these come after the specialization of each architecture itself.
+
+
 === Software Trends
 
 - https://en.wikipedia.org/wiki/Wirth%27s_law
